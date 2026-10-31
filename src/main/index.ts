@@ -3,8 +3,22 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { chat, listModels, type ChatMessage } from './ollamaClient'
+import { captureSource, listSources } from './capture'
 
 const VALID_ROLES = new Set(['system', 'user', 'assistant'])
+const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024
+const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
+
+function isImageList(value: unknown): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.length <= 4 &&
+    value.every(
+      (img) =>
+        typeof img === 'string' && img.length <= MAX_IMAGE_BASE64_LENGTH && BASE64_PATTERN.test(img)
+    )
+  )
+}
 
 // Renderer input is untrusted: check its shape before forwarding to Ollama.
 function isChatMessages(value: unknown): value is ChatMessage[] {
@@ -15,9 +29,27 @@ function isChatMessages(value: unknown): value is ChatMessage[] {
         typeof m === 'object' &&
         m !== null &&
         VALID_ROLES.has((m as ChatMessage).role) &&
-        typeof (m as ChatMessage).content === 'string'
+        typeof (m as ChatMessage).content === 'string' &&
+        ((m as ChatMessage).images === undefined || isImageList((m as ChatMessage).images))
     )
   )
+}
+
+function senderWindow(event: Electron.IpcMainInvokeEvent): BrowserWindow {
+  const win = BrowserWindow.fromWebContents(event.sender)
+  if (!win) throw new Error('No window for this request.')
+  return win
+}
+
+function registerCaptureHandlers(): void {
+  ipcMain.handle('capture:list-sources', (event) => listSources(senderWindow(event)))
+
+  ipcMain.handle('capture:screenshot', (event, sourceId: unknown) => {
+    if (typeof sourceId !== 'string' || !/^(screen|window):[\w:-]+$/.test(sourceId)) {
+      throw new Error('Invalid capture source.')
+    }
+    return captureSource(sourceId, senderWindow(event))
+  })
 }
 
 function registerOllamaHandlers(): void {
@@ -83,6 +115,7 @@ app.whenReady().then(() => {
   })
 
   registerOllamaHandlers()
+  registerCaptureHandlers()
 
   createWindow()
 

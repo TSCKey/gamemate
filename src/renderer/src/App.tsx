@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
-import type { ChatMessage } from '../../preload/index.d'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { CaptureSource, ChatMessage, ModelInfo } from '../../preload/index.d'
+
+const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
 
 function errorMessage(error: unknown): string {
   const text = error instanceof Error ? error.message : String(error)
@@ -7,44 +9,96 @@ function errorMessage(error: unknown): string {
   return text.replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
 }
 
+// Prefer a game window, then the main screen.
+function pickDefaultSource(sources: CaptureSource[]): string {
+  const game = sources.find((s) => s.type === 'window' && /minecraft/i.test(s.name))
+  return (game ?? sources.find((s) => s.type === 'screen') ?? sources[0])?.id ?? ''
+}
+
+function sourceLabel(source: CaptureSource, screenCount: number): string {
+  if (source.type === 'window') return source.name
+  return screenCount > 1 ? source.name : 'Entire screen'
+}
+
 function App(): React.JSX.Element {
-  const [models, setModels] = useState<string[]>([])
+  const [models, setModels] = useState<ModelInfo[]>([])
   const [model, setModel] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'capturing' | 'thinking'>('idle')
   const [error, setError] = useState<string | null>(null)
+  const [sources, setSources] = useState<CaptureSource[]>([])
+  const [sourceId, setSourceId] = useState('')
+  const [attachScreenshot, setAttachScreenshot] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const loading = status !== 'idle'
+  const visionModel = models.find((m) => m.name === model)?.vision ?? false
+  const willAttach = attachScreenshot && visionModel && sourceId !== ''
+  const screenCount = sources.filter((s) => s.type === 'screen').length
 
   const loadModels = async (): Promise<void> => {
     try {
-      const names = await window.api.listModels()
-      setModels(names)
-      setModel((current) => (names.includes(current) ? current : (names[0] ?? '')))
-      setError(names.length === 0 ? 'No models installed. Run: ollama pull llama3.2' : null)
+      const list = await window.api.listModels()
+      setModels(list)
+      setModel((current) => {
+        if (list.some((m) => m.name === current)) return current
+        return (list.find((m) => m.vision) ?? list[0])?.name ?? ''
+      })
+      setError(list.length === 0 ? 'No models installed. Run: ollama pull qwen3.5:2b' : null)
     } catch (e) {
       setError(errorMessage(e))
     }
   }
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- state is only set after the IPC call resolves
-    loadModels()
+  const loadSources = useCallback(async (): Promise<void> => {
+    try {
+      const list = await window.api.listCaptureSources()
+      setSources(list)
+      setSourceId((current) =>
+        list.some((s) => s.id === current) ? current : pickDefaultSource(list)
+      )
+    } catch (e) {
+      setError(errorMessage(e))
+    }
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- state is only set after the IPC call resolves
+    loadModels()
+    loadSources()
+    // Windows open and close while GameMate is in the background; refresh when it regains focus.
+    window.addEventListener('focus', loadSources)
+    return () => window.removeEventListener('focus', loadSources)
+  }, [loadSources])
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, loading])
+  }, [messages, status])
 
-  const send = async (): Promise<void> => {
-    const content = input.trim()
-    if (!content || !model || loading) return
+  const send = async (text: string = input, withScreenshot = willAttach): Promise<void> => {
+    const typed = text.trim()
+    if (!model || loading || (!typed && !withScreenshot)) return
 
-    const history: ChatMessage[] = [...messages, { role: 'user', content }]
+    setError(null)
+    let images: string[] | undefined
+    if (withScreenshot) {
+      setStatus('capturing')
+      try {
+        images = [(await window.api.captureScreenshot(sourceId)).base64]
+      } catch (e) {
+        setError(errorMessage(e))
+        setStatus('idle')
+        loadSources()
+        return
+      }
+    }
+
+    const content = typed || DEFAULT_SCREEN_QUESTION
+    const history: ChatMessage[] = [...messages, { role: 'user', content, images }]
     setMessages(history)
     setInput('')
-    setLoading(true)
-    setError(null)
+    setStatus('thinking')
 
     try {
       const reply = await window.api.chat(model, history)
@@ -52,7 +106,7 @@ function App(): React.JSX.Element {
     } catch (e) {
       setError(errorMessage(e))
     } finally {
-      setLoading(false)
+      setStatus('idle')
     }
   }
 
@@ -72,11 +126,13 @@ function App(): React.JSX.Element {
             value={model}
             onChange={(e) => setModel(e.target.value)}
             disabled={models.length === 0}
+            aria-label="Model"
           >
             {models.length === 0 && <option value="">No models</option>}
             {models.map((m) => (
-              <option key={m} value={m}>
-                {m}
+              <option key={m.name} value={m.name}>
+                {m.name}
+                {m.vision ? ' 👁' : ''}
               </option>
             ))}
           </select>
@@ -91,18 +147,74 @@ function App(): React.JSX.Element {
 
       <main className="chat-messages">
         {messages.length === 0 && !loading && (
-          <p className="chat-empty">Ask anything to get started.</p>
+          <div className="chat-empty">
+            <p>Ask anything to get started.</p>
+            {visionModel && sourceId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAttachScreenshot(true)
+                  send(DEFAULT_SCREEN_QUESTION, true)
+                }}
+              >
+                📷 What&apos;s on my screen?
+              </button>
+            )}
+          </div>
         )}
         {messages.map((m, i) => (
           <div key={i} className={`bubble bubble-${m.role}`}>
+            {m.images?.map((img, j) => (
+              <img
+                key={j}
+                className="bubble-screenshot"
+                src={`data:image/jpeg;base64,${img}`}
+                alt="Screenshot sent with this question"
+              />
+            ))}
             {m.content}
           </div>
         ))}
-        {loading && <div className="bubble bubble-assistant bubble-pending">Thinking…</div>}
+        {loading && (
+          <div className="bubble bubble-assistant bubble-pending">
+            {status === 'capturing' ? 'Capturing screen…' : 'Thinking…'}
+          </div>
+        )}
         <div ref={bottomRef} />
       </main>
 
       {error && <div className="chat-error">{error}</div>}
+
+      <div className="capture-bar">
+        <label className={visionModel ? '' : 'is-disabled'}>
+          <input
+            type="checkbox"
+            checked={attachScreenshot && visionModel}
+            onChange={(e) => setAttachScreenshot(e.target.checked)}
+            disabled={!visionModel || sources.length === 0}
+          />
+          Include screenshot of
+        </label>
+        <select
+          value={sourceId}
+          onChange={(e) => setSourceId(e.target.value)}
+          disabled={!visionModel || sources.length === 0}
+          aria-label="Screenshot source"
+        >
+          {sources.length === 0 && <option value="">Nothing to capture</option>}
+          {sources.map((s) => (
+            <option key={s.id} value={s.id}>
+              {sourceLabel(s, screenCount)}
+            </option>
+          ))}
+        </select>
+        <button type="button" onClick={loadSources} title="Refresh window list">
+          ↻
+        </button>
+        {!visionModel && model && (
+          <span className="capture-hint">This model can&apos;t see images.</span>
+        )}
+      </div>
 
       <form
         className="chat-input"
@@ -115,11 +227,17 @@ function App(): React.JSX.Element {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder={model ? `Message ${model}…` : 'Select a model first'}
+          placeholder={
+            !model
+              ? 'Select a model first'
+              : willAttach
+                ? 'Ask about your screen… (or just press Enter)'
+                : `Message ${model}…`
+          }
           rows={2}
           disabled={!model}
         />
-        <button type="submit" disabled={!input.trim() || !model || loading}>
+        <button type="submit" disabled={!model || loading || (!input.trim() && !willAttach)}>
           Send
         </button>
       </form>

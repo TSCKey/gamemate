@@ -5,7 +5,9 @@ import type { Api, ChatMessage } from './index.d'
 const api: Api = {
   listModels: () => ipcRenderer.invoke('ollama:list-models'),
   chat: (model: string, messages: ChatMessage[]) =>
-    ipcRenderer.invoke('ollama:chat', model, messages)
+    ipcRenderer.invoke('ollama:chat', model, messages),
+  listCaptureSources: () => ipcRenderer.invoke('capture:list-sources'),
+  captureScreenshot: (sourceId: string) => ipcRenderer.invoke('capture:screenshot', sourceId)
 }
 
 contextBridge.exposeInMainWorld('api', api)
