@@ -1,13 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { CaptureSource, ChatMessage, ModelInfo } from '../../preload/index.d'
+import type { AppInfo, CaptureSource, ChatMessage } from '../../preload/index.d'
+import RecipeCard from './components/RecipeCard'
+import { errorMessage, useSettings } from './useSettings'
 
 const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
-
-function errorMessage(error: unknown): string {
-  const text = error instanceof Error ? error.message : String(error)
-  // ipcRenderer.invoke wraps main-process errors in a generic prefix; strip it.
-  return text.replace(/^Error invoking remote method '[^']+': (Error: )?/, '')
-}
 
 // Prefer a game window, then the main screen.
 function pickDefaultSource(sources: CaptureSource[]): string {
@@ -21,8 +17,9 @@ function sourceLabel(source: CaptureSource, screenCount: number): string {
 }
 
 function App(): React.JSX.Element {
-  const [models, setModels] = useState<ModelInfo[]>([])
-  const [model, setModel] = useState('')
+  const { settings, models, modelError, update, reloadModels } = useSettings()
+  const [versions, setVersions] = useState<string[]>([])
+  const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'capturing' | 'thinking'>('idle')
@@ -32,24 +29,12 @@ function App(): React.JSX.Element {
   const [attachScreenshot, setAttachScreenshot] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  const model = settings?.model ?? ''
   const loading = status !== 'idle'
   const visionModel = models.find((m) => m.name === model)?.vision ?? false
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
-
-  const loadModels = async (): Promise<void> => {
-    try {
-      const list = await window.api.listModels()
-      setModels(list)
-      setModel((current) => {
-        if (list.some((m) => m.name === current)) return current
-        return (list.find((m) => m.vision) ?? list[0])?.name ?? ''
-      })
-      setError(list.length === 0 ? 'No models installed. Run: ollama pull qwen3.5:2b' : null)
-    } catch (e) {
-      setError(errorMessage(e))
-    }
-  }
+  const shownError = error ?? modelError
 
   const loadSources = useCallback(async (): Promise<void> => {
     try {
@@ -64,8 +49,9 @@ function App(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
+    window.api.listMinecraftVersions().then(setVersions)
+    window.api.getAppInfo().then(setAppInfo)
     // eslint-disable-next-line react-hooks/set-state-in-effect -- state is only set after the IPC call resolves
-    loadModels()
     loadSources()
     // Windows open and close while GameMate is in the background; refresh when it regains focus.
     window.addEventListener('focus', loadSources)
@@ -101,7 +87,7 @@ function App(): React.JSX.Element {
     setStatus('thinking')
 
     try {
-      const reply = await window.api.chat(model, history)
+      const reply = await window.api.ask(history)
       setMessages([...history, reply])
     } catch (e) {
       setError(errorMessage(e))
@@ -123,8 +109,20 @@ function App(): React.JSX.Element {
         <h1>GameMate</h1>
         <div className="model-picker">
           <select
+            value={settings?.minecraftVersion ?? ''}
+            onChange={(e) => update({ minecraftVersion: e.target.value })}
+            aria-label="Minecraft version"
+            title="Minecraft version"
+          >
+            {versions.map((v) => (
+              <option key={v} value={v}>
+                Minecraft {v}
+              </option>
+            ))}
+          </select>
+          <select
             value={model}
-            onChange={(e) => setModel(e.target.value)}
+            onChange={(e) => update({ model: e.target.value })}
             disabled={models.length === 0}
             aria-label="Model"
           >
@@ -136,7 +134,7 @@ function App(): React.JSX.Element {
               </option>
             ))}
           </select>
-          <button type="button" onClick={loadModels} title="Reload models">
+          <button type="button" onClick={reloadModels} title="Reload models">
             ↻
           </button>
           <button type="button" onClick={() => setMessages([])} disabled={loading}>
@@ -149,6 +147,17 @@ function App(): React.JSX.Element {
         {messages.length === 0 && !loading && (
           <div className="chat-empty">
             <p>Ask anything to get started.</p>
+            {appInfo &&
+              (appInfo.shortcutRegistered ? (
+                <p className="chat-hint">
+                  Tip: press <kbd>{appInfo.shortcut}</kbd> in any game to ask without leaving it.
+                </p>
+              ) : (
+                <p className="chat-hint">
+                  <kbd>{appInfo.shortcut}</kbd> is used by another app, so the in-game shortcut is
+                  off. Close that app and restart GameMate.
+                </p>
+              ))}
             {visionModel && sourceId && (
               <button
                 type="button"
@@ -173,6 +182,9 @@ function App(): React.JSX.Element {
               />
             ))}
             {m.content}
+            {m.recipes?.map((r, j) => (
+              <RecipeCard key={j} recipe={r} />
+            ))}
           </div>
         ))}
         {loading && (
@@ -183,7 +195,7 @@ function App(): React.JSX.Element {
         <div ref={bottomRef} />
       </main>
 
-      {error && <div className="chat-error">{error}</div>}
+      {shownError && <div className="chat-error">{shownError}</div>}
 
       <div className="capture-bar">
         <label className={visionModel ? '' : 'is-disabled'}>

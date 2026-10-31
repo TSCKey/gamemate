@@ -4,12 +4,6 @@
 const OLLAMA_URL = 'http://127.0.0.1:11434'
 const REQUEST_TIMEOUT_MS = 120_000
 
-const SYSTEM_PROMPT = `You are GameMate, a friendly AI companion that helps people while they play video games.
-Answer clearly and briefly (a few sentences), like a knowledgeable friend sitting next to the player.
-Write plain text: no Markdown, headings or bold.
-When the user attaches a screenshot, it shows their screen right now: base your answer on what is actually visible in it, and say so if something is unclear or not visible.
-Never invent game facts you are unsure about.`
-
 export type ChatRole = 'system' | 'user' | 'assistant'
 
 export interface ChatMessage {
@@ -17,6 +11,32 @@ export interface ChatMessage {
   content: string
   // Base64-encoded images (no data: prefix) for vision models.
   images?: string[]
+}
+
+export interface ToolCall {
+  function: { name: string; arguments: Record<string, unknown> }
+}
+
+// A message as Ollama sends and receives it, including tool calls and tool results.
+export interface OllamaMessage {
+  role: ChatRole | 'tool'
+  content: string
+  images?: string[]
+  tool_calls?: ToolCall[]
+  tool_name?: string
+}
+
+export interface ToolDefinition {
+  type: 'function'
+  function: {
+    name: string
+    description: string
+    parameters: {
+      type: 'object'
+      properties: Record<string, { type: string; description: string }>
+      required: string[]
+    }
+  }
 }
 
 export interface ModelInfo {
@@ -33,7 +53,7 @@ interface ShowResponse {
 }
 
 interface ChatResponse {
-  message: ChatMessage
+  message: OllamaMessage
   done: boolean
 }
 
@@ -85,22 +105,15 @@ export async function listModels(): Promise<ModelInfo[]> {
   )
 }
 
-export async function chat(model: string, messages: ChatMessage[]): Promise<ChatMessage> {
-  // Only the latest message keeps its screenshot: older ones would slow every reply
-  // and describe a screen that has since changed.
-  const lastIndex = messages.length - 1
-  const prepared = messages.map((m, i) =>
-    i === lastIndex ? m : { role: m.role, content: m.content }
-  )
-
+// One round-trip to /api/chat. The caller handles any tool calls in the reply.
+export async function chatOnce(
+  model: string,
+  messages: OllamaMessage[],
+  tools?: ToolDefinition[]
+): Promise<OllamaMessage> {
   const data = await request<ChatResponse>('/api/chat', {
     method: 'POST',
-    body: JSON.stringify({
-      model,
-      messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...prepared],
-      stream: false
-    })
+    body: JSON.stringify({ model, messages, tools, stream: false })
   })
-  // Drop extra fields (e.g. `thinking` from reasoning models) so only the answer is kept in history.
-  return { role: data.message.role, content: data.message.content }
+  return data.message
 }

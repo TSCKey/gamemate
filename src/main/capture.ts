@@ -20,8 +20,8 @@ export interface Screenshot {
   height: number
 }
 
-function captureSize(): { width: number; height: number } {
-  const { width, height } = screen.getPrimaryDisplay().size
+function captureSize(display = screen.getPrimaryDisplay()): { width: number; height: number } {
+  const { width, height } = display.size
   const scale = Math.min(1, MAX_CAPTURE_WIDTH / width)
   return { width: Math.round(width * scale), height: Math.round(height * scale) }
 }
@@ -40,6 +40,20 @@ export async function listSources(ownWindow: BrowserWindow): Promise<CaptureSour
       name: s.name,
       type: s.id.startsWith('screen:') ? 'screen' : 'window'
     }))
+}
+
+// Screenshot of one monitor, used by the floating window. The floating window has content
+// protection on, so it never appears in this capture.
+export async function captureDisplay(displayId: number): Promise<Screenshot> {
+  const display = screen.getAllDisplays().find((d) => d.id === displayId)
+  const sources = await desktopCapturer.getSources({
+    types: ['screen'],
+    thumbnailSize: captureSize(display)
+  })
+  const source = sources.find((s) => s.display_id === String(displayId)) ?? sources[0]
+  if (!source || source.thumbnail.isEmpty()) throw new Error('Could not capture the screen.')
+  const { width, height } = source.thumbnail.getSize()
+  return { base64: source.thumbnail.toJPEG(JPEG_QUALITY).toString('base64'), width, height }
 }
 
 export async function captureSource(
