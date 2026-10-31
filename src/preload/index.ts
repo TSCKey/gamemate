@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import type { Api, CompanionState, Settings } from './index.d'
+import type { Api, CompanionState, Settings, SpeechModelStatus } from './index.d'
 
 // Subscribe to a main-process event without handing the renderer the raw IPC event.
 function listen<T extends unknown[]>(channel: string, callback: (...args: T) => void): () => void {
@@ -25,6 +25,15 @@ const api: Api = {
     clearEvents: () => ipcRenderer.invoke('companion:clear-events'),
     onState: (callback) => listen<[CompanionState]>('companion:state', callback)
   },
+  voice: {
+    models: () => ipcRenderer.invoke('voice:models'),
+    voices: () => ipcRenderer.invoke('voice:voices'),
+    speak: (text) => ipcRenderer.invoke('voice:speak', text),
+    stop: () => ipcRenderer.invoke('voice:stop'),
+    download: (id) => ipcRenderer.invoke('voice:download', id),
+    remove: (id) => ipcRenderer.invoke('voice:remove', id),
+    onModels: (callback) => listen<[SpeechModelStatus[]]>('voice:models', callback)
+  },
   toast: {
     hide: () => ipcRenderer.invoke('toast:hide'),
     setHeight: (height) => ipcRenderer.invoke('toast:set-height', height),
@@ -34,7 +43,8 @@ const api: Api = {
     hide: () => ipcRenderer.invoke('overlay:hide'),
     setHeight: (height) => ipcRenderer.invoke('overlay:set-height', height),
     takeScreenshot: () => ipcRenderer.invoke('overlay:take-screenshot'),
-    onShown: (callback) => listen('overlay:shown', callback)
+    onShown: (callback) => listen<[boolean]>('overlay:shown', callback),
+    onListen: (callback) => listen('overlay:listen', callback)
   }
 }
 

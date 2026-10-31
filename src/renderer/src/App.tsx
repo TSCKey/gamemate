@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AppInfo, CaptureSource, ChatMessage } from '../../preload/index.d'
 import CompanionPanel from './components/CompanionPanel'
 import RecipeCard from './components/RecipeCard'
+import VoicePanel from './components/VoicePanel'
+import { speak } from './voice/speak'
+import { useVoiceInput } from './voice/useVoiceInput'
 import { errorMessage, useSettings } from './useSettings'
 
 const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
@@ -28,7 +31,7 @@ function App(): React.JSX.Element {
   const [sources, setSources] = useState<CaptureSource[]>([])
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
-  const [showCompanion, setShowCompanion] = useState(false)
+  const [panel, setPanel] = useState<'companion' | 'voice' | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const model = settings?.model ?? ''
@@ -66,7 +69,11 @@ function App(): React.JSX.Element {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, status])
 
-  const send = async (text: string = input, withScreenshot = willAttach): Promise<void> => {
+  const send = async (
+    text: string = input,
+    withScreenshot = willAttach,
+    byVoice = false
+  ): Promise<void> => {
     const typed = text.trim()
     if (!model || loading || (!typed && !withScreenshot)) return
 
@@ -93,12 +100,19 @@ function App(): React.JSX.Element {
     try {
       const reply = await window.api.ask(history)
       setMessages([...history, reply])
+      const say = settings?.speakAnswers
+      if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
+        speak(reply.content)
+      }
     } catch (e) {
       setError(errorMessage(e))
     } finally {
       setStatus('idle')
     }
   }
+
+  // Spoken questions are sent as soon as they're transcribed.
+  const voice = useVoiceInput(settings, (text) => send(text, willAttach, true))
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -146,16 +160,27 @@ function App(): React.JSX.Element {
           </button>
           <button
             type="button"
-            className={showCompanion ? 'is-active' : ''}
-            onClick={() => setShowCompanion((v) => !v)}
+            className={panel === 'companion' ? 'is-active' : ''}
+            onClick={() => setPanel((p) => (p === 'companion' ? null : 'companion'))}
             title="Always-on companion settings"
           >
             🎮 Companion
           </button>
+          <button
+            type="button"
+            className={panel === 'voice' ? 'is-active' : ''}
+            onClick={() => setPanel((p) => (p === 'voice' ? null : 'voice'))}
+            title="Voice settings"
+          >
+            🔊 Voice
+          </button>
         </div>
       </header>
 
-      {showCompanion && settings && <CompanionPanel settings={settings} update={update} />}
+      {panel === 'companion' && settings && <CompanionPanel settings={settings} update={update} />}
+      {panel === 'voice' && settings && (
+        <VoicePanel settings={settings} update={update} appInfo={appInfo} />
+      )}
 
       <main className="chat-messages">
         {messages.length === 0 && !loading && (
@@ -209,7 +234,7 @@ function App(): React.JSX.Element {
         <div ref={bottomRef} />
       </main>
 
-      {shownError && <div className="chat-error">{shownError}</div>}
+      {(shownError || voice.error) && <div className="chat-error">{shownError ?? voice.error}</div>}
 
       <div className="capture-bar">
         <label className={visionModel ? '' : 'is-disabled'}>
@@ -258,13 +283,28 @@ function App(): React.JSX.Element {
           placeholder={
             !model
               ? 'Select a model first'
-              : willAttach
-                ? 'Ask about your screen… (or just press Enter)'
-                : `Message ${model}…`
+              : voice.status === 'listening'
+                ? 'Listening…'
+                : voice.status === 'transcribing'
+                  ? 'Working out what you said…'
+                  : willAttach
+                    ? 'Ask about your screen… (or just press Enter)'
+                    : `Message ${model}…`
           }
           rows={2}
-          disabled={!model}
+          disabled={!model || voice.status !== 'idle'}
         />
+        {voice.ready && (
+          <button
+            type="button"
+            className={voice.status === 'listening' ? 'is-active' : ''}
+            onClick={voice.toggle}
+            disabled={!model || loading || voice.status === 'transcribing'}
+            title={voice.status === 'listening' ? 'Listening, click to stop' : 'Ask by voice'}
+          >
+            🎤
+          </button>
+        )}
         <button type="submit" disabled={!model || loading || (!input.trim() && !willAttach)}>
           Send
         </button>

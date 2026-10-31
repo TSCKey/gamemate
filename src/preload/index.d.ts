@@ -38,12 +38,31 @@ export interface Screenshot {
 export type CompanionMode = 'disabled' | 'on-demand' | 'observation' | 'commentary' | 'quiet'
 export type CommentaryFrequency = 'rare' | 'normal' | 'frequent'
 
+export type SpeechModelId = 'fast' | 'accurate'
+export type SpeakAnswers = 'off' | 'voice' | 'always'
+
+export interface SpeechModelStatus {
+  id: SpeechModelId
+  sizeMb: number
+  installed: boolean
+  // 0-1 while downloading, otherwise null.
+  progress: number | null
+  error: string | null
+}
+
 export interface Settings {
   model: string
   minecraftVersion: string
   overlayScreenshot: boolean
   companionMode: CompanionMode
   commentaryFrequency: CommentaryFrequency
+  voiceInput: boolean
+  speechModel: SpeechModelId
+  speakAnswers: SpeakAnswers
+  speakComments: boolean
+  voiceName: string
+  voiceVolume: number
+  voiceRate: number
 }
 
 export interface ObservedEvent {
@@ -65,6 +84,8 @@ export interface CompanionState {
 export interface AppInfo {
   shortcut: string
   shortcutRegistered: boolean
+  voiceShortcut: string
+  voiceShortcutRegistered: boolean
 }
 
 export interface Api {
@@ -84,6 +105,17 @@ export interface Api {
     clearEvents: () => Promise<void>
     onState: (callback: (state: CompanionState) => void) => () => void
   }
+  voice: {
+    models: () => Promise<SpeechModelStatus[]>
+    // Windows text-to-speech voices.
+    voices: () => Promise<string[]>
+    // Speaks with the voice, volume and speed from settings, replacing anything still playing.
+    speak: (text: string) => Promise<void>
+    stop: () => Promise<void>
+    download: (id: SpeechModelId) => Promise<void>
+    remove: (id: SpeechModelId) => Promise<void>
+    onModels: (callback: (models: SpeechModelStatus[]) => void) => () => void
+  }
   toast: {
     hide: () => Promise<void>
     setHeight: (height: number) => Promise<void>
@@ -93,7 +125,10 @@ export interface Api {
     hide: () => Promise<void>
     setHeight: (height: number) => Promise<void>
     takeScreenshot: () => Promise<Screenshot | null>
-    onShown: (callback: () => void) => () => void
+    // listen is true when opened with the voice shortcut.
+    onShown: (callback: (listen: boolean) => void) => () => void
+    // The voice shortcut was pressed while the window was already open.
+    onListen: (callback: () => void) => () => void
   }
 }
 

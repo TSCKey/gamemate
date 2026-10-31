@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { speak } from './voice/speak'
 
 // Transparent space around the bubble, so its shadow isn't clipped by the window edge.
 const WINDOW_PADDING = 12
@@ -8,7 +9,15 @@ function Toast(): React.JSX.Element {
   const [text, setText] = useState('')
   const bubbleRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => window.api.toast.onShow(setText), [])
+  useEffect(
+    () =>
+      window.api.toast.onShow(async (comment) => {
+        setText(comment)
+        const settings = await window.api.getSettings()
+        if (settings.speakComments) speak(comment)
+      }),
+    []
+  )
 
   useLayoutEffect(() => {
     const bubble = bubbleRef.current

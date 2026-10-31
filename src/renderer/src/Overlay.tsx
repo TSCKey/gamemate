@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ChatMessage } from '../../preload/index.d'
 import RecipeCard from './components/RecipeCard'
 import { errorMessage, useSettings } from './useSettings'
+import { speak, stopSpeaking } from './voice/speak'
+import { useVoiceInput } from './voice/useVoiceInput'
 
 // Reopening after this long starts a new conversation instead of continuing the old one.
 const FRESH_CONVERSATION_MS = 10 * 60 * 1000
@@ -17,6 +19,7 @@ function Overlay(): React.JSX.Element {
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const lastActivity = useRef(0)
+  const [appVoiceShortcut, setAppVoiceShortcut] = useState('')
 
   const model = settings?.model ?? ''
   // In "Disabled" mode GameMate doesn't look at the screen at all.
@@ -26,19 +29,27 @@ function Overlay(): React.JSX.Element {
   const useScreenshot = vision && (settings?.overlayScreenshot ?? false)
   const lastQuestion = [...history].reverse().find((m) => m.role === 'user')
   const lastAnswer = history.at(-1)?.role === 'assistant' ? history.at(-1) : undefined
+  const listenRef = useRef<() => void>(() => {})
 
   useEffect(
     () =>
-      window.api.overlay.onShown(() => {
+      window.api.overlay.onShown((listen) => {
         if (Date.now() - lastActivity.current > FRESH_CONVERSATION_MS) {
           setHistory([])
           setError(null)
         }
         inputRef.current?.focus()
         inputRef.current?.select()
+        if (listen) listenRef.current()
       }),
     []
   )
+
+  useEffect(() => window.api.overlay.onListen(() => listenRef.current()), [])
+
+  useEffect(() => {
+    window.api.getAppInfo().then((info) => setAppVoiceShortcut(info.voiceShortcut))
+  }, [])
 
   // Grow and shrink the window with its content.
   useLayoutEffect(() => {
@@ -51,8 +62,8 @@ function Overlay(): React.JSX.Element {
     return () => observer.disconnect()
   }, [])
 
-  const send = async (): Promise<void> => {
-    const content = input.trim()
+  const send = async (text: string = input, byVoice = false): Promise<void> => {
+    const content = text.trim()
     if (!content || !model || thinking) return
 
     setError(null)
@@ -69,6 +80,10 @@ function Overlay(): React.JSX.Element {
       setInput('')
       const reply = await window.api.ask(next)
       setHistory([...next, reply])
+      const say = settings?.speakAnswers
+      if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
+        speak(reply.content)
+      }
     } catch (e) {
       setError(errorMessage(e))
     } finally {
@@ -77,12 +92,24 @@ function Overlay(): React.JSX.Element {
     }
   }
 
+  // Spoken questions are sent as soon as they're transcribed.
+  const voice = useVoiceInput(settings, (text) => send(text, true))
+  useEffect(() => {
+    listenRef.current = voice.toggle
+  })
+
+  const hide = (): void => {
+    voice.cancel()
+    stopSpeaking()
+    window.api.overlay.hide()
+  }
+
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       e.preventDefault()
       send()
     } else if (e.key === 'Escape') {
-      window.api.overlay.hide()
+      hide()
     }
   }
 
@@ -98,10 +125,44 @@ function Overlay(): React.JSX.Element {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
-            placeholder={model ? 'Ask GameMate…' : 'Open GameMate and pick a model first'}
-            disabled={!model}
+            placeholder={
+              !model
+                ? 'Open GameMate and pick a model first'
+                : voice.status === 'listening'
+                  ? 'Listening…'
+                  : voice.status === 'transcribing'
+                    ? 'Working out what you said…'
+                    : 'Ask GameMate…'
+            }
+            disabled={!model || voice.status !== 'idle'}
             autoFocus
           />
+          {voice.ready && (
+            <button
+              type="button"
+              className={
+                voice.status === 'listening'
+                  ? 'overlay-toggle is-on is-listening'
+                  : 'overlay-toggle'
+              }
+              style={
+                voice.status === 'listening'
+                  ? {
+                      boxShadow: `0 0 0 ${Math.min(8, voice.level * 120)}px rgba(63, 185, 80, 0.35)`
+                    }
+                  : undefined
+              }
+              onClick={voice.toggle}
+              disabled={!model || voice.status === 'transcribing' || thinking}
+              title={
+                voice.status === 'listening'
+                  ? 'Listening, click to stop'
+                  : `Ask by voice (${appVoiceShortcut})`
+              }
+            >
+              🎤
+            </button>
+          )}
           <button
             type="button"
             className={useScreenshot ? 'overlay-toggle is-on' : 'overlay-toggle'}
@@ -130,7 +191,7 @@ function Overlay(): React.JSX.Element {
           )}
         </div>
 
-        {(lastQuestion || thinking || error) && (
+        {(lastQuestion || thinking || error || voice.error) && (
           <div className="overlay-body">
             {lastQuestion && (
               <div className="overlay-question">
@@ -147,10 +208,12 @@ function Overlay(): React.JSX.Element {
                 ))}
               </div>
             )}
-            {error && <div className="overlay-error">{error}</div>}
+            {(error || voice.error) && <div className="overlay-error">{error ?? voice.error}</div>}
           </div>
         )}
-        <div className="overlay-footer">Enter to ask · Esc to hide</div>
+        <div className="overlay-footer">
+          Enter to ask{voice.ready ? ` · ${appVoiceShortcut} to talk` : ''} · Esc to hide
+        </div>
       </div>
     </div>
   )

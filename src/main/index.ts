@@ -3,6 +3,7 @@ import {
   shell,
   BrowserWindow,
   globalShortcut,
+  session,
   ipcMain,
   Menu,
   nativeImage,
@@ -15,7 +16,7 @@ import { listModels, type ChatMessage } from './ollamaClient'
 import { captureSource, listSources } from './capture'
 import { ask } from './assistant'
 import { listVersions } from './games/minecraft'
-import { getSettings, updateSettings } from './settings'
+import { getSettings, onSettingsChanged, updateSettings, type Settings } from './settings'
 import {
   createOverlay,
   hideOverlay,
@@ -24,6 +25,15 @@ import {
   toggleOverlay
 } from './overlay'
 import { createToast, hideToast, setToastHeight, showToast } from './toast'
+import { listVoices, shutdownSpeech, speak, stopSpeaking } from './tts'
+import {
+  downloadSpeechModel,
+  isSpeechModelId,
+  registerModelScheme,
+  removeSpeechModel,
+  serveModels,
+  speechModelStatuses
+} from './voiceModels'
 import {
   clearEvents,
   getObserverState,
@@ -36,6 +46,7 @@ import {
 } from './observer'
 
 const SHORTCUT = 'Alt+Space'
+const VOICE_SHORTCUT = 'Alt+V'
 const VALID_ROLES = new Set(['user', 'assistant'])
 const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024
 const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
@@ -44,6 +55,7 @@ const preloadPath = join(__dirname, '../preload/index.js')
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let shortcutRegistered = false
+let voiceShortcutRegistered = false
 let quitting = false
 
 function isImageList(value: unknown): value is string[] {
@@ -106,7 +118,27 @@ function registerHandlers(): void {
     updateSettings(patch, listVersions())
   )
   ipcMain.handle('minecraft:versions', () => listVersions())
-  ipcMain.handle('app:info', () => ({ shortcut: SHORTCUT, shortcutRegistered }))
+  ipcMain.handle('app:info', () => ({
+    shortcut: SHORTCUT,
+    shortcutRegistered,
+    voiceShortcut: VOICE_SHORTCUT,
+    voiceShortcutRegistered
+  }))
+
+  ipcMain.handle('voice:models', () => speechModelStatuses())
+  ipcMain.handle('voice:voices', () => listVoices())
+  ipcMain.handle('voice:speak', (_event, text: unknown) => {
+    if (typeof text !== 'string') return
+    const { voiceName, voiceVolume, voiceRate } = getSettings()
+    speak(text, { voice: voiceName, volume: voiceVolume, rate: voiceRate })
+  })
+  ipcMain.handle('voice:stop', () => stopSpeaking())
+  ipcMain.handle('voice:download', (_event, id: unknown) => {
+    if (isSpeechModelId(id)) downloadSpeechModel(id)
+  })
+  ipcMain.handle('voice:remove', (_event, id: unknown) =>
+    isSpeechModelId(id) ? removeSpeechModel(id) : undefined
+  )
 
   ipcMain.handle('overlay:hide', () => hideOverlay())
   ipcMain.handle('overlay:set-height', (_event, height: unknown) => setOverlayHeight(height))
@@ -207,7 +239,7 @@ function updateTray(observer: ObserverState): void {
           ]
         : []),
       { type: 'separator' },
-      { label: `Ask GameMate (${SHORTCUT})`, click: toggleOverlay },
+      { label: `Ask GameMate (${SHORTCUT})`, click: () => toggleOverlay() },
       { label: 'Open GameMate', click: showMainWindow },
       { type: 'separator' },
       {
@@ -227,6 +259,39 @@ function createTray(): void {
   updateTray(getObserverState())
   onObserverState(updateTray)
 }
+
+// The voice shortcut only exists while voice input is on, so the key stays free for games.
+function updateVoiceShortcut(settings: Settings): void {
+  const active = globalShortcut.isRegistered(VOICE_SHORTCUT)
+  if (settings.voiceInput && !active) {
+    voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => toggleOverlay(true))
+    if (!voiceShortcutRegistered) console.warn(`Could not register ${VOICE_SHORTCUT}`)
+  } else if (!settings.voiceInput && active) {
+    globalShortcut.unregister(VOICE_SHORTCUT)
+    voiceShortcutRegistered = false
+  }
+}
+
+// GameMate's own pages may use the microphone (for voice questions) and nothing else.
+function restrictPermissions(): void {
+  const ownPage = (url: string): boolean =>
+    url.startsWith('file://') ||
+    (is.dev &&
+      !!process.env['ELECTRON_RENDERER_URL'] &&
+      url.startsWith(process.env['ELECTRON_RENDERER_URL']))
+  session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => {
+    const audioOnly =
+      permission === 'media' &&
+      'mediaTypes' in details &&
+      (details.mediaTypes ?? []).every((t) => t === 'audio')
+    callback(audioOnly && ownPage(contents.getURL()) && getSettings().voiceInput)
+  })
+  session.defaultSession.setPermissionCheckHandler(
+    (_contents, permission, origin) => permission === 'media' && ownPage(origin)
+  )
+}
+
+registerModelScheme()
 
 // Only one GameMate may run: a second launch just opens the existing window.
 if (!app.requestSingleInstanceLock()) {
@@ -249,6 +314,8 @@ if (!app.requestSingleInstanceLock()) {
     })
 
     registerHandlers()
+    restrictPermissions()
+    serveModels()
     createWindow()
     createOverlay(loadRenderer, preloadPath)
     createToast(loadRenderer, preloadPath)
@@ -256,8 +323,10 @@ if (!app.requestSingleInstanceLock()) {
     startObserver(showToast)
 
     // Fails if another app (e.g. PowerToys Run) already owns the shortcut.
-    shortcutRegistered = globalShortcut.register(SHORTCUT, toggleOverlay)
+    shortcutRegistered = globalShortcut.register(SHORTCUT, () => toggleOverlay())
     if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
+    updateVoiceShortcut(getSettings())
+    onSettingsChanged(updateVoiceShortcut)
 
     app.on('activate', function () {
       // On macOS it's common to re-create a window in the app when the
@@ -273,6 +342,7 @@ app.on('before-quit', () => {
 
 app.on('will-quit', () => {
   stopObserver()
+  shutdownSpeech()
   globalShortcut.unregisterAll()
 })
 

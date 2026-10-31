@@ -2,6 +2,7 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import { isSpeechModelId, type SpeechModelId } from './voiceModels'
 
 // How much GameMate watches and talks on its own (see README "Always-on companion").
 export const COMPANION_MODES = [
@@ -15,6 +16,9 @@ export type CompanionMode = (typeof COMPANION_MODES)[number]
 export const COMMENTARY_FREQUENCIES = ['rare', 'normal', 'frequent'] as const
 export type CommentaryFrequency = (typeof COMMENTARY_FREQUENCIES)[number]
 
+export const SPEAK_ANSWERS = ['off', 'voice', 'always'] as const
+export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
+
 export interface Settings {
   // Ollama model used for answers ('' until the user or GameMate picks one).
   model: string
@@ -23,6 +27,17 @@ export interface Settings {
   overlayScreenshot: boolean
   companionMode: CompanionMode
   commentaryFrequency: CommentaryFrequency
+  // Talk to GameMate with the microphone (needs a downloaded speech model).
+  voiceInput: boolean
+  speechModel: SpeechModelId
+  // Read answers aloud: never, only for questions asked by voice, or always.
+  speakAnswers: SpeakAnswers
+  // Read the companion's comments aloud.
+  speakComments: boolean
+  // Windows voice name ('' = the system default voice).
+  voiceName: string
+  voiceVolume: number
+  voiceRate: number
 }
 
 const DEFAULTS: Settings = {
@@ -31,7 +46,14 @@ const DEFAULTS: Settings = {
   overlayScreenshot: true,
   // Watching the screen is opt-in.
   companionMode: 'on-demand',
-  commentaryFrequency: 'normal'
+  commentaryFrequency: 'normal',
+  voiceInput: false,
+  speechModel: 'accurate',
+  speakAnswers: 'voice',
+  speakComments: false,
+  voiceName: '',
+  voiceVolume: 1,
+  voiceRate: 1
 }
 
 const listeners: ((settings: Settings) => void)[] = []
@@ -71,6 +93,17 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   if (COMMENTARY_FREQUENCIES.includes(p.commentaryFrequency as CommentaryFrequency)) {
     next.commentaryFrequency = p.commentaryFrequency as CommentaryFrequency
   }
+  if (typeof p.voiceInput === 'boolean') next.voiceInput = p.voiceInput
+  if (isSpeechModelId(p.speechModel)) next.speechModel = p.speechModel
+  if (SPEAK_ANSWERS.includes(p.speakAnswers as SpeakAnswers)) {
+    next.speakAnswers = p.speakAnswers as SpeakAnswers
+  }
+  if (typeof p.speakComments === 'boolean') next.speakComments = p.speakComments
+  if (typeof p.voiceName === 'string') next.voiceName = p.voiceName.slice(0, 200)
+  const num = (v: unknown, min: number, max: number): number | null =>
+    typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : null
+  next.voiceVolume = num(p.voiceVolume, 0, 1) ?? next.voiceVolume
+  next.voiceRate = num(p.voiceRate, 0.5, 2) ?? next.voiceRate
 
   current = next
   try {

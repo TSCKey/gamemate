@@ -45,10 +45,13 @@ export function createOverlay(
   load(overlay, 'overlay')
 }
 
-export function toggleOverlay(): void {
+// listen: opened with the voice shortcut, so start recording a spoken question.
+export function toggleOverlay(listen = false): void {
   if (!overlay) return
   if (overlay.isVisible() && overlay.isFocused()) {
-    overlay.hide()
+    // The voice shortcut on an open window starts (or stops) listening instead of hiding it.
+    if (listen) overlay.webContents.send('overlay:listen')
+    else overlay.hide()
     return
   }
 
@@ -71,7 +74,7 @@ export function toggleOverlay(): void {
   }
   overlay.show()
   overlay.focus()
-  overlay.webContents.send('overlay:shown')
+  overlay.webContents.send('overlay:shown', listen)
 }
 
 export function hideOverlay(): void {

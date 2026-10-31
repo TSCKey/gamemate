@@ -2,7 +2,7 @@
 
 **Your local AI gaming companion.**
 
-GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, it knows the real Minecraft crafting recipes, and if you like, it can watch your game and speak up when something important happens.
+GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, it knows the real Minecraft crafting recipes, and if you like, it can watch your game and speak up when something important happens. You can even ask out loud and hear the answer.
 
 Everything runs **on your own computer**. GameMate uses AI models running locally through [Ollama](https://ollama.com), so your questions, screenshots and conversations never leave your PC, there are no subscription or per-question fees, and it keeps working without an internet connection once a model is installed.
 
@@ -11,6 +11,7 @@ Everything runs **on your own computer**. GameMate uses AI models running locall
 - **Ask without leaving your game.** Press **Alt + Space** and a small window appears on top of your game. Type a question, read the answer, and press **Esc** to get back to playing.
 - **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe for your Minecraft version and shows it as a crafting grid, instead of guessing. Supports Minecraft Java Edition 26.1, 1.21.11, 1.21.4 and 1.20.4.
 - **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
+- **Talk to it.** Press **Alt + V** and ask your question out loud. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
 - **Ask about your screen.** Attach a screenshot of your game window or your whole screen and ask "What is this creature?" or "What should I do next?". GameMate picks your Minecraft window automatically when it's open.
 - **Choose your model.** Pick any model you've installed in Ollama, and switch between them at any time. Models that can see images are marked with 👁.
 - **Chat window.** A full chat window for longer conversations.
@@ -69,6 +70,26 @@ Click **🎮 Companion** at the top of the chat window to choose how much GameMa
 - Click **⏸ Pause** in the Companion panel, or **Pause watching** in the tray icon's menu, to stop watching for a while.
 - GameMate only watches while the Minecraft game window is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
 
+### Voice
+
+Click **🔊 Voice** at the top of the chat window.
+
+**Asking by voice**
+
+1. Tick **Ask questions with your microphone**.
+2. Choose a speech model and click **Download**. You only do this once, and after that voice works offline.
+   - **Fast** (45 MB) understands you quicker.
+   - **Accurate** (80 MB) makes fewer mistakes but takes a few seconds longer.
+3. In a game, press **Alt + V** and ask your question. GameMate stops listening when you pause, then sends your question. In the chat window, click **🎤** instead.
+
+Press **Alt + V** or click **🎤** again to stop listening early, or press **Esc** in the in-game window to cancel and hide it. The **Alt + V** shortcut only exists while voice input is turned on, so the key stays free for your games otherwise.
+
+**GameMate's voice**
+
+- **Read answers aloud:** Never, When I ask by voice (the default), or Always.
+- **Read companion comments aloud:** speaks Commentary mode's pop-ups.
+- Choose a **Voice** and set the **Volume** and **Speed**. Click **🔊 Test** to hear it. GameMate uses the voices built into Windows.
+
 ### Chat window
 
 - Pick your Minecraft version and AI model from the drop-downs at the top. Both are remembered, and the in-game window uses the same choices.
@@ -105,6 +126,15 @@ Make sure the game is open and not minimized, then click the **↻** next to the
 **Commentary mode never says anything**
 Check the status line in the Companion panel. It needs Minecraft to be the active window and a model marked with 👁. GameMate only comments on important moments, so try **Comments: Often**. Smaller models may miss things, and `qwen3.5:4b` sees more if your GPU has room for it.
 
+**Alt + V does nothing, or the 🎤 button is missing**
+Turn on **Ask questions with your microphone** in **🔊 Voice** and download the speech model. If another app uses **Alt + V**, the Voice panel tells you, and you can still click **🎤**.
+
+**"GameMate is not allowed to use the microphone"**
+Open Windows **Settings → Privacy & security → Microphone** and allow desktop apps to use the microphone.
+
+**GameMate doesn't understand me**
+Speak after the 🎤 lights up, and pause briefly when you're done. Try the **Accurate** speech model, and check that the right microphone is set as the default in Windows sound settings.
+
 **Answers are slow**
 Your game and the AI model share your GPU. Try a smaller model, close other GPU-heavy apps, or lower your game's graphics settings.
 
@@ -117,6 +147,8 @@ GameMate talks only to Ollama on your own computer (`127.0.0.1`). It takes scree
 - while Minecraft is the active window, if you've turned on Observation, Commentary or Quiet mode. These modes are off by default. The tray icon and the Companion panel always show whether GameMate is watching.
 
 Screenshots go only to your local model and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
+
+GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. The only time GameMate uses the internet is when you click **Download** for a speech model, which it fetches once from Hugging Face.
 
 ## What GameMate won't do
 
@@ -137,4 +169,4 @@ To build a Windows installer, run `npm run build:win`.
 
 To refresh the bundled Minecraft data, run `node scripts/build-minecraft-data.mjs`.
 
-Built with Electron, React, TypeScript and Ollama. Minecraft item and recipe data comes from [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data) (MIT). GameMate is not affiliated with Mojang or Microsoft.
+Built with Electron, React, TypeScript and Ollama. Speech recognition uses OpenAI's Whisper (MIT), converted by [onnx-community](https://huggingface.co/onnx-community) and run with [Transformers.js](https://github.com/huggingface/transformers.js) (Apache-2.0). Minecraft item and recipe data comes from [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data) (MIT). GameMate is not affiliated with Mojang or Microsoft.

@@ -473,3 +473,60 @@ html.is-overlay body {
 .toast-icon {
   font-size: 18px;
 }
+
+/* Voice panel */
+
+.voice h2 {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ev-c-text-1);
+}
+
+.voice h2:not(:first-child) {
+  margin-top: 16px;
+}
+
+.voice-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.voice-models {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 8px;
+}
+
+.voice-model {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voice-model label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.voice-dim {
+  color: var(--ev-c-text-2);
+}
+
+.voice-error {
+  color: #ffb4b4;
+}
+
+.voice .companion-row + .companion-row {
+  margin-top: 10px;
+}
+
+.overlay-toggle.is-listening {
+  border-color: #3fb950;
+  transition: box-shadow 80ms linear;
+}
