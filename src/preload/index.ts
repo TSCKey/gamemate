@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import type { Api, Settings } from './index.d'
+import type { Api, CompanionState, Settings } from './index.d'
 
 // Subscribe to a main-process event without handing the renderer the raw IPC event.
 function listen<T extends unknown[]>(channel: string, callback: (...args: T) => void): () => void {
@@ -19,6 +19,17 @@ const api: Api = {
   onSettingsChanged: (callback) => listen<[Settings]>('settings:changed', callback),
   listMinecraftVersions: () => ipcRenderer.invoke('minecraft:versions'),
   getAppInfo: () => ipcRenderer.invoke('app:info'),
+  companion: {
+    getState: () => ipcRenderer.invoke('companion:get-state'),
+    setPaused: (paused) => ipcRenderer.invoke('companion:set-paused', paused),
+    clearEvents: () => ipcRenderer.invoke('companion:clear-events'),
+    onState: (callback) => listen<[CompanionState]>('companion:state', callback)
+  },
+  toast: {
+    hide: () => ipcRenderer.invoke('toast:hide'),
+    setHeight: (height) => ipcRenderer.invoke('toast:set-height', height),
+    onShow: (callback) => listen<[string]>('toast:show', callback)
+  },
   overlay: {
     hide: () => ipcRenderer.invoke('overlay:hide'),
     setHeight: (height) => ipcRenderer.invoke('overlay:set-height', height),

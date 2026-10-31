@@ -23,6 +23,17 @@ import {
   takePendingScreenshot,
   toggleOverlay
 } from './overlay'
+import { createToast, hideToast, setToastHeight, showToast } from './toast'
+import {
+  clearEvents,
+  getObserverState,
+  onObserverState,
+  recentObservations,
+  setPaused,
+  startObserver,
+  stopObserver,
+  type ObserverState
+} from './observer'
 
 const SHORTCUT = 'Alt+Space'
 const VALID_ROLES = new Set(['user', 'assistant'])
@@ -75,7 +86,10 @@ function registerHandlers(): void {
   ipcMain.handle('assistant:ask', (_event, messages: unknown) => {
     const { model, minecraftVersion } = getSettings()
     if (!model) throw new Error('Pick a model in GameMate first.')
-    return ask({ model, minecraftVersion }, parseChatMessages(messages))
+    return ask(
+      { model, minecraftVersion, observations: recentObservations() },
+      parseChatMessages(messages)
+    )
   })
 
   ipcMain.handle('capture:list-sources', (event) => listSources(senderWindow(event)))
@@ -97,6 +111,15 @@ function registerHandlers(): void {
   ipcMain.handle('overlay:hide', () => hideOverlay())
   ipcMain.handle('overlay:set-height', (_event, height: unknown) => setOverlayHeight(height))
   ipcMain.handle('overlay:take-screenshot', () => takePendingScreenshot())
+
+  ipcMain.handle('toast:hide', () => hideToast())
+  ipcMain.handle('toast:set-height', (_event, height: unknown) => setToastHeight(height))
+
+  ipcMain.handle('companion:get-state', () => getObserverState())
+  ipcMain.handle('companion:set-paused', (_event, paused: unknown) => {
+    if (typeof paused === 'boolean') setPaused(paused)
+  })
+  ipcMain.handle('companion:clear-events', () => clearEvents())
 }
 
 // HMR for renderer base on electron-vite cli.
@@ -110,7 +133,11 @@ function loadRenderer(win: BrowserWindow, hash = ''): void {
 }
 
 function showMainWindow(): void {
-  if (!mainWindow) return
+  // The window may have been destroyed (e.g. the page closed itself); open a new one.
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    createWindow()
+    return
+  }
   if (mainWindow.isMinimized()) mainWindow.restore()
   mainWindow.show()
   mainWindow.focus()
@@ -143,6 +170,9 @@ function createWindow(): void {
       mainWindow?.hide()
     }
   })
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
@@ -152,11 +182,31 @@ function createWindow(): void {
   loadRenderer(mainWindow)
 }
 
-function createTray(): void {
-  tray = new Tray(nativeImage.createFromPath(icon).resize({ width: 16, height: 16 }))
-  tray.setToolTip('GameMate')
+const STATUS_LABELS: Record<ObserverState['status'], string> = {
+  off: 'Not watching',
+  paused: 'Watching paused',
+  'no-model': 'Pick a model to start watching',
+  'waiting-for-game': 'Waiting for Minecraft',
+  watching: 'Watching Minecraft',
+  analyzing: 'Watching Minecraft'
+}
+
+function updateTray(observer: ObserverState): void {
+  if (!tray) return
+  const watching = observer.status !== 'off'
+  tray.setToolTip(`GameMate · ${STATUS_LABELS[observer.status]}`)
   tray.setContextMenu(
     Menu.buildFromTemplate([
+      { label: STATUS_LABELS[observer.status], enabled: false },
+      ...(watching
+        ? [
+            {
+              label: observer.paused ? 'Resume watching' : 'Pause watching',
+              click: () => setPaused(!observer.paused)
+            }
+          ]
+        : []),
+      { type: 'separator' },
       { label: `Ask GameMate (${SHORTCUT})`, click: toggleOverlay },
       { label: 'Open GameMate', click: showMainWindow },
       { type: 'separator' },
@@ -169,7 +219,13 @@ function createTray(): void {
       }
     ])
   )
+}
+
+function createTray(): void {
+  tray = new Tray(nativeImage.createFromPath(icon).resize({ width: 16, height: 16 }))
   tray.on('double-click', showMainWindow)
+  updateTray(getObserverState())
+  onObserverState(updateTray)
 }
 
 // Only one GameMate may run: a second launch just opens the existing window.
@@ -195,7 +251,9 @@ if (!app.requestSingleInstanceLock()) {
     registerHandlers()
     createWindow()
     createOverlay(loadRenderer, preloadPath)
+    createToast(loadRenderer, preloadPath)
     createTray()
+    startObserver(showToast)
 
     // Fails if another app (e.g. PowerToys Run) already owns the shortcut.
     shortcutRegistered = globalShortcut.register(SHORTCUT, toggleOverlay)
@@ -214,6 +272,7 @@ app.on('before-quit', () => {
 })
 
 app.on('will-quit', () => {
+  stopObserver()
   globalShortcut.unregisterAll()
 })
 

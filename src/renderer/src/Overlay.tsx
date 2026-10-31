@@ -19,7 +19,10 @@ function Overlay(): React.JSX.Element {
   const lastActivity = useRef(0)
 
   const model = settings?.model ?? ''
-  const vision = models.find((m) => m.name === model)?.vision ?? false
+  // In "Disabled" mode GameMate doesn't look at the screen at all.
+  const vision =
+    (models.find((m) => m.name === model)?.vision ?? false) &&
+    settings?.companionMode !== 'disabled'
   const useScreenshot = vision && (settings?.overlayScreenshot ?? false)
   const lastQuestion = [...history].reverse().find((m) => m.role === 'user')
   const lastAnswer = history.at(-1)?.role === 'assistant' ? history.at(-1) : undefined

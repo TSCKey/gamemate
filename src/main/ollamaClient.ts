@@ -109,11 +109,17 @@ export async function listModels(): Promise<ModelInfo[]> {
 export async function chatOnce(
   model: string,
   messages: OllamaMessage[],
-  tools?: ToolDefinition[]
+  options: {
+    tools?: ToolDefinition[]
+    // JSON schema the reply must follow.
+    format?: object
+    // false skips a reasoning model's thinking step, for fast background calls.
+    think?: boolean
+  } = {}
 ): Promise<OllamaMessage> {
   const data = await request<ChatResponse>('/api/chat', {
     method: 'POST',
-    body: JSON.stringify({ model, messages, tools, stream: false })
+    body: JSON.stringify({ model, messages, stream: false, ...options })
   })
   return data.message
 }

@@ -11,6 +11,8 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
+  # koffi's native binaries can't be loaded from inside the asar archive.
+  - node_modules/koffi/**
 win:
   executableName: gamemate
 nsis:

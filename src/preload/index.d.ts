@@ -35,10 +35,31 @@ export interface Screenshot {
   height: number
 }
 
+export type CompanionMode = 'disabled' | 'on-demand' | 'observation' | 'commentary' | 'quiet'
+export type CommentaryFrequency = 'rare' | 'normal' | 'frequent'
+
 export interface Settings {
   model: string
   minecraftVersion: string
   overlayScreenshot: boolean
+  companionMode: CompanionMode
+  commentaryFrequency: CommentaryFrequency
+}
+
+export interface ObservedEvent {
+  time: number
+  type: 'hostile_mob' | 'low_health' | 'death' | 'dark_area' | 'discovery' | 'other'
+  importance: number
+  description: string
+  comment: string
+  spoken: boolean
+}
+
+export interface CompanionState {
+  status: 'off' | 'paused' | 'no-model' | 'waiting-for-game' | 'watching' | 'analyzing'
+  game: string | null
+  paused: boolean
+  events: ObservedEvent[]
 }
 
 export interface AppInfo {
@@ -57,6 +78,17 @@ export interface Api {
   onSettingsChanged: (callback: (settings: Settings) => void) => () => void
   listMinecraftVersions: () => Promise<string[]>
   getAppInfo: () => Promise<AppInfo>
+  companion: {
+    getState: () => Promise<CompanionState>
+    setPaused: (paused: boolean) => Promise<void>
+    clearEvents: () => Promise<void>
+    onState: (callback: (state: CompanionState) => void) => () => void
+  }
+  toast: {
+    hide: () => Promise<void>
+    setHeight: (height: number) => Promise<void>
+    onShow: (callback: (text: string) => void) => () => void
+  }
   overlay: {
     hide: () => Promise<void>
     setHeight: (height: number) => Promise<void>

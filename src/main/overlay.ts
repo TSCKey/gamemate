@@ -1,5 +1,5 @@
 // The floating question window opened with the global shortcut, shown on top of games.
-import { BrowserWindow, screen } from 'electron'
+import { app, BrowserWindow, screen } from 'electron'
 import { captureDisplay, type Screenshot } from './capture'
 import { getSettings } from './settings'
 
@@ -34,6 +34,14 @@ export function createOverlay(
   overlay.setAlwaysOnTop(true, 'screen-saver')
   // Keep the floating window out of every screenshot, including GameMate's own.
   overlay.setContentProtection(true)
+  // Alt+F4 or a close message would destroy the window; keep it and just hide it instead.
+  let quitting = false
+  app.once('before-quit', () => (quitting = true))
+  overlay.on('close', (event) => {
+    if (quitting) return
+    event.preventDefault()
+    overlay?.hide()
+  })
   load(overlay, 'overlay')
 }
 
@@ -46,12 +54,15 @@ export function toggleOverlay(): void {
 
   const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint())
   if (!overlay.isVisible()) {
-    pendingShot = getSettings().overlayScreenshot
-      ? captureDisplay(display.id).catch((error) => {
-          console.error('Screenshot failed', error)
-          return null
-        })
-      : Promise.resolve(null)
+    const settings = getSettings()
+    // "Disabled" turns off all screen access, including the shortcut's screenshot.
+    pendingShot =
+      settings.overlayScreenshot && settings.companionMode !== 'disabled'
+        ? captureDisplay(display.id).catch((error) => {
+            console.error('Screenshot failed', error)
+            return null
+          })
+        : Promise.resolve(null)
 
     // setPosition/setSize rather than setBounds: setBounds miscalculates the size when
     // moving between monitors with different display scaling.

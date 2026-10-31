@@ -1,5 +1,5 @@
 // Capture module: lists capturable screens/windows and grabs a screenshot of one.
-import { BrowserWindow, desktopCapturer, screen } from 'electron'
+import { BrowserWindow, desktopCapturer, screen, type NativeImage } from 'electron'
 
 // Large enough for the vision model to read the scene, small enough to keep inference fast.
 const MAX_CAPTURE_WIDTH = 1280
@@ -20,9 +20,12 @@ export interface Screenshot {
   height: number
 }
 
-function captureSize(display = screen.getPrimaryDisplay()): { width: number; height: number } {
+function captureSize(
+  display = screen.getPrimaryDisplay(),
+  maxWidth = MAX_CAPTURE_WIDTH
+): { width: number; height: number } {
   const { width, height } = display.size
-  const scale = Math.min(1, MAX_CAPTURE_WIDTH / width)
+  const scale = Math.min(1, maxWidth / width)
   return { width: Math.round(width * scale), height: Math.round(height * scale) }
 }
 
@@ -42,18 +45,42 @@ export async function listSources(ownWindow: BrowserWindow): Promise<CaptureSour
     }))
 }
 
-// Screenshot of one monitor, used by the floating window. The floating window has content
-// protection on, so it never appears in this capture.
-export async function captureDisplay(displayId: number): Promise<Screenshot> {
+// One monitor as an image. maxWidth keeps it small: the observer diffs tiny frames often
+// and only grabs a full-size one when it asks the model about the screen.
+export async function captureDisplayImage(
+  displayId: number,
+  maxWidth = MAX_CAPTURE_WIDTH
+): Promise<NativeImage | null> {
   const display = screen.getAllDisplays().find((d) => d.id === displayId)
   const sources = await desktopCapturer.getSources({
     types: ['screen'],
-    thumbnailSize: captureSize(display)
+    thumbnailSize: captureSize(display, maxWidth)
   })
   const source = sources.find((s) => s.display_id === String(displayId)) ?? sources[0]
-  if (!source || source.thumbnail.isEmpty()) throw new Error('Could not capture the screen.')
-  const { width, height } = source.thumbnail.getSize()
-  return { base64: source.thumbnail.toJPEG(JPEG_QUALITY).toString('base64'), width, height }
+  return source && !source.thumbnail.isEmpty() ? source.thumbnail : null
+}
+
+export function toScreenshot(image: NativeImage): Screenshot {
+  const { width, height } = image.getSize()
+  return { base64: image.toJPEG(JPEG_QUALITY).toString('base64'), width, height }
+}
+
+// Screenshot of one monitor, used by the floating window. The floating window has content
+// protection on, so it never appears in this capture.
+export async function captureDisplay(displayId: number): Promise<Screenshot> {
+  const image = await captureDisplayImage(displayId)
+  if (!image) throw new Error('Could not capture the screen.')
+  return toScreenshot(image)
+}
+
+// The first open window whose title matches, e.g. the Minecraft game window.
+export async function findWindow(pattern: RegExp): Promise<CaptureSource | null> {
+  const sources = await desktopCapturer.getSources({
+    types: ['window'],
+    thumbnailSize: { width: 0, height: 0 }
+  })
+  const match = sources.find((s) => pattern.test(s.name))
+  return match ? { id: match.id, name: match.name, type: 'window' } : null
 }
 
 export async function captureSource(

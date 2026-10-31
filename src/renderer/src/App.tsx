@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AppInfo, CaptureSource, ChatMessage } from '../../preload/index.d'
+import CompanionPanel from './components/CompanionPanel'
 import RecipeCard from './components/RecipeCard'
 import { errorMessage, useSettings } from './useSettings'
 
@@ -27,11 +28,14 @@ function App(): React.JSX.Element {
   const [sources, setSources] = useState<CaptureSource[]>([])
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
+  const [showCompanion, setShowCompanion] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const model = settings?.model ?? ''
   const loading = status !== 'idle'
-  const visionModel = models.find((m) => m.name === model)?.vision ?? false
+  // In "Disabled" mode GameMate doesn't look at the screen at all.
+  const screenAllowed = settings?.companionMode !== 'disabled'
+  const visionModel = (models.find((m) => m.name === model)?.vision ?? false) && screenAllowed
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
   const shownError = error ?? modelError
@@ -140,8 +144,18 @@ function App(): React.JSX.Element {
           <button type="button" onClick={() => setMessages([])} disabled={loading}>
             New chat
           </button>
+          <button
+            type="button"
+            className={showCompanion ? 'is-active' : ''}
+            onClick={() => setShowCompanion((v) => !v)}
+            title="Always-on companion settings"
+          >
+            🎮 Companion
+          </button>
         </div>
       </header>
+
+      {showCompanion && settings && <CompanionPanel settings={settings} update={update} />}
 
       <main className="chat-messages">
         {messages.length === 0 && !loading && (
@@ -224,7 +238,9 @@ function App(): React.JSX.Element {
           ↻
         </button>
         {!visionModel && model && (
-          <span className="capture-hint">This model can&apos;t see images.</span>
+          <span className="capture-hint">
+            {screenAllowed ? 'This model can’t see images.' : 'Screen access is disabled.'}
+          </span>
         )}
       </div>
 

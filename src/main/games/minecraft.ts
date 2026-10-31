@@ -35,6 +35,10 @@ export interface RecipeView {
   totals: { label: string; count: number }[]
 }
 
+// Title of the Java Edition game window ("Minecraft* 1.21.4 - Singleplayer") or Bedrock
+// ("Minecraft"), but not the launcher or a browser tab about Minecraft.
+export const GAME_WINDOW = /^Minecraft(\*?\s+\d|$)/
+
 const dataDir = (): string => join(app.getAppPath(), 'resources', 'minecraft')
 const cache = new Map<string, VersionData>()
 

@@ -16,6 +16,15 @@ export interface AssistantReply {
 export interface AssistantContext {
   model: string
   minecraftVersion: string
+  // What the always-on companion noticed recently, newest last.
+  observations?: string[]
+}
+
+let asking = 0
+
+// True while the player is waiting for an answer, so background work can hold off.
+export function isAsking(): boolean {
+  return asking > 0
 }
 
 function systemPrompt(minecraftVersion: string): string {
@@ -28,6 +37,11 @@ For any question about crafting or what an item is made of, ALWAYS call minecraf
 GameMate shows the player each recipe you look up as a crafting grid picture, so do not write out the rows. Answer recipe questions in one or two sentences that only restate the recipe data (ingredients, amounts, whether a crafting table is needed); do not add any other facts.
 If there is no crafting recipe, the thing is probably built in the world or obtained another way: explain that from your general knowledge, without inventing a crafting recipe.
 Never invent game facts you are unsure about.`
+}
+
+function observationsPrompt(observations: string[]): string {
+  const list = observations.map((o) => `- ${o}`).join('\n')
+  return `While the player was playing, GameMate noticed (use this as background for questions like "what should I do next?"):\n${list}`
 }
 
 const TOOLS: ToolDefinition[] = [
@@ -107,11 +121,23 @@ function runTool(
 }
 
 export async function ask(ctx: AssistantContext, history: ChatMessage[]): Promise<AssistantReply> {
+  asking++
+  try {
+    return await answer(ctx, history)
+  } finally {
+    asking--
+  }
+}
+
+async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<AssistantReply> {
   // Only the latest message keeps its screenshot: older ones would slow every reply
   // and describe a screen that has since changed.
   const lastIndex = history.length - 1
   const messages: OllamaMessage[] = [
     { role: 'system', content: systemPrompt(ctx.minecraftVersion) },
+    ...(ctx.observations?.length
+      ? [{ role: 'system' as const, content: observationsPrompt(ctx.observations) }]
+      : []),
     ...history.map((m, i) => ({
       role: m.role,
       content: m.content,
@@ -125,7 +151,9 @@ export async function ask(ctx: AssistantContext, history: ChatMessage[]): Promis
 
   for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
     // On the last round, withhold tools so the model has to answer.
-    const reply = await chatOnce(ctx.model, messages, round < MAX_TOOL_ROUNDS ? TOOLS : undefined)
+    const reply = await chatOnce(ctx.model, messages, {
+      tools: round < MAX_TOOL_ROUNDS ? TOOLS : undefined
+    })
     if (!reply.tool_calls?.length) {
       // Keep only the answer: drop fields such as `thinking` from reasoning models.
       return { role: 'assistant', content: reply.content, ...(recipes.length ? { recipes } : {}) }

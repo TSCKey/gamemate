@@ -3,15 +3,43 @@ import { app, BrowserWindow } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
+// How much GameMate watches and talks on its own (see README "Always-on companion").
+export const COMPANION_MODES = [
+  'disabled',
+  'on-demand',
+  'observation',
+  'commentary',
+  'quiet'
+] as const
+export type CompanionMode = (typeof COMPANION_MODES)[number]
+export const COMMENTARY_FREQUENCIES = ['rare', 'normal', 'frequent'] as const
+export type CommentaryFrequency = (typeof COMMENTARY_FREQUENCIES)[number]
+
 export interface Settings {
   // Ollama model used for answers ('' until the user or GameMate picks one).
   model: string
   minecraftVersion: string
   // Whether the floating window sends a screenshot of the screen with each question.
   overlayScreenshot: boolean
+  companionMode: CompanionMode
+  commentaryFrequency: CommentaryFrequency
 }
 
-const DEFAULTS: Settings = { model: '', minecraftVersion: '26.1', overlayScreenshot: true }
+const DEFAULTS: Settings = {
+  model: '',
+  minecraftVersion: '26.1',
+  overlayScreenshot: true,
+  // Watching the screen is opt-in.
+  companionMode: 'on-demand',
+  commentaryFrequency: 'normal'
+}
+
+const listeners: ((settings: Settings) => void)[] = []
+
+// Lets main-process modules (e.g. the observer) react to setting changes.
+export function onSettingsChanged(listener: (settings: Settings) => void): void {
+  listeners.push(listener)
+}
 
 const file = (): string => join(app.getPath('userData'), 'settings.json')
 let current: Settings | null = null
@@ -37,6 +65,12 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
     next.minecraftVersion = p.minecraftVersion
   }
   if (typeof p.overlayScreenshot === 'boolean') next.overlayScreenshot = p.overlayScreenshot
+  if (COMPANION_MODES.includes(p.companionMode as CompanionMode)) {
+    next.companionMode = p.companionMode as CompanionMode
+  }
+  if (COMMENTARY_FREQUENCIES.includes(p.commentaryFrequency as CommentaryFrequency)) {
+    next.commentaryFrequency = p.commentaryFrequency as CommentaryFrequency
+  }
 
   current = next
   try {
@@ -45,5 +79,6 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
     console.error('Could not save settings', error)
   }
   for (const win of BrowserWindow.getAllWindows()) win.webContents.send('settings:changed', next)
+  for (const listener of listeners) listener(next)
   return next
 }

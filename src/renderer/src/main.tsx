@@ -4,11 +4,14 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import Overlay from './Overlay'
+import Toast from './Toast'
 
-// The floating Alt+Space window loads the same page with #overlay.
-const isOverlay = window.location.hash === '#overlay'
-document.documentElement.classList.toggle('is-overlay', isOverlay)
+// The floating Alt+Space window and the comment pop-up load this same page with a #hash.
+const view = window.location.hash.slice(1)
+document.documentElement.classList.toggle('is-overlay', view === 'overlay' || view === 'toast')
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>{isOverlay ? <Overlay /> : <App />}</StrictMode>
+  <StrictMode>
+    {view === 'overlay' ? <Overlay /> : view === 'toast' ? <Toast /> : <App />}
+  </StrictMode>
 )

@@ -2,7 +2,7 @@
 
 **Your local AI gaming companion.**
 
-GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, and it knows the real Minecraft crafting recipes.
+GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, it knows the real Minecraft crafting recipes, and if you like, it can watch your game and speak up when something important happens.
 
 Everything runs **on your own computer**. GameMate uses AI models running locally through [Ollama](https://ollama.com), so your questions, screenshots and conversations never leave your PC, there are no subscription or per-question fees, and it keeps working without an internet connection once a model is installed.
 
@@ -10,6 +10,7 @@ Everything runs **on your own computer**. GameMate uses AI models running locall
 
 - **Ask without leaving your game.** Press **Alt + Space** and a small window appears on top of your game. Type a question, read the answer, and press **Esc** to get back to playing.
 - **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe for your Minecraft version and shows it as a crafting grid, instead of guessing. Supports Minecraft Java Edition 26.1, 1.21.11, 1.21.4 and 1.20.4.
+- **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
 - **Ask about your screen.** Attach a screenshot of your game window or your whole screen and ask "What is this creature?" or "What should I do next?". GameMate picks your Minecraft window automatically when it's open.
 - **Choose your model.** Pick any model you've installed in Ollama, and switch between them at any time. Models that can see images are marked with 👁.
 - **Chat window.** A full chat window for longer conversations.
@@ -50,6 +51,24 @@ Everything runs **on your own computer**. GameMate uses AI models running locall
 - Drag the 🎮 icon to move the window.
 - For the window to appear over your game, set the game to **windowed** or **borderless/windowed fullscreen**. Windows doesn't let other apps draw over exclusive fullscreen.
 
+### Always-on companion
+
+Click **🎮 Companion** at the top of the chat window to choose how much GameMate watches and talks on its own:
+
+| Mode                    | What GameMate does                                                                                                                                                      |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Disabled**            | Never looks at your screen, not even when you press **Alt + Space**.                                                                                                    |
+| **On-demand** (default) | Only looks and answers when you ask.                                                                                                                                    |
+| **Observation**         | Watches your game and keeps a log of what it noticed in the Companion panel, without pop-ups.                                                                           |
+| **Commentary**          | Watches your game and pops up a short comment when something important happens, such as a creeper nearby, low health, dying, entering a dark cave or finding a village. |
+| **Quiet**               | Watches silently and uses what it saw only to answer your questions.                                                                                                    |
+
+- In Commentary mode, use **Comments** to choose how often GameMate speaks up: **Rarely** (big moments only), **Sometimes**, or **Often**. It also waits a while before commenting on the same kind of thing again.
+- Comments appear in the top-right corner of the screen for a few seconds. They never take focus, so your keyboard and mouse stay in the game. Click a comment to dismiss it.
+- In any watching mode, GameMate remembers what it saw recently, so questions like "What should I do next?" get better answers.
+- Click **⏸ Pause** in the Companion panel, or **Pause watching** in the tray icon's menu, to stop watching for a while.
+- GameMate only watches while the Minecraft game window is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
+
 ### Chat window
 
 - Pick your Minecraft version and AI model from the drop-downs at the top. Both are remembered, and the in-game window uses the same choices.
@@ -83,12 +102,21 @@ The selected model can't see images. Pick a model marked with 👁, such as `qwe
 **My game window isn't in the list**
 Make sure the game is open and not minimized, then click the **↻** next to the list. If it still doesn't appear, choose your whole screen instead.
 
+**Commentary mode never says anything**
+Check the status line in the Companion panel. It needs Minecraft to be the active window and a model marked with 👁. GameMate only comments on important moments, so try **Comments: Often**. Smaller models may miss things, and `qwen3.5:4b` sees more if your GPU has room for it.
+
 **Answers are slow**
 Your game and the AI model share your GPU. Try a smaller model, close other GPU-heavy apps, or lower your game's graphics settings.
 
 ## Privacy
 
-GameMate talks only to Ollama on your own computer (`127.0.0.1`). It only takes screenshots when you ask for them: when you send a question with **Include screenshot of** ticked, or when you press **Alt + Space** with **📷** turned on. Screenshots go only to your local model. It doesn't save screenshots to disk, send your conversations anywhere, collect usage data or require an account.
+GameMate talks only to Ollama on your own computer (`127.0.0.1`). It takes screenshots only:
+
+- when you send a question with **Include screenshot of** ticked,
+- when you press **Alt + Space** with **📷** turned on, and
+- while Minecraft is the active window, if you've turned on Observation, Commentary or Quiet mode. These modes are off by default. The tray icon and the Companion panel always show whether GameMate is watching.
+
+Screenshots go only to your local model and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
 
 ## What GameMate won't do
 
