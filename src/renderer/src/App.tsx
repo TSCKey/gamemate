@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { AppInfo, CaptureSource, ChatMessage } from '../../preload/index.d'
-import AiPanel from './components/AiPanel'
-import CompanionPanel from './components/CompanionPanel'
+import type { AppInfo, CaptureSource, ChatMessage, CompanionState } from '../../preload/index.d'
+import PrivacyNotice from './components/PrivacyNotice'
+import { PRIVACY_NOTICE_VERSION, STATUS_TEXT } from './constants'
 import RecipeCard from './components/RecipeCard'
 import Sources from './components/Sources'
-import VoicePanel from './components/VoicePanel'
+import SettingsScreen, { type SettingsTab } from './SettingsScreen'
 import { speak } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
 import { errorMessage, useSettings } from './useSettings'
 
 const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
+
+const SUGGESTIONS = ['How do I craft a piston?', 'How do I build a Nether portal?']
 
 // Prefer a game window, then the main screen.
 function pickDefaultSource(sources: CaptureSource[]): string {
@@ -26,6 +28,7 @@ function App(): React.JSX.Element {
   const { settings, models, modelError, update, reloadModels } = useSettings()
   const [versions, setVersions] = useState<string[]>([])
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
+  const [companion, setCompanion] = useState<CompanionState | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'capturing' | 'thinking'>('idle')
@@ -33,17 +36,20 @@ function App(): React.JSX.Element {
   const [sources, setSources] = useState<CaptureSource[]>([])
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
-  const [panel, setPanel] = useState<'companion' | 'voice' | 'ai' | null>(null)
+  const [settingsTab, setSettingsTab] = useState<SettingsTab | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const model = settings?.model ?? ''
   const loading = status !== 'idle'
+  const onGemini = settings?.answersEngine === 'gemini'
+  const ready = onGemini ? Boolean(settings?.geminiModel) : Boolean(model)
   // In "Disabled" mode GameMate doesn't look at the screen at all.
   const screenAllowed = settings?.companionMode !== 'disabled'
-  const visionModel = (models.find((m) => m.name === model)?.vision ?? false) && screenAllowed
+  const visionModel =
+    (onGemini || (models.find((m) => m.name === model)?.vision ?? false)) && screenAllowed
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
-  const shownError = error ?? modelError
+  const shownError = error ?? (onGemini ? null : modelError)
 
   const loadSources = useCallback(async (): Promise<void> => {
     try {
@@ -60,11 +66,16 @@ function App(): React.JSX.Element {
   useEffect(() => {
     window.api.listMinecraftVersions().then(setVersions)
     window.api.getAppInfo().then(setAppInfo)
+    window.api.companion.getState().then(setCompanion)
+    const stopCompanion = window.api.companion.onState(setCompanion)
     // eslint-disable-next-line react-hooks/set-state-in-effect -- state is only set after the IPC call resolves
     loadSources()
     // Windows open and close while GameMate is in the background; refresh when it regains focus.
     window.addEventListener('focus', loadSources)
-    return () => window.removeEventListener('focus', loadSources)
+    return () => {
+      stopCompanion()
+      window.removeEventListener('focus', loadSources)
+    }
   }, [loadSources])
 
   useEffect(() => {
@@ -77,7 +88,7 @@ function App(): React.JSX.Element {
     byVoice = false
   ): Promise<void> => {
     const typed = text.trim()
-    if (!model || loading || (!typed && !withScreenshot)) return
+    if (!ready || loading || (!typed && !withScreenshot)) return
 
     setError(null)
     let images: string[] | undefined
@@ -123,87 +134,124 @@ function App(): React.JSX.Element {
     }
   }
 
+  const notice =
+    settings && settings.privacyNoticeVersion < PRIVACY_NOTICE_VERSION ? (
+      <PrivacyNotice
+        onAccept={() => update({ privacyNoticeVersion: PRIVACY_NOTICE_VERSION })}
+        onMore={() => {
+          update({ privacyNoticeVersion: PRIVACY_NOTICE_VERSION })
+          setSettingsTab('privacy')
+        }}
+      />
+    ) : null
+
+  if (settingsTab && settings) {
+    return (
+      <>
+        <SettingsScreen
+          tab={settingsTab}
+          onTab={setSettingsTab}
+          onClose={() => setSettingsTab(null)}
+          settings={settings}
+          update={update}
+          models={models}
+          modelError={modelError}
+          reloadModels={reloadModels}
+          versions={versions}
+          appInfo={appInfo}
+        />
+        {notice}
+      </>
+    )
+  }
+
+  const engineLabel = onGemini ? `☁ ${settings?.geminiModel || 'Gemini'}` : model || 'No model'
+  const companionOn = companion !== null && companion.status !== 'off'
+
   return (
     <div className="chat">
       <header className="chat-header">
-        <h1>GameMate</h1>
-        <div className="model-picker">
-          <select
-            value={settings?.minecraftVersion ?? ''}
-            onChange={(e) => update({ minecraftVersion: e.target.value })}
-            aria-label="Minecraft version"
+        <div className="brand">
+          <span className="brand-mark">GM</span>
+          <span className="brand-name">GameMate</span>
+        </div>
+        <div className="chips">
+          <button
+            type="button"
+            className="chip"
+            onClick={() => setSettingsTab(onGemini ? 'ai' : 'general')}
+            title="Which AI answers"
+          >
+            {engineLabel}
+          </button>
+          <button
+            type="button"
+            className="chip"
+            onClick={() => setSettingsTab('general')}
             title="Minecraft version"
           >
-            {versions.map((v) => (
-              <option key={v} value={v}>
-                Minecraft {v}
-              </option>
-            ))}
-          </select>
-          <select
-            value={model}
-            onChange={(e) => update({ model: e.target.value })}
-            disabled={models.length === 0}
-            aria-label="Model"
-          >
-            {models.length === 0 && <option value="">No models</option>}
-            {models.map((m) => (
-              <option key={m.name} value={m.name}>
-                {m.name}
-                {m.vision ? ' 👁' : ''}
-              </option>
-            ))}
-          </select>
-          <button type="button" onClick={reloadModels} title="Reload models">
-            ↻
+            Minecraft {settings?.minecraftVersion}
           </button>
-          <button type="button" onClick={() => setMessages([])} disabled={loading}>
+          {companionOn && (
+            <button
+              type="button"
+              className={`chip companion-status is-${companion.status}`}
+              onClick={() => setSettingsTab('companion')}
+              title="Companion"
+            >
+              <span className="companion-dot" /> {STATUS_TEXT[companion.status]}
+            </button>
+          )}
+        </div>
+        <div className="header-actions">
+          <button
+            type="button"
+            className="ghost"
+            onClick={() => setMessages([])}
+            disabled={loading || messages.length === 0}
+          >
             New chat
           </button>
           <button
             type="button"
-            className={panel === 'companion' ? 'is-active' : ''}
-            onClick={() => setPanel((p) => (p === 'companion' ? null : 'companion'))}
-            title="Always-on companion settings"
+            className="icon-button"
+            onClick={() => setSettingsTab('general')}
+            title="Settings"
+            aria-label="Settings"
           >
-            🎮 Companion
-          </button>
-          <button
-            type="button"
-            className={panel === 'voice' ? 'is-active' : ''}
-            onClick={() => setPanel((p) => (p === 'voice' ? null : 'voice'))}
-            title="Voice settings"
-          >
-            🔊 Voice
-          </button>
-          <button
-            type="button"
-            className={panel === 'ai' ? 'is-active' : ''}
-            onClick={() => setPanel((p) => (p === 'ai' ? null : 'ai'))}
-            title="AI engine and web lookup settings"
-          >
-            {settings?.answersEngine === 'gemini' || settings?.commentaryEngine === 'gemini'
-              ? '☁'
-              : '🧠'}{' '}
-            AI
+            ⚙
           </button>
         </div>
       </header>
 
-      {panel === 'companion' && settings && <CompanionPanel settings={settings} update={update} />}
-      {panel === 'ai' && settings && <AiPanel settings={settings} update={update} />}
-      {panel === 'voice' && settings && (
-        <VoicePanel settings={settings} update={update} appInfo={appInfo} />
-      )}
-
       <main className="chat-messages">
         {messages.length === 0 && !loading && (
           <div className="chat-empty">
-            <p>Ask anything to get started.</p>
+            <div className="brand-mark is-large">GM</div>
+            <h2>What can I help with?</h2>
+            <div className="suggestions">
+              {SUGGESTIONS.map((q) => (
+                <button key={q} type="button" disabled={!ready} onClick={() => send(q, false)}>
+                  {q}
+                </button>
+              ))}
+              {visionModel && sourceId && (
+                <button
+                  type="button"
+                  disabled={!ready}
+                  onClick={() => {
+                    setAttachScreenshot(true)
+                    send(DEFAULT_SCREEN_QUESTION, true)
+                  }}
+                >
+                  📷 What&apos;s on my screen?
+                </button>
+              )}
+            </div>
             {appInfo &&
               (appInfo.shortcutRegistered ? (
                 <p className="chat-hint">
-                  Tip: press <kbd>{appInfo.shortcut}</kbd> in any game to ask without leaving it.
+                  Press <kbd>{appInfo.shortcut}</kbd> in any game to ask without leaving it.
                 </p>
               ) : (
                 <p className="chat-hint">
@@ -211,17 +259,6 @@ function App(): React.JSX.Element {
                   off. Close that app and restart GameMate.
                 </p>
               ))}
-            {visionModel && sourceId && (
-              <button
-                type="button"
-                onClick={() => {
-                  setAttachScreenshot(true)
-                  send(DEFAULT_SCREEN_QUESTION, true)
-                }}
-              >
-                📷 What&apos;s on my screen?
-              </button>
-            )}
           </div>
         )}
         {messages.map((m, i) => (
@@ -251,41 +288,8 @@ function App(): React.JSX.Element {
 
       {(shownError || voice.error) && <div className="chat-error">{shownError ?? voice.error}</div>}
 
-      <div className="capture-bar">
-        <label className={visionModel ? '' : 'is-disabled'}>
-          <input
-            type="checkbox"
-            checked={attachScreenshot && visionModel}
-            onChange={(e) => setAttachScreenshot(e.target.checked)}
-            disabled={!visionModel || sources.length === 0}
-          />
-          Include screenshot of
-        </label>
-        <select
-          value={sourceId}
-          onChange={(e) => setSourceId(e.target.value)}
-          disabled={!visionModel || sources.length === 0}
-          aria-label="Screenshot source"
-        >
-          {sources.length === 0 && <option value="">Nothing to capture</option>}
-          {sources.map((s) => (
-            <option key={s.id} value={s.id}>
-              {sourceLabel(s, screenCount)}
-            </option>
-          ))}
-        </select>
-        <button type="button" onClick={loadSources} title="Refresh window list">
-          ↻
-        </button>
-        {!visionModel && model && (
-          <span className="capture-hint">
-            {screenAllowed ? 'This model can’t see images.' : 'Screen access is disabled.'}
-          </span>
-        )}
-      </div>
-
       <form
-        className="chat-input"
+        className="composer"
         onSubmit={(e) => {
           e.preventDefault()
           send()
@@ -296,34 +300,81 @@ function App(): React.JSX.Element {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={
-            !model
-              ? 'Select a model first'
+            !ready
+              ? 'Pick an AI model in Settings first'
               : voice.status === 'listening'
                 ? 'Listening…'
                 : voice.status === 'transcribing'
                   ? 'Working out what you said…'
                   : willAttach
                     ? 'Ask about your screen… (or just press Enter)'
-                    : `Message ${model}…`
+                    : 'Ask about Minecraft…'
           }
           rows={2}
-          disabled={!model || voice.status !== 'idle'}
+          disabled={!ready || voice.status !== 'idle'}
         />
-        {voice.ready && (
-          <button
-            type="button"
-            className={voice.status === 'listening' ? 'is-active' : ''}
-            onClick={voice.toggle}
-            disabled={!model || loading || voice.status === 'transcribing'}
-            title={voice.status === 'listening' ? 'Listening, click to stop' : 'Ask by voice'}
-          >
-            🎤
-          </button>
-        )}
-        <button type="submit" disabled={!model || loading || (!input.trim() && !willAttach)}>
-          Send
-        </button>
+        <div className="composer-bar">
+          {visionModel ? (
+            <div className="screenshot-picker">
+              <button
+                type="button"
+                className={`chip${willAttach ? ' is-on' : ''}`}
+                onClick={() => setAttachScreenshot((on) => !on)}
+                disabled={sources.length === 0}
+                aria-pressed={willAttach}
+                title="Send a screenshot with your question"
+              >
+                📷 Screenshot
+              </button>
+              {attachScreenshot && (
+                <select
+                  value={sourceId}
+                  onChange={(e) => setSourceId(e.target.value)}
+                  onFocus={loadSources}
+                  aria-label="Screenshot source"
+                >
+                  {sources.length === 0 && <option value="">Nothing to capture</option>}
+                  {sources.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {sourceLabel(s, screenCount)}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          ) : (
+            <span className="composer-hint">
+              {!screenAllowed
+                ? 'Screen access is off (Companion: Disabled).'
+                : ready
+                  ? 'This model can’t see screenshots.'
+                  : ''}
+            </span>
+          )}
+          <div className="composer-actions">
+            {voice.ready && (
+              <button
+                type="button"
+                className={`icon-button${voice.status === 'listening' ? ' is-listening' : ''}`}
+                onClick={voice.toggle}
+                disabled={!ready || loading || voice.status === 'transcribing'}
+                title={voice.status === 'listening' ? 'Listening, click to stop' : 'Ask by voice'}
+                aria-label="Ask by voice"
+              >
+                🎤
+              </button>
+            )}
+            <button
+              type="submit"
+              className="primary"
+              disabled={!ready || loading || (!input.trim() && !willAttach)}
+            >
+              Send
+            </button>
+          </div>
+        </div>
       </form>
+      {notice}
     </div>
   )
 }

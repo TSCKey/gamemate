@@ -48,7 +48,14 @@ export interface Settings {
   geminiModel: string
   // Let the AI look things up on minecraft.wiki.
   webLookup: boolean
+  // Version of the privacy notice the player has read (0 = not shown yet).
+  privacyNoticeVersion: number
+  // The player agreed to send data to Google to use Gemini (required before a key is saved).
+  geminiConsent: boolean
 }
+
+// Bump when the privacy notice changes in a way players should see again.
+export const PRIVACY_NOTICE_VERSION = 1
 
 const DEFAULTS: Settings = {
   model: '',
@@ -68,7 +75,9 @@ const DEFAULTS: Settings = {
   answersEngine: 'local',
   commentaryEngine: 'local',
   geminiModel: '',
-  webLookup: false
+  webLookup: false,
+  privacyNoticeVersion: 0,
+  geminiConsent: false
 }
 
 const listeners: ((settings: Settings) => void)[] = []
@@ -127,7 +136,27 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
     next.geminiModel = p.geminiModel
   }
   if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
+  if (p.privacyNoticeVersion === PRIVACY_NOTICE_VERSION) {
+    next.privacyNoticeVersion = PRIVACY_NOTICE_VERSION
+  }
+  if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
+  // Nothing goes to Google without the player's consent.
+  if (!next.geminiConsent) {
+    next.answersEngine = 'local'
+    next.commentaryEngine = 'local'
+  }
 
+  save(next)
+  return next
+}
+
+// Back to the defaults (used by "Delete my data").
+export function resetSettings(): Settings {
+  save({ ...DEFAULTS })
+  return { ...DEFAULTS }
+}
+
+function save(next: Settings): void {
   current = next
   try {
     writeFileSync(file(), JSON.stringify(next, null, 2))
@@ -136,5 +165,4 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   }
   for (const win of BrowserWindow.getAllWindows()) win.webContents.send('settings:changed', next)
   for (const listener of listeners) listener(next)
-  return next
 }

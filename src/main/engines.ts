@@ -10,6 +10,9 @@ export function engineFor(job: Job): LlmEngine {
   const settings = getSettings()
   const provider = job === 'answers' ? settings.answersEngine : settings.commentaryEngine
   if (provider === 'gemini') {
+    if (!settings.geminiConsent) {
+      throw new Error('Turn on Gemini in GameMate’s settings (AI & online) first.')
+    }
     const apiKey = getGeminiKey()
     if (!apiKey) throw new Error('Add your Gemini API key in GameMate’s AI settings first.')
     if (!settings.geminiModel) throw new Error('Pick a Gemini model in GameMate’s AI settings.')

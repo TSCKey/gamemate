@@ -5,28 +5,30 @@ import type {
   CompanionState,
   Settings
 } from '../../../preload/index.d'
+import { STATUS_TEXT } from '../constants'
+import { Field, Section } from './ui'
 
 const MODES: { value: CompanionMode; label: string; help: string }[] = [
   {
     value: 'disabled',
     label: 'Disabled',
-    help: 'GameMate never looks at your screen, not even when you press the shortcut.'
+    help: 'Never looks at your screen, not even when you press the shortcut.'
   },
-  { value: 'on-demand', label: 'On-demand', help: 'GameMate only looks and answers when you ask.' },
+  { value: 'on-demand', label: 'On-demand', help: 'Only looks and answers when you ask.' },
   {
     value: 'observation',
     label: 'Observation',
-    help: 'GameMate watches your game and keeps a log of what happens below, without pop-ups.'
+    help: 'Watches your game and keeps a log of what happens, without pop-ups.'
   },
   {
     value: 'commentary',
     label: 'Commentary',
-    help: 'GameMate watches your game and pops up a short comment when something important happens.'
+    help: 'Watches your game and pops up a short comment when something important happens.'
   },
   {
     value: 'quiet',
     label: 'Quiet',
-    help: 'GameMate watches your game silently and uses what it saw only to answer your questions.'
+    help: 'Watches silently and uses what it saw only to answer your questions.'
   }
 ]
 
@@ -35,15 +37,6 @@ const FREQUENCIES: { value: CommentaryFrequency; label: string }[] = [
   { value: 'normal', label: 'Sometimes' },
   { value: 'frequent', label: 'Often' }
 ]
-
-const STATUS_TEXT: Record<CompanionState['status'], string> = {
-  off: 'Not watching',
-  paused: 'Paused',
-  'no-model': 'Pick a model to start watching',
-  'waiting-for-game': 'Waiting for Minecraft to be the active window',
-  watching: 'Watching',
-  analyzing: 'Looking at your screen…'
-}
 
 const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   hostile_mob: '⚔️',
@@ -75,30 +68,33 @@ function CompanionPanel({
     return window.api.companion.onState(setState)
   }, [])
 
-  const mode = MODES.find((m) => m.value === settings.companionMode) ?? MODES[1]
   const watching = state !== null && state.status !== 'off'
   const showLog =
     settings.companionMode === 'observation' || settings.companionMode === 'commentary'
 
   return (
-    <section className="companion">
-      <div className="companion-row">
-        <label>
-          Mode
-          <select
-            value={settings.companionMode}
-            onChange={(e) => update({ companionMode: e.target.value as CompanionMode })}
-          >
-            {MODES.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-        </label>
+    <>
+      <Section
+        title="Companion mode"
+        description="How much GameMate watches your game and talks on its own."
+      >
+        <div className="mode-grid" role="radiogroup" aria-label="Companion mode">
+          {MODES.map((m) => (
+            <button
+              key={m.value}
+              type="button"
+              role="radio"
+              aria-checked={settings.companionMode === m.value}
+              className={`mode-option${settings.companionMode === m.value ? ' is-selected' : ''}`}
+              onClick={() => update({ companionMode: m.value })}
+            >
+              <span className="mode-title">{m.label}</span>
+              <span className="mode-help">{m.help}</span>
+            </button>
+          ))}
+        </div>
         {settings.companionMode === 'commentary' && (
-          <label>
-            Comments
+          <Field label="How often to comment">
             <select
               value={settings.commentaryFrequency}
               onChange={(e) =>
@@ -111,35 +107,46 @@ function CompanionPanel({
                 </option>
               ))}
             </select>
-          </label>
+          </Field>
         )}
         {watching && (
-          <button type="button" onClick={() => window.api.companion.setPaused(!state.paused)}>
-            {state.paused ? '▶ Resume' : '⏸ Pause'}
-          </button>
-        )}
-      </div>
-      <p className="companion-help">{mode.help}</p>
-      {watching && (
-        <p className={`companion-status is-${state.status}`}>
-          <span className="companion-dot" /> {STATUS_TEXT[state.status]}
-          {state.game && state.status !== 'waiting-for-game' ? ` · ${state.game}` : ''}
-        </p>
-      )}
-      {showLog && state && state.events.length > 0 && (
-        <ul className="companion-log">
-          {[...state.events].reverse().map((e) => (
-            <li key={e.time}>
-              <span className="companion-log-icon">{EVENT_ICONS[e.type]}</span>
-              <span className="companion-log-text">
-                {e.spoken && e.comment ? `“${e.comment}”` : e.description}
+          <Field
+            label={
+              <span className={`companion-status is-${state.status}`}>
+                <span className="companion-dot" /> {STATUS_TEXT[state.status]}
+                {state.game && state.status !== 'waiting-for-game' ? ` · ${state.game}` : ''}
               </span>
-              <span className="companion-log-time">{timeAgo(e.time)}</span>
-            </li>
-          ))}
-        </ul>
+            }
+          >
+            <button type="button" onClick={() => window.api.companion.setPaused(!state.paused)}>
+              {state.paused ? '▶ Resume' : '⏸ Pause'}
+            </button>
+          </Field>
+        )}
+      </Section>
+
+      {showLog && (
+        <Section title="What GameMate saw" description="Kept only while GameMate is open.">
+          {state && state.events.length > 0 ? (
+            <ul className="companion-log">
+              {[...state.events].reverse().map((e) => (
+                <li key={e.time}>
+                  <span>{EVENT_ICONS[e.type]}</span>
+                  <span className="companion-log-text">
+                    {e.spoken && e.comment ? `“${e.comment}”` : e.description}
+                  </span>
+                  <span className="companion-log-time">{timeAgo(e.time)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="field-help">
+              Nothing yet. Start playing and GameMate will log what happens.
+            </p>
+          )}
+        </Section>
       )}
-    </section>
+    </>
   )
 }
 

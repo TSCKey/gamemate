@@ -19,7 +19,13 @@ import { engineFor } from './engines'
 import { listGeminiModels } from './gemini'
 import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
 import { listVersions } from './games/minecraft'
-import { getSettings, onSettingsChanged, updateSettings, type Settings } from './settings'
+import {
+  getSettings,
+  onSettingsChanged,
+  resetSettings,
+  updateSettings,
+  type Settings
+} from './settings'
 import {
   createOverlay,
   hideOverlay,
@@ -53,6 +59,13 @@ const VOICE_SHORTCUT = 'Alt+V'
 const VALID_ROLES = new Set(['user', 'assistant'])
 const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024
 const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
+// Policy and setup pages the settings screen links to.
+const EXTERNAL_LINKS = [
+  'https://aistudio.google.com/apikey',
+  'https://ai.google.dev/gemini-api/terms',
+  'https://policies.google.com/privacy',
+  'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer'
+]
 
 const preloadPath = join(__dirname, '../preload/index.js')
 let mainWindow: BrowserWindow | null = null
@@ -111,20 +124,37 @@ function registerHandlers(): void {
     )
   })
 
-  // Only minecraft.wiki pages, so a page can't open arbitrary programs or sites.
+  // Only wiki pages and the policy pages GameMate links to, so a page can't open arbitrary
+  // programs or sites.
   ipcMain.handle('app:open-source', (_event, url: unknown) => {
-    if (typeof url === 'string' && url.startsWith('https://minecraft.wiki/w/')) {
+    if (
+      typeof url === 'string' &&
+      (url.startsWith('https://minecraft.wiki/w/') || EXTERNAL_LINKS.includes(url))
+    ) {
       shell.openExternal(url)
     }
   })
+  // "Delete my data": everything GameMate stored on this PC, back to a fresh install.
+  ipcMain.handle('app:delete-data', async () => {
+    clearGeminiKey()
+    clearEvents()
+    await Promise.all(speechModelStatuses().map((m) => removeSpeechModel(m.id)))
+    resetSettings()
+  })
   ipcMain.handle('gemini:status', () => ({ hasKey: hasGeminiKey() }))
   ipcMain.handle('gemini:set-key', async (_event, key: unknown) => {
-    if (typeof key !== 'string' || !/^[\w-]{20,200}$/.test(key.trim())) {
+    if (!getSettings().geminiConsent) throw new Error('Agree to the Gemini terms first.')
+    // Key formats change (newer ones contain dots), so only drop stray whitespace and quotes
+    // from copy-pasting and require characters that are safe in a header; Google does the
+    // real check below.
+    const trimmed =
+      typeof key === 'string' ? key.replace(/\s+/g, '').replace(/^["']|["']$/g, '') : ''
+    if (!/^[\x21-\x7e]{20,300}$/.test(trimmed)) {
       throw new Error('That doesn’t look like a Gemini API key.')
     }
     // Check the key works before saving it.
-    const models = await listGeminiModels(key.trim())
-    setGeminiKey(key.trim())
+    const models = await listGeminiModels(trimmed)
+    setGeminiKey(trimmed)
     return models
   })
   ipcMain.handle('gemini:clear-key', () => clearGeminiKey())
@@ -206,8 +236,11 @@ function showMainWindow(): void {
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: 960,
+    height: 700,
+    minWidth: 640,
+    minHeight: 480,
+    backgroundColor: '#15161a',
     show: false,
     autoHideMenuBar: true,
     title: 'GameMate',
@@ -356,6 +389,12 @@ if (!app.requestSingleInstanceLock()) {
     if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
     updateVoiceShortcut(getSettings())
     onSettingsChanged(updateVoiceShortcut)
+    // Withdrawing consent for Gemini also forgets the key.
+    let geminiConsent = getSettings().geminiConsent
+    onSettingsChanged((settings) => {
+      if (geminiConsent && !settings.geminiConsent) clearGeminiKey()
+      geminiConsent = settings.geminiConsent
+    })
 
     app.on('activate', function () {
       // On macOS it's common to re-create a window in the app when the

@@ -32,6 +32,7 @@ const api: Api = {
     models: () => ipcRenderer.invoke('gemini:models')
   },
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
+  deleteData: () => ipcRenderer.invoke('app:delete-data'),
   voice: {
     models: () => ipcRenderer.invoke('voice:models'),
     voices: () => ipcRenderer.invoke('voice:voices'),

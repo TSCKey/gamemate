@@ -7,10 +7,16 @@ import type {
   SpeechModelStatus
 } from '../../../preload/index.d'
 import { speak } from '../voice/speak'
+import { Field, Section, Toggle } from './ui'
 
 const MODEL_LABELS: Record<SpeechModelId, string> = {
   fast: 'Fast',
   accurate: 'Accurate'
+}
+
+const MODEL_HELP: Record<SpeechModelId, string> = {
+  fast: 'Quicker, but mishears more often.',
+  accurate: 'A little slower, but mishears less. Recommended.'
 }
 
 const SPEAK_OPTIONS: { value: SpeakAnswers; label: string }[] = [
@@ -40,59 +46,72 @@ function VoicePanel({
   const selected = models.find((m) => m.id === settings.speechModel)
 
   return (
-    <section className="companion voice">
-      <h2>Talk to GameMate</h2>
-      <label className="voice-check">
-        <input
-          type="checkbox"
-          checked={settings.voiceInput}
-          onChange={(e) => update({ voiceInput: e.target.checked })}
-        />
-        Ask questions with your microphone
-      </label>
-      {settings.voiceInput && (
-        <>
-          <div className="voice-models">
+    <>
+      <Section
+        title="Talk to GameMate"
+        description="Speech is turned into text on this PC. Your voice never leaves it."
+      >
+        <Field
+          label="Ask with your microphone"
+          help={
+            settings.voiceInput && appInfo?.voiceShortcutRegistered === false
+              ? `${appInfo.voiceShortcut} is used by another app. Use the 🎤 button instead.`
+              : `In a game, press ${appInfo?.voiceShortcut ?? 'Alt+V'} and ask out loud. GameMate stops listening when you pause.`
+          }
+        >
+          <Toggle
+            label="Ask with your microphone"
+            checked={settings.voiceInput}
+            onChange={(voiceInput) => update({ voiceInput })}
+          />
+        </Field>
+        {settings.voiceInput && (
+          <>
             {models.map((m) => (
-              <div key={m.id} className="voice-model">
-                <label>
-                  <input
-                    type="radio"
-                    name="speech-model"
-                    checked={settings.speechModel === m.id}
-                    onChange={() => update({ speechModel: m.id })}
-                  />
-                  {MODEL_LABELS[m.id]} <span className="voice-dim">({m.sizeMb} MB)</span>
-                </label>
+              <Field
+                key={m.id}
+                label={
+                  <label className="check">
+                    <input
+                      type="radio"
+                      name="speech-model"
+                      checked={settings.speechModel === m.id}
+                      onChange={() => update({ speechModel: m.id })}
+                    />
+                    {MODEL_LABELS[m.id]} speech model
+                    <span className="field-help">{m.sizeMb} MB</span>
+                  </label>
+                }
+                help={m.error ? <span className="error-text">{m.error}</span> : MODEL_HELP[m.id]}
+              >
                 {m.progress !== null ? (
-                  <span className="voice-dim">Downloading… {Math.round(m.progress * 100)}%</span>
+                  <span className="field-help">Downloading… {Math.round(m.progress * 100)}%</span>
                 ) : m.installed ? (
                   <button type="button" onClick={() => window.api.voice.remove(m.id)}>
                     Remove
                   </button>
                 ) : (
-                  <button type="button" onClick={() => window.api.voice.download(m.id)}>
+                  <button
+                    type="button"
+                    className="primary"
+                    onClick={() => window.api.voice.download(m.id)}
+                  >
                     Download
                   </button>
                 )}
-                {m.error && <span className="voice-error">{m.error}</span>}
-              </div>
+              </Field>
             ))}
-          </div>
-          <p className="companion-help">
-            {selected?.installed
-              ? appInfo?.voiceShortcutRegistered === false
-                ? `${appInfo.voiceShortcut} is used by another app. Use the 🎤 button instead.`
-                : `In a game, press ${appInfo?.voiceShortcut ?? 'Alt+V'} and ask your question out loud. GameMate stops listening when you pause.`
-              : 'Download the speech model once to start. After that it works offline, and your voice never leaves this PC.'}
-          </p>
-        </>
-      )}
+            {!selected?.installed && (
+              <p className="field-help">
+                Download the selected model once to start. After that it works offline.
+              </p>
+            )}
+          </>
+        )}
+      </Section>
 
-      <h2>GameMate&apos;s voice</h2>
-      <div className="companion-row">
-        <label>
-          Read answers aloud
+      <Section title="GameMate's voice" description="Uses the voices built into Windows.">
+        <Field label="Read answers aloud">
           <select
             value={settings.speakAnswers}
             onChange={(e) => update({ speakAnswers: e.target.value as SpeakAnswers })}
@@ -103,19 +122,15 @@ function VoicePanel({
               </option>
             ))}
           </select>
-        </label>
-        <label className="voice-check">
-          <input
-            type="checkbox"
+        </Field>
+        <Field label="Read companion comments aloud">
+          <Toggle
+            label="Read companion comments aloud"
             checked={settings.speakComments}
-            onChange={(e) => update({ speakComments: e.target.checked })}
+            onChange={(speakComments) => update({ speakComments })}
           />
-          Read companion comments aloud
-        </label>
-      </div>
-      <div className="companion-row">
-        <label>
-          Voice
+        </Field>
+        <Field label="Voice">
           <select
             value={settings.voiceName}
             onChange={(e) => update({ voiceName: e.target.value })}
@@ -127,34 +142,36 @@ function VoicePanel({
               </option>
             ))}
           </select>
-        </label>
-        <label>
-          Volume
+        </Field>
+        <Field label="Volume">
           <input
             type="range"
             min={0}
             max={1}
             step={0.05}
             value={settings.voiceVolume}
+            aria-label="Volume"
             onChange={(e) => update({ voiceVolume: Number(e.target.value) })}
           />
-        </label>
-        <label>
-          Speed
+        </Field>
+        <Field label="Speed">
           <input
             type="range"
             min={0.5}
             max={2}
             step={0.1}
             value={settings.voiceRate}
+            aria-label="Speed"
             onChange={(e) => update({ voiceRate: Number(e.target.value) })}
           />
-        </label>
-        <button type="button" onClick={() => speak("Hi, I'm GameMate. Watch out for creepers!")}>
-          🔊 Test
-        </button>
-      </div>
-    </section>
+        </Field>
+        <Field label="Try it">
+          <button type="button" onClick={() => speak("Hi, I'm GameMate. Watch out for creepers!")}>
+            🔊 Test voice
+          </button>
+        </Field>
+      </Section>
+    </>
   )
 }
 

@@ -76,6 +76,8 @@ export interface Settings {
   commentaryEngine: Engine
   geminiModel: string
   webLookup: boolean
+  privacyNoticeVersion: number
+  geminiConsent: boolean
 }
 
 export interface ObservedEvent {
@@ -125,8 +127,10 @@ export interface Api {
     clearKey: () => Promise<void>
     models: () => Promise<string[]>
   }
-  // Opens a minecraft.wiki link in the default browser.
+  // Opens a minecraft.wiki page (or one of GameMate's policy links) in the default browser.
   openSource: (url: string) => Promise<void>
+  // Deletes the key, speech models, companion log and settings stored by GameMate.
+  deleteData: () => Promise<void>
   voice: {
     models: () => Promise<SpeechModelStatus[]>
     // Windows text-to-speech voices.
