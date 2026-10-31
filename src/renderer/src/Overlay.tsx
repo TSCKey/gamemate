@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ChatMessage } from '../../preload/index.d'
 import RecipeCard from './components/RecipeCard'
+import Sources from './components/Sources'
 import { errorMessage, useSettings } from './useSettings'
 import { speak, stopSpeaking } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
@@ -206,12 +207,18 @@ function Overlay(): React.JSX.Element {
                 {lastAnswer.recipes?.map((r, i) => (
                   <RecipeCard key={i} recipe={r} />
                 ))}
+                <Sources sources={lastAnswer.sources} />
               </div>
             )}
             {(error || voice.error) && <div className="overlay-error">{error ?? voice.error}</div>}
           </div>
         )}
         <div className="overlay-footer">
+          {settings?.answersEngine === 'gemini' && (
+            <span className="overlay-cloud" title="Answers come from Gemini (Google)">
+              ☁ Gemini ·{' '}
+            </span>
+          )}
           Enter to ask{voice.ready ? ` · ${appVoiceShortcut} to talk` : ''} · Esc to hide
         </div>
       </div>

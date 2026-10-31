@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AppInfo, CaptureSource, ChatMessage } from '../../preload/index.d'
+import AiPanel from './components/AiPanel'
 import CompanionPanel from './components/CompanionPanel'
 import RecipeCard from './components/RecipeCard'
+import Sources from './components/Sources'
 import VoicePanel from './components/VoicePanel'
 import { speak } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
@@ -31,7 +33,7 @@ function App(): React.JSX.Element {
   const [sources, setSources] = useState<CaptureSource[]>([])
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
-  const [panel, setPanel] = useState<'companion' | 'voice' | null>(null)
+  const [panel, setPanel] = useState<'companion' | 'voice' | 'ai' | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const model = settings?.model ?? ''
@@ -174,10 +176,22 @@ function App(): React.JSX.Element {
           >
             🔊 Voice
           </button>
+          <button
+            type="button"
+            className={panel === 'ai' ? 'is-active' : ''}
+            onClick={() => setPanel((p) => (p === 'ai' ? null : 'ai'))}
+            title="AI engine and web lookup settings"
+          >
+            {settings?.answersEngine === 'gemini' || settings?.commentaryEngine === 'gemini'
+              ? '☁'
+              : '🧠'}{' '}
+            AI
+          </button>
         </div>
       </header>
 
       {panel === 'companion' && settings && <CompanionPanel settings={settings} update={update} />}
+      {panel === 'ai' && settings && <AiPanel settings={settings} update={update} />}
       {panel === 'voice' && settings && (
         <VoicePanel settings={settings} update={update} appInfo={appInfo} />
       )}
@@ -224,6 +238,7 @@ function App(): React.JSX.Element {
             {m.recipes?.map((r, j) => (
               <RecipeCard key={j} recipe={r} />
             ))}
+            <Sources sources={m.sources} />
           </div>
         ))}
         {loading && (

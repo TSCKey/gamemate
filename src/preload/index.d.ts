@@ -9,6 +9,11 @@ export interface RecipeView {
   totals: { label: string; count: number }[]
 }
 
+export interface WikiSource {
+  title: string
+  url: string
+}
+
 export interface ChatMessage {
   role: ChatRole
   content: string
@@ -16,6 +21,8 @@ export interface ChatMessage {
   images?: string[]
   // Recipes GameMate looked up for this answer.
   recipes?: RecipeView[]
+  // minecraft.wiki pages the answer used.
+  sources?: WikiSource[]
 }
 
 export interface ModelInfo {
@@ -50,6 +57,8 @@ export interface SpeechModelStatus {
   error: string | null
 }
 
+export type Engine = 'local' | 'gemini'
+
 export interface Settings {
   model: string
   minecraftVersion: string
@@ -63,6 +72,10 @@ export interface Settings {
   voiceName: string
   voiceVolume: number
   voiceRate: number
+  answersEngine: Engine
+  commentaryEngine: Engine
+  geminiModel: string
+  webLookup: boolean
 }
 
 export interface ObservedEvent {
@@ -105,6 +118,15 @@ export interface Api {
     clearEvents: () => Promise<void>
     onState: (callback: (state: CompanionState) => void) => () => void
   }
+  gemini: {
+    status: () => Promise<{ hasKey: boolean }>
+    // Checks the key with Google, stores it encrypted, and returns the available models.
+    setKey: (key: string) => Promise<string[]>
+    clearKey: () => Promise<void>
+    models: () => Promise<string[]>
+  }
+  // Opens a minecraft.wiki link in the default browser.
+  openSource: (url: string) => Promise<void>
   voice: {
     models: () => Promise<SpeechModelStatus[]>
     // Windows text-to-speech voices.

@@ -4,7 +4,7 @@
 
 GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, it knows the real Minecraft crafting recipes, and if you like, it can watch your game and speak up when something important happens. You can even ask out loud and hear the answer.
 
-Everything runs **on your own computer**. GameMate uses AI models running locally through [Ollama](https://ollama.com), so your questions, screenshots and conversations never leave your PC, there are no subscription or per-question fees, and it keeps working without an internet connection once a model is installed.
+By default everything runs **on your own computer**. GameMate uses AI models running locally through [Ollama](https://ollama.com), so your questions, screenshots and conversations stay on your PC, there are no subscription or per-question fees, and it keeps working without an internet connection once a model is installed. If you want smarter answers, you can switch on Google's Gemini with your own API key, and let GameMate look things up on the Minecraft Wiki.
 
 ## Features
 
@@ -16,7 +16,9 @@ Everything runs **on your own computer**. GameMate uses AI models running locall
 - **Choose your model.** Pick any model you've installed in Ollama, and switch between them at any time. Models that can see images are marked with 👁.
 - **Chat window.** A full chat window for longer conversations.
 - **Runs in the background.** Closing the window keeps GameMate in the system tray, ready for **Alt + Space**.
-- **Private by design.** No accounts, no cloud services, nothing uploaded.
+- **Looks things up.** Turn on wiki lookup and GameMate reads [minecraft.wiki](https://minecraft.wiki) for things that aren't crafted, like building a Nether portal, taming a wolf or what an enchantment does, and links to the page it used.
+- **Local or cloud, your choice.** Use the local model for everything, or Gemini for questions, the companion, or both.
+- **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or wiki lookup.
 
 ## Requirements
 
@@ -69,6 +71,18 @@ Click **🎮 Companion** at the top of the chat window to choose how much GameMa
 - In any watching mode, GameMate remembers what it saw recently, so questions like "What should I do next?" get better answers.
 - Click **⏸ Pause** in the Companion panel, or **Pause watching** in the tray icon's menu, to stop watching for a while.
 - GameMate only watches while the Minecraft game window is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
+
+### AI engine and wiki lookup
+
+Click **🧠 AI** at the top of the chat window (it shows **☁ AI** while Gemini is in use).
+
+- **Which AI answers:** choose **Local model** or **Gemini**, separately for **Questions** (chat and **Alt + Space**) and the **Companion** (always-on watching).
+- **Gemini:**
+  1. Get a free API key at [aistudio.google.com](https://aistudio.google.com).
+  2. Paste it and click **Save key**. GameMate checks it with Google, stores it encrypted on your PC, and lists the Gemini models your key can use.
+  3. Pick a model. A Flash model is a good balance of speed and quality.
+- **Look things up:** tick **Let the AI read minecraft.wiki**. When a question needs more than a crafting recipe, the AI reads the matching wiki page. The answer shows **Source:** with a link to it.
+- When questions go to Gemini, the in-game window shows **☁ Gemini**.
 
 ### Voice
 
@@ -135,20 +149,28 @@ Open Windows **Settings → Privacy & security → Microphone** and allow deskto
 **GameMate doesn't understand me**
 Speak after the 🎤 lights up, and pause briefly when you're done. Try the **Accurate** speech model, and check that the right microphone is set as the default in Windows sound settings.
 
+**"Gemini rejected the API key" or "usage limit was reached"**
+Check the key at aistudio.google.com and paste it again in **🧠 AI**. Free keys have per-minute and daily limits, and the Companion can use them up quickly, so consider setting **Companion** back to **Local model**.
+
 **Answers are slow**
 Your game and the AI model share your GPU. Try a smaller model, close other GPU-heavy apps, or lower your game's graphics settings.
 
 ## Privacy
 
-GameMate talks only to Ollama on your own computer (`127.0.0.1`). It takes screenshots only:
+GameMate is local by default. Two optional features use the internet, and only when you turn them on:
+
+- **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under [Google's terms](https://ai.google.dev/gemini-api/terms). That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
+- **Wiki lookup** sends only the topic, such as "Nether Portal", to minecraft.wiki.
+
+Otherwise, GameMate talks only to Ollama on your own computer (`127.0.0.1`). It takes screenshots only:
 
 - when you send a question with **Include screenshot of** ticked,
 - when you press **Alt + Space** with **📷** turned on, and
 - while Minecraft is the active window, if you've turned on Observation, Commentary or Quiet mode. These modes are off by default. The tray icon and the Companion panel always show whether GameMate is watching.
 
-Screenshots go only to your local model and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
+Screenshots go only to the AI you chose and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
 
-GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. The only time GameMate uses the internet is when you click **Download** for a speech model, which it fetches once from Hugging Face.
+GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models are downloaded once from Hugging Face when you click **Download**.
 
 ## What GameMate won't do
 
@@ -169,4 +191,4 @@ To build a Windows installer, run `npm run build:win`.
 
 To refresh the bundled Minecraft data, run `node scripts/build-minecraft-data.mjs`.
 
-Built with Electron, React, TypeScript and Ollama. Speech recognition uses OpenAI's Whisper (MIT), converted by [onnx-community](https://huggingface.co/onnx-community) and run with [Transformers.js](https://github.com/huggingface/transformers.js) (Apache-2.0). Minecraft item and recipe data comes from [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data) (MIT). GameMate is not affiliated with Mojang or Microsoft.
+Built with Electron, React, TypeScript and Ollama. Speech recognition uses OpenAI's Whisper (MIT), converted by [onnx-community](https://huggingface.co/onnx-community) and run with [Transformers.js](https://github.com/huggingface/transformers.js) (Apache-2.0). Minecraft item and recipe data comes from [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data) (MIT). Wiki lookups read [minecraft.wiki](https://minecraft.wiki), whose content is licensed CC BY-NC-SA 3.0. GameMate is not affiliated with Mojang or Microsoft.

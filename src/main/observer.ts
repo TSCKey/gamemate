@@ -7,7 +7,8 @@ import { BrowserWindow, screen, type NativeImage } from 'electron'
 import { captureDisplayImage, findWindow, toScreenshot } from './capture'
 import { foregroundHandle, handleFromSourceId, windowRect } from './foreground'
 import { GAME_WINDOW } from './games/minecraft'
-import { chatOnce } from './ollamaClient'
+import { complete } from './llm'
+import { engineFor, engineReady } from './engines'
 import { isAsking } from './assistant'
 import { getSettings, onSettingsChanged, type CommentaryFrequency, type Settings } from './settings'
 
@@ -169,11 +170,11 @@ async function analyze(displayId: number, reason: string, settings: Settings): P
   if (!image) return
   setState({ status: 'analyzing' })
   try {
-    const reply = await chatOnce(
-      settings.model,
+    const reply = await complete(
+      engineFor('commentary'),
       [{ role: 'user', content: analysisPrompt(reason), images: [toScreenshot(image).base64] }],
       // Thinking would make each look take several times longer.
-      { format: ANALYSIS_SCHEMA, think: false }
+      { jsonSchema: ANALYSIS_SCHEMA, fast: true }
     )
     const parsed = JSON.parse(reply.content) as {
       event?: string
@@ -220,7 +221,7 @@ async function tick(): Promise<void> {
   const settings = getSettings()
   if (!observes(settings)) return setState({ status: 'off', game: null })
   if (state.paused) return setState({ status: 'paused' })
-  if (!settings.model) return setState({ status: 'no-model' })
+  if (!engineReady('commentary')) return setState({ status: 'no-model' })
 
   // GAMEMATE_GAME_WINDOW lets developers point the observer at another window for testing.
   const pattern = process.env.GAMEMATE_GAME_WINDOW

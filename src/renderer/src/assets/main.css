@@ -530,3 +530,48 @@ html.is-overlay body {
   border-color: #3fb950;
   transition: box-shadow 80ms linear;
 }
+
+/* AI panel and answer sources */
+
+.ai-key {
+  flex: 1;
+  min-width: 220px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ev-c-text-1);
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--ev-c-gray-2);
+  border-radius: 8px;
+}
+
+.sources {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--ev-c-text-2);
+  white-space: normal;
+}
+
+.sources a {
+  color: #7fa7ff;
+  cursor: pointer;
+}
+
+.bubble-user .sources,
+.bubble-user .sources a {
+  color: #e6ecff;
+}
+
+.overlay-cloud {
+  color: #7fa7ff;
+}
+
+/* Keep header buttons on one line each; the group wraps as a whole on narrow windows. */
+.chat-header .model-picker {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.chat-header button {
+  white-space: nowrap;
+}

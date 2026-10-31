@@ -25,6 +25,13 @@ const api: Api = {
     clearEvents: () => ipcRenderer.invoke('companion:clear-events'),
     onState: (callback) => listen<[CompanionState]>('companion:state', callback)
   },
+  gemini: {
+    status: () => ipcRenderer.invoke('gemini:status'),
+    setKey: (key) => ipcRenderer.invoke('gemini:set-key', key),
+    clearKey: () => ipcRenderer.invoke('gemini:clear-key'),
+    models: () => ipcRenderer.invoke('gemini:models')
+  },
+  openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   voice: {
     models: () => ipcRenderer.invoke('voice:models'),
     voices: () => ipcRenderer.invoke('voice:voices'),

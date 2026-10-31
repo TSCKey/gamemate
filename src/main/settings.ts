@@ -19,6 +19,9 @@ export type CommentaryFrequency = (typeof COMMENTARY_FREQUENCIES)[number]
 export const SPEAK_ANSWERS = ['off', 'voice', 'always'] as const
 export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
 
+export const ENGINES = ['local', 'gemini'] as const
+export type Engine = (typeof ENGINES)[number]
+
 export interface Settings {
   // Ollama model used for answers ('' until the user or GameMate picks one).
   model: string
@@ -38,6 +41,13 @@ export interface Settings {
   voiceName: string
   voiceVolume: number
   voiceRate: number
+  // Which AI answers questions, and which watches the game: the local model or Gemini (opt-in).
+  answersEngine: Engine
+  commentaryEngine: Engine
+  // Gemini model id, e.g. from the list GameMate fetches with the player's key.
+  geminiModel: string
+  // Let the AI look things up on minecraft.wiki.
+  webLookup: boolean
 }
 
 const DEFAULTS: Settings = {
@@ -53,7 +63,12 @@ const DEFAULTS: Settings = {
   speakComments: false,
   voiceName: '',
   voiceVolume: 1,
-  voiceRate: 1
+  voiceRate: 1,
+  // Everything stays local until the player chooses otherwise.
+  answersEngine: 'local',
+  commentaryEngine: 'local',
+  geminiModel: '',
+  webLookup: false
 }
 
 const listeners: ((settings: Settings) => void)[] = []
@@ -104,6 +119,14 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : null
   next.voiceVolume = num(p.voiceVolume, 0, 1) ?? next.voiceVolume
   next.voiceRate = num(p.voiceRate, 0.5, 2) ?? next.voiceRate
+  if (ENGINES.includes(p.answersEngine as Engine)) next.answersEngine = p.answersEngine as Engine
+  if (ENGINES.includes(p.commentaryEngine as Engine)) {
+    next.commentaryEngine = p.commentaryEngine as Engine
+  }
+  if (typeof p.geminiModel === 'string' && /^[\w.-]{0,100}$/.test(p.geminiModel)) {
+    next.geminiModel = p.geminiModel
+  }
+  if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
 
   current = next
   try {

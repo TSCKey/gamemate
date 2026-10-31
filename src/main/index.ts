@@ -15,6 +15,9 @@ import icon from '../../resources/icon.png?asset'
 import { listModels, type ChatMessage } from './ollamaClient'
 import { captureSource, listSources } from './capture'
 import { ask } from './assistant'
+import { engineFor } from './engines'
+import { listGeminiModels } from './gemini'
+import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
 import { listVersions } from './games/minecraft'
 import { getSettings, onSettingsChanged, updateSettings, type Settings } from './settings'
 import {
@@ -96,12 +99,38 @@ function registerHandlers(): void {
   ipcMain.handle('ollama:list-models', () => listModels())
 
   ipcMain.handle('assistant:ask', (_event, messages: unknown) => {
-    const { model, minecraftVersion } = getSettings()
-    if (!model) throw new Error('Pick a model in GameMate first.')
+    const { minecraftVersion, webLookup } = getSettings()
     return ask(
-      { model, minecraftVersion, observations: recentObservations() },
+      {
+        engine: engineFor('answers'),
+        minecraftVersion,
+        webLookup,
+        observations: recentObservations()
+      },
       parseChatMessages(messages)
     )
+  })
+
+  // Only minecraft.wiki pages, so a page can't open arbitrary programs or sites.
+  ipcMain.handle('app:open-source', (_event, url: unknown) => {
+    if (typeof url === 'string' && url.startsWith('https://minecraft.wiki/w/')) {
+      shell.openExternal(url)
+    }
+  })
+  ipcMain.handle('gemini:status', () => ({ hasKey: hasGeminiKey() }))
+  ipcMain.handle('gemini:set-key', async (_event, key: unknown) => {
+    if (typeof key !== 'string' || !/^[\w-]{20,200}$/.test(key.trim())) {
+      throw new Error('That doesn’t look like a Gemini API key.')
+    }
+    // Check the key works before saving it.
+    const models = await listGeminiModels(key.trim())
+    setGeminiKey(key.trim())
+    return models
+  })
+  ipcMain.handle('gemini:clear-key', () => clearGeminiKey())
+  ipcMain.handle('gemini:models', () => {
+    const key = getGeminiKey()
+    return key ? listGeminiModels(key) : []
   })
 
   ipcMain.handle('capture:list-sources', (event) => listSources(senderWindow(event)))
