@@ -1,5 +1,71 @@
-import type { AppInfo, Settings } from '../../../preload/index.d'
+import { useEffect, useState } from 'react'
+import type { AppInfo, Settings, UpdateState } from '../../../preload/index.d'
 import { Field, Section, Toggle } from './ui'
+
+function updateText(u: UpdateState): string {
+  switch (u.status) {
+    case 'dev':
+      return 'Running from source code: updates come from git.'
+    case 'checking':
+      return 'Checking for updates…'
+    case 'downloading':
+      return `Downloading version ${u.available}… ${Math.round((u.progress ?? 0) * 100)}%`
+    case 'ready':
+      return `Version ${u.available} is ready. It installs when GameMate restarts.`
+    case 'none':
+      return 'GameMate is up to date.'
+    case 'error':
+      return u.error ?? 'Couldn’t check for updates.'
+    default:
+      return 'Updates come from GameMate’s releases on GitHub.'
+  }
+}
+
+// Version, update status and the buttons to check or install.
+function Updates({
+  settings,
+  update
+}: {
+  settings: Settings
+  update: (patch: Partial<Settings>) => void
+}): React.JSX.Element {
+  const [state, setState] = useState<UpdateState | null>(null)
+  useEffect(() => {
+    window.api.updates.state().then(setState)
+    return window.api.updates.onState(setState)
+  }, [])
+  if (!state) return <></>
+  const busy = state.status === 'checking' || state.status === 'downloading'
+  return (
+    <Section title="Updates" description={`GameMate ${state.version}`}>
+      <Field label="Status" help={updateText(state)}>
+        {state.status === 'ready' ? (
+          <button type="button" className="primary" onClick={() => window.api.updates.install()}>
+            Restart and update
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={busy || state.status === 'dev'}
+            onClick={() => window.api.updates.check().then(setState)}
+          >
+            Check now
+          </button>
+        )}
+      </Field>
+      <Field
+        label="Check for updates automatically"
+        help="Looks for a new version when GameMate starts and every few hours, and downloads it in the background."
+      >
+        <Toggle
+          label="Check for updates automatically"
+          checked={settings.autoUpdate}
+          onChange={(autoUpdate) => update({ autoUpdate })}
+        />
+      </Field>
+    </Section>
+  )
+}
 
 function GeneralPanel({
   settings,
@@ -54,6 +120,8 @@ function GeneralPanel({
           />
         </Field>
       </Section>
+
+      <Updates settings={settings} update={update} />
     </>
   )
 }

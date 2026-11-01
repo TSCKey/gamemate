@@ -68,6 +68,8 @@ export interface Settings {
   // Closing the window keeps GameMate in the tray (for the shortcuts and companion) instead
   // of quitting.
   closeToTray: boolean
+  // Check GitHub for new versions now and then (the installed app only).
+  autoUpdate: boolean
   // The player allowed GameMate to look at this PC for games: launcher libraries, modpack
   // folders and the program in front. Nothing is detected without it.
   deviceConsent: boolean
@@ -108,6 +110,7 @@ const DEFAULTS: Settings = {
   privacyNoticeVersion: 0,
   geminiConsent: false,
   closeToTray: true,
+  autoUpdate: true,
   deviceConsent: false,
   currentGame: 'minecraft',
   autoDetectGame: true,
@@ -183,6 +186,7 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
   if (typeof p.deviceConsent === 'boolean') next.deviceConsent = p.deviceConsent
+  if (typeof p.autoUpdate === 'boolean') next.autoUpdate = p.autoUpdate
   if (
     typeof p.currentGame === 'string' &&
     (p.currentGame === 'minecraft' || next.games.some((g) => g.id === p.currentGame))

@@ -31,7 +31,8 @@ export function PrivacySummary(): React.JSX.Element {
         <strong>Online features are off until you turn them on:</strong> looking things up on your
         game&apos;s wiki or Modrinth (only the topic is sent) and Google Gemini (your questions and
         screenshots are sent to Google). Downloads happen once, when you ask for them: AI and speech
-        models come from Hugging Face, and GameMate&apos;s AI engine from GitHub.
+        models come from Hugging Face, and GameMate&apos;s AI engine from GitHub. Update checks ask
+        GitHub for the latest GameMate version (you can turn them off).
       </li>
     </ul>
   )

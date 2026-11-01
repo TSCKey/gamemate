@@ -19,6 +19,7 @@ import type { LlmEngine } from './llm'
 import { isUnreachable, routeQuestion } from './engines'
 import { listGeminiModels } from './gemini'
 import { runningModel, stopEngine } from './llamaEngine'
+import { checkForUpdates, installUpdate, startUpdater, updateState } from './updater'
 import {
   cancelLocalModel,
   downloadLocalModel,
@@ -157,6 +158,9 @@ function registerHandlers(): void {
     if (typeof url === 'string' && allowedLink(url)) shell.openExternal(url)
   })
 
+  ipcMain.handle('updates:state', () => updateState())
+  ipcMain.handle('updates:check', () => checkForUpdates())
+  ipcMain.handle('updates:install', () => installUpdate())
   ipcMain.handle('games:state', () => gamesState())
   ipcMain.handle('games:scan', () => scanGames())
   ipcMain.handle('games:running-apps', () => {
@@ -574,6 +578,7 @@ if (!app.requestSingleInstanceLock()) {
     createToast(loadRenderer, preloadPath)
     createTray()
     startObserver(showToast)
+    startUpdater()
 
     // Fails if another app (e.g. PowerToys Run) already owns the shortcut.
     shortcutRegistered = globalShortcut.register(SHORTCUT, () => {

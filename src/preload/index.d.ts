@@ -25,6 +25,16 @@ export interface WikiSite {
   license: string
 }
 
+export interface UpdateState {
+  // 'dev' when running from source (no updates).
+  status: 'dev' | 'idle' | 'checking' | 'none' | 'downloading' | 'ready' | 'error'
+  version: string
+  available?: string
+  progress?: number
+  error?: string
+  checkedAt?: number
+}
+
 export type GameLauncher = 'steam' | 'epic' | 'battlenet' | 'riot' | 'manual'
 
 // A game found by a scan or added by the player.
@@ -163,6 +173,7 @@ export interface Settings {
   currentGame: string
   autoDetectGame: boolean
   // The player allowed GameMate to look at this PC for games.
+  autoUpdate: boolean
   deviceConsent: boolean
   games: SavedGame[]
   // 'auto' (the running pack), '' (none) or a pack's folder.
@@ -220,6 +231,13 @@ export interface Api {
   openSource: (url: string) => Promise<void>
   // Deletes the key, AI and speech models, companion log and settings stored by GameMate.
   deleteData: () => Promise<void>
+  updates: {
+    state: () => Promise<UpdateState>
+    check: () => Promise<UpdateState>
+    // Restarts GameMate and installs the downloaded update.
+    install: () => Promise<void>
+    onState: (callback: (state: UpdateState) => void) => () => void
+  }
   games: {
     state: () => Promise<GamesState>
     // Looks through Steam, Epic, Battle.net and Riot, and finds each game's wiki.

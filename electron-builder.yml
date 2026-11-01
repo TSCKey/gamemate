@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: gamemate
+appId: com.gamemate.app
+productName: GameMate
 directories:
   buildResources: build
 files:
@@ -9,17 +9,27 @@ files:
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+# GameMate's interface is in English, so Chromium's other languages aren't needed.
+electronLanguages:
+  - en-US
 asarUnpack:
   - resources/**
   # koffi's native binaries can't be loaded from inside the asar archive.
   - node_modules/koffi/**
 win:
-  executableName: gamemate
+  executableName: GameMate
+  target:
+    - target: nsis
+      arch: x64
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
+  # One click, installed for the current user: no admin prompt, so updates install quietly too.
+  oneClick: true
+  perMachine: false
+  artifactName: GameMate-Setup-${version}.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+  createStartMenuShortcut: true
 mac:
   entitlementsInherit: build/entitlements.mac.plist
   extendInfo:
@@ -40,8 +50,9 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
+# Installers and update files are published as GitHub Releases; the app checks there for updates.
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
-electronDownload:
-  mirror: https://npmmirror.com/mirrors/electron/
+  provider: github
+  owner: TSCKey
+  repo: gamemate
+  releaseType: release

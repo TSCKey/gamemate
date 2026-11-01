@@ -1,5 +1,12 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import type { Api, CompanionState, LocalModelStatus, Settings, SpeechModelStatus } from './index.d'
+import type {
+  Api,
+  CompanionState,
+  LocalModelStatus,
+  Settings,
+  SpeechModelStatus,
+  UpdateState
+} from './index.d'
 
 // Subscribe to a main-process event without handing the renderer the raw IPC event.
 function listen<T extends unknown[]>(channel: string, callback: (...args: T) => void): () => void {
@@ -32,6 +39,12 @@ const api: Api = {
   },
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
+  updates: {
+    state: () => ipcRenderer.invoke('updates:state'),
+    check: () => ipcRenderer.invoke('updates:check'),
+    install: () => ipcRenderer.invoke('updates:install'),
+    onState: (callback) => listen<[UpdateState]>('updates:state', callback)
+  },
   games: {
     state: () => ipcRenderer.invoke('games:state'),
     scan: () => ipcRenderer.invoke('games:scan'),

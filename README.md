@@ -136,6 +136,10 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 - **Read companion comments aloud:** speaks Commentary mode's pop-ups.
 - Choose a **Voice** and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it. GameMate uses the voices built into Windows.
 
+### Updates
+
+GameMate checks for a new version when it starts and every few hours, downloads it in the background and installs it the next time it starts. To update right away, open **⚙ Settings → General → Updates** and click **Restart and update**. You can also click **Check now**, or turn off **Check for updates automatically**.
+
 ### Chat window
 
 - The top of the window shows your Minecraft version and the companion mode. Click either to change it, or click **⚙** for all settings.
@@ -146,6 +150,9 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 - Closing the window keeps GameMate running in the system tray, so the in-game shortcuts and the companion keep working. Right-click the tray icon to open it again or to quit. To make the close button quit GameMate instead, turn off **Keep running in the tray** in **⚙ Settings → General**. When GameMate quits, it frees the AI model's memory right away.
 
 ## Troubleshooting
+
+**"Windows protected your PC" when installing**
+The installer isn't code-signed yet, so Windows SmartScreen doesn't recognize it. Click **More info**, then **Run anyway**.
 
 **Alt + Space does nothing**
 Another app may already use that shortcut, for example PowerToys Run. The chat window shows a notice when this happens. Change or turn off the other app's shortcut, then restart GameMate. Also check that GameMate is still running in the system tray.
@@ -205,7 +212,7 @@ GameMate is local by default. The first time you open it, it shows a short summa
 - **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under the [Gemini API terms](https://ai.google.dev/gemini-api/terms) and [Google's Privacy Policy](https://policies.google.com/privacy). GameMate asks for your agreement before you can add a key, and Google requires you to be 18 or older. That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
 - **Online lookups** send only the topic, such as "Nether Portal", to your game's wiki, and for Minecraft mods the mod's name to Modrinth.
 
-Otherwise, GameMate's AI runs on your own computer. Its engine only accepts requests from GameMate on this PC (`127.0.0.1`, with a new random key each time it starts), and Ollama, if you use it, is local too. AI models are downloaded once from Hugging Face, and the AI engine from GitHub, when you click **Download**, and every file is checked against a known checksum. GameMate takes screenshots only:
+Otherwise, GameMate's AI runs on your own computer. Its engine only accepts requests from GameMate on this PC (`127.0.0.1`, with a new random key each time it starts), and Ollama, if you use it, is local too. AI models are downloaded once from Hugging Face, and the AI engine from GitHub, when you click **Download**, and every file is checked against a known checksum. Update checks only ask GitHub for the latest GameMate version, and you can turn them off. GameMate takes screenshots only:
 
 - when you send a question with **📷 Screenshot** on,
 - when you press **Alt + Space** with **📷** turned on, and
@@ -242,7 +249,7 @@ npm install
 npm run dev
 ```
 
-To build a Windows installer, run `npm run build:win`.
+To build a Windows installer, run `npm run build:win`; it ends up in `dist/`. To publish a release that installed copies update to, raise `version` in `package.json` and run `npm run release:win` with a GitHub token in `GH_TOKEN`.
 
 To refresh the bundled Minecraft data, run `node scripts/build-minecraft-data.mjs`.
 

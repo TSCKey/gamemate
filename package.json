@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Local AI gaming companion powered by lightweight local language and vision models",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "TSCKey",
+  "homepage": "https://github.com/TSCKey/gamemate",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -17,6 +17,7 @@
     "postinstall": "install-electron && electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
+    "release:win": "npm run build && electron-builder --win --publish always",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux"
   },
