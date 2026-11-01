@@ -14,6 +14,13 @@ export interface WikiSource {
   url: string
 }
 
+export interface AnsweredBy {
+  provider: Engine
+  model: string
+  // Auto mode: why this AI was picked.
+  reason?: string
+}
+
 export interface ChatMessage {
   role: ChatRole
   content: string
@@ -23,6 +30,8 @@ export interface ChatMessage {
   recipes?: RecipeView[]
   // minecraft.wiki pages the answer used.
   sources?: WikiSource[]
+  // Which AI answered (assistant messages only).
+  answeredBy?: AnsweredBy
 }
 
 export interface ModelInfo {
@@ -58,6 +67,7 @@ export interface SpeechModelStatus {
 }
 
 export type Engine = 'local' | 'gemini'
+export type AnswerEngine = Engine | 'auto'
 
 export interface Settings {
   model: string
@@ -72,7 +82,7 @@ export interface Settings {
   voiceName: string
   voiceVolume: number
   voiceRate: number
-  answersEngine: Engine
+  answersEngine: AnswerEngine
   commentaryEngine: Engine
   geminiModel: string
   webLookup: boolean

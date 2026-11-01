@@ -21,6 +21,9 @@ export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
 
 export const ENGINES = ['local', 'gemini'] as const
 export type Engine = (typeof ENGINES)[number]
+// Questions can also be routed automatically, per question.
+export const ANSWER_ENGINES = [...ENGINES, 'auto'] as const
+export type AnswerEngine = (typeof ANSWER_ENGINES)[number]
 
 export interface Settings {
   // Ollama model used for answers ('' until the user or GameMate picks one).
@@ -41,8 +44,9 @@ export interface Settings {
   voiceName: string
   voiceVolume: number
   voiceRate: number
-  // Which AI answers questions, and which watches the game: the local model or Gemini (opt-in).
-  answersEngine: Engine
+  // Which AI answers questions (or 'auto' to decide per question), and which watches the game:
+  // the local model or Gemini (opt-in).
+  answersEngine: AnswerEngine
   commentaryEngine: Engine
   // Gemini model id, e.g. from the list GameMate fetches with the player's key.
   geminiModel: string
@@ -128,7 +132,9 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : null
   next.voiceVolume = num(p.voiceVolume, 0, 1) ?? next.voiceVolume
   next.voiceRate = num(p.voiceRate, 0.5, 2) ?? next.voiceRate
-  if (ENGINES.includes(p.answersEngine as Engine)) next.answersEngine = p.answersEngine as Engine
+  if (ANSWER_ENGINES.includes(p.answersEngine as AnswerEngine)) {
+    next.answersEngine = p.answersEngine as AnswerEngine
+  }
   if (ENGINES.includes(p.commentaryEngine as Engine)) {
     next.commentaryEngine = p.commentaryEngine as Engine
   }

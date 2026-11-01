@@ -4,6 +4,7 @@ import PrivacyNotice from './components/PrivacyNotice'
 import { PRIVACY_NOTICE_VERSION, STATUS_TEXT } from './constants'
 import RecipeCard from './components/RecipeCard'
 import Sources from './components/Sources'
+import AnsweredByLabel from './components/AnsweredByLabel'
 import SettingsScreen, { type SettingsTab } from './SettingsScreen'
 import { speak } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
@@ -42,11 +43,14 @@ function App(): React.JSX.Element {
   const model = settings?.model ?? ''
   const loading = status !== 'idle'
   const onGemini = settings?.answersEngine === 'gemini'
-  const ready = onGemini ? Boolean(settings?.geminiModel) : Boolean(model)
+  const onAuto = settings?.answersEngine === 'auto'
+  const ready = onGemini
+    ? Boolean(settings?.geminiModel)
+    : Boolean(model) || (onAuto && Boolean(settings?.geminiModel))
   // In "Disabled" mode GameMate doesn't look at the screen at all.
   const screenAllowed = settings?.companionMode !== 'disabled'
   const visionModel =
-    (onGemini || (models.find((m) => m.name === model)?.vision ?? false)) && screenAllowed
+    (onGemini || onAuto || (models.find((m) => m.name === model)?.vision ?? false)) && screenAllowed
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
   const shownError = error ?? (onGemini ? null : modelError)
@@ -165,7 +169,11 @@ function App(): React.JSX.Element {
     )
   }
 
-  const engineLabel = onGemini ? `☁ ${settings?.geminiModel || 'Gemini'}` : model || 'No model'
+  const engineLabel = onAuto
+    ? '✦ Auto'
+    : onGemini
+      ? `☁ ${settings?.geminiModel || 'Gemini'}`
+      : model || 'No model'
   const companionOn = companion !== null && companion.status !== 'off'
 
   return (
@@ -179,7 +187,7 @@ function App(): React.JSX.Element {
           <button
             type="button"
             className="chip"
-            onClick={() => setSettingsTab(onGemini ? 'ai' : 'general')}
+            onClick={() => setSettingsTab(onGemini || onAuto ? 'ai' : 'general')}
             title="Which AI answers"
           >
             {engineLabel}
@@ -276,6 +284,7 @@ function App(): React.JSX.Element {
               <RecipeCard key={j} recipe={r} />
             ))}
             <Sources sources={m.sources} />
+            {onAuto && m.answeredBy && <AnsweredByLabel by={m.answeredBy} />}
           </div>
         ))}
         {loading && (

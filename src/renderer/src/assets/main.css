@@ -1069,3 +1069,12 @@ html.is-overlay body {
 .toast-icon {
   font-size: 18px;
 }
+
+/* Auto mode: which AI answered */
+
+.answered-by {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--text-3);
+  white-space: normal;
+}

@@ -15,6 +15,14 @@ export interface AssistantReply {
   recipes?: RecipeView[]
   // minecraft.wiki pages the answer used.
   sources?: WikiSource[]
+  // Which AI answered, and in Auto mode why.
+  answeredBy?: AnsweredBy
+}
+
+export interface AnsweredBy {
+  provider: 'local' | 'gemini'
+  model: string
+  reason?: string
 }
 
 export interface AssistantContext {
@@ -193,6 +201,7 @@ async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<As
       return {
         role: 'assistant',
         content: reply.content,
+        answeredBy: { provider: ctx.engine.provider, model: ctx.engine.model },
         ...(out.recipes.length ? { recipes: out.recipes } : {}),
         ...(out.sources.length ? { sources: out.sources } : {})
       }

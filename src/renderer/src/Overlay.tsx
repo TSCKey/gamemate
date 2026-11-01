@@ -22,10 +22,16 @@ function Overlay(): React.JSX.Element {
   const lastActivity = useRef(0)
   const [appVoiceShortcut, setAppVoiceShortcut] = useState('')
 
-  const model = settings?.model ?? ''
+  const engine = settings?.answersEngine ?? 'local'
+  const cloud = engine !== 'local'
+  // Whether some AI is set up to answer (Gemini or Auto can work without a local model).
+  const model =
+    engine === 'gemini'
+      ? (settings?.geminiModel ?? '')
+      : settings?.model || (engine === 'auto' ? (settings?.geminiModel ?? '') : '')
   // In "Disabled" mode GameMate doesn't look at the screen at all.
   const vision =
-    (models.find((m) => m.name === model)?.vision ?? false) &&
+    (cloud || (models.find((m) => m.name === settings?.model)?.vision ?? false)) &&
     settings?.companionMode !== 'disabled'
   const useScreenshot = vision && (settings?.overlayScreenshot ?? false)
   const lastQuestion = [...history].reverse().find((m) => m.role === 'user')
@@ -214,9 +220,20 @@ function Overlay(): React.JSX.Element {
           </div>
         )}
         <div className="overlay-footer">
-          {settings?.answersEngine === 'gemini' && (
+          {engine === 'gemini' && (
             <span className="overlay-cloud" title="Answers come from Gemini (Google)">
               ☁ Gemini ·{' '}
+            </span>
+          )}
+          {engine === 'auto' && (
+            <span
+              className="overlay-cloud"
+              title="GameMate picks the local AI or Gemini for each question"
+            >
+              {lastAnswer?.answeredBy
+                ? `✦ Auto: ${lastAnswer.answeredBy.provider === 'gemini' ? '☁ Gemini' : 'this PC'}`
+                : '✦ Auto'}{' '}
+              ·{' '}
             </span>
           )}
           Enter to ask{voice.ready ? ` · ${appVoiceShortcut} to talk` : ''} · Esc to hide

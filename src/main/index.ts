@@ -14,8 +14,9 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { listModels, type ChatMessage } from './ollamaClient'
 import { captureSource, listSources } from './capture'
-import { ask } from './assistant'
-import { engineFor } from './engines'
+import { ask, type AssistantReply } from './assistant'
+import type { LlmEngine } from './llm'
+import { isUnreachable, routeQuestion } from './engines'
 import { listGeminiModels } from './gemini'
 import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
 import { listVersions } from './games/minecraft'
@@ -111,17 +112,26 @@ function senderWindow(event: Electron.IpcMainInvokeEvent): BrowserWindow {
 function registerHandlers(): void {
   ipcMain.handle('ollama:list-models', () => listModels())
 
-  ipcMain.handle('assistant:ask', (_event, messages: unknown) => {
+  ipcMain.handle('assistant:ask', async (_event, messages: unknown) => {
+    const history = parseChatMessages(messages)
     const { minecraftVersion, webLookup } = getSettings()
-    return ask(
-      {
-        engine: engineFor('answers'),
-        minecraftVersion,
-        webLookup,
-        observations: recentObservations()
-      },
-      parseChatMessages(messages)
-    )
+    const last = history.at(-1)
+    const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
+    const askWith = async (engine: LlmEngine, reason?: string): Promise<AssistantReply> => {
+      const reply = await ask(
+        { engine, minecraftVersion, webLookup, observations: recentObservations() },
+        history
+      )
+      return reply.answeredBy ? { ...reply, answeredBy: { ...reply.answeredBy, reason } } : reply
+    }
+    try {
+      return await askWith(route.engine, route.reason)
+    } catch (error) {
+      // Auto mode: if the chosen AI is offline or out of quota, the other one answers.
+      if (!route.fallback || !isUnreachable(error)) throw error
+      const what = route.engine.provider === 'gemini' ? 'Gemini' : 'the local model'
+      return askWith(route.fallback, `${what} couldn’t be reached`)
+    }
   })
 
   // Only wiki pages and the policy pages GameMate links to, so a page can't open arbitrary

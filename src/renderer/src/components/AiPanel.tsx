@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { Engine, Settings } from '../../../preload/index.d'
+import type { AnswerEngine, Engine, Settings } from '../../../preload/index.d'
 import { errorMessage } from '../useSettings'
 import { LINKS } from '../constants'
 import { ExternalLink, Field, Section, Toggle } from './ui'
@@ -102,12 +102,18 @@ function AiPanel({
     setModels([])
   }
 
-  const engineSelect = (
-    value: Engine,
-    onChange: (engine: Engine) => void,
-    label: string
+  const engineSelect = <T extends AnswerEngine>(
+    value: T,
+    onChange: (engine: T) => void,
+    label: string,
+    withAuto = false
   ): React.JSX.Element => (
-    <select value={value} aria-label={label} onChange={(e) => onChange(e.target.value as Engine)}>
+    <select value={value} aria-label={label} onChange={(e) => onChange(e.target.value as T)}>
+      {withAuto && (
+        <option value="auto" disabled={!hasKey}>
+          Auto (decide per question){hasKey ? '' : ' (add a key first)'}
+        </option>
+      )}
       <option value="local">On this PC ({settings.model || 'no model'})</option>
       <option value="gemini" disabled={!hasKey}>
         Gemini{hasKey ? '' : ' (add a key first)'}
@@ -121,18 +127,26 @@ function AiPanel({
         title="Which AI answers"
         description="Everything runs on this PC unless you choose Gemini for a job."
       >
-        <Field label="Your questions" help="Chat and the in-game window.">
+        <Field
+          label="Your questions"
+          help={
+            settings.answersEngine === 'auto'
+              ? 'Auto: quick questions and recipes stay on this PC; screenshots and questions that need more thinking (strategy, builds, farms, bosses) go to Gemini. If one AI can’t be reached, the other answers.'
+              : 'Chat and the in-game window.'
+          }
+        >
           {engineSelect(
             settings.answersEngine,
             (answersEngine) => update({ answersEngine }),
-            'AI for questions'
+            'AI for questions',
+            true
           )}
         </Field>
         <Field
           label="Companion"
           help="Watching your game. On Gemini this sends screenshots every few seconds, which can use up a free key's limits."
         >
-          {engineSelect(
+          {engineSelect<Engine>(
             settings.commentaryEngine,
             (commentaryEngine) => update({ commentaryEngine }),
             'AI for the companion'

@@ -77,6 +77,11 @@ Open **⚙ Settings → Companion** to choose how much GameMate watches and talk
 Open **⚙ Settings → AI & online**.
 
 - **Which AI answers:** choose **On this PC** or **Gemini**, separately for **Your questions** (chat and **Alt + Space**) and the **Companion** (always-on watching).
+- **Auto:** once Gemini is set up, choose **Auto** for **Your questions** and GameMate picks an AI for each question:
+  - **On this PC:** crafting recipes and quick questions. These are fast, free and stay on your PC.
+  - **Gemini:** questions with a screenshot, and questions that need more thinking, such as builds and Nether portals, farms, redstone, strategy, bosses, "why" questions, long questions and long conversations.
+  - If the chosen AI can't be reached (Ollama isn't running, you're offline, or Gemini's limit is used up), the other one answers.
+  - A small note under each answer, and in the in-game window, shows which AI answered and why.
 - **Gemini:**
   1. Read what Gemini sends to Google, tick **I'm 18 or older and agree…** and click **Turn on Gemini**.
   2. Get an API key at [aistudio.google.com](https://aistudio.google.com/apikey). If you live in the EU/EEA, Switzerland or the UK, Google's terms ask for a paid (billing-enabled) key in apps like GameMate.
