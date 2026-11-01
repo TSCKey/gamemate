@@ -86,6 +86,26 @@ function GeneralPanel({
           />
         </Field>
       </Section>
+
+      <Section
+        title="When you close the window"
+        description="When GameMate quits, it frees the AI model right away so nothing keeps running in the background."
+      >
+        <Field
+          label="Keep running in the tray"
+          help={
+            settings.closeToTray
+              ? 'Keeps the in-game shortcuts and the companion working. Quit from the tray icon. The AI model is freed after a few idle minutes.'
+              : 'Closing the window quits GameMate. The in-game shortcuts and the companion stop until you start it again.'
+          }
+        >
+          <Toggle
+            label="Keep running in the tray"
+            checked={settings.closeToTray}
+            onChange={(closeToTray) => update({ closeToTray })}
+          />
+        </Field>
+      </Section>
     </>
   )
 }

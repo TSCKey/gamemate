@@ -88,6 +88,7 @@ export interface Settings {
   webLookup: boolean
   privacyNoticeVersion: number
   geminiConsent: boolean
+  closeToTray: boolean
 }
 
 export interface ObservedEvent {

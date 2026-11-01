@@ -56,6 +56,9 @@ export interface Settings {
   privacyNoticeVersion: number
   // The player agreed to send data to Google to use Gemini (required before a key is saved).
   geminiConsent: boolean
+  // Closing the window keeps GameMate in the tray (for the shortcuts and companion) instead
+  // of quitting.
+  closeToTray: boolean
 }
 
 // Bump when the privacy notice changes in a way players should see again.
@@ -81,7 +84,8 @@ const DEFAULTS: Settings = {
   geminiModel: '',
   webLookup: false,
   privacyNoticeVersion: 0,
-  geminiConsent: false
+  geminiConsent: false,
+  closeToTray: true
 }
 
 const listeners: ((settings: Settings) => void)[] = []
@@ -146,6 +150,7 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
     next.privacyNoticeVersion = PRIVACY_NOTICE_VERSION
   }
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
+  if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
   // Nothing goes to Google without the player's consent.
   if (!next.geminiConsent) {
     next.answersEngine = 'local'

@@ -12,7 +12,7 @@ import {
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { listModels, type ChatMessage } from './ollamaClient'
+import { listModels, unloadModels, type ChatMessage } from './ollamaClient'
 import { captureSource, listSources } from './capture'
 import { ask, type AssistantReply } from './assistant'
 import type { LlmEngine } from './llm'
@@ -267,11 +267,16 @@ function createWindow(): void {
     mainWindow?.show()
   })
 
-  // Closing the window keeps GameMate running in the tray so the shortcut still works.
+  // Closing the window keeps GameMate running in the tray so the shortcuts still work,
+  // unless the player turned that off.
   mainWindow.on('close', (event) => {
-    if (!quitting) {
+    if (quitting) return
+    if (getSettings().closeToTray) {
       event.preventDefault()
       mainWindow?.hide()
+    } else {
+      // Quit once this close has gone through; quitting from inside the handler cancels it.
+      setImmediate(() => app.quit())
     }
   })
   mainWindow.on('closed', () => {
@@ -418,10 +423,17 @@ app.on('before-quit', () => {
   quitting = true
 })
 
-app.on('will-quit', () => {
+let cleanedUp = false
+
+app.on('will-quit', (event) => {
+  if (cleanedUp) return
+  // Hold the quit until the AI model is freed, so nothing GameMate started keeps running.
+  event.preventDefault()
+  cleanedUp = true
   stopObserver()
   shutdownSpeech()
   globalShortcut.unregisterAll()
+  unloadModels().finally(() => app.quit())
 })
 
 // GameMate lives in the tray, so closing every window doesn't quit it.

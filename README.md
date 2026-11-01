@@ -118,7 +118,7 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 - To ask about what's on screen, click **📷 Screenshot** under the message box and choose your game window or screen. GameMate takes a fresh screenshot each time you send a question. With it on, you can also press **Enter** with an empty message to ask "What is happening on my screen?".
 - Click **New chat** to clear the conversation.
 - Click the AI name under the question box to pick which AI answers. After installing a new model in Ollama, click **↻** in **⚙ Settings → General** to refresh the list.
-- Closing the window keeps GameMate running in the system tray. Right-click the tray icon to open it again or to quit.
+- Closing the window keeps GameMate running in the system tray, so the in-game shortcuts and the companion keep working. Right-click the tray icon to open it again or to quit. To make the close button quit GameMate instead, turn off **Keep running in the tray** in **⚙ Settings → General**. When GameMate quits, it frees the AI model's memory right away.
 
 ## Troubleshooting
 

@@ -4,6 +4,9 @@
 const OLLAMA_URL = 'http://127.0.0.1:11434'
 const REQUEST_TIMEOUT_MS = 120_000
 
+// Models GameMate has used this session, so it can free them when it quits.
+const usedModels = new Set<string>()
+
 export type ChatRole = 'system' | 'user' | 'assistant'
 
 export interface ChatMessage {
@@ -117,9 +120,28 @@ export async function chatOnce(
     think?: boolean
   } = {}
 ): Promise<OllamaMessage> {
+  usedModels.add(model)
   const data = await request<ChatResponse>('/api/chat', {
     method: 'POST',
     body: JSON.stringify({ model, messages, stream: false, ...options })
   })
   return data.message
+}
+
+// Asks Ollama to unload the models GameMate used, so they stop holding memory and GPU once
+// GameMate quits (Ollama would otherwise keep them loaded for a few minutes). Models that
+// only other apps loaded are left alone.
+export async function unloadModels(timeoutMs = 3000): Promise<void> {
+  const models = [...usedModels]
+  usedModels.clear()
+  await Promise.allSettled(
+    models.map((model) =>
+      fetch(`${OLLAMA_URL}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, keep_alive: 0 }),
+        signal: AbortSignal.timeout(timeoutMs)
+      })
+    )
+  )
 }
