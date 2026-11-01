@@ -5,7 +5,7 @@ import { complete, type LlmEngine, type LlmMessage, type LlmTool } from './llm'
 import { findMentionedItems, lookupRecipe, searchItems, type RecipeView } from './games/minecraft'
 import type { GameContext } from './games/current'
 import { modInfo, searchMods } from './games/modpacks'
-import { lookupWiki, type WikiSource } from './wiki'
+import { findWikiForGame, lookupWiki, type WikiSite, type WikiSource } from './wiki'
 
 // Stops a confused model from looping on tool calls forever.
 const MAX_TOOL_ROUNDS = 4
@@ -80,6 +80,7 @@ function systemPrompt(ctx: AssistantContext): string {
   return [
     'You are GameMate, a friendly AI companion that helps people while they play video games.',
     `The player is playing ${playing}.`,
+    `If the player asks about a different game, help with that game just as well: never say you can only help with ${playing}.${ctx.webLookup ? ' For facts about another game, call game_wiki with its name (not wiki_lookup, which only covers ${playing}).' : ''}`,
     'Answer clearly and briefly (a few sentences), like a knowledgeable friend sitting next to the player.',
     'Write plain text: no Markdown, headings or bold.',
     'When the user attaches a screenshot, it shows their screen right now: base your answer on what is actually visible in it, and say so if something is unclear or not visible.',
@@ -141,6 +142,23 @@ function wikiTool(ctx: AssistantContext): LlmTool {
   }
 }
 
+const OTHER_GAME_TOOL: LlmTool = {
+  name: 'game_wiki',
+  description:
+    "Read a page from another game's community wiki, for questions about a game other than the one the player is playing.",
+  parameters: {
+    type: 'object',
+    properties: {
+      game: { type: 'string', description: 'Name of the game, e.g. "VALORANT"' },
+      topic: { type: 'string', description: 'Short page-style topic, e.g. "Operator"' }
+    },
+    required: ['game', 'topic']
+  }
+}
+
+// Wikis found for games named in questions, so each is only looked up once.
+const otherWikis = new Map<string, WikiSite | null>()
+
 const MODPACK_TOOL: LlmTool = {
   name: 'modpack_mods',
   description:
@@ -168,6 +186,7 @@ function toolsFor(ctx: AssistantContext): LlmTool[] {
   return [
     ...(mc?.recipeVersion ? RECIPE_TOOLS : []),
     ...(ctx.webLookup && ctx.game.wiki ? [wikiTool(ctx)] : []),
+    ...(ctx.webLookup ? [OTHER_GAME_TOOL] : []),
     ...(mc?.modpack ? [MODPACK_TOOL] : []),
     ...(mc?.modpack && ctx.webLookup ? [MOD_INFO_TOOL] : [])
   ]
@@ -176,6 +195,8 @@ function toolsFor(ctx: AssistantContext): LlmTool[] {
 interface Collected {
   recipes: RecipeView[]
   sources: WikiSource[]
+  // The question was about another game (game_wiki was used).
+  otherGame?: boolean
 }
 
 // Small models sometimes skip the tool and guess. For crafting questions that name an item,
@@ -221,6 +242,17 @@ async function runTool(
       case 'wiki_lookup': {
         if (!ctx.webLookup || !ctx.game.wiki) return 'Wiki lookups are turned off.'
         const result = await lookupWiki(ctx.game.wiki, arg('topic'))
+        addSource(out, result.source)
+        return result.text
+      }
+      case 'game_wiki': {
+        if (!ctx.webLookup) return 'Wiki lookups are turned off.'
+        const name = arg('game').toLowerCase()
+        if (!otherWikis.has(name)) otherWikis.set(name, await findWikiForGame(arg('game')))
+        out.otherGame = true
+        const site = otherWikis.get(name)
+        if (!site) return `No wiki found for "${arg('game')}". Answer from what you know.`
+        const result = await lookupWiki(site, arg('topic'))
         addSource(out, result.source)
         return result.text
       }
@@ -280,15 +312,23 @@ async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<As
       tools: round < MAX_TOOL_ROUNDS && tools.length ? tools : undefined
     })
     if (reply.toolCalls.length === 0) {
+      // Small models sometimes put the whole answer in their thinking; ask once more without it.
+      const content = reply.content.trim()
+        ? reply.content
+        : (await complete(ctx.engine, messages, { fast: true })).content
+      // An answer about another game doesn't need pages from the current game's wiki.
+      const sources = out.otherGame
+        ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
+        : out.sources
       return {
         role: 'assistant',
-        content: reply.content,
+        content,
         answeredBy: {
           provider: ctx.engine.provider === 'gemini' ? 'gemini' : 'local',
           model: ctx.engine.model
         },
         ...(out.recipes.length ? { recipes: out.recipes } : {}),
-        ...(out.sources.length ? { sources: out.sources } : {})
+        ...(sources.length ? { sources } : {})
       }
     }
     messages.push({

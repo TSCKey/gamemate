@@ -131,7 +131,7 @@ function registerHandlers(): void {
   ipcMain.handle('assistant:ask', async (_event, messages: unknown) => {
     const history = parseChatMessages(messages)
     const { webLookup } = getSettings()
-    const game = await gameContext()
+    const game = await gameContext(history.at(-1)?.content)
     const last = history.at(-1)
     const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
     const askWith = async (engine: LlmEngine, reason?: string): Promise<AssistantReply> => {

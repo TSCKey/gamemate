@@ -119,8 +119,28 @@ export interface GameContext {
   }
 }
 
-export async function gameContext(): Promise<GameContext> {
-  const game = currentGame()
+const phrase = (text: string): string =>
+  ` ${text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()} `
+
+// A known game (other than the current one) that the question names, e.g. "valorant".
+export function mentionedGame(question: string): GameProfile | null {
+  const asked = phrase(question)
+  const current = getSettings().currentGame
+  return (
+    allGames().find((g) => {
+      const name = phrase(g.name)
+      return g.id !== current && name.trim().length >= 4 && asked.includes(name)
+    }) ?? null
+  )
+}
+
+// What the assistant needs to know about the game a question is about: the one the question
+// names, or else the current game.
+export async function gameContext(question = ''): Promise<GameContext> {
+  const game = mentionedGame(question) ?? currentGame()
   if (game.id !== 'minecraft') return { name: game.name, wiki: game.wiki }
   const modpack = await currentModpack()
   return {
