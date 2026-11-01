@@ -50,10 +50,13 @@ function GeminiConsent({ onAgree }: { onAgree: () => void }): React.JSX.Element 
 
 function AiPanel({
   settings,
-  update
+  update,
+  localName
 }: {
   settings: Settings
   update: (patch: Partial<Settings>) => void
+  // The model "On this PC" stands for: built-in or Ollama.
+  localName: string
 }): React.JSX.Element {
   const [hasKey, setHasKey] = useState(false)
   const [models, setModels] = useState<string[]>([])
@@ -114,7 +117,7 @@ function AiPanel({
           Auto (decide per question){hasKey ? '' : ' (add a key first)'}
         </option>
       )}
-      <option value="local">On this PC ({settings.model || 'no model'})</option>
+      <option value="local">On this PC ({localName})</option>
       <option value="gemini" disabled={!hasKey}>
         Gemini{hasKey ? '' : ' (add a key first)'}
       </option>

@@ -1,23 +1,26 @@
 import { useState } from 'react'
-import type { ModelInfo, Settings } from '../../../preload/index.d'
-import { Dropdown, MenuItem, MenuLabel, MenuNote, MenuSeparator } from './Menu'
+import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
+import { Dropdown, MenuItem, MenuLabel, MenuSeparator } from './Menu'
 
 // Gemini variants that can't chat (image, speech, embeddings…) aren't worth listing here.
 const CHAT_GEMINI = (name: string): boolean =>
   !/image|tts|live|audio|embed|native|learnlm|robotics|computer-use/.test(name)
 const MAX_GEMINI_CHOICES = 6
 
-// Small picker under the question box: Auto, a model on this PC, or a Gemini model.
+// Small picker under the question box: Auto, a model on this PC (built-in or Ollama), or Gemini.
 function ModelMenu({
   settings,
   update,
   models,
+  localModels,
   onOpenSettings
 }: {
   settings: Settings
   update: (patch: Partial<Settings>) => void
+  // Ollama's models, if Ollama is running.
   models: ModelInfo[]
-  onOpenSettings: () => void
+  localModels: LocalModelStatus[]
+  onOpenSettings: (tab: 'models' | 'ai') => void
 }): React.JSX.Element {
   // Loaded when the menu opens, so Google isn't asked for the list on every start.
   const [gemini, setGemini] = useState<{ hasKey: boolean; models: string[] } | null>(null)
@@ -41,13 +44,17 @@ function ModelMenu({
   ]
     .filter(Boolean)
     .slice(0, MAX_GEMINI_CHOICES)
+  const installed = localModels.filter((m) => m.installed)
+  const builtinName = localModels.find((m) => m.id === settings.builtinModel)?.name ?? 'Built-in AI'
 
   const label =
     engine === 'auto'
       ? '✦ Auto'
       : engine === 'gemini'
         ? `☁ ${settings.geminiModel || 'Gemini'}`
-        : settings.model || 'Choose a model'
+        : settings.localBackend === 'builtin'
+          ? builtinName
+          : settings.model || 'Choose a model'
 
   return (
     <Dropdown
@@ -73,18 +80,47 @@ function ModelMenu({
         />
         <MenuSeparator />
         <MenuLabel>On this PC</MenuLabel>
-        {models.length === 0 ? (
-          <MenuNote>No models found. Is Ollama running?</MenuNote>
-        ) : (
-          models.map((m) => (
-            <MenuItem
-              key={m.name}
-              title={m.name}
-              description={m.vision ? 'Can see screenshots' : 'Text only'}
-              checked={engine === 'local' && settings.model === m.name}
-              onSelect={() => update({ answersEngine: 'local', model: m.name })}
-            />
-          ))
+        {installed.map((m) => (
+          <MenuItem
+            key={m.id}
+            title={m.name}
+            description={`${m.label} · Can see screenshots`}
+            checked={
+              engine === 'local' &&
+              settings.localBackend === 'builtin' &&
+              settings.builtinModel === m.id
+            }
+            onSelect={() =>
+              update({ answersEngine: 'local', localBackend: 'builtin', builtinModel: m.id })
+            }
+          />
+        ))}
+        {installed.length === 0 && (
+          <MenuItem
+            title="Download a model…"
+            description="Runs on your graphics card, works offline"
+            onSelect={() => onOpenSettings('models')}
+          />
+        )}
+        {models.length > 0 && (
+          <>
+            <MenuLabel>Ollama</MenuLabel>
+            {models.map((m) => (
+              <MenuItem
+                key={m.name}
+                title={m.name}
+                description={m.vision ? 'Can see screenshots' : 'Text only'}
+                checked={
+                  engine === 'local' &&
+                  settings.localBackend === 'ollama' &&
+                  settings.model === m.name
+                }
+                onSelect={() =>
+                  update({ answersEngine: 'local', localBackend: 'ollama', model: m.name })
+                }
+              />
+            ))}
+          </>
         )}
         <MenuSeparator />
         <MenuLabel>Gemini (cloud)</MenuLabel>
@@ -101,11 +137,11 @@ function ModelMenu({
           <MenuItem
             title="Set up Gemini…"
             description="Smarter answers with your own Google API key"
-            onSelect={onOpenSettings}
+            onSelect={() => onOpenSettings('ai')}
           />
         )}
         <MenuSeparator />
-        <MenuItem title="AI settings…" onSelect={onOpenSettings} />
+        <MenuItem title="Manage models…" onSelect={() => onOpenSettings('models')} />
       </>
     </Dropdown>
   )

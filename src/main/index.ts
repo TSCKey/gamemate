@@ -18,6 +18,16 @@ import { ask, type AssistantReply } from './assistant'
 import type { LlmEngine } from './llm'
 import { isUnreachable, routeQuestion } from './engines'
 import { listGeminiModels } from './gemini'
+import { runningModel, stopEngine } from './llamaEngine'
+import {
+  cancelLocalModel,
+  downloadLocalModel,
+  isLocalModelId,
+  isLocalModelInstalled,
+  localModelStatuses,
+  removeAllLocalModels,
+  removeLocalModel
+} from './localModels'
 import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
 import { listVersions } from './games/minecraft'
 import {
@@ -148,8 +158,30 @@ function registerHandlers(): void {
   ipcMain.handle('app:delete-data', async () => {
     clearGeminiKey()
     clearEvents()
-    await Promise.all(speechModelStatuses().map((m) => removeSpeechModel(m.id)))
+    await stopEngine()
+    await Promise.all([
+      ...speechModelStatuses().map((m) => removeSpeechModel(m.id)),
+      removeAllLocalModels()
+    ])
     resetSettings()
+  })
+
+  ipcMain.handle('local-models:list', () => localModelStatuses())
+  ipcMain.handle('local-models:download', async (_event, id: unknown) => {
+    if (!isLocalModelId(id)) throw new Error('Unknown model.')
+    const done = await downloadLocalModel(id)
+    // A freshly downloaded model is used if the chosen one isn't there yet.
+    if (done && !isLocalModelInstalled(getSettings().builtinModel)) {
+      updateSettings({ builtinModel: id }, listVersions())
+    }
+  })
+  ipcMain.handle('local-models:cancel', async (_event, id: unknown) => {
+    if (isLocalModelId(id)) await cancelLocalModel(id)
+  })
+  ipcMain.handle('local-models:remove', async (_event, id: unknown) => {
+    if (!isLocalModelId(id)) return
+    if (runningModel() === id) await stopEngine()
+    await removeLocalModel(id)
   })
   ipcMain.handle('gemini:status', () => ({ hasKey: hasGeminiKey() }))
   ipcMain.handle('gemini:set-key', async (_event, key: unknown) => {
@@ -404,6 +436,13 @@ if (!app.requestSingleInstanceLock()) {
     if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
     updateVoiceShortcut(getSettings())
     onSettingsChanged(updateVoiceShortcut)
+    // Free the built-in engine's memory as soon as its model is no longer the one in use.
+    onSettingsChanged((settings) => {
+      const running = runningModel()
+      if (running && (settings.localBackend !== 'builtin' || settings.builtinModel !== running)) {
+        void stopEngine()
+      }
+    })
     // Withdrawing consent for Gemini also forgets the key.
     let geminiConsent = getSettings().geminiConsent
     onSettingsChanged((settings) => {
@@ -427,13 +466,14 @@ let cleanedUp = false
 
 app.on('will-quit', (event) => {
   if (cleanedUp) return
-  // Hold the quit until the AI model is freed, so nothing GameMate started keeps running.
+  // Hold the quit until the AI models are freed and the built-in engine has stopped, so
+  // nothing GameMate started keeps running.
   event.preventDefault()
   cleanedUp = true
   stopObserver()
   shutdownSpeech()
   globalShortcut.unregisterAll()
-  unloadModels().finally(() => app.quit())
+  Promise.allSettled([unloadModels(), stopEngine()]).finally(() => app.quit())
 })
 
 // GameMate lives in the tray, so closing every window doesn't quit it.

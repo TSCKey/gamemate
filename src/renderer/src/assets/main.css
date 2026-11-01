@@ -1227,3 +1227,128 @@ html.is-overlay body {
   align-items: center;
   margin-left: auto;
 }
+
+/* Models page and first-run download */
+
+.model-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.card-body > .model-row:first-child {
+  border-top: none;
+}
+
+.model-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.model-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: 1px;
+  color: var(--text-2);
+  background-color: var(--surface-3);
+  border-radius: 999px;
+}
+
+.badge.is-accent {
+  color: var(--accent-hover);
+  background-color: var(--accent-soft);
+}
+
+.in-use {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-hover);
+}
+
+.progress {
+  height: 6px;
+  margin-top: 8px;
+  overflow: hidden;
+  background-color: var(--surface-3);
+  border-radius: 999px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--accent);
+  border-radius: 999px;
+  transition: width 250ms;
+}
+
+.setup-card {
+  width: min(480px, 100%);
+  padding: 24px;
+  text-align: left;
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+
+.setup-card h2 {
+  margin-bottom: 6px;
+  font-size: 19px;
+}
+
+.setup-card p {
+  color: var(--text-2);
+}
+
+.setup-download {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 14px;
+}
+
+.setup-progress {
+  margin-top: 14px;
+}
+
+.setup-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.setup-card .error-text {
+  margin-top: 10px;
+}
+
+.setup-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 16px;
+}
+
+button.link {
+  padding: 0;
+  font-weight: 500;
+  color: var(--link);
+  background: none;
+  border: none;
+}
+
+button.link:hover:not(:disabled) {
+  background: none;
+  text-decoration: underline;
+}

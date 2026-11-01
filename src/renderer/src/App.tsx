@@ -4,6 +4,7 @@ import CompanionMenu from './components/CompanionMenu'
 import { Dropdown, MenuItem } from './components/Menu'
 import ModelMenu from './components/ModelMenu'
 import PrivacyNotice from './components/PrivacyNotice'
+import SetupCard from './components/SetupCard'
 import { PRIVACY_NOTICE_VERSION } from './constants'
 import RecipeCard from './components/RecipeCard'
 import Sources from './components/Sources'
@@ -12,6 +13,7 @@ import SettingsScreen, { type SettingsTab } from './SettingsScreen'
 import { speak } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
 import { errorMessage, useSettings } from './useSettings'
+import { localModelInfo, useLocalModels } from './useLocalModels'
 
 const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
 
@@ -30,6 +32,7 @@ function sourceLabel(source: CaptureSource, screenCount: number): string {
 
 function App(): React.JSX.Element {
   const { settings, models, modelError, update, reloadModels } = useSettings()
+  const localModels = useLocalModels()
   const [versions, setVersions] = useState<string[]>([])
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
   const [companion, setCompanion] = useState<CompanionState | null>(null)
@@ -43,20 +46,26 @@ function App(): React.JSX.Element {
   const [settingsTab, setSettingsTab] = useState<SettingsTab | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const model = settings?.model ?? ''
   const loading = status !== 'idle'
   const onGemini = settings?.answersEngine === 'gemini'
   const onAuto = settings?.answersEngine === 'auto'
+  const local = settings
+    ? localModelInfo(settings, localModels, models)
+    : { ready: false, name: '', vision: false }
   const ready = onGemini
     ? Boolean(settings?.geminiModel)
-    : Boolean(model) || (onAuto && Boolean(settings?.geminiModel))
+    : local.ready || (onAuto && Boolean(settings?.geminiModel))
   // In "Disabled" mode GameMate doesn't look at the screen at all.
   const screenAllowed = settings?.companionMode !== 'disabled'
-  const visionModel =
-    (onGemini || onAuto || (models.find((m) => m.name === model)?.vision ?? false)) && screenAllowed
+  const visionModel = (onGemini || onAuto || local.vision) && screenAllowed
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
-  const shownError = error ?? (onGemini ? null : modelError)
+  // Ollama problems only matter to players who use Ollama.
+  const usesOllama = settings?.localBackend === 'ollama' && !onGemini
+  const shownError = error ?? (usesOllama ? modelError : null)
+  // First start: nothing can answer until GameMate's own AI is downloaded.
+  const needsSetup =
+    !ready && settings?.localBackend === 'builtin' && !localModels.some((m) => m.installed)
 
   const loadSources = useCallback(async (): Promise<void> => {
     try {
@@ -164,6 +173,7 @@ function App(): React.JSX.Element {
           models={models}
           modelError={modelError}
           reloadModels={reloadModels}
+          localModels={localModels}
           versions={versions}
           appInfo={appInfo}
         />
@@ -228,7 +238,17 @@ function App(): React.JSX.Element {
       </header>
 
       <main className="chat-messages">
-        {messages.length === 0 && !loading && (
+        {messages.length === 0 && !loading && needsSetup && settings && (
+          <div className="chat-empty">
+            <SetupCard
+              models={localModels}
+              update={update}
+              onOpenModels={() => setSettingsTab('models')}
+              onOpenAi={() => setSettingsTab('ai')}
+            />
+          </div>
+        )}
+        {messages.length === 0 && !loading && !needsSetup && (
           <div className="chat-empty">
             <div className="brand-mark is-large">GM</div>
             <h2>What can I help with?</h2>
@@ -305,7 +325,9 @@ function App(): React.JSX.Element {
           onKeyDown={onKeyDown}
           placeholder={
             !ready
-              ? 'Pick an AI model in Settings first'
+              ? needsSetup
+                ? 'Download GameMate’s AI to start'
+                : 'Pick an AI model in Settings first'
               : voice.status === 'listening'
                 ? 'Listening…'
                 : voice.status === 'transcribing'
@@ -361,7 +383,8 @@ function App(): React.JSX.Element {
                 settings={settings}
                 update={update}
                 models={models}
-                onOpenSettings={() => setSettingsTab('ai')}
+                localModels={localModels}
+                onOpenSettings={setSettingsTab}
               />
             )}
             {voice.ready && (

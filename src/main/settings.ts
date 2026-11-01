@@ -3,6 +3,7 @@ import { app, BrowserWindow } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { isSpeechModelId, type SpeechModelId } from './voiceModels'
+import { isLocalModelId, LOCAL_MODELS } from './localModels'
 
 // How much GameMate watches and talks on its own (see README "Always-on companion").
 export const COMPANION_MODES = [
@@ -21,12 +22,19 @@ export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
 
 export const ENGINES = ['local', 'gemini'] as const
 export type Engine = (typeof ENGINES)[number]
+// Where "on this PC" models run: GameMate's built-in engine, or the player's Ollama install.
+export const LOCAL_BACKENDS = ['builtin', 'ollama'] as const
+export type LocalBackend = (typeof LOCAL_BACKENDS)[number]
+
 // Questions can also be routed automatically, per question.
 export const ANSWER_ENGINES = [...ENGINES, 'auto'] as const
 export type AnswerEngine = (typeof ANSWER_ENGINES)[number]
 
 export interface Settings {
-  // Ollama model used for answers ('' until the user or GameMate picks one).
+  localBackend: LocalBackend
+  // Built-in model from the catalog in localModels.ts.
+  builtinModel: string
+  // Ollama model used when localBackend is 'ollama' ('' until the user or GameMate picks one).
   model: string
   minecraftVersion: string
   // Whether the floating window sends a screenshot of the screen with each question.
@@ -65,6 +73,9 @@ export interface Settings {
 export const PRIVACY_NOTICE_VERSION = 1
 
 const DEFAULTS: Settings = {
+  // New players get the built-in engine: no other install needed.
+  localBackend: 'builtin',
+  builtinModel: LOCAL_MODELS[0].id,
   model: '',
   minecraftVersion: '26.1',
   overlayScreenshot: true,
@@ -101,7 +112,10 @@ let current: Settings | null = null
 export function getSettings(): Settings {
   if (!current) {
     try {
-      current = { ...DEFAULTS, ...(JSON.parse(readFileSync(file(), 'utf8')) as Partial<Settings>) }
+      const saved = JSON.parse(readFileSync(file(), 'utf8')) as Partial<Settings>
+      current = { ...DEFAULTS, ...saved }
+      // Players who set GameMate up with Ollama before the built-in engine existed keep it.
+      if (saved.localBackend === undefined && saved.model) current.localBackend = 'ollama'
     } catch {
       current = { ...DEFAULTS }
     }
@@ -114,6 +128,10 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   if (typeof patch !== 'object' || patch === null) throw new Error('Invalid settings.')
   const p = patch as Record<string, unknown>
   const next = { ...getSettings() }
+  if (LOCAL_BACKENDS.includes(p.localBackend as LocalBackend)) {
+    next.localBackend = p.localBackend as LocalBackend
+  }
+  if (isLocalModelId(p.builtinModel)) next.builtinModel = p.builtinModel
   if (typeof p.model === 'string') next.model = p.model.slice(0, 200)
   if (typeof p.minecraftVersion === 'string' && validVersions.includes(p.minecraftVersion)) {
     next.minecraftVersion = p.minecraftVersion

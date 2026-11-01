@@ -67,9 +67,26 @@ export interface SpeechModelStatus {
 }
 
 export type Engine = 'local' | 'gemini'
+export type LocalBackend = 'builtin' | 'ollama'
+
+// A model for GameMate's built-in engine, and whether it's downloaded.
+export interface LocalModelStatus {
+  id: string
+  name: string
+  // Short tier name, e.g. "Fast".
+  label: string
+  description: string
+  sizeMb: number
+  installed: boolean
+  // 0-1 while downloading, otherwise null.
+  progress: number | null
+  error: string | null
+}
 export type AnswerEngine = Engine | 'auto'
 
 export interface Settings {
+  localBackend: LocalBackend
+  builtinModel: string
   model: string
   minecraftVersion: string
   overlayScreenshot: boolean
@@ -140,8 +157,16 @@ export interface Api {
   }
   // Opens a minecraft.wiki page (or one of GameMate's policy links) in the default browser.
   openSource: (url: string) => Promise<void>
-  // Deletes the key, speech models, companion log and settings stored by GameMate.
+  // Deletes the key, AI and speech models, companion log and settings stored by GameMate.
   deleteData: () => Promise<void>
+  // Models for the built-in engine: download (resolves when done), cancel, delete.
+  localModels: {
+    list: () => Promise<LocalModelStatus[]>
+    download: (id: string) => Promise<void>
+    cancel: (id: string) => Promise<void>
+    remove: (id: string) => Promise<void>
+    onChange: (callback: (models: LocalModelStatus[]) => void) => () => void
+  }
   voice: {
     models: () => Promise<SpeechModelStatus[]>
     // Windows text-to-speech voices.

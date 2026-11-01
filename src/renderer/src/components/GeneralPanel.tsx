@@ -1,20 +1,14 @@
-import type { AppInfo, ModelInfo, Settings } from '../../../preload/index.d'
+import type { AppInfo, Settings } from '../../../preload/index.d'
 import { Field, Section, Toggle } from './ui'
 
 function GeneralPanel({
   settings,
   update,
-  models,
-  modelError,
-  reloadModels,
   versions,
   appInfo
 }: {
   settings: Settings
   update: (patch: Partial<Settings>) => void
-  models: ModelInfo[]
-  modelError: string | null
-  reloadModels: () => void
   versions: string[]
   appInfo: AppInfo | null
 }): React.JSX.Element {
@@ -32,35 +26,6 @@ function GeneralPanel({
               </option>
             ))}
           </select>
-        </Field>
-      </Section>
-
-      <Section
-        title="Local AI model"
-        description="The Ollama model that runs on this PC. Models marked 👁 can see screenshots."
-      >
-        <Field
-          label="Model"
-          help={modelError ? <span className="error-text">{modelError}</span> : undefined}
-        >
-          <div className="button-row">
-            <select
-              value={settings.model}
-              onChange={(e) => update({ model: e.target.value })}
-              disabled={models.length === 0}
-            >
-              {models.length === 0 && <option value="">No models</option>}
-              {models.map((m) => (
-                <option key={m.name} value={m.name}>
-                  {m.name}
-                  {m.vision ? ' 👁' : ''}
-                </option>
-              ))}
-            </select>
-            <button type="button" onClick={reloadModels} title="Reload models" aria-label="Reload">
-              ↻
-            </button>
-          </div>
         </Field>
       </Section>
 

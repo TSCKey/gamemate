@@ -1,14 +1,17 @@
-import type { AppInfo, ModelInfo, Settings } from '../../preload/index.d'
+import type { AppInfo, LocalModelStatus, ModelInfo, Settings } from '../../preload/index.d'
 import AiPanel from './components/AiPanel'
 import CompanionPanel from './components/CompanionPanel'
 import GeneralPanel from './components/GeneralPanel'
+import ModelsPanel from './components/ModelsPanel'
 import PrivacyPanel from './components/PrivacyPanel'
 import VoicePanel from './components/VoicePanel'
+import { localModelInfo } from './useLocalModels'
 
-export type SettingsTab = 'general' | 'companion' | 'voice' | 'ai' | 'privacy'
+export type SettingsTab = 'general' | 'models' | 'companion' | 'voice' | 'ai' | 'privacy'
 
 const TABS: { id: SettingsTab; icon: string; label: string }[] = [
   { id: 'general', icon: '⚙️', label: 'General' },
+  { id: 'models', icon: '🧠', label: 'Models' },
   { id: 'companion', icon: '🎮', label: 'Companion' },
   { id: 'voice', icon: '🎙️', label: 'Voice' },
   { id: 'ai', icon: '☁️', label: 'AI & online' },
@@ -24,6 +27,7 @@ function SettingsScreen({
   models,
   modelError,
   reloadModels,
+  localModels,
   versions,
   appInfo
 }: {
@@ -35,6 +39,7 @@ function SettingsScreen({
   models: ModelInfo[]
   modelError: string | null
   reloadModels: () => void
+  localModels: LocalModelStatus[]
   versions: string[]
   appInfo: AppInfo | null
 }): React.JSX.Element {
@@ -61,19 +66,28 @@ function SettingsScreen({
       <main className="settings-content">
         <h1>{current.label}</h1>
         {tab === 'general' && (
-          <GeneralPanel
+          <GeneralPanel settings={settings} update={update} versions={versions} appInfo={appInfo} />
+        )}
+        {tab === 'models' && (
+          <ModelsPanel
             settings={settings}
             update={update}
-            models={models}
-            modelError={modelError}
-            reloadModels={reloadModels}
-            versions={versions}
-            appInfo={appInfo}
+            localModels={localModels}
+            ollamaModels={models}
+            ollamaError={modelError}
+            reloadOllama={reloadModels}
+            onOpenAi={() => onTab('ai')}
           />
         )}
         {tab === 'companion' && <CompanionPanel settings={settings} update={update} />}
         {tab === 'voice' && <VoicePanel settings={settings} update={update} appInfo={appInfo} />}
-        {tab === 'ai' && <AiPanel settings={settings} update={update} />}
+        {tab === 'ai' && (
+          <AiPanel
+            settings={settings}
+            update={update}
+            localName={localModelInfo(settings, localModels, models).name}
+          />
+        )}
         {tab === 'privacy' && <PrivacyPanel />}
       </main>
     </div>

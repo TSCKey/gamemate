@@ -2,8 +2,11 @@
 // Google Gemini. Callers build a provider-neutral conversation; each adapter translates it.
 import { chatOnce, type OllamaMessage } from './ollamaClient'
 import { generate, type GeminiContent, type GeminiPart, type GeminiRequest } from './gemini'
+import { chatCompletion } from './llamaClient'
+import { withEngine } from './llamaEngine'
 
-export type Provider = 'local' | 'gemini'
+// GameMate's built-in engine (llama.cpp), an Ollama install, or Google Gemini.
+export type Provider = 'builtin' | 'ollama' | 'gemini'
 
 export interface LlmToolCall {
   id?: string
@@ -41,6 +44,7 @@ export interface LlmReply {
 
 export interface LlmEngine {
   provider: Provider
+  // Built-in: the catalog id (see localModels.ts). Ollama and Gemini: the model name.
   model: string
   // Gemini only.
   apiKey?: string
@@ -204,6 +208,9 @@ export function complete(
   if (engine.provider === 'gemini') {
     if (!engine.apiKey) throw new Error('Add your Gemini API key in GameMate’s AI settings first.')
     return viaGemini(engine.apiKey, engine.model, messages, options)
+  }
+  if (engine.provider === 'builtin') {
+    return withEngine(engine.model, (server) => chatCompletion(server, messages, options))
   }
   return viaOllama(engine.model, messages, options)
 }

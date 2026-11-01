@@ -24,7 +24,8 @@ export function PrivacySummary(): React.JSX.Element {
       <li>
         <strong>Online features are off until you turn them on:</strong> looking things up on
         minecraft.wiki (only the topic is sent) and Google Gemini (your questions and screenshots
-        are sent to Google). Downloading a speech model fetches it once from Hugging Face.
+        are sent to Google). Downloads happen once, when you ask for them: AI and speech models come
+        from Hugging Face, and GameMate&apos;s AI engine from GitHub.
       </li>
     </ul>
   )
@@ -53,7 +54,7 @@ function PrivacyPanel(): React.JSX.Element {
         <ul className="privacy-list">
           <li>Your settings.</li>
           <li>Your Gemini API key, if you added one, encrypted by Windows.</li>
-          <li>Speech models you downloaded.</li>
+          <li>AI models, GameMate&apos;s AI engine and speech models you downloaded.</li>
         </ul>
       </Section>
 

@@ -2,16 +2,24 @@
 // per question whether the local model or Gemini should answer.
 import { findMentionedItems } from './games/minecraft'
 import type { LlmEngine } from './llm'
+import { isLocalModelInstalled } from './localModels'
 import { decide } from './router'
 import { getGeminiKey } from './secrets'
 import { getSettings } from './settings'
 
 export type Job = 'answers' | 'commentary'
 
+// "On this PC": GameMate's built-in engine, or the player's own Ollama install.
 function localEngine(): LlmEngine {
-  const { model } = getSettings()
-  if (!model) throw new Error('Pick a model in GameMate first.')
-  return { provider: 'local', model }
+  const settings = getSettings()
+  if (settings.localBackend === 'builtin') {
+    if (!isLocalModelInstalled(settings.builtinModel)) {
+      throw new Error('Download an AI model in GameMate first (Settings → Models).')
+    }
+    return { provider: 'builtin', model: settings.builtinModel }
+  }
+  if (!settings.model) throw new Error('Pick a model in GameMate first.')
+  return { provider: 'ollama', model: settings.model }
 }
 
 function geminiEngine(): LlmEngine {
@@ -79,7 +87,7 @@ export function routeQuestion(question: string, hasImages: boolean, messages: nu
 // as opposed to e.g. a rejected key the player has to fix.
 export function isUnreachable(error: unknown): boolean {
   const message = error instanceof Error ? error.message : String(error)
-  return /could not reach|usage limit|took too long|not running|ECONNREFUSED|fetch failed/i.test(
+  return /could not reach|usage limit|took too long|not running|ECONNREFUSED|fetch failed|couldn.t start|stopped unexpectedly/i.test(
     message
   )
 }

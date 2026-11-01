@@ -201,7 +201,10 @@ async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<As
       return {
         role: 'assistant',
         content: reply.content,
-        answeredBy: { provider: ctx.engine.provider, model: ctx.engine.model },
+        answeredBy: {
+          provider: ctx.engine.provider === 'gemini' ? 'gemini' : 'local',
+          model: ctx.engine.model
+        },
         ...(out.recipes.length ? { recipes: out.recipes } : {}),
         ...(out.sources.length ? { sources: out.sources } : {})
       }

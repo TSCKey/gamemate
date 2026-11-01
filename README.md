@@ -4,7 +4,7 @@
 
 GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, it knows the real Minecraft crafting recipes, and if you like, it can watch your game and speak up when something important happens. You can even ask out loud and hear the answer.
 
-By default everything runs **on your own computer**. GameMate uses AI models running locally through [Ollama](https://ollama.com), so your questions, screenshots and conversations stay on your PC, there are no subscription or per-question fees, and it keeps working without an internet connection once a model is installed. If you want smarter answers, you can switch on Google's Gemini with your own API key, and let GameMate look things up on the Minecraft Wiki.
+By default everything runs **on your own computer**. GameMate comes with its own AI engine: download a model once from inside the app and it answers right on your PC, so your questions, screenshots and conversations stay there, there are no subscription or per-question fees, and it keeps working without an internet connection. Already use [Ollama](https://ollama.com)? GameMate can use your Ollama models instead. If you want smarter answers, you can switch on Google's Gemini with your own API key, and let GameMate look things up on the Minecraft Wiki.
 
 ## Features
 
@@ -13,7 +13,8 @@ By default everything runs **on your own computer**. GameMate uses AI models run
 - **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
 - **Talk to it.** Press **Alt + V** and ask your question out loud. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
 - **Ask about your screen.** Attach a screenshot of your game window or your whole screen and ask "What is this creature?" or "What should I do next?". GameMate picks your Minecraft window automatically when it's open.
-- **Choose your model.** Pick any model you've installed in Ollama, and switch between them at any time. Models that can see images are marked with 👁.
+- **Download and play.** No other installs: GameMate downloads its AI with one click the first time you open it. Choose from three models, from fast to best, or use your Ollama models.
+- **Nothing left running.** GameMate's AI starts when you ask something, frees your graphics card after a few idle minutes, and stops completely when GameMate quits.
 - **Chat window.** A full chat window for longer conversations.
 - **Runs in the background.** Closing the window keeps GameMate in the system tray, ready for **Alt + Space**.
 - **Looks things up.** Turn on wiki lookup and GameMate reads [minecraft.wiki](https://minecraft.wiki) for things that aren't crafted, like building a Nether portal, taming a wolf or what an enchantment does, and links to the page it used.
@@ -23,23 +24,16 @@ By default everything runs **on your own computer**. GameMate uses AI models run
 ## Requirements
 
 - Windows 10 or 11
-- [Ollama](https://ollama.com/download), installed and running
-- At least one Ollama model. We recommend **Qwen 3.5 2B**, which is small, fast and works well on most NVIDIA GPUs.
-- A dedicated NVIDIA GPU is recommended for fast answers, especially while a game is running.
+- A graphics card is recommended for fast answers, especially while a game is running. NVIDIA, AMD and Intel cards all work, and GameMate picks your dedicated card automatically. Without one, GameMate uses the processor, which is slower.
+- 2 to 7 GB of free disk space for the AI model, depending on which one you choose.
 
 ## Getting started
 
-1. **Install Ollama** from [ollama.com/download](https://ollama.com/download) and start it.
-2. **Download a model.** Open a terminal and run:
+1. **Install GameMate.** Download the latest installer from the [Releases](https://github.com/TSCKey/gamemate/releases) page and run it.
+2. **Open GameMate** and click **Download Qwen3.5 2B (1.9 GB)**. You only do this once. After that, GameMate's AI works offline.
+3. **Start asking questions.**
 
-   ```bash
-   ollama pull qwen3.5:2b
-   ```
-
-   If answers aren't good enough and your GPU has more memory available, try the larger `qwen3.5:4b`.
-
-3. **Install GameMate.** Download the latest installer from the [Releases](https://github.com/TSCKey/gamemate/releases) page and run it.
-4. **Open GameMate** and start asking questions.
+Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ Settings → Models**.
 
 ## Using GameMate
 
@@ -72,15 +66,31 @@ Click the companion mode at the top of the chat window (for example **On-demand 
 - Click **⏸ Pause** on the Companion page, or **Pause watching** in the tray icon's menu, to stop watching for a while. While GameMate is watching, the top of the chat window shows its status.
 - GameMate only watches while the Minecraft game window is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
 
-### AI engine and wiki lookup
+### AI models
 
-Click the AI name under the question box (for example **qwen3.5:2b ▾**) to switch between **Auto**, a model on your PC and a Gemini model. **⚙ Settings → AI & online** has all the options:
+Open **⚙ Settings → Models** to choose the AI that runs on your PC:
+
+| Model                  | Download | Good for                                                     |
+| ---------------------- | -------- | ------------------------------------------------------------ |
+| **Qwen3.5 2B** (Fast)  | 1.9 GB   | Quick answers on most graphics cards                         |
+| **Qwen3.5 4B** (Smart) | 3.4 GB   | Better answers, best with 6 GB or more of graphics memory    |
+| **Qwen3.5 9B** (Best)  | 6.6 GB   | The best answers, best with 10 GB or more of graphics memory |
+
+- Click **Download**, then **Use**. You can cancel a download, and if one fails, **Try again** continues where it stopped.
+- All of them can see screenshots and work offline.
+- GameMate's AI starts the first time you ask something, frees your graphics card after 5 idle minutes, and stops completely when GameMate quits, even if GameMate crashes.
+- **Use my Ollama models:** turn this on to use models from your own Ollama install instead. Ollama must be running.
+- Cloud models (Gemini) are set up in **⚙ Settings → AI & online**, see below.
+
+### Gemini, Auto and wiki lookup
+
+Click the AI name under the question box (for example **Qwen3.5 2B ▾**) to switch between **Auto**, a model on your PC and a Gemini model. **⚙ Settings → AI & online** has all the options:
 
 - **Which AI answers:** choose **On this PC** or **Gemini**, separately for **Your questions** (chat and **Alt + Space**) and the **Companion** (always-on watching).
 - **Auto:** once Gemini is set up, choose **Auto** for **Your questions** and GameMate picks an AI for each question:
   - **On this PC:** crafting recipes and quick questions. These are fast, free and stay on your PC.
   - **Gemini:** questions with a screenshot, and questions that need more thinking, such as builds and Nether portals, farms, redstone, strategy, bosses, "why" questions, long questions and long conversations.
-  - If the chosen AI can't be reached (Ollama isn't running, you're offline, or Gemini's limit is used up), the other one answers.
+  - If the chosen AI can't be reached (the AI on your PC can't start, you're offline, or Gemini's limit is used up), the other one answers.
   - A small note under each answer, and in the in-game window, shows which AI answered and why.
 - **Gemini:**
   1. Read what Gemini sends to Google, tick **I'm 18 or older and agree…** and click **Turn on Gemini**.
@@ -117,7 +127,7 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 - Type your question and press **Enter** to send it. Use **Shift + Enter** for a new line. On a new chat, click one of the suggestions to try GameMate out.
 - To ask about what's on screen, click **📷 Screenshot** under the message box and choose your game window or screen. GameMate takes a fresh screenshot each time you send a question. With it on, you can also press **Enter** with an empty message to ask "What is happening on my screen?".
 - Click **New chat** to clear the conversation.
-- Click the AI name under the question box to pick which AI answers. After installing a new model in Ollama, click **↻** in **⚙ Settings → General** to refresh the list.
+- Click the AI name under the question box to pick which AI answers. Get more models in **⚙ Settings → Models**.
 - Closing the window keeps GameMate running in the system tray, so the in-game shortcuts and the companion keep working. Right-click the tray icon to open it again or to quit. To make the close button quit GameMate instead, turn off **Keep running in the tray** in **⚙ Settings → General**. When GameMate quits, it frees the AI model's memory right away.
 
 ## Troubleshooting
@@ -131,20 +141,26 @@ Switch the game to windowed or borderless fullscreen. In Minecraft, press **F11*
 **A recipe looks wrong or is missing**
 Make sure the Minecraft version at the top of the chat window matches the version you're playing. GameMate knows crafting-table recipes. Items that are smelted, brewed, traded or built in the world (such as Nether portals) don't have a crafting recipe.
 
-**"Could not reach Ollama. Is it running?"**
-Make sure Ollama is running. You should see its icon in the system tray. If not, start Ollama from the Start menu, then click **↻** in **⚙ Settings → General**.
+**The first answer takes a while**
+The very first time, your graphics card's driver prepares the AI for your card, which can take up to a minute. After that, answers come in seconds. Each time GameMate's AI starts, it also needs a few seconds to load the model.
 
-**"No models installed"**
-Download a model with `ollama pull qwen3.5:2b`, then click **↻** in **⚙ Settings → General**.
+**"The built-in AI couldn't start: there isn't enough graphics memory"**
+Choose a smaller model in **⚙ Settings → Models**, close other programs that use the graphics card, or lower your game's graphics settings.
+
+**A model download failed**
+Check your internet connection and free disk space, then click **Try again** in **⚙ Settings → Models**. It continues where it stopped.
+
+**"Could not reach Ollama. Is it running?"** (only if you use Ollama models)
+Start Ollama from the Start menu, then click **↻** in **⚙ Settings → Models**. To download an Ollama model, run `ollama pull qwen3.5:2b`.
 
 **There's no 📷 Screenshot button**
-The selected model can't see images, or the Companion is set to **Disabled**. Pick a model marked with 👁, such as `qwen3.5:2b`.
+The selected Ollama model can't see images, or the Companion is set to **Disabled**. All of GameMate's built-in models can see screenshots.
 
 **My game window isn't in the list**
 Make sure the game is open and not minimized, then open the list again. If it still doesn't appear, choose your whole screen instead.
 
 **Commentary mode never says anything**
-Check the status on the Companion settings page. It needs Minecraft to be the active window and a model marked with 👁. GameMate only comments on important moments, so try **How often to comment: Often**. Smaller models may miss things, and `qwen3.5:4b` sees more if your GPU has room for it.
+Check the status on the Companion settings page. It needs Minecraft to be the active window and a model that can see screenshots. GameMate only comments on important moments, so try **How often to comment: Often**. Smaller models may miss things, and **Qwen3.5 4B** sees more if your graphics card has room for it.
 
 **Alt + V does nothing, or the 🎤 button is missing**
 Turn on **Ask with your microphone** in **⚙ Settings → Voice** and download the speech model. If another app uses **Alt + V**, the Voice page tells you, and you can still click **🎤**.
@@ -159,7 +175,7 @@ Speak after the 🎤 lights up, and pause briefly when you're done. Try the **Ac
 Check the key at aistudio.google.com and paste it again in **⚙ Settings → AI & online**. Free keys have per-minute and daily limits, and the Companion can use them up quickly, so consider setting **Companion** back to **On this PC**.
 
 **Answers are slow**
-Your game and the AI model share your GPU. Try a smaller model, close other GPU-heavy apps, or lower your game's graphics settings.
+Your game and the AI model share your graphics card. Try a smaller model, close other apps that use the graphics card, or lower your game's graphics settings.
 
 ## Privacy
 
@@ -168,7 +184,7 @@ GameMate is local by default. The first time you open it, it shows a short summa
 - **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under the [Gemini API terms](https://ai.google.dev/gemini-api/terms) and [Google's Privacy Policy](https://policies.google.com/privacy). GameMate asks for your agreement before you can add a key, and Google requires you to be 18 or older. That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
 - **Wiki lookup** sends only the topic, such as "Nether Portal", to minecraft.wiki.
 
-Otherwise, GameMate talks only to Ollama on your own computer (`127.0.0.1`). It takes screenshots only:
+Otherwise, GameMate's AI runs on your own computer. Its engine only accepts requests from GameMate on this PC (`127.0.0.1`, with a new random key each time it starts), and Ollama, if you use it, is local too. AI models are downloaded once from Hugging Face, and the AI engine from GitHub, when you click **Download**, and every file is checked against a known checksum. GameMate takes screenshots only:
 
 - when you send a question with **📷 Screenshot** on,
 - when you press **Alt + Space** with **📷** turned on, and
@@ -178,11 +194,19 @@ Screenshots go only to the AI you chose and are never saved to disk. What GameMa
 
 GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models are downloaded once from Hugging Face when you click **Download**.
 
-**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy** to remove everything GameMate stored on your PC (settings, your Gemini key and downloaded speech models) and start fresh. Data already sent to Google is covered by Google's policies.
+**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy** to remove everything GameMate stored on your PC (settings, your Gemini key, and the AI engine, AI models and speech models you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
 
 ## What GameMate won't do
 
 GameMate is an assistant, not a bot. It never plays games for you, controls your keyboard or mouse, provides cheats, or modifies game files or processes.
+
+## Credits
+
+- GameMate's built-in AI engine is [llama.cpp](https://github.com/ggml-org/llama.cpp) (MIT License).
+- The built-in models are [Qwen3.5](https://huggingface.co/Qwen) by the Qwen team (Apache 2.0), in versions prepared by [Unsloth](https://huggingface.co/unsloth).
+- Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
+- Wiki answers use [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0).
+- GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 
 ## Building from source
 

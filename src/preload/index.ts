@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
-import type { Api, CompanionState, Settings, SpeechModelStatus } from './index.d'
+import type { Api, CompanionState, LocalModelStatus, Settings, SpeechModelStatus } from './index.d'
 
 // Subscribe to a main-process event without handing the renderer the raw IPC event.
 function listen<T extends unknown[]>(channel: string, callback: (...args: T) => void): () => void {
@@ -33,6 +33,13 @@ const api: Api = {
   },
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
+  localModels: {
+    list: () => ipcRenderer.invoke('local-models:list'),
+    download: (id) => ipcRenderer.invoke('local-models:download', id),
+    cancel: (id) => ipcRenderer.invoke('local-models:cancel', id),
+    remove: (id) => ipcRenderer.invoke('local-models:remove', id),
+    onChange: (callback) => listen<[LocalModelStatus[]]>('local-models:changed', callback)
+  },
   voice: {
     models: () => ipcRenderer.invoke('voice:models'),
     voices: () => ipcRenderer.invoke('voice:voices'),

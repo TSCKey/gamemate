@@ -3,6 +3,7 @@ import type { ChatMessage } from '../../preload/index.d'
 import RecipeCard from './components/RecipeCard'
 import Sources from './components/Sources'
 import { errorMessage, useSettings } from './useSettings'
+import { localModelInfo, useLocalModels } from './useLocalModels'
 import { speak, stopSpeaking } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
 
@@ -13,6 +14,7 @@ const WINDOW_PADDING = 24
 
 function Overlay(): React.JSX.Element {
   const { settings, models, update } = useSettings()
+  const localModels = useLocalModels()
   const [history, setHistory] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
@@ -24,15 +26,18 @@ function Overlay(): React.JSX.Element {
 
   const engine = settings?.answersEngine ?? 'local'
   const cloud = engine !== 'local'
+  const local = settings ? localModelInfo(settings, localModels, models) : null
   // Whether some AI is set up to answer (Gemini or Auto can work without a local model).
   const model =
     engine === 'gemini'
       ? (settings?.geminiModel ?? '')
-      : settings?.model || (engine === 'auto' ? (settings?.geminiModel ?? '') : '')
+      : local?.ready
+        ? local.name
+        : engine === 'auto'
+          ? (settings?.geminiModel ?? '')
+          : ''
   // In "Disabled" mode GameMate doesn't look at the screen at all.
-  const vision =
-    (cloud || (models.find((m) => m.name === settings?.model)?.vision ?? false)) &&
-    settings?.companionMode !== 'disabled'
+  const vision = (cloud || (local?.vision ?? false)) && settings?.companionMode !== 'disabled'
   const useScreenshot = vision && (settings?.overlayScreenshot ?? false)
   const lastQuestion = [...history].reverse().find((m) => m.role === 'user')
   const lastAnswer = history.at(-1)?.role === 'assistant' ? history.at(-1) : undefined
@@ -134,7 +139,7 @@ function Overlay(): React.JSX.Element {
             onKeyDown={onKeyDown}
             placeholder={
               !model
-                ? 'Open GameMate and pick a model first'
+                ? 'Open GameMate and set up an AI model first'
                 : voice.status === 'listening'
                   ? 'Listening…'
                   : voice.status === 'transcribing'
