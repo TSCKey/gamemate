@@ -1,7 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AppInfo, CaptureSource, ChatMessage, CompanionState } from '../../preload/index.d'
+import CompanionMenu from './components/CompanionMenu'
+import { Dropdown, MenuItem } from './components/Menu'
+import ModelMenu from './components/ModelMenu'
 import PrivacyNotice from './components/PrivacyNotice'
-import { PRIVACY_NOTICE_VERSION, STATUS_TEXT } from './constants'
+import { PRIVACY_NOTICE_VERSION } from './constants'
 import RecipeCard from './components/RecipeCard'
 import Sources from './components/Sources'
 import AnsweredByLabel from './components/AnsweredByLabel'
@@ -169,13 +172,6 @@ function App(): React.JSX.Element {
     )
   }
 
-  const engineLabel = onAuto
-    ? '✦ Auto'
-    : onGemini
-      ? `☁ ${settings?.geminiModel || 'Gemini'}`
-      : model || 'No model'
-  const companionOn = companion !== null && companion.status !== 'off'
-
   return (
     <div className="chat">
       <header className="chat-header">
@@ -184,31 +180,30 @@ function App(): React.JSX.Element {
           <span className="brand-name">GameMate</span>
         </div>
         <div className="chips">
-          <button
-            type="button"
-            className="chip"
-            onClick={() => setSettingsTab(onGemini || onAuto ? 'ai' : 'general')}
-            title="Which AI answers"
-          >
-            {engineLabel}
-          </button>
-          <button
-            type="button"
-            className="chip"
-            onClick={() => setSettingsTab('general')}
-            title="Minecraft version"
-          >
-            Minecraft {settings?.minecraftVersion}
-          </button>
-          {companionOn && (
-            <button
-              type="button"
-              className={`chip companion-status is-${companion.status}`}
-              onClick={() => setSettingsTab('companion')}
-              title="Companion"
-            >
-              <span className="companion-dot" /> {STATUS_TEXT[companion.status]}
-            </button>
+          {settings && (
+            <>
+              <Dropdown
+                label={`Minecraft ${settings.minecraftVersion}`}
+                menuLabel="Minecraft version"
+                title="Minecraft version (recipes are shown for this version)"
+                triggerClassName="chip"
+              >
+                {versions.map((v) => (
+                  <MenuItem
+                    key={v}
+                    title={`Minecraft ${v}`}
+                    checked={settings.minecraftVersion === v}
+                    onSelect={() => update({ minecraftVersion: v })}
+                  />
+                ))}
+              </Dropdown>
+              <CompanionMenu
+                settings={settings}
+                update={update}
+                state={companion}
+                onOpenSettings={() => setSettingsTab('companion')}
+              />
+            </>
           )}
         </div>
         <div className="header-actions">
@@ -361,6 +356,14 @@ function App(): React.JSX.Element {
             </span>
           )}
           <div className="composer-actions">
+            {settings && (
+              <ModelMenu
+                settings={settings}
+                update={update}
+                models={models}
+                onOpenSettings={() => setSettingsTab('ai')}
+              />
+            )}
             {voice.ready && (
               <button
                 type="button"

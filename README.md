@@ -56,7 +56,7 @@ By default everything runs **on your own computer**. GameMate uses AI models run
 
 ### Always-on companion
 
-Open **⚙ Settings → Companion** to choose how much GameMate watches and talks on its own:
+Click the companion mode at the top of the chat window (for example **On-demand ▾**) to choose how much GameMate watches and talks on its own. **⚙ Settings → Companion** has the same choices plus the log:
 
 | Mode                    | What GameMate does                                                                                                                                                      |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -74,7 +74,7 @@ Open **⚙ Settings → Companion** to choose how much GameMate watches and talk
 
 ### AI engine and wiki lookup
 
-Open **⚙ Settings → AI & online**.
+Click the AI name under the question box (for example **qwen3.5:2b ▾**) to switch between **Auto**, a model on your PC and a Gemini model. **⚙ Settings → AI & online** has all the options:
 
 - **Which AI answers:** choose **On this PC** or **Gemini**, separately for **Your questions** (chat and **Alt + Space**) and the **Companion** (always-on watching).
 - **Auto:** once Gemini is set up, choose **Auto** for **Your questions** and GameMate picks an AI for each question:
@@ -89,7 +89,7 @@ Open **⚙ Settings → AI & online**.
   4. Pick a model. A Flash model is a good balance of speed and quality.
   5. To stop using Gemini, click **Turn off**. GameMate deletes your key and goes back to the local AI.
 - **Look things up:** turn on **Read minecraft.wiki**. When a question needs more than a crafting recipe, the AI reads the matching wiki page. The answer shows **Source:** with a link to it.
-- When questions go to Gemini, the top of the chat window and the in-game window show **☁**.
+- When questions go to Gemini, the AI name under the question box and the in-game window show **☁**.
 
 ### Voice
 
@@ -113,11 +113,11 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 
 ### Chat window
 
-- The top of the window shows which AI answers and your Minecraft version. Click either to change it, or click **⚙** for all settings.
+- The top of the window shows your Minecraft version and the companion mode. Click either to change it, or click **⚙** for all settings.
 - Type your question and press **Enter** to send it. Use **Shift + Enter** for a new line. On a new chat, click one of the suggestions to try GameMate out.
 - To ask about what's on screen, click **📷 Screenshot** under the message box and choose your game window or screen. GameMate takes a fresh screenshot each time you send a question. With it on, you can also press **Enter** with an empty message to ask "What is happening on my screen?".
 - Click **New chat** to clear the conversation.
-- Pick your local AI model in **⚙ Settings → General**. Click **↻** there to refresh the list after installing a new model in Ollama.
+- Click the AI name under the question box to pick which AI answers. After installing a new model in Ollama, click **↻** in **⚙ Settings → General** to refresh the list.
 - Closing the window keeps GameMate running in the system tray. Right-click the tray icon to open it again or to quit.
 
 ## Troubleshooting

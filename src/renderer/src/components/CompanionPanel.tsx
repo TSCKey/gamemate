@@ -1,42 +1,7 @@
 import { useEffect, useState } from 'react'
-import type {
-  CommentaryFrequency,
-  CompanionMode,
-  CompanionState,
-  Settings
-} from '../../../preload/index.d'
-import { STATUS_TEXT } from '../constants'
+import type { CommentaryFrequency, CompanionState, Settings } from '../../../preload/index.d'
+import { COMMENTARY_FREQUENCIES, COMPANION_MODES, STATUS_TEXT } from '../constants'
 import { Field, Section } from './ui'
-
-const MODES: { value: CompanionMode; label: string; help: string }[] = [
-  {
-    value: 'disabled',
-    label: 'Disabled',
-    help: 'Never looks at your screen, not even when you press the shortcut.'
-  },
-  { value: 'on-demand', label: 'On-demand', help: 'Only looks and answers when you ask.' },
-  {
-    value: 'observation',
-    label: 'Observation',
-    help: 'Watches your game and keeps a log of what happens, without pop-ups.'
-  },
-  {
-    value: 'commentary',
-    label: 'Commentary',
-    help: 'Watches your game and pops up a short comment when something important happens.'
-  },
-  {
-    value: 'quiet',
-    label: 'Quiet',
-    help: 'Watches silently and uses what it saw only to answer your questions.'
-  }
-]
-
-const FREQUENCIES: { value: CommentaryFrequency; label: string }[] = [
-  { value: 'rare', label: 'Rarely (big moments only)' },
-  { value: 'normal', label: 'Sometimes' },
-  { value: 'frequent', label: 'Often' }
-]
 
 const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   hostile_mob: '⚔️',
@@ -79,7 +44,7 @@ function CompanionPanel({
         description="How much GameMate watches your game and talks on its own."
       >
         <div className="mode-grid" role="radiogroup" aria-label="Companion mode">
-          {MODES.map((m) => (
+          {COMPANION_MODES.map((m) => (
             <button
               key={m.value}
               type="button"
@@ -101,7 +66,7 @@ function CompanionPanel({
                 update({ commentaryFrequency: e.target.value as CommentaryFrequency })
               }
             >
-              {FREQUENCIES.map((f) => (
+              {COMMENTARY_FREQUENCIES.map((f) => (
                 <option key={f.value} value={f.value}>
                   {f.label}
                 </option>
