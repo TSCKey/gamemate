@@ -1,34 +1,40 @@
 // The game GameMate is helping with right now: followed automatically when the player is in a
-// game, or picked by the player. For Minecraft this also works out the modpack in use.
+// game (only after they allowed detection), or picked by the player. For Minecraft this also
+// works out the modpack in use.
 import { basename } from 'path'
 import { foregroundHandle, windowProgram, type WindowProgram } from '../foreground'
 import { getSettings, updateSettings } from '../settings'
 import type { WikiSite } from '../wiki'
-import { GAMES, customGameProfile, type GameProfile } from './catalog'
+import { MINECRAFT, savedGameProfile, type GameProfile } from './catalog'
 import { listVersions } from './minecraft'
 import { gameDirOfProcess, readModpack, type Modpack } from './modpacks'
 
 const MODPACK_CACHE_MS = 60_000
 
 export function allGames(): GameProfile[] {
-  return [...getSettings().customGames.map(customGameProfile), ...GAMES]
+  return [MINECRAFT, ...getSettings().games.map(savedGameProfile)]
 }
 
 export function gameById(id: string): GameProfile {
-  return allGames().find((g) => g.id === id) ?? GAMES[0]
+  return allGames().find((g) => g.id === id) ?? MINECRAFT
 }
 
 export function currentGame(): GameProfile {
   return gameById(getSettings().currentGame)
 }
 
-// Which known game a program is, by its file name (and title or folder for Java games).
+const folder = (path: string): string =>
+  path.replace(/\//g, '\\').replace(/\\+$/, '').toLowerCase() + '\\'
+
+// Which game a program is: by its folder (scanned games) or file name (added games, Minecraft).
 export function matchGame(
   program: { exe: string; title: string },
   games: GameProfile[]
 ): GameProfile | null {
-  const exe = basename(program.exe).toLowerCase()
+  const path = program.exe.replace(/\//g, '\\').toLowerCase()
+  const exe = basename(path)
   for (const game of games) {
+    if (game.installDir && path.startsWith(folder(game.installDir))) return game
     if (!game.exes.some((e) => (typeof e === 'string' ? e === exe : e.test(exe)))) continue
     if (!game.title && !game.pathHint) return game
     if (game.title?.test(program.title) || game.pathHint?.test(program.exe)) return game
@@ -39,8 +45,9 @@ export function matchGame(
 // The Minecraft process seen most recently, to find its modpack.
 let minecraftPid: number | null = null
 
-// The game in the window in front, if it is one.
+// The game in the window in front, if it is one. Nothing is looked at without the player's OK.
 export function foregroundGame(): { game: GameProfile; program: WindowProgram } | null {
+  if (!getSettings().deviceConsent) return null
   const handle = foregroundHandle()
   const program = handle && windowProgram(handle)
   if (!program) return null
@@ -60,7 +67,7 @@ export function followForegroundGame(): { game: GameProfile; program: WindowProg
   const found = foregroundGame()
   const settings = getSettings()
   if (found && settings.autoDetectGame && settings.currentGame !== found.game.id) {
-    updateSettings({ currentGame: found.game.id }, listVersions())
+    updateSettings({ currentGame: found.game.id })
   }
   return found
 }
@@ -78,13 +85,18 @@ async function cachedModpack(dir: string): Promise<Modpack | null> {
 
 // The modpack in use: the player's choice, or the one the running Minecraft was started from.
 export async function currentModpack(): Promise<Modpack | null> {
-  const choice = getSettings().minecraftModpack
-  if (choice === '') return null
+  const { minecraftModpack: choice, deviceConsent } = getSettings()
+  if (!deviceConsent || choice === '') return null
   if (choice !== 'auto') return cachedModpack(choice)
   if (minecraftPid && running?.pid !== minecraftPid) {
     running = { pid: minecraftPid, dir: await gameDirOfProcess(minecraftPid) }
   }
   return running?.dir ? cachedModpack(running.dir) : null
+}
+
+// The newest recipe data GameMate has.
+export function latestRecipeVersion(): string {
+  return listVersions()[0]
 }
 
 // GameMate's recipe data closest to a pack's Minecraft version ("1.20.1" -> "1.20.4"), or null.
@@ -101,7 +113,7 @@ export interface GameContext {
   minecraft?: {
     // Version of GameMate's recipe data to use (null: none close enough).
     recipeVersion: string | null
-    // Shown to the model, e.g. "Java Edition 26.1".
+    // Shown to the model, e.g. "Java Edition 26.1.2" ('' when not known).
     edition: string
     modpack: Modpack | null
   }
@@ -111,14 +123,15 @@ export async function gameContext(): Promise<GameContext> {
   const game = currentGame()
   if (game.id !== 'minecraft') return { name: game.name, wiki: game.wiki }
   const modpack = await currentModpack()
-  const version = modpack?.minecraftVersion || getSettings().minecraftVersion
   return {
     name: game.name,
     wiki: game.wiki,
-    minecraft: {
-      recipeVersion: modpack ? recipeVersionFor(version) : version,
-      edition: `Java Edition ${version}`,
-      modpack
-    }
+    minecraft: modpack?.minecraftVersion
+      ? {
+          recipeVersion: recipeVersionFor(modpack.minecraftVersion),
+          edition: `Java Edition ${modpack.minecraftVersion}`,
+          modpack
+        }
+      : { recipeVersion: latestRecipeVersion(), edition: '', modpack }
   }
 }

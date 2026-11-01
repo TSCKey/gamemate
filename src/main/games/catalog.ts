@@ -1,281 +1,127 @@
-// Games GameMate knows: how to recognise them on screen, their wiki, and what the companion
-// should watch for. Players can add any other game themselves (see CustomGame).
+// The games GameMate helps with: Minecraft (built in, with its recipes, wiki and modpacks) and the
+// games the player's scan found or the player added. Nothing about other games is built in except
+// a few hints for well-known competitive games.
 import type { WikiSite } from '../wiki'
+import type { Launcher } from './launchers'
 
 export interface GameProfile {
   id: string
   name: string
-  // Lower-case program names of the running game.
+  // Lower-case program names of the running game (added games, and Minecraft).
   exes: (string | RegExp)[]
+  // Games found by a scan: any program running from inside this folder is the game.
+  installDir?: string
   // For games that run as a generic program (Minecraft runs on Java): the window title or the
   // program's folder must also match one of these.
   title?: RegExp
   pathHint?: RegExp
   wiki?: WikiSite
+  // Ranked online games, where AI help during matches may break the game's rules.
+  competitive?: boolean
   // What matters on screen in this game, for the companion.
   watchFor: string
   // Example questions for an empty chat.
   examples: [string, string]
 }
 
-// A game the player added: the program they picked, and optionally a wiki address.
-export interface CustomGame {
+// A game found by a scan or added by the player.
+export interface SavedGame {
   id: string
   name: string
-  exe: string
+  launcher: Launcher | 'manual'
+  installDir?: string
+  // Program file name, for games added from the running programs.
+  exe?: string
   wiki?: WikiSite
 }
 
-const wiki = (name: string, api: string, articlePath: string, license: string): WikiSite => ({
-  name,
-  api,
-  articlePath,
-  license
-})
+export const MINECRAFT: GameProfile = {
+  id: 'minecraft',
+  name: 'Minecraft',
+  // Java Edition runs on Java; Bedrock is Minecraft.Windows.exe.
+  exes: ['javaw.exe', 'java.exe', 'minecraft.windows.exe'],
+  title: /^minecraft(\*?\s+\d|$)/i,
+  // Modpacks often change the window title; their Java comes from the launcher's folder.
+  pathHint: /minecraft|curseforge|modrinth|prismlauncher|multimc|atlauncher|gdlauncher/i,
+  wiki: {
+    name: 'Minecraft Wiki',
+    api: 'https://minecraft.wiki/api.php',
+    articlePath: 'https://minecraft.wiki/w/$1',
+    license: 'CC BY-NC-SA 3.0'
+  },
+  watchFor:
+    'the "You Died!" screen, the health bar dropping to 3 hearts or fewer, creepers, zombies, skeletons or spiders close by, dark caves where mobs can spawn, villages, structures and diamonds',
+  examples: ['How do I craft a piston?', 'How do I build a Nether portal?']
+}
 
-export const GAMES: GameProfile[] = [
+const GENERIC_WATCH = 'danger, enemies or bosses close by, low health, death and notable finds'
+const GENERIC_EXAMPLES: [string, string] = ['What should I do next?', 'Any tips for where I am?']
+
+// What to watch for in well-known competitive games, matched by name.
+const HINTS: { name: RegExp; watchFor: string; examples: [string, string] }[] = [
   {
-    id: 'minecraft',
-    name: 'Minecraft',
-    // Java Edition runs on Java; Bedrock is Minecraft.Windows.exe.
-    exes: ['javaw.exe', 'java.exe', 'minecraft.windows.exe'],
-    title: /^minecraft(\*?\s+\d|$)/i,
-    // Modpacks often change the window title; their Java comes from the launcher's folder.
-    pathHint: /minecraft|curseforge|modrinth|prismlauncher|multimc|atlauncher|gdlauncher/i,
-    wiki: wiki(
-      'Minecraft Wiki',
-      'https://minecraft.wiki/api.php',
-      'https://minecraft.wiki/w/$1',
-      'CC BY-NC-SA 3.0'
-    ),
-    watchFor:
-      'the "You Died!" screen, the health bar dropping to 3 hearts or fewer, creepers, zombies, skeletons or spiders close by, dark caves where mobs can spawn, villages, structures and diamonds',
-    examples: ['How do I craft a piston?', 'How do I build a Nether portal?']
+    name: /^valorant$/i,
+    watchFor: 'the spike being planted or defused, low health, the round being won or lost',
+    examples: ['Which agent is good for beginners?', 'How does Jett’s dash work?']
   },
   {
-    id: 'terraria',
-    name: 'Terraria',
-    exes: ['terraria.exe', 'tmodloader.exe'],
-    wiki: wiki(
-      'Terraria Wiki',
-      'https://terraria.wiki.gg/api.php',
-      'https://terraria.wiki.gg/wiki/$1',
-      'CC BY-NC-SA 4.0'
-    ),
-    watchFor:
-      'bosses and strong enemies, low health, events like the Blood Moon or invasions, rare drops and chests',
-    examples: ['How do I summon the Eye of Cthulhu?', 'What should I do after beating Skeletron?']
+    name: /^overwatch/i,
+    watchFor: 'low health, the ultimate being ready, the objective being contested, team fights',
+    examples: ['How do I counter Widowmaker?', 'Which tank is easiest to learn?']
   },
   {
-    id: 'valheim',
-    name: 'Valheim',
-    exes: ['valheim.exe'],
-    wiki: wiki(
-      'Valheim Wiki',
-      'https://valheim.fandom.com/api.php',
-      'https://valheim.fandom.com/wiki/$1',
-      'CC BY-SA'
-    ),
-    watchFor:
-      'trolls, bosses and other enemies close by, low health or stamina, raids, being cold or wet',
-    examples: ['How do I beat Eikthyr?', 'Where do I find copper?']
+    name: /^marvel rivals$/i,
+    watchFor: 'low health, the ultimate being ready, the payload or objective status',
+    examples: ['Which hero is good for beginners?', 'How do team-up abilities work?']
   },
   {
-    id: 'eldenring',
-    name: 'Elden Ring',
-    exes: ['eldenring.exe'],
-    wiki: wiki(
-      'Eldenpedia',
-      'https://eldenring.wiki.gg/api.php',
-      'https://eldenring.wiki.gg/wiki/$1',
-      'CC BY-SA 4.0'
-    ),
-    watchFor: 'boss fights, low HP, being surrounded, Sites of Grace and notable items',
-    examples: ['How do I beat Margit, the Fell Omen?', 'Where can I upgrade my flask?']
+    name: /^counter-strike/i,
+    watchFor: 'the bomb being planted, low health, the round being won or lost',
+    examples: ['How do I spray control the AK-47?', 'When should I save money?']
   },
   {
-    id: 'bg3',
-    name: "Baldur's Gate 3",
-    exes: ['bg3.exe', 'bg3_dx11.exe'],
-    wiki: wiki(
-      'bg3.wiki',
-      'https://bg3.wiki/w/api.php',
-      'https://bg3.wiki/wiki/$1',
-      'CC BY-NC-SA 4.0 or CC BY-SA 4.0'
-    ),
-    watchFor:
-      'party members with low HP in combat, dangerous enemies, important dialogue choices and loot',
-    examples: ['How does Bardic Inspiration work?', 'Where is the Owlbear cave?']
+    name: /^league of legends$/i,
+    watchFor: 'low health, dragon or Baron being taken, towers falling',
+    examples: ['Which champion is good for beginners?', 'How do I farm better?']
   },
   {
-    id: 'satisfactory',
-    name: 'Satisfactory',
-    exes: [/^factorygame.*-win64-shipping\.exe$/],
-    wiki: wiki(
-      'Satisfactory Wiki',
-      'https://satisfactory.wiki.gg/api.php',
-      'https://satisfactory.wiki.gg/wiki/$1',
-      'CC BY-NC-SA 4.0'
-    ),
-    watchFor: 'power failures, hostile creatures close by, low health and notable resource nodes',
-    examples: ['How do I make Reinforced Iron Plates?', 'How do I unlock coal power?']
+    name: /^apex legends$/i,
+    watchFor: 'the ring closing, low health or shields, enemies close by',
+    examples: ['Which legend is good for beginners?', 'Where should I land?']
   },
   {
-    id: 'factorio',
-    name: 'Factorio',
-    exes: ['factorio.exe'],
-    wiki: wiki(
-      'Official Factorio Wiki',
-      'https://wiki.factorio.com/api.php',
-      'https://wiki.factorio.com/$1',
-      'CC BY-NC-SA 3.0'
-    ),
-    watchFor:
-      'biters attacking, damaged buildings, power or production stopping, low ammo in turrets',
-    examples: ['How do I make red circuits?', 'How do I set up oil processing?']
+    name: /^fortnite$/i,
+    watchFor: 'the storm closing, low health or shields, enemies close by',
+    examples: ['How do I build faster?', 'Where should I land?']
   },
   {
-    id: 'rimworld',
-    name: 'RimWorld',
-    exes: ['rimworldwin64.exe'],
-    wiki: wiki(
-      'RimWorld Wiki',
-      'https://rimworldwiki.com/api.php',
-      'https://rimworldwiki.com/wiki/$1',
-      'CC BY-SA 3.0'
-    ),
-    watchFor: 'raids, colonists in danger, mental breaks, fires, low food and bad events',
-    examples: ['How do I stop food poisoning?', 'How do I defend against raids?']
+    name: /^(rainbow six|tom clancy's rainbow six)/i,
+    watchFor: 'low health, the defuser or objective, the round being won or lost',
+    examples: ['Which operator is good for beginners?', 'How do I use drones well?']
   },
   {
-    id: 'dontstarve',
-    name: "Don't Starve",
-    exes: ['dontstarve_steam_x64.exe', 'dontstarve_steam.exe', 'dontstarve.exe'],
-    wiki: wiki(
-      "Don't Starve Wiki",
-      'https://dontstarve.wiki.gg/api.php',
-      'https://dontstarve.wiki.gg/wiki/$1',
-      'CC BY-SA 4.0'
-    ),
-    watchFor:
-      'low health, hunger or sanity, night falling, hounds, bosses and other dangers close by',
-    examples: ['How do I survive my first winter?', 'How do I make a Science Machine?']
+    name: /^rocket league$/i,
+    watchFor: 'goals scored or conceded, low boost, overtime',
+    examples: ['How do I aerial?', 'How do I rotate properly?']
   },
   {
-    id: 'subnautica',
-    name: 'Subnautica',
-    exes: ['subnautica.exe', 'subnauticazero.exe'],
-    wiki: wiki(
-      'Subnautica Wiki',
-      'https://subnautica.fandom.com/api.php',
-      'https://subnautica.fandom.com/wiki/$1',
-      'CC BY-SA'
-    ),
-    watchFor: 'low oxygen, leviathans and hostile creatures close by, low health and new biomes',
-    examples: ['Where do I find lithium?', 'How do I build the Seamoth?']
-  },
-  {
-    id: 'nomanssky',
-    name: "No Man's Sky",
-    exes: ['nms.exe'],
-    wiki: wiki(
-      "No Man's Sky Wiki",
-      'https://nomanssky.fandom.com/api.php',
-      'https://nomanssky.fandom.com/wiki/$1',
-      'CC BY-NC-SA'
-    ),
-    watchFor:
-      'sentinels attacking, hazard protection or life support running low, low health and notable discoveries',
-    examples: ['How do I get a better starship?', 'How do I make antimatter?']
-  },
-  {
-    id: 'hollowknight',
-    name: 'Hollow Knight',
-    exes: ['hollow_knight.exe'],
-    wiki: wiki(
-      'Hollow Knight Wiki',
-      'https://hollowknight.fandom.com/api.php',
-      'https://hollowknight.fandom.com/wiki/$1',
-      'CC BY-SA'
-    ),
-    watchFor: 'boss fights, few masks (health) left, benches and new areas',
-    examples: ['How do I beat the False Knight?', 'Where do I find the Mothwing Cloak?']
-  },
-  {
-    id: 'hades',
-    name: 'Hades',
-    exes: ['hades.exe', 'hades2.exe'],
-    wiki: wiki(
-      'Hades Wiki',
-      'https://hades.fandom.com/api.php',
-      'https://hades.fandom.com/wiki/$1',
-      'CC BY-NC-SA'
-    ),
-    watchFor: 'boss fights, low health, boon choices and notable rewards',
-    examples: ['Which weapon is best for beginners?', 'How do I beat Megaera?']
-  },
-  {
-    id: 'skyrim',
-    name: 'Skyrim',
-    exes: ['skyrimse.exe', 'tesv.exe'],
-    wiki: wiki(
-      'UESP',
-      'https://en.uesp.net/w/api.php',
-      'https://en.uesp.net/wiki/$1',
-      'CC BY-SA 2.5'
-    ),
-    watchFor: 'dragons and strong enemies, low health, notable loot and quest moments',
-    examples: ['How do I join the Companions?', 'Where can I learn the Fire Breath shout?']
-  },
-  {
-    id: 'witcher3',
-    name: 'The Witcher 3',
-    exes: ['witcher3.exe'],
-    wiki: wiki(
-      'Witcher Wiki',
-      'https://witcher.fandom.com/api.php',
-      'https://witcher.fandom.com/wiki/$1',
-      'CC BY-SA'
-    ),
-    watchFor: 'monsters and strong enemies, low vitality, contracts and notable loot',
-    examples: ['Which oil works against drowners?', 'How do I get the Griffin armor?']
-  },
-  {
-    id: 'cyberpunk',
-    name: 'Cyberpunk 2077',
-    exes: ['cyberpunk2077.exe'],
-    wiki: wiki(
-      'Cyberpunk Wiki',
-      'https://cyberpunk.fandom.com/api.php',
-      'https://cyberpunk.fandom.com/wiki/$1',
-      'CC BY-SA'
-    ),
-    watchFor: 'enemies, low health, police wanted level and notable loot',
-    examples: ['Which perks are good for a netrunner?', 'How do I get the Mantis Blades?']
-  },
-  {
-    id: 'palworld',
-    name: 'Palworld',
-    exes: ['palworld-win64-shipping.exe'],
-    wiki: wiki(
-      'Palworld Wiki',
-      'https://palworld.wiki.gg/api.php',
-      'https://palworld.wiki.gg/wiki/$1',
-      'CC BY-SA 4.0'
-    ),
-    watchFor: 'raids and hostile Pals close by, low health or hunger, rare Pals and bosses',
-    examples: ['Where do I find Anubis?', 'How do I breed Pals?']
+    name: /^(dota 2|2xko|brawlhalla)$/i,
+    watchFor: 'low health, the round or match being won or lost',
+    examples: ['Who is good for beginners?', 'How do I get better at this?']
   }
 ]
 
-// What a player-added game looks like to the rest of GameMate.
-export function customGameProfile(game: CustomGame): GameProfile {
+// What the rest of GameMate knows about a found or added game.
+export function savedGameProfile(game: SavedGame): GameProfile {
+  const hint = HINTS.find((h) => h.name.test(game.name))
   return {
     id: game.id,
     name: game.name,
-    exes: [game.exe.toLowerCase()],
+    exes: game.exe ? [game.exe.toLowerCase()] : [],
+    installDir: game.installDir,
     wiki: game.wiki,
-    watchFor: 'danger, enemies or bosses close by, low health, death and notable finds',
-    examples: ['What should I do next?', 'Any tips for where I am?']
+    competitive: Boolean(hint),
+    watchFor: hint?.watchFor ?? GENERIC_WATCH,
+    examples: hint?.examples ?? GENERIC_EXAMPLES
   }
 }

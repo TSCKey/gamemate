@@ -76,7 +76,7 @@ function wikiRules(ctx: AssistantContext): string {
 
 function systemPrompt(ctx: AssistantContext): string {
   const { game } = ctx
-  const playing = game.minecraft ? `Minecraft ${game.minecraft.edition}` : game.name
+  const playing = game.minecraft?.edition ? `Minecraft ${game.minecraft.edition}` : game.name
   return [
     'You are GameMate, a friendly AI companion that helps people while they play video games.',
     `The player is playing ${playing}.`,

@@ -1,5 +1,6 @@
 // Picks the AI engine for a job from the player's settings, and in Auto mode decides
 // per question whether the local model or Gemini should answer.
+import { latestRecipeVersion } from './games/current'
 import { findMentionedItems } from './games/minecraft'
 import type { LlmEngine } from './llm'
 import { isLocalModelInstalled } from './localModels'
@@ -71,7 +72,7 @@ function autoRoute(question: string, hasImages: boolean, messages: number): Rout
     question,
     hasImages,
     messages,
-    mentionsItem: findMentionedItems(getSettings().minecraftVersion, question).length > 0
+    mentionsItem: findMentionedItems(latestRecipeVersion(), question).length > 0
   })
   return cloud
     ? { engine: gemini, fallback: local, reason }

@@ -1393,3 +1393,8 @@ button.link:hover:not(:disabled) {
   min-width: 0;
   flex: 1;
 }
+
+.badge.is-warning {
+  color: #f0c36a;
+  background-color: rgba(210, 153, 34, 0.15);
+}

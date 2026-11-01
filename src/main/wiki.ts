@@ -204,6 +204,87 @@ export async function lookupWiki(site: WikiSite, query: string): Promise<WikiLoo
   return result
 }
 
+async function siteAt(api: string): Promise<WikiSite | null> {
+  const info = await fetch(
+    `${api}?${new URLSearchParams({
+      action: 'query',
+      meta: 'siteinfo',
+      siprop: 'general|rightsinfo',
+      format: 'json',
+      formatversion: '2'
+    })}`,
+    { headers: { 'User-Agent': USER_AGENT }, signal: AbortSignal.timeout(TIMEOUT_MS) }
+  )
+    .then((res) => (res.ok ? res.json() : null))
+    .catch(() => null)
+  const general = info?.query?.general as
+    { sitename: string; server: string; articlepath: string } | undefined
+  if (!general) return null
+  const server = general.server.startsWith('//') ? `https:${general.server}` : general.server
+  return {
+    name: general.sitename,
+    api,
+    articlePath: `${server}${general.articlepath}`,
+    license: info?.query?.rightsinfo?.text || 'see the wiki for its license'
+  }
+}
+
+// Words in a wiki's name that say nothing about which game it covers.
+const GENERIC = new Set([
+  'wiki',
+  'wikia',
+  'the',
+  'official',
+  'fandom',
+  'community',
+  'unofficial',
+  'database',
+  'encyclopedia',
+  'of'
+])
+
+function nameWords(text: string): string[] {
+  return (
+    text
+      .normalize('NFD')
+      // Drop accents: "Ragnarök" -> "ragnarok".
+      .replace(/\p{Diacritic}/gu, '')
+      .toLowerCase()
+      .replace(/[™®©'’.!]/g, '')
+      .replace(/&/g, 'and')
+      .match(/[a-z0-9]+/g) ?? []
+  )
+}
+
+// Looks for a game's community wiki on wiki.gg and Fandom by its name, e.g. "Marvel Rivals" ->
+// marvelrivals.wiki.gg. Only the game's name is sent. Null if none is found.
+export async function findWikiForGame(name: string): Promise<WikiSite | null> {
+  const parts = nameWords(name)
+  if (!parts.length) return null
+  // Also without a trailing number ("Overwatch 2") or the part after a colon ("Call of Duty: …").
+  const noNumber = parts.filter((p, i) => !(i === parts.length - 1 && /^\d+$/.test(p)))
+  const beforeColon = name.includes(':') ? nameWords(name.split(':')[0]) : []
+  const slugs = [
+    ...new Set(
+      [parts, noNumber, beforeColon]
+        .filter((w) => w.length)
+        .flatMap((w) => [w.join(''), w.join('-')])
+    )
+  ]
+  const gameWords = new Set(parts.filter((p) => !/^\d+$/.test(p)))
+  for (const slug of slugs) {
+    for (const api of [`https://${slug}.wiki.gg/api.php`, `https://${slug}.fandom.com/api.php`]) {
+      const site = await siteAt(api)
+      if (!site) continue
+      // Make sure the wiki is about this game: most words of its name are the game's words.
+      const named = nameWords(site.name).filter((w) => !GENERIC.has(w) && !/^\d+$/.test(w))
+      const shared = named.filter((w) => gameWords.has(w)).length
+      if (named.length && shared * 2 >= named.length) return site
+    }
+  }
+  return null
+}
+
 // Finds a MediaWiki site from any address on it (for games players add themselves).
 export async function discoverWiki(address: string): Promise<WikiSite> {
   let origin: string

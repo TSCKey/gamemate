@@ -1,19 +1,64 @@
 import { useEffect, useState } from 'react'
-import type { GamesState, ModpackSummary, RunningApp, Settings } from '../../../preload/index.d'
+import type {
+  GameInfo,
+  GamesState,
+  ModpackSummary,
+  RunningApp,
+  Settings
+} from '../../../preload/index.d'
 import { errorMessage } from '../useSettings'
 import { Field, Section, Toggle } from './ui'
 
-// A player-added game: its wiki can be set or removed.
-function CustomGameRow({
+const LAUNCHERS: Record<GameInfo['launcher'], string> = {
+  builtin: 'Built in',
+  steam: 'Steam',
+  epic: 'Epic Games',
+  battlenet: 'Battle.net',
+  riot: 'Riot',
+  manual: 'Added by you'
+}
+
+// What the player agrees to before GameMate looks at anything on their PC.
+function DetectionConsent({ onAgree }: { onAgree: () => void }): React.JSX.Element {
+  const [checked, setChecked] = useState(false)
+  return (
+    <div className="consent">
+      <p>GameMate can find your games and follow the one you&apos;re playing. To do that it:</p>
+      <ul className="privacy-list">
+        <li>
+          Reads the game lists of Steam, Epic Games, Battle.net and Riot on this PC, and your
+          CurseForge Minecraft modpacks, when you click <strong>Scan for games</strong>.
+        </li>
+        <li>
+          Looks up a wiki for each game it finds, sending only the game&apos;s name to wiki.gg and
+          Fandom.
+        </li>
+        <li>Reads the name of the program in front while you play, to know which game it is.</li>
+        <li>Keeps everything on this PC. Turning this off forgets all the games it found.</li>
+      </ul>
+      <label className="check">
+        <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+        Allow GameMate to look for games on this PC.
+      </label>
+      <div className="button-row">
+        <button type="button" className="primary" disabled={!checked} onClick={onAgree}>
+          Allow and scan for games
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// A found or added game: launcher, wiki (which can be set or removed), and removal.
+function GameRow({
   game,
-  wiki,
   onChange
 }: {
-  game: { id: string; name: string; exe: string | null }
-  wiki: string | null
+  game: GameInfo
   onChange: (state: GamesState) => void
 }): React.JSX.Element {
   const [address, setAddress] = useState('')
+  const [editing, setEditing] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -23,6 +68,7 @@ function CustomGameRow({
     try {
       onChange(await window.api.games.setWiki(game.id, value))
       setAddress('')
+      setEditing(false)
     } catch (e) {
       setError(errorMessage(e))
     } finally {
@@ -34,11 +80,17 @@ function CustomGameRow({
     <div className="model-row">
       <div className="model-info">
         <div className="field-label">
-          {game.name} <span className="badge">{game.exe}</span>
+          {game.name} <span className="badge">{LAUNCHERS[game.launcher]}</span>
+          {game.competitive && (
+            <span
+              className="badge is-warning"
+              title="Ranked online game: AI help during matches may break its rules"
+            >
+              Competitive
+            </span>
+          )}
         </div>
-        {wiki ? (
-          <div className="field-help">Wiki: {wiki}</div>
-        ) : (
+        {editing || !game.wiki ? (
           <form
             className="key-form game-wiki-form"
             onSubmit={(e) => {
@@ -50,23 +102,29 @@ function CustomGameRow({
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Wiki address (optional), e.g. https://hades.fandom.com"
+              placeholder={
+                game.wiki
+                  ? 'New wiki address'
+                  : 'No wiki found. Paste its address, e.g. https://…fandom.com'
+              }
               aria-label={`Wiki address for ${game.name}`}
               spellCheck={false}
             />
             <button type="submit" disabled={busy || !address.trim()}>
-              {busy ? 'Checking…' : 'Add wiki'}
+              {busy ? 'Checking…' : 'Use wiki'}
             </button>
           </form>
+        ) : (
+          <div className="field-help">
+            Wiki: {game.wiki}{' '}
+            <button type="button" className="link" onClick={() => setEditing(true)}>
+              Change
+            </button>
+          </div>
         )}
         {error && <div className="error-text">{error}</div>}
       </div>
       <div className="model-actions">
-        {wiki && (
-          <button type="button" onClick={() => saveWiki('')} disabled={busy}>
-            Remove wiki
-          </button>
-        )}
         <button
           type="button"
           onClick={async () => onChange(await window.api.games.remove(game.id))}
@@ -155,130 +213,148 @@ function AddGame({ onAdded }: { onAdded: (state: GamesState) => void }): React.J
 
 function GamesPanel({
   settings,
-  update,
-  versions
+  update
 }: {
   settings: Settings
   update: (patch: Partial<Settings>) => void
-  versions: string[]
 }): React.JSX.Element {
   const [games, setGames] = useState<GamesState | null>(null)
   const [packs, setPacks] = useState<ModpackSummary[] | null>(null)
   const [current, setCurrent] = useState<ModpackSummary | null>(null)
+  const [scanning, setScanning] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const consent = settings.deviceConsent
 
   useEffect(() => {
     window.api.games.state().then(setGames)
-    window.api.modpacks.list().then(setPacks)
-  }, [])
+  }, [settings.games])
+  useEffect(() => {
+    if (consent) window.api.modpacks.list().then(setPacks)
+  }, [consent])
   useEffect(() => {
     window.api.modpacks.current().then(setCurrent)
-  }, [settings.minecraftModpack])
+  }, [settings.minecraftModpack, consent])
 
-  const custom = games?.games.filter((g) => g.custom) ?? []
-  const builtIn = games?.games.filter((g) => !g.custom) ?? []
+  const scan = async (): Promise<void> => {
+    setScanning(true)
+    setError(null)
+    try {
+      setGames(await window.api.games.scan())
+      setPacks(await window.api.modpacks.list())
+    } catch (e) {
+      setError(errorMessage(e))
+    } finally {
+      setScanning(false)
+    }
+  }
+
+  const found = games?.games.filter((g) => g.launcher !== 'builtin') ?? []
   const choice = settings.minecraftModpack
 
   return (
     <>
-      <Section title="Which game">
-        <Field
-          label="Follow the game I'm playing"
-          help="When you press the shortcut or the companion is watching, GameMate switches to the game in front. It only reads the name of the program in front."
-        >
-          <Toggle
-            label="Follow the game I'm playing"
-            checked={settings.autoDetectGame}
-            onChange={(autoDetectGame) => update({ autoDetectGame })}
+      <Section
+        title="Find your games"
+        description="GameMate knows Minecraft out of the box. Your other games come from a scan of this PC."
+      >
+        {!consent ? (
+          <DetectionConsent
+            onAgree={async () => {
+              update({ deviceConsent: true })
+              await scan()
+            }}
           />
-        </Field>
-        <Field label="Current game">
-          <select
-            value={settings.currentGame}
-            onChange={(e) => update({ currentGame: e.target.value })}
-            aria-label="Current game"
-          >
-            {(games?.games ?? []).map((g) => (
-              <option key={g.id} value={g.id}>
-                {g.name}
-              </option>
-            ))}
-          </select>
-        </Field>
+        ) : (
+          <>
+            <Field
+              label={scanning ? 'Scanning…' : `${found.length} games found`}
+              help="Looks through Steam, Epic Games, Battle.net and Riot, and finds each game's wiki. Run it again after installing a game."
+            >
+              <button type="button" className="primary" onClick={scan} disabled={scanning}>
+                {scanning ? 'Scanning…' : 'Scan for games'}
+              </button>
+            </Field>
+            <Field
+              label="Follow the game I'm playing"
+              help="When you press the shortcut or the companion is watching, GameMate switches to the game in front."
+            >
+              <Toggle
+                label="Follow the game I'm playing"
+                checked={settings.autoDetectGame}
+                onChange={(autoDetectGame) => update({ autoDetectGame })}
+              />
+            </Field>
+            <Field
+              label="Stop looking for games"
+              help="Turns detection off and forgets every game GameMate found."
+            >
+              <button
+                type="button"
+                className="danger"
+                onClick={() => update({ deviceConsent: false })}
+              >
+                Turn off
+              </button>
+            </Field>
+          </>
+        )}
+        {error && <p className="error-text">{error}</p>}
       </Section>
 
-      <Section
-        title="Minecraft modpacks"
-        description="GameMate reads your CurseForge modpacks on this PC, so answers know which mods you have. With another launcher, it reads the mods of the pack that's running."
-      >
-        <Field
-          label="Modpack"
-          help={
-            current
-              ? `Using ${current.name}${current.minecraftVersion ? ` (Minecraft ${current.minecraftVersion}` : ''}${current.loader ? `, ${current.loader}` : ''}${current.minecraftVersion ? ')' : ''}, ${current.modCount} mods.`
-              : choice === 'auto'
-                ? 'No modpack running right now. Start one, or pick it here.'
-                : 'Plain Minecraft, without mods.'
-          }
+      {consent && (
+        <Section
+          title="Your games"
+          description="Wikis were found by each game's name. If one is missing or wrong, paste the right address."
         >
-          <select
-            value={choice}
-            onChange={(e) => update({ minecraftModpack: e.target.value })}
-            aria-label="Modpack"
+          {found.map((g) => (
+            <GameRow key={g.id} game={g} onChange={setGames} />
+          ))}
+          <div className="button-row">
+            <AddGame onAdded={setGames} />
+          </div>
+          {found.some((g) => g.competitive) && (
+            <p className="field-help">
+              Competitive games: check the game&apos;s rules before using the companion during
+              ranked matches.
+            </p>
+          )}
+        </Section>
+      )}
+
+      {consent && (
+        <Section
+          title="Minecraft modpacks"
+          description="Your CurseForge modpacks on this PC, so answers know which mods you have. With another launcher, GameMate reads the mods of the pack that's running."
+        >
+          <Field
+            label="Modpack"
+            help={
+              current
+                ? `Using ${current.name}${current.minecraftVersion ? `, Minecraft ${current.minecraftVersion}` : ''}${current.loader ? `, ${current.loader}` : ''}, ${current.modCount} mods.`
+                : choice === 'auto'
+                  ? 'No modpack running right now. Start one, or pick it here.'
+                  : 'Plain Minecraft, without mods.'
+            }
           >
-            <option value="auto">Detect the one I&apos;m playing</option>
-            <option value="">None (plain Minecraft)</option>
-            {(packs ?? []).map((p) => (
-              <option key={p.path} value={p.path}>
-                {p.name} · {p.minecraftVersion} · {p.modCount} mods
-              </option>
-            ))}
-            {choice && choice !== 'auto' && !packs?.some((p) => p.path === choice) && (
-              <option value={choice}>{current?.name ?? choice}</option>
-            )}
-          </select>
-        </Field>
-        {!current && (
-          <Field label="Minecraft version" help="Recipes are shown for this version.">
             <select
-              value={settings.minecraftVersion}
-              onChange={(e) => update({ minecraftVersion: e.target.value })}
-              aria-label="Minecraft version"
+              value={choice}
+              onChange={(e) => update({ minecraftModpack: e.target.value })}
+              aria-label="Modpack"
             >
-              {versions.map((v) => (
-                <option key={v} value={v}>
-                  Minecraft {v}
+              <option value="auto">Detect the one I&apos;m playing</option>
+              <option value="">None (plain Minecraft)</option>
+              {(packs ?? []).map((p) => (
+                <option key={p.path} value={p.path}>
+                  {p.name} · {p.minecraftVersion} · {p.modCount} mods
                 </option>
               ))}
+              {choice && choice !== 'auto' && !packs?.some((p) => p.path === choice) && (
+                <option value={choice}>{current?.name ?? choice}</option>
+              )}
             </select>
           </Field>
-        )}
-      </Section>
-
-      <Section
-        title="Your games"
-        description="Add any game GameMate doesn't know yet. Start it first, then pick it from the list. Adding its wiki lets GameMate look things up for it."
-      >
-        {custom.map((g) => (
-          <CustomGameRow key={g.id} game={g} wiki={g.wiki} onChange={(state) => setGames(state)} />
-        ))}
-        <div className="button-row">
-          <AddGame onAdded={(state) => setGames(state)} />
-        </div>
-      </Section>
-
-      <Section
-        title="Games GameMate knows"
-        description="Recognized automatically, with their wikis for looking things up."
-      >
-        <ul className="game-list">
-          {builtIn.map((g) => (
-            <li key={g.id}>
-              <span className="field-label">{g.name}</span>
-              {g.wiki && <span className="field-help">{g.wiki}</span>}
-            </li>
-          ))}
-        </ul>
-      </Section>
+        </Section>
+      )}
     </>
   )
 }

@@ -34,7 +34,6 @@ function App(): React.JSX.Element {
   const localModels = useLocalModels()
   const games = useGames(settings)
   const modpack = useModpack(settings)
-  const [versions, setVersions] = useState<string[]>([])
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
   const [companion, setCompanion] = useState<CompanionState | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -83,7 +82,6 @@ function App(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
-    window.api.listMinecraftVersions().then(setVersions)
     window.api.getAppInfo().then(setAppInfo)
     window.api.companion.getState().then(setCompanion)
     const stopCompanion = window.api.companion.onState(setCompanion)
@@ -177,7 +175,6 @@ function App(): React.JSX.Element {
           modelError={modelError}
           reloadModels={reloadModels}
           localModels={localModels}
-          versions={versions}
           appInfo={appInfo}
         />
         {notice}
@@ -199,7 +196,6 @@ function App(): React.JSX.Element {
                 settings={settings}
                 update={update}
                 games={games}
-                versions={versions}
                 modpack={modpack}
                 onOpenSettings={() => setSettingsTab('games')}
               />

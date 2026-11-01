@@ -29,16 +29,17 @@ import {
   removeLocalModel
 } from './localModels'
 import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
-import { listVersions } from './games/minecraft'
 import { runningApps } from './games/apps'
 import { allGames, currentModpack, followForegroundGame, gameContext } from './games/current'
+import { scanLaunchers } from './games/launchers'
 import { listCurseForgeModpacks, type ModpackSummary } from './games/modpacks'
-import { discoverWiki } from './wiki'
+import type { SavedGame } from './games/catalog'
+import { discoverWiki, findWikiForGame } from './wiki'
 import {
   getSettings,
   onSettingsChanged,
   resetSettings,
-  setCustomGames,
+  setGames,
   updateSettings,
   type Settings
 } from './settings'
@@ -157,15 +158,20 @@ function registerHandlers(): void {
   })
 
   ipcMain.handle('games:state', () => gamesState())
-  ipcMain.handle('games:running-apps', () => runningApps())
+  ipcMain.handle('games:scan', () => scanGames())
+  ipcMain.handle('games:running-apps', () => {
+    requireConsent()
+    return runningApps()
+  })
   ipcMain.handle('games:add', (_event, exe: unknown, name: unknown) => {
+    requireConsent()
     if (typeof exe !== 'string' || !/^[\w .()&+'-]{1,80}\.exe$/i.test(exe)) {
       throw new Error('That program can’t be added.')
     }
     const title = typeof name === 'string' ? name.trim().slice(0, 60) : ''
     if (!title) throw new Error('Give the game a name.')
-    const { customGames } = getSettings()
-    if (customGames.length >= 30) throw new Error('You can add up to 30 games.')
+    const { games } = getSettings()
+    if (games.length >= 300) throw new Error('That’s too many games.')
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -173,23 +179,23 @@ function registerHandlers(): void {
       .slice(0, 30)
     let id = `custom-${slug || 'game'}`
     for (let n = 2; allGames().some((g) => g.id === id); n++) id = `custom-${slug || 'game'}-${n}`
-    setCustomGames([...customGames, { id, name: title, exe }])
-    updateSettings({ currentGame: id }, listVersions())
+    setGames([...games, { id, name: title, launcher: 'manual', exe }])
+    updateSettings({ currentGame: id })
     return gamesState()
   })
   ipcMain.handle('games:remove', (_event, id: unknown) => {
-    setCustomGames(getSettings().customGames.filter((g) => g.id !== id))
+    setGames(getSettings().games.filter((g) => g.id !== id))
     return gamesState()
   })
   ipcMain.handle('games:set-wiki', async (_event, id: unknown, address: unknown) => {
-    const { customGames } = getSettings()
-    const game = customGames.find((g) => g.id === id)
+    const { games } = getSettings()
+    const game = games.find((g) => g.id === id)
     if (!game || typeof address !== 'string') throw new Error('Unknown game.')
     const wiki = address.trim() ? await discoverWiki(address) : undefined
-    setCustomGames(customGames.map((g) => (g.id === game.id ? { ...g, wiki } : g)))
+    setGames(games.map((g) => (g.id === game.id ? { ...g, wiki } : g)))
     return gamesState()
   })
-  ipcMain.handle('modpacks:list', () => cachedModpackList())
+  ipcMain.handle('modpacks:list', () => (getSettings().deviceConsent ? cachedModpackList() : []))
   ipcMain.handle('modpacks:current', async (): Promise<ModpackSummary | null> => {
     const pack = await currentModpack()
     return pack
@@ -220,7 +226,7 @@ function registerHandlers(): void {
     const done = await downloadLocalModel(id)
     // A freshly downloaded model is used if the chosen one isn't there yet.
     if (done && !isLocalModelInstalled(getSettings().builtinModel)) {
-      updateSettings({ builtinModel: id }, listVersions())
+      updateSettings({ builtinModel: id })
     }
   })
   ipcMain.handle('local-models:cancel', async (_event, id: unknown) => {
@@ -263,10 +269,7 @@ function registerHandlers(): void {
   })
 
   ipcMain.handle('settings:get', () => getSettings())
-  ipcMain.handle('settings:update', (_event, patch: unknown) =>
-    updateSettings(patch, listVersions())
-  )
-  ipcMain.handle('minecraft:versions', () => listVersions())
+  ipcMain.handle('settings:update', (_event, patch: unknown) => updateSettings(patch))
   ipcMain.handle('app:info', () => ({
     shortcut: SHORTCUT,
     shortcutRegistered,
@@ -378,26 +381,56 @@ function gamesState(): {
     name: string
     wiki: string | null
     examples: [string, string]
-    custom: boolean
+    launcher: SavedGame['launcher'] | 'builtin'
+    competitive: boolean
     exe: string | null
   }[]
   current: string
 } {
-  const { customGames, currentGame } = getSettings()
+  const { games, currentGame } = getSettings()
   return {
     games: allGames().map((g) => {
-      const custom = customGames.find((c) => c.id === g.id)
+      const saved = games.find((s) => s.id === g.id)
       return {
         id: g.id,
         name: g.name,
         wiki: g.wiki?.name ?? null,
         examples: g.examples,
-        custom: Boolean(custom),
-        exe: custom?.exe ?? null
+        launcher: saved?.launcher ?? 'builtin',
+        competitive: Boolean(g.competitive),
+        exe: saved?.exe ?? null
       }
     }),
     current: currentGame
   }
+}
+
+function requireConsent(): void {
+  if (!getSettings().deviceConsent) {
+    throw new Error('Allow GameMate to look for games first (Settings → Games).')
+  }
+}
+
+// "Scan for games": the launchers' libraries on this PC, then each new game's wiki (only the
+// game's name is sent to wiki.gg and Fandom). Games added by hand and wikis set by the player stay.
+async function scanGames(): Promise<ReturnType<typeof gamesState>> {
+  requireConsent()
+  const found = await scanLaunchers()
+  const known = new Map(getSettings().games.map((g) => [g.id, g]))
+  const scanned: SavedGame[] = []
+  const queue = [...found]
+  // A few at a time, so the wikis aren't flooded with requests.
+  await Promise.all(
+    Array.from({ length: 6 }, async () => {
+      for (let game = queue.shift(); game; game = queue.shift()) {
+        const wiki = known.get(game.id)?.wiki ?? (await findWikiForGame(game.name)) ?? undefined
+        scanned.push({ ...game, wiki })
+      }
+    })
+  )
+  const manual = getSettings().games.filter((g) => g.launcher === 'manual')
+  setGames([...scanned.sort((a, b) => a.name.localeCompare(b.name)), ...manual])
+  return gamesState()
 }
 
 let modpackList: { at: number; list: Promise<ModpackSummary[]> } | null = null
@@ -429,6 +462,7 @@ const STATUS_LABELS: Record<ObserverState['status'], string> = {
   off: 'Not watching',
   paused: 'Watching paused',
   'no-model': 'Pick a model to start watching',
+  'needs-consent': 'Allow game detection in Settings',
   'waiting-for-game': 'Waiting for a game',
   watching: 'Watching your game',
   analyzing: 'Watching your game'

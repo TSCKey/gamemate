@@ -30,7 +30,6 @@ function SettingsScreen({
   modelError,
   reloadModels,
   localModels,
-  versions,
   appInfo
 }: {
   tab: SettingsTab
@@ -42,7 +41,6 @@ function SettingsScreen({
   modelError: string | null
   reloadModels: () => void
   localModels: LocalModelStatus[]
-  versions: string[]
   appInfo: AppInfo | null
 }): React.JSX.Element {
   const current = TABS.find((t) => t.id === tab) ?? TABS[0]
@@ -70,7 +68,7 @@ function SettingsScreen({
         {tab === 'general' && (
           <GeneralPanel settings={settings} update={update} appInfo={appInfo} />
         )}
-        {tab === 'games' && <GamesPanel settings={settings} update={update} versions={versions} />}
+        {tab === 'games' && <GamesPanel settings={settings} update={update} />}
         {tab === 'models' && (
           <ModelsPanel
             settings={settings}

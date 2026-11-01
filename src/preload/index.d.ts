@@ -25,10 +25,15 @@ export interface WikiSite {
   license: string
 }
 
-export interface CustomGame {
+export type GameLauncher = 'steam' | 'epic' | 'battlenet' | 'riot' | 'manual'
+
+// A game found by a scan or added by the player.
+export interface SavedGame {
   id: string
   name: string
-  exe: string
+  launcher: GameLauncher
+  installDir?: string
+  exe?: string
   wiki?: WikiSite
 }
 
@@ -38,8 +43,10 @@ export interface GameInfo {
   // The game's wiki, if GameMate knows one.
   wiki: string | null
   examples: [string, string]
-  // Added by the player.
-  custom: boolean
+  // Where it was found ('builtin' for Minecraft).
+  launcher: GameLauncher | 'builtin'
+  // Ranked online game: AI help during matches may break its rules.
+  competitive: boolean
   exe: string | null
 }
 
@@ -136,7 +143,6 @@ export interface Settings {
   localBackend: LocalBackend
   builtinModel: string
   model: string
-  minecraftVersion: string
   overlayScreenshot: boolean
   companionMode: CompanionMode
   commentaryFrequency: CommentaryFrequency
@@ -156,7 +162,9 @@ export interface Settings {
   closeToTray: boolean
   currentGame: string
   autoDetectGame: boolean
-  customGames: CustomGame[]
+  // The player allowed GameMate to look at this PC for games.
+  deviceConsent: boolean
+  games: SavedGame[]
   // 'auto' (the running pack), '' (none) or a pack's folder.
   minecraftModpack: string
 }
@@ -171,7 +179,8 @@ export interface ObservedEvent {
 }
 
 export interface CompanionState {
-  status: 'off' | 'paused' | 'no-model' | 'waiting-for-game' | 'watching' | 'analyzing'
+  status:
+    'off' | 'paused' | 'no-model' | 'needs-consent' | 'waiting-for-game' | 'watching' | 'analyzing'
   game: string | null
   paused: boolean
   events: ObservedEvent[]
@@ -193,7 +202,6 @@ export interface Api {
   updateSettings: (patch: Partial<Settings>) => Promise<Settings>
   // Returns a function that stops listening.
   onSettingsChanged: (callback: (settings: Settings) => void) => () => void
-  listMinecraftVersions: () => Promise<string[]>
   getAppInfo: () => Promise<AppInfo>
   companion: {
     getState: () => Promise<CompanionState>
@@ -214,6 +222,8 @@ export interface Api {
   deleteData: () => Promise<void>
   games: {
     state: () => Promise<GamesState>
+    // Looks through Steam, Epic, Battle.net and Riot, and finds each game's wiki.
+    scan: () => Promise<GamesState>
     runningApps: () => Promise<RunningApp[]>
     add: (exe: string, name: string) => Promise<GamesState>
     remove: (id: string) => Promise<GamesState>

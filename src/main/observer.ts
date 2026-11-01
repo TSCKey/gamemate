@@ -54,7 +54,7 @@ export interface ObservedEvent {
 }
 
 export type ObserverStatus =
-  'off' | 'paused' | 'no-model' | 'waiting-for-game' | 'watching' | 'analyzing'
+  'off' | 'paused' | 'no-model' | 'needs-consent' | 'waiting-for-game' | 'watching' | 'analyzing'
 
 export interface ObserverState {
   status: ObserverStatus
@@ -241,6 +241,8 @@ async function tick(): Promise<void> {
   if (!engineReady('commentary')) return setState({ status: 'no-model' })
 
   // Only watch while a game is the window in front: not while alt-tabbed or in GameMate.
+  // Telling which game is in front needs the player's OK.
+  if (!settings.deviceConsent) return setState({ status: 'needs-consent', game: null })
   const found = followForegroundGame()
   if (!found) {
     lastFrame = null

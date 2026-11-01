@@ -6,24 +6,22 @@ function GameMenu({
   settings,
   update,
   games,
-  versions,
   modpack,
   onOpenSettings
 }: {
   settings: Settings
   update: (patch: Partial<Settings>) => void
   games: GamesState | null
-  versions: string[]
   modpack: ModpackSummary | null
   onOpenSettings: () => void
 }): React.JSX.Element {
   const current = games?.games.find((g) => g.id === settings.currentGame)
-  const minecraft = settings.currentGame === 'minecraft'
-  const label = minecraft
-    ? modpack
-      ? `Minecraft · ${modpack.name}`
-      : `Minecraft ${settings.minecraftVersion}`
-    : (current?.name ?? 'Game')
+  const label =
+    settings.currentGame === 'minecraft'
+      ? modpack
+        ? `Minecraft · ${modpack.name}`
+        : 'Minecraft'
+      : (current?.name ?? 'Game')
 
   return (
     <Dropdown
@@ -35,8 +33,13 @@ function GameMenu({
       <>
         <MenuItem
           title="Follow the game I'm playing"
-          description="Switches by itself when you're in a game"
-          checked={settings.autoDetectGame}
+          description={
+            settings.deviceConsent
+              ? 'Switches by itself when you’re in a game'
+              : 'Allow game detection in Settings → Games first'
+          }
+          checked={settings.deviceConsent && settings.autoDetectGame}
+          disabled={!settings.deviceConsent}
           onSelect={() => update({ autoDetectGame: !settings.autoDetectGame })}
         />
         <MenuSeparator />
@@ -45,27 +48,15 @@ function GameMenu({
           <MenuItem
             key={g.id}
             title={g.name}
-            description={g.custom ? 'Added by you' : undefined}
             checked={g.id === settings.currentGame}
             onSelect={() => update({ currentGame: g.id })}
           />
         ))}
-        {minecraft && !modpack && versions.length > 0 && (
-          <>
-            <MenuSeparator />
-            <MenuLabel>Minecraft version</MenuLabel>
-            {versions.map((v) => (
-              <MenuItem
-                key={v}
-                title={`Minecraft ${v}`}
-                checked={settings.minecraftVersion === v}
-                onSelect={() => update({ minecraftVersion: v })}
-              />
-            ))}
-          </>
-        )}
         <MenuSeparator />
-        <MenuItem title="Games and modpacks…" onSelect={onOpenSettings} />
+        <MenuItem
+          title={settings.deviceConsent ? 'Scan for games…' : 'Find my games…'}
+          onSelect={onOpenSettings}
+        />
       </>
     </Dropdown>
   )

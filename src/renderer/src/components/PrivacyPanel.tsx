@@ -15,8 +15,10 @@ export function PrivacySummary(): React.JSX.Element {
         watch your game. Screenshots stay in memory and are never saved to disk.
       </li>
       <li>
-        <strong>Recognizing your game:</strong> GameMate reads the name of the program in front, and
-        for Minecraft the modpack folders of your launcher. This stays on your PC.
+        <strong>Finding your games</strong> only happens after you allow it in Settings → Games.
+        Then GameMate reads your launchers&apos; game lists (Steam, Epic Games, Battle.net, Riot),
+        your CurseForge modpacks and the name of the program in front. This stays on your PC; to
+        find wikis, only game names are sent to wiki.gg and Fandom.
       </li>
       <li>
         <strong>Your microphone</strong> is only used when voice input is on and you press the voice
@@ -59,7 +61,7 @@ function PrivacyPanel(): React.JSX.Element {
           <li>Your settings.</li>
           <li>Your Gemini API key, if you added one, encrypted by Windows.</li>
           <li>AI models, GameMate&apos;s AI engine and speech models you downloaded.</li>
-          <li>Games you added: their name, program and wiki address.</li>
+          <li>Games found or added: their name, folder or program, and wiki address.</li>
         </ul>
       </Section>
 

@@ -17,7 +17,6 @@ const api: Api = {
   getSettings: () => ipcRenderer.invoke('settings:get'),
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
   onSettingsChanged: (callback) => listen<[Settings]>('settings:changed', callback),
-  listMinecraftVersions: () => ipcRenderer.invoke('minecraft:versions'),
   getAppInfo: () => ipcRenderer.invoke('app:info'),
   companion: {
     getState: () => ipcRenderer.invoke('companion:get-state'),
@@ -35,6 +34,7 @@ const api: Api = {
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
   games: {
     state: () => ipcRenderer.invoke('games:state'),
+    scan: () => ipcRenderer.invoke('games:scan'),
     runningApps: () => ipcRenderer.invoke('games:running-apps'),
     add: (exe, name) => ipcRenderer.invoke('games:add', exe, name),
     remove: (id) => ipcRenderer.invoke('games:remove', id),

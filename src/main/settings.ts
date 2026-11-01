@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { isSpeechModelId, type SpeechModelId } from './voiceModels'
 import { isLocalModelId, LOCAL_MODELS } from './localModels'
-import { GAMES, type CustomGame } from './games/catalog'
+import type { SavedGame } from './games/catalog'
 import { existsSync } from 'fs'
 
 // How much GameMate watches and talks on its own (see README "Always-on companion").
@@ -38,7 +38,6 @@ export interface Settings {
   builtinModel: string
   // Ollama model used when localBackend is 'ollama' ('' until the user or GameMate picks one).
   model: string
-  minecraftVersion: string
   // Whether the floating window sends a screenshot of the screen with each question.
   overlayScreenshot: boolean
   companionMode: CompanionMode
@@ -69,12 +68,15 @@ export interface Settings {
   // Closing the window keeps GameMate in the tray (for the shortcuts and companion) instead
   // of quitting.
   closeToTray: boolean
-  // The game GameMate helps with (catalog id or a custom game's id).
+  // The player allowed GameMate to look at this PC for games: launcher libraries, modpack
+  // folders and the program in front. Nothing is detected without it.
+  deviceConsent: boolean
+  // The game GameMate helps with ('minecraft' or a found or added game's id).
   currentGame: string
   // Switch to the game in front automatically when the player is in one.
   autoDetectGame: boolean
-  // Games the player added (only changed through setCustomGames).
-  customGames: CustomGame[]
+  // Games found by a scan or added by the player (only changed through setGames).
+  games: SavedGame[]
   // Minecraft modpack: 'auto' (the one running), '' (none) or a pack's folder.
   minecraftModpack: string
 }
@@ -87,7 +89,6 @@ const DEFAULTS: Settings = {
   localBackend: 'builtin',
   builtinModel: LOCAL_MODELS[0].id,
   model: '',
-  minecraftVersion: '26.1',
   overlayScreenshot: true,
   // Watching the screen is opt-in.
   companionMode: 'on-demand',
@@ -107,9 +108,10 @@ const DEFAULTS: Settings = {
   privacyNoticeVersion: 0,
   geminiConsent: false,
   closeToTray: true,
+  deviceConsent: false,
   currentGame: 'minecraft',
   autoDetectGame: true,
-  customGames: [],
+  games: [],
   minecraftModpack: 'auto'
 }
 
@@ -138,7 +140,7 @@ export function getSettings(): Settings {
 }
 
 // Renderer input is untrusted: only accept known keys with the right types.
-export function updateSettings(patch: unknown, validVersions: string[]): Settings {
+export function updateSettings(patch: unknown): Settings {
   if (typeof patch !== 'object' || patch === null) throw new Error('Invalid settings.')
   const p = patch as Record<string, unknown>
   const next = { ...getSettings() }
@@ -147,9 +149,6 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   }
   if (isLocalModelId(p.builtinModel)) next.builtinModel = p.builtinModel
   if (typeof p.model === 'string') next.model = p.model.slice(0, 200)
-  if (typeof p.minecraftVersion === 'string' && validVersions.includes(p.minecraftVersion)) {
-    next.minecraftVersion = p.minecraftVersion
-  }
   if (typeof p.overlayScreenshot === 'boolean') next.overlayScreenshot = p.overlayScreenshot
   if (COMPANION_MODES.includes(p.companionMode as CompanionMode)) {
     next.companionMode = p.companionMode as CompanionMode
@@ -183,10 +182,10 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   }
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
+  if (typeof p.deviceConsent === 'boolean') next.deviceConsent = p.deviceConsent
   if (
     typeof p.currentGame === 'string' &&
-    (GAMES.some((g) => g.id === p.currentGame) ||
-      next.customGames.some((g) => g.id === p.currentGame))
+    (p.currentGame === 'minecraft' || next.games.some((g) => g.id === p.currentGame))
   ) {
     next.currentGame = p.currentGame
   }
@@ -199,6 +198,12 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   ) {
     next.minecraftModpack = p.minecraftModpack
   }
+  // Taking back consent forgets everything GameMate found on this PC.
+  if (!next.deviceConsent) {
+    next.games = []
+    next.currentGame = 'minecraft'
+    next.minecraftModpack = 'auto'
+  }
   // Nothing goes to Google without the player's consent.
   if (!next.geminiConsent) {
     next.answersEngine = 'local'
@@ -209,13 +214,10 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   return next
 }
 
-// Player-added games come from the main process (which checks them), never straight from a page.
-export function setCustomGames(customGames: CustomGame[]): Settings {
-  const next = { ...getSettings(), customGames }
-  if (
-    !customGames.some((g) => g.id === next.currentGame) &&
-    !GAMES.some((g) => g.id === next.currentGame)
-  ) {
+// Found and added games come from the main process (which checks them), never straight from a page.
+export function setGames(games: SavedGame[]): Settings {
+  const next = { ...getSettings(), games }
+  if (next.currentGame !== 'minecraft' && !games.some((g) => g.id === next.currentGame)) {
     next.currentGame = 'minecraft'
   }
   save(next)

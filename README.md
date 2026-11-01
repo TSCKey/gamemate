@@ -9,9 +9,9 @@ By default everything runs **on your own computer**. GameMate comes with its own
 ## Features
 
 - **Ask without leaving your game.** Press **Alt + Space** and a small window appears on top of your game. Type a question, read the answer, and press **Esc** to get back to playing.
-- **Many games.** GameMate recognizes Minecraft (Java and Bedrock), Terraria, Valheim, Elden Ring, Baldur's Gate 3, Satisfactory, Factorio, RimWorld, Don't Starve, Subnautica, No Man's Sky, Hollow Knight, Hades, Skyrim, The Witcher 3, Cyberpunk 2077 and Palworld, and you can add any other game, with its wiki.
+- **All your games.** Click **Scan for games** and GameMate finds what you installed with Steam, Epic Games, Battle.net and Riot (VALORANT, Overwatch, Marvel Rivals, and so on), plus each game's wiki. Minecraft works out of the box. You can also add any game that's running.
 - **Knows your modpack.** GameMate reads your CurseForge modpacks (and the pack that's running in other launchers), so it knows which mods you have, and can read what a mod does.
-- **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe for your Minecraft version and shows it as a crafting grid, instead of guessing. Supports Minecraft Java Edition 26.1, 1.21.11, 1.21.4 and 1.20.4.
+- **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe and shows it as a crafting grid, instead of guessing. It uses the newest Minecraft, or your modpack's version.
 - **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
 - **Talk to it.** Press **Alt + V** and ask your question out loud. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
 - **Ask about your screen.** Attach a screenshot of your game window or your whole screen and ask "What is this creature?" or "What should I do next?". GameMate picks your Minecraft window automatically when it's open.
@@ -52,13 +52,16 @@ Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ 
 
 ### Games and modpacks
 
-GameMate always helps with one game, shown at the top of the chat window (for example **Terraria ▾**). Click it to switch games.
+GameMate always helps with one game, shown at the top of the chat window (for example **VALORANT ▾**). Click it to switch games. Minecraft is always there; your other games come from a scan.
 
-- **Follow the game I'm playing** (on by default): when you press **Alt + Space**, or while the companion is watching, GameMate switches to the game in front by itself. It recognizes games by the name of their program.
-- **⚙ Settings → Games** has all the options:
-  - **Minecraft modpacks:** GameMate lists the modpacks you installed with CurseForge. Choose one, or leave **Detect the one I'm playing** to use the pack that's running, from any launcher. Answers then know which mods you have, and with lookups on, the AI can read what a mod does on Modrinth.
-  - **Your games:** start a game GameMate doesn't know, click **Add a game that's running…** and pick it. Add its wiki's address (any Fandom, wiki.gg or other MediaWiki wiki) so GameMate can look things up for it.
-  - **Games GameMate knows:** the games it recognizes by itself, with their wikis.
+1. Open **⚙ Settings → Games**. GameMate explains what it would look at; tick **Allow GameMate to look for games on this PC** and click **Allow and scan for games**. Nothing on your PC is looked at before that.
+2. GameMate reads the game lists of Steam, Epic Games, Battle.net and Riot, and finds a wiki for each game on wiki.gg or Fandom (only the game's name is sent). Click **Scan for games** again after installing a game.
+3. If a wiki is missing or wrong, paste its address next to the game. Games no launcher knows can be added with **Add a game that's running…**.
+
+- **Follow the game I'm playing** (on once you allow detection): when you press **Alt + Space**, or while the companion is watching, GameMate switches to the game in front by itself.
+- **Minecraft modpacks:** GameMate lists the modpacks you installed with CurseForge. Choose one, or leave **Detect the one I'm playing** to use the pack that's running, from any launcher. Answers then know which mods you have, and with lookups on, the AI can read what a mod does on Modrinth.
+- **Competitive games** (VALORANT, Overwatch, Marvel Rivals and others) are marked as such: check the game's rules before using the companion during ranked matches.
+- **Turn off** under **Stop looking for games** turns detection off and forgets every game GameMate found.
 
 ### Always-on companion
 
@@ -76,7 +79,7 @@ Click the companion mode at the top of the chat window (for example **On-demand 
 - Comments appear in the top-right corner of the screen for a few seconds. They never take focus, so your keyboard and mouse stay in the game. Click a comment to dismiss it.
 - In any watching mode, GameMate remembers what it saw recently, so questions like "What should I do next?" get better answers.
 - Click **⏸ Pause** on the Companion page, or **Pause watching** in the tray icon's menu, to stop watching for a while. While GameMate is watching, the top of the chat window shows its status.
-- GameMate only watches while a game it knows (or one you added) is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
+- GameMate only watches while a game it found (or Minecraft) is the active window, and only after you allowed game detection. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
 
 ### AI models
 
@@ -151,10 +154,10 @@ Another app may already use that shortcut, for example PowerToys Run. The chat w
 Switch the game to windowed or borderless fullscreen. In Minecraft, press **F11** to toggle fullscreen.
 
 **A recipe looks wrong or is missing**
-Make sure the Minecraft version matches the version you're playing (click the game at the top of the chat window). GameMate knows the crafting-table recipes of plain Minecraft. Items that are smelted, brewed, traded or built in the world (such as Nether portals) don't have a crafting recipe, and recipes for items from mods aren't included yet.
+GameMate knows the crafting-table recipes of the newest plain Minecraft (or your modpack's Minecraft version). Items that are smelted, brewed, traded or built in the world (such as Nether portals) don't have a crafting recipe, and recipes for items from mods aren't included yet.
 
 **GameMate doesn't recognize my game**
-Add it in **⚙ Settings → Games → Add a game that's running…** while the game is open. You can also pick the game yourself at the top of the chat window.
+Click **Scan for games** in **⚙ Settings → Games** after installing it. If no launcher knows it, use **Add a game that's running…** while the game is open. You can also pick the game yourself at the top of the chat window.
 
 **My modpack isn't listed**
 GameMate lists packs installed with CurseForge in its default folder. For other launchers, start the pack and leave **Modpack** on **Detect the one I'm playing**; GameMate then reads the mods of the pack that's running.
@@ -208,7 +211,7 @@ Otherwise, GameMate's AI runs on your own computer. Its engine only accepts requ
 - when you press **Alt + Space** with **📷** turned on, and
 - while a game is the active window, if you've turned on Observation, Commentary or Quiet mode. These modes are off by default. The tray icon and the chat window always show whether GameMate is watching.
 
-To recognize your game, GameMate reads the name of the program in front, and for Minecraft it reads your launcher's modpack folders. This stays on your PC.
+GameMate looks for games only after you allow it in **⚙ Settings → Games**. Then it reads your launchers' game lists, your CurseForge modpacks and the name of the program in front. This stays on your PC; to find wikis, only game names are sent to wiki.gg and Fandom. **Turn off** forgets everything it found.
 
 Screenshots go only to the AI you chose and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
 
@@ -218,7 +221,7 @@ GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V**
 
 ## What GameMate won't do
 
-GameMate is an assistant, not a bot. It never plays games for you, controls your keyboard or mouse, provides cheats, or modifies game files or processes. Use the companion in single-player and co-op games: competitive online games may not allow AI help during matches.
+GameMate is an assistant, not a bot. It never plays games for you, controls your keyboard or mouse, provides cheats, or modifies game files or processes. In competitive games, check the game's rules before using the companion during ranked matches.
 
 ## Credits
 

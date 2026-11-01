@@ -6,7 +6,7 @@ export function useGames(settings: Settings | null): GamesState | null {
   const [state, setState] = useState<GamesState | null>(null)
   // Ask again whenever the current game or the player's games change.
   const key = settings
-    ? `${settings.currentGame}|${settings.customGames.map((g) => `${g.id}:${g.wiki?.api ?? ''}`).join(',')}`
+    ? `${settings.currentGame}|${settings.games.map((g) => `${g.id}:${g.wiki?.api ?? ''}`).join(',')}`
     : ''
   useEffect(() => {
     if (key) window.api.games.state().then(setState)
