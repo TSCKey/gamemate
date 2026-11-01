@@ -6,7 +6,8 @@ import { stopSpeaking } from './speak'
 
 const REPOS: Record<Settings['speechModel'], string> = {
   fast: 'onnx-community/whisper-tiny.en',
-  accurate: 'onnx-community/whisper-base.en'
+  accurate: 'onnx-community/whisper-base.en',
+  best: 'onnx-community/whisper-small.en'
 }
 
 export type VoiceStatus = 'idle' | 'listening' | 'transcribing'

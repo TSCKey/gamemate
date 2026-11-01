@@ -124,8 +124,9 @@ Open **⚙ Settings → Voice**.
 
 1. Turn on **Ask with your microphone**.
 2. Choose a speech model and click **Download**. You only do this once, and after that voice works offline.
-   - **Fast** (45 MB) understands you quicker.
-   - **Accurate** (80 MB) makes fewer mistakes but takes a few seconds longer.
+   - **Fast** (45 MB) is the quickest but mishears more often.
+   - **Accurate** (80 MB) makes fewer mistakes.
+   - **Best** (250 MB, Whisper Small) understands you best, also with an accent, but takes a few seconds longer. Recommended.
 3. In a game, press **Alt + V** and ask your question. GameMate stops listening when you pause, then sends your question. In the chat window, click **🎤** instead.
 
 Press **Alt + V** or click **🎤** again to stop listening early, or press **Esc** in the in-game window to cancel and hide it. The **Alt + V** shortcut only exists while voice input is turned on, so the key stays free for your games otherwise.
@@ -134,7 +135,8 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 
 - **Read answers aloud:** Never, When I ask by voice (the default), or Always.
 - **Read companion comments aloud:** speaks Commentary mode's pop-ups.
-- Choose a **Voice** and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it. GameMate uses the voices built into Windows.
+- **Voice type:** **Natural (Kokoro)** sounds like a real person. Click **Download** once (340 MB); it then runs on your PC and works offline. Until it's downloaded, or if you pick **Windows voices**, GameMate uses the voices built into Windows.
+- Choose a **Voice** (Kokoro has 28 American and British voices) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
 
 ### Updates
 
@@ -235,6 +237,7 @@ GameMate is an assistant, not a bot. It never plays games for you, controls your
 - GameMate's built-in AI engine is [llama.cpp](https://github.com/ggml-org/llama.cpp) (MIT License).
 - The built-in models are [Qwen3.5](https://huggingface.co/Qwen) by the Qwen team (Apache 2.0), in versions prepared by [Unsloth](https://huggingface.co/unsloth).
 - Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
+- The natural voice is [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (Apache 2.0), run with [kokoro-js](https://github.com/hexgrad/kokoro) (Apache 2.0). Its pronunciation step uses [eSpeak NG](https://github.com/espeak-ng/espeak-ng) (GPL-3.0) through [phonemizer.js](https://github.com/xenova/phonemizer.js).
 - Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 

@@ -4,6 +4,7 @@ import type {
   CompanionState,
   LocalModelStatus,
   Settings,
+  SayRequest,
   SpeechModelStatus,
   UpdateState
 } from './index.d'
@@ -71,7 +72,9 @@ const api: Api = {
     stop: () => ipcRenderer.invoke('voice:stop'),
     download: (id) => ipcRenderer.invoke('voice:download', id),
     remove: (id) => ipcRenderer.invoke('voice:remove', id),
-    onModels: (callback) => listen<[SpeechModelStatus[]]>('voice:models', callback)
+    onModels: (callback) => listen<[SpeechModelStatus[]]>('voice:models', callback),
+    onSay: (callback) => listen<[SayRequest]>('voice:say', callback),
+    onHush: (callback) => listen<[]>('voice:hush', callback)
   },
   toast: {
     hide: () => ipcRenderer.invoke('toast:hide'),

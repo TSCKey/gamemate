@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { speak } from './voice/speak'
+import { hush, say } from './voice/natural'
 
 // Transparent space around the bubble, so its shadow isn't clipped by the window edge.
 const WINDOW_PADDING = 12
@@ -18,6 +19,16 @@ function Toast(): React.JSX.Element {
       }),
     []
   )
+
+  // This window is also where GameMate's natural voice speaks, for every window.
+  useEffect(() => {
+    const stopSay = window.api.voice.onSay((request) => void say(request))
+    const stopHush = window.api.voice.onHush(hush)
+    return () => {
+      stopSay()
+      stopHush()
+    }
+  }, [])
 
   useLayoutEffect(() => {
     const bubble = bubbleRef.current

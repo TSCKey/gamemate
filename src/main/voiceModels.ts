@@ -10,23 +10,7 @@ import { pathToFileURL } from 'url'
 
 export const MODEL_SCHEME = 'gm-model'
 
-// Whisper (MIT) converted to ONNX by onnx-community, 8-bit quantized. Pinned revisions so
-// every install gets the same files.
-export const SPEECH_MODELS = {
-  fast: {
-    repo: 'onnx-community/whisper-tiny.en',
-    revision: '2575352d61be1bf7225cf8f8b268a4678025fc58',
-    sizeMb: 45
-  },
-  accurate: {
-    repo: 'onnx-community/whisper-base.en',
-    revision: '51eefc0af78b103839eda9e7e4f4186acc6517fe',
-    sizeMb: 80
-  }
-} as const
-export type SpeechModelId = keyof typeof SPEECH_MODELS
-
-const FILES = [
+const WHISPER_FILES = [
   'config.json',
   'generation_config.json',
   'preprocessor_config.json',
@@ -40,8 +24,83 @@ const FILES = [
   'onnx/decoder_model_merged_quantized.onnx'
 ]
 
+// Kokoro's American and British English voices.
+export const KOKORO_VOICES = [
+  'af_heart',
+  'af_alloy',
+  'af_aoede',
+  'af_bella',
+  'af_jessica',
+  'af_kore',
+  'af_nicole',
+  'af_nova',
+  'af_river',
+  'af_sarah',
+  'af_sky',
+  'am_adam',
+  'am_echo',
+  'am_eric',
+  'am_fenrir',
+  'am_liam',
+  'am_michael',
+  'am_onyx',
+  'am_puck',
+  'am_santa',
+  'bf_alice',
+  'bf_emma',
+  'bf_isabella',
+  'bf_lily',
+  'bm_daniel',
+  'bm_fable',
+  'bm_george',
+  'bm_lewis'
+]
+
+// Speech recognition: Whisper (MIT), converted to ONNX by onnx-community, 8-bit quantized.
+// Voice: Kokoro-82M (Apache 2.0). Pinned revisions so every install gets the same files.
+export const SPEECH_MODELS = {
+  fast: {
+    kind: 'listen',
+    repo: 'onnx-community/whisper-tiny.en',
+    revision: '2575352d61be1bf7225cf8f8b268a4678025fc58',
+    sizeMb: 45,
+    files: WHISPER_FILES
+  },
+  accurate: {
+    kind: 'listen',
+    repo: 'onnx-community/whisper-base.en',
+    revision: '51eefc0af78b103839eda9e7e4f4186acc6517fe',
+    sizeMb: 80,
+    files: WHISPER_FILES
+  },
+  best: {
+    kind: 'listen',
+    repo: 'onnx-community/whisper-small.en',
+    revision: '482fb8ba081b6e906f92efe103622316b2a0cc69',
+    sizeMb: 250,
+    files: WHISPER_FILES
+  },
+  kokoro: {
+    kind: 'speak',
+    repo: 'onnx-community/Kokoro-82M-v1.0-ONNX',
+    revision: '1939ad2a8e416c0acfeecc08a694d14ef25f2231',
+    sizeMb: 340,
+    files: [
+      'config.json',
+      'tokenizer.json',
+      'tokenizer_config.json',
+      'onnx/model.onnx',
+      ...KOKORO_VOICES.map((v) => `voices/${v}.bin`)
+    ]
+  }
+} as const
+export type SpeechModelId = keyof typeof SPEECH_MODELS
+export type ListenModelId = 'fast' | 'accurate' | 'best'
+
 export interface SpeechModelStatus {
   id: SpeechModelId
+  // Speech recognition ('listen') or GameMate's voice ('speak').
+  kind: 'listen' | 'speak'
   sizeMb: number
   installed: boolean
   // 0-1 while downloading, otherwise null.
@@ -57,12 +116,21 @@ export function isSpeechModelId(value: unknown): value is SpeechModelId {
   return typeof value === 'string' && value in SPEECH_MODELS
 }
 
+export function isListenModelId(value: unknown): value is ListenModelId {
+  return isSpeechModelId(value) && SPEECH_MODELS[value].kind === 'listen'
+}
+
+export function isSpeechModelInstalled(id: SpeechModelId): boolean {
+  return status(id).installed
+}
+
 function status(id: SpeechModelId): SpeechModelStatus {
   const dl = downloads.get(id)
   return {
     id,
+    kind: SPEECH_MODELS[id].kind,
     sizeMb: SPEECH_MODELS[id].sizeMb,
-    installed: !dl && FILES.every((f) => existsSync(join(modelDir(id), f))),
+    installed: !dl && SPEECH_MODELS[id].files.every((f) => existsSync(join(modelDir(id), f))),
     progress: dl && !dl.error ? dl.progress : null,
     error: dl?.error ?? null
   }
@@ -96,11 +164,12 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     const sizes = new Map(
       ((await listing.json()) as { path: string; size: number }[]).map((f) => [f.path, f.size])
     )
-    const total = FILES.reduce((sum, f) => sum + (sizes.get(f) ?? 0), 0)
+    const files: readonly string[] = SPEECH_MODELS[id].files
+    const total = files.reduce<number>((sum, f) => sum + (sizes.get(f) ?? 0), 0)
     let received = 0
     let lastBroadcast = 0
 
-    for (const name of FILES) {
+    for (const name of files) {
       const res = await net.fetch(`https://huggingface.co/${repo}/resolve/${revision}/${name}`)
       if (!res.ok || !res.body) throw new Error(`${name} returned ${res.status}`)
       const file = join(tmp, name)
@@ -126,7 +195,7 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     await rename(tmp, dir)
     downloads.delete(id)
   } catch (error) {
-    state.error = `Could not download the speech model: ${
+    state.error = `Could not download the ${SPEECH_MODELS[id].kind === 'speak' ? 'voice' : 'speech model'}: ${
       error instanceof Error ? error.message : String(error)
     }`
     await rm(tmp, { recursive: true, force: true }).catch(() => {})

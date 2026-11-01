@@ -16,7 +16,11 @@ if (onnx.wasm) {
     wasm: new URL(ortWasmUrl, self.location.href).href,
     mjs: new URL(ortMjsUrl, self.location.href).href
   }
-  onnx.wasm.numThreads = 1
+  // Several cores when the browser allows threads (GameMate turns them on).
+  onnx.wasm.numThreads =
+    typeof SharedArrayBuffer === 'undefined'
+      ? 1
+      : Math.max(1, Math.min(4, Math.floor((navigator.hardwareConcurrency || 2) / 2)))
 }
 
 export type SpeechRequest =

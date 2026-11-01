@@ -51,11 +51,12 @@ import {
   takePendingScreenshot,
   toggleOverlay
 } from './overlay'
-import { createToast, hideToast, setToastHeight, showToast } from './toast'
+import { createToast, hideToast, hushToast, sayInToast, setToastHeight, showToast } from './toast'
 import { listVoices, shutdownSpeech, speak, stopSpeaking } from './tts'
 import {
   downloadSpeechModel,
   isSpeechModelId,
+  isSpeechModelInstalled,
   registerModelScheme,
   removeSpeechModel,
   serveModels,
@@ -285,10 +286,18 @@ function registerHandlers(): void {
   ipcMain.handle('voice:voices', () => listVoices())
   ipcMain.handle('voice:speak', (_event, text: unknown) => {
     if (typeof text !== 'string') return
-    const { voiceName, voiceVolume, voiceRate } = getSettings()
-    speak(text, { voice: voiceName, volume: voiceVolume, rate: voiceRate })
+    const { voiceEngine, kokoroVoice, voiceName, voiceVolume, voiceRate } = getSettings()
+    // The natural voice runs in the pop-up window; Windows' voices run here.
+    const natural =
+      voiceEngine === 'kokoro' &&
+      isSpeechModelInstalled('kokoro') &&
+      sayInToast({ text, voice: kokoroVoice, speed: voiceRate, volume: voiceVolume })
+    if (!natural) speak(text, { voice: voiceName, volume: voiceVolume, rate: voiceRate })
   })
-  ipcMain.handle('voice:stop', () => stopSpeaking())
+  ipcMain.handle('voice:stop', () => {
+    stopSpeaking()
+    hushToast()
+  })
   ipcMain.handle('voice:download', (_event, id: unknown) => {
     if (isSpeechModelId(id)) downloadSpeechModel(id)
   })
@@ -549,6 +558,8 @@ function restrictPermissions(): void {
 }
 
 registerModelScheme()
+// Lets speech recognition and the natural voice use several CPU cores (WebAssembly threads).
+app.commandLine.appendSwitch('enable-features', 'SharedArrayBuffer')
 
 // Only one GameMate may run: a second launch just opens the existing window.
 if (!app.requestSingleInstanceLock()) {

@@ -29,7 +29,14 @@ export function createToast(
     focusable: false,
     skipTaskbar: true,
     alwaysOnTop: true,
-    webPreferences: { preload, sandbox: true, contextIsolation: true, nodeIntegration: false }
+    webPreferences: {
+      preload,
+      sandbox: true,
+      contextIsolation: true,
+      nodeIntegration: false,
+      // This hidden window also speaks with GameMate's natural voice; keep it running at full speed.
+      backgroundThrottling: false
+    }
   })
   toast.setAlwaysOnTop(true, 'screen-saver')
   // Keep comments out of screenshots, so the observer doesn't react to its own words.
@@ -64,4 +71,20 @@ export function hideToast(): void {
 export function setToastHeight(height: unknown): void {
   if (!toast || typeof height !== 'number' || !Number.isFinite(height)) return
   toast.setSize(WIDTH, Math.round(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, height))))
+}
+
+// Speak with GameMate's natural voice (Kokoro), which runs in this window.
+export function sayInToast(request: {
+  text: string
+  voice: string
+  speed: number
+  volume: number
+}): boolean {
+  if (!toast || toast.isDestroyed()) return false
+  toast.webContents.send('voice:say', request)
+  return true
+}
+
+export function hushToast(): void {
+  if (toast && !toast.isDestroyed()) toast.webContents.send('voice:hush')
 }

@@ -119,11 +119,23 @@ export interface Screenshot {
 export type CompanionMode = 'disabled' | 'on-demand' | 'observation' | 'commentary' | 'quiet'
 export type CommentaryFrequency = 'rare' | 'normal' | 'frequent'
 
-export type SpeechModelId = 'fast' | 'accurate'
+export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro'
+export type ListenModelId = 'fast' | 'accurate' | 'best'
+export type VoiceEngine = 'windows' | 'kokoro'
+
+// A request to speak with the natural voice (handled by the pop-up window).
+export interface SayRequest {
+  text: string
+  voice: string
+  speed: number
+  volume: number
+}
 export type SpeakAnswers = 'off' | 'voice' | 'always'
 
 export interface SpeechModelStatus {
   id: SpeechModelId
+  // Speech recognition ('listen') or GameMate's voice ('speak').
+  kind: 'listen' | 'speak'
   sizeMb: number
   installed: boolean
   // 0-1 while downloading, otherwise null.
@@ -157,10 +169,12 @@ export interface Settings {
   companionMode: CompanionMode
   commentaryFrequency: CommentaryFrequency
   voiceInput: boolean
-  speechModel: SpeechModelId
+  speechModel: ListenModelId
   speakAnswers: SpeakAnswers
   speakComments: boolean
+  voiceEngine: VoiceEngine
   voiceName: string
+  kokoroVoice: string
   voiceVolume: number
   voiceRate: number
   answersEngine: AnswerEngine
@@ -272,6 +286,9 @@ export interface Api {
     download: (id: SpeechModelId) => Promise<void>
     remove: (id: SpeechModelId) => Promise<void>
     onModels: (callback: (models: SpeechModelStatus[]) => void) => () => void
+    // For the pop-up window, which speaks with the natural voice.
+    onSay: (callback: (request: SayRequest) => void) => () => void
+    onHush: (callback: () => void) => () => void
   }
   toast: {
     hide: () => Promise<void>

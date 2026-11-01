@@ -2,7 +2,7 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { isSpeechModelId, type SpeechModelId } from './voiceModels'
+import { isListenModelId, KOKORO_VOICES, type ListenModelId } from './voiceModels'
 import { isLocalModelId, LOCAL_MODELS } from './localModels'
 import type { SavedGame } from './games/catalog'
 import { existsSync } from 'fs'
@@ -21,6 +21,9 @@ export type CommentaryFrequency = (typeof COMMENTARY_FREQUENCIES)[number]
 
 export const SPEAK_ANSWERS = ['off', 'voice', 'always'] as const
 export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
+
+export const VOICE_ENGINES = ['windows', 'kokoro'] as const
+export type VoiceEngine = (typeof VOICE_ENGINES)[number]
 
 export const ENGINES = ['local', 'gemini'] as const
 export type Engine = (typeof ENGINES)[number]
@@ -44,13 +47,17 @@ export interface Settings {
   commentaryFrequency: CommentaryFrequency
   // Talk to GameMate with the microphone (needs a downloaded speech model).
   voiceInput: boolean
-  speechModel: SpeechModelId
+  speechModel: ListenModelId
   // Read answers aloud: never, only for questions asked by voice, or always.
   speakAnswers: SpeakAnswers
   // Read the companion's comments aloud.
   speakComments: boolean
   // Windows voice name ('' = the system default voice).
+  // GameMate's voice: Windows' built-in voices, or Kokoro (natural, needs a download).
+  voiceEngine: VoiceEngine
   voiceName: string
+  // Kokoro voice id, e.g. 'af_heart'.
+  kokoroVoice: string
   voiceVolume: number
   voiceRate: number
   // Which AI answers questions (or 'auto' to decide per question), and which watches the game:
@@ -99,7 +106,9 @@ const DEFAULTS: Settings = {
   speechModel: 'accurate',
   speakAnswers: 'voice',
   speakComments: false,
+  voiceEngine: 'windows',
   voiceName: '',
+  kokoroVoice: 'af_heart',
   voiceVolume: 1,
   voiceRate: 1,
   // Everything stays local until the player chooses otherwise.
@@ -160,12 +169,17 @@ export function updateSettings(patch: unknown): Settings {
     next.commentaryFrequency = p.commentaryFrequency as CommentaryFrequency
   }
   if (typeof p.voiceInput === 'boolean') next.voiceInput = p.voiceInput
-  if (isSpeechModelId(p.speechModel)) next.speechModel = p.speechModel
+  if (isListenModelId(p.speechModel)) next.speechModel = p.speechModel
   if (SPEAK_ANSWERS.includes(p.speakAnswers as SpeakAnswers)) {
     next.speakAnswers = p.speakAnswers as SpeakAnswers
   }
   if (typeof p.speakComments === 'boolean') next.speakComments = p.speakComments
   if (typeof p.voiceName === 'string') next.voiceName = p.voiceName.slice(0, 200)
+  if (VOICE_ENGINES.includes(p.voiceEngine as VoiceEngine))
+    next.voiceEngine = p.voiceEngine as VoiceEngine
+  if (typeof p.kokoroVoice === 'string' && KOKORO_VOICES.includes(p.kokoroVoice)) {
+    next.kokoroVoice = p.kokoroVoice
+  }
   const num = (v: unknown, min: number, max: number): number | null =>
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : null
   next.voiceVolume = num(p.voiceVolume, 0, 1) ?? next.voiceVolume
