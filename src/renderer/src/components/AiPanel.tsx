@@ -235,11 +235,11 @@ function AiPanel({
 
       <Section title="Look things up">
         <Field
-          label="Read minecraft.wiki"
-          help="For things that aren't crafting recipes, like building a Nether portal, mobs and enchantments. Only the topic is sent, and answers link to the page."
+          label="Look things up online"
+          help="Lets the AI read your game's wiki (and Modrinth for Minecraft mods) when it isn't sure, for things like bosses, items or building a Nether portal. Only the topic is sent, and answers link to the page."
         >
           <Toggle
-            label="Read minecraft.wiki"
+            label="Look things up online"
             checked={settings.webLookup}
             onChange={(webLookup) => update({ webLookup })}
           />

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { AppInfo, CaptureSource, ChatMessage, CompanionState } from '../../preload/index.d'
 import CompanionMenu from './components/CompanionMenu'
-import { Dropdown, MenuItem } from './components/Menu'
+import GameMenu from './components/GameMenu'
 import ModelMenu from './components/ModelMenu'
 import PrivacyNotice from './components/PrivacyNotice'
 import SetupCard from './components/SetupCard'
@@ -14,10 +14,9 @@ import { speak } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
 import { errorMessage, useSettings } from './useSettings'
 import { localModelInfo, useLocalModels } from './useLocalModels'
+import { useGames, useModpack } from './useGames'
 
 const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
-
-const SUGGESTIONS = ['How do I craft a piston?', 'How do I build a Nether portal?']
 
 // Prefer a game window, then the main screen.
 function pickDefaultSource(sources: CaptureSource[]): string {
@@ -33,6 +32,8 @@ function sourceLabel(source: CaptureSource, screenCount: number): string {
 function App(): React.JSX.Element {
   const { settings, models, modelError, update, reloadModels } = useSettings()
   const localModels = useLocalModels()
+  const games = useGames(settings)
+  const modpack = useModpack(settings)
   const [versions, setVersions] = useState<string[]>([])
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
   const [companion, setCompanion] = useState<CompanionState | null>(null)
@@ -60,6 +61,8 @@ function App(): React.JSX.Element {
   const visionModel = (onGemini || onAuto || local.vision) && screenAllowed
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
+  const game = games?.games.find((g) => g.id === settings?.currentGame)
+  const suggestions = game?.examples ?? []
   // Ollama problems only matter to players who use Ollama.
   const usesOllama = settings?.localBackend === 'ollama' && !onGemini
   const shownError = error ?? (usesOllama ? modelError : null)
@@ -192,21 +195,14 @@ function App(): React.JSX.Element {
         <div className="chips">
           {settings && (
             <>
-              <Dropdown
-                label={`Minecraft ${settings.minecraftVersion}`}
-                menuLabel="Minecraft version"
-                title="Minecraft version (recipes are shown for this version)"
-                triggerClassName="chip"
-              >
-                {versions.map((v) => (
-                  <MenuItem
-                    key={v}
-                    title={`Minecraft ${v}`}
-                    checked={settings.minecraftVersion === v}
-                    onSelect={() => update({ minecraftVersion: v })}
-                  />
-                ))}
-              </Dropdown>
+              <GameMenu
+                settings={settings}
+                update={update}
+                games={games}
+                versions={versions}
+                modpack={modpack}
+                onOpenSettings={() => setSettingsTab('games')}
+              />
               <CompanionMenu
                 settings={settings}
                 update={update}
@@ -253,7 +249,7 @@ function App(): React.JSX.Element {
             <div className="brand-mark is-large">GM</div>
             <h2>What can I help with?</h2>
             <div className="suggestions">
-              {SUGGESTIONS.map((q) => (
+              {suggestions.map((q) => (
                 <button key={q} type="button" disabled={!ready} onClick={() => send(q, false)}>
                   {q}
                 </button>
@@ -334,7 +330,7 @@ function App(): React.JSX.Element {
                   ? 'Working out what you said…'
                   : willAttach
                     ? 'Ask about your screen… (or just press Enter)'
-                    : 'Ask about Minecraft…'
+                    : `Ask about ${game?.name ?? 'your game'}…`
           }
           rows={2}
           disabled={!ready || voice.status !== 'idle'}

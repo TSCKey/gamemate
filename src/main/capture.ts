@@ -73,16 +73,6 @@ export async function captureDisplay(displayId: number): Promise<Screenshot> {
   return toScreenshot(image)
 }
 
-// The first open window whose title matches, e.g. the Minecraft game window.
-export async function findWindow(pattern: RegExp): Promise<CaptureSource | null> {
-  const sources = await desktopCapturer.getSources({
-    types: ['window'],
-    thumbnailSize: { width: 0, height: 0 }
-  })
-  const match = sources.find((s) => pattern.test(s.name))
-  return match ? { id: match.id, name: match.name, type: 'window' } : null
-}
-
 export async function captureSource(
   sourceId: string,
   ownWindow: BrowserWindow

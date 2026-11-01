@@ -33,6 +33,17 @@ const api: Api = {
   },
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
+  games: {
+    state: () => ipcRenderer.invoke('games:state'),
+    runningApps: () => ipcRenderer.invoke('games:running-apps'),
+    add: (exe, name) => ipcRenderer.invoke('games:add', exe, name),
+    remove: (id) => ipcRenderer.invoke('games:remove', id),
+    setWiki: (id, address) => ipcRenderer.invoke('games:set-wiki', id, address)
+  },
+  modpacks: {
+    list: () => ipcRenderer.invoke('modpacks:list'),
+    current: () => ipcRenderer.invoke('modpacks:current')
+  },
   localModels: {
     list: () => ipcRenderer.invoke('local-models:list'),
     download: (id) => ipcRenderer.invoke('local-models:download', id),

@@ -4,6 +4,8 @@ import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { isSpeechModelId, type SpeechModelId } from './voiceModels'
 import { isLocalModelId, LOCAL_MODELS } from './localModels'
+import { GAMES, type CustomGame } from './games/catalog'
+import { existsSync } from 'fs'
 
 // How much GameMate watches and talks on its own (see README "Always-on companion").
 export const COMPANION_MODES = [
@@ -67,6 +69,14 @@ export interface Settings {
   // Closing the window keeps GameMate in the tray (for the shortcuts and companion) instead
   // of quitting.
   closeToTray: boolean
+  // The game GameMate helps with (catalog id or a custom game's id).
+  currentGame: string
+  // Switch to the game in front automatically when the player is in one.
+  autoDetectGame: boolean
+  // Games the player added (only changed through setCustomGames).
+  customGames: CustomGame[]
+  // Minecraft modpack: 'auto' (the one running), '' (none) or a pack's folder.
+  minecraftModpack: string
 }
 
 // Bump when the privacy notice changes in a way players should see again.
@@ -96,7 +106,11 @@ const DEFAULTS: Settings = {
   webLookup: false,
   privacyNoticeVersion: 0,
   geminiConsent: false,
-  closeToTray: true
+  closeToTray: true,
+  currentGame: 'minecraft',
+  autoDetectGame: true,
+  customGames: [],
+  minecraftModpack: 'auto'
 }
 
 const listeners: ((settings: Settings) => void)[] = []
@@ -169,12 +183,41 @@ export function updateSettings(patch: unknown, validVersions: string[]): Setting
   }
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
+  if (
+    typeof p.currentGame === 'string' &&
+    (GAMES.some((g) => g.id === p.currentGame) ||
+      next.customGames.some((g) => g.id === p.currentGame))
+  ) {
+    next.currentGame = p.currentGame
+  }
+  if (typeof p.autoDetectGame === 'boolean') next.autoDetectGame = p.autoDetectGame
+  if (
+    typeof p.minecraftModpack === 'string' &&
+    (p.minecraftModpack === 'auto' ||
+      p.minecraftModpack === '' ||
+      (p.minecraftModpack.length < 400 && existsSync(p.minecraftModpack)))
+  ) {
+    next.minecraftModpack = p.minecraftModpack
+  }
   // Nothing goes to Google without the player's consent.
   if (!next.geminiConsent) {
     next.answersEngine = 'local'
     next.commentaryEngine = 'local'
   }
 
+  save(next)
+  return next
+}
+
+// Player-added games come from the main process (which checks them), never straight from a page.
+export function setCustomGames(customGames: CustomGame[]): Settings {
+  const next = { ...getSettings(), customGames }
+  if (
+    !customGames.some((g) => g.id === next.currentGame) &&
+    !GAMES.some((g) => g.id === next.currentGame)
+  ) {
+    next.currentGame = 'minecraft'
+  }
   save(next)
   return next
 }

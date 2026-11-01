@@ -1,16 +1,18 @@
 import type { AppInfo, LocalModelStatus, ModelInfo, Settings } from '../../preload/index.d'
 import AiPanel from './components/AiPanel'
 import CompanionPanel from './components/CompanionPanel'
+import GamesPanel from './components/GamesPanel'
 import GeneralPanel from './components/GeneralPanel'
 import ModelsPanel from './components/ModelsPanel'
 import PrivacyPanel from './components/PrivacyPanel'
 import VoicePanel from './components/VoicePanel'
 import { localModelInfo } from './useLocalModels'
 
-export type SettingsTab = 'general' | 'models' | 'companion' | 'voice' | 'ai' | 'privacy'
+export type SettingsTab = 'general' | 'games' | 'models' | 'companion' | 'voice' | 'ai' | 'privacy'
 
 const TABS: { id: SettingsTab; icon: string; label: string }[] = [
   { id: 'general', icon: '⚙️', label: 'General' },
+  { id: 'games', icon: '🕹️', label: 'Games' },
   { id: 'models', icon: '🧠', label: 'Models' },
   { id: 'companion', icon: '🎮', label: 'Companion' },
   { id: 'voice', icon: '🎙️', label: 'Voice' },
@@ -66,8 +68,9 @@ function SettingsScreen({
       <main className="settings-content">
         <h1>{current.label}</h1>
         {tab === 'general' && (
-          <GeneralPanel settings={settings} update={update} versions={versions} appInfo={appInfo} />
+          <GeneralPanel settings={settings} update={update} appInfo={appInfo} />
         )}
+        {tab === 'games' && <GamesPanel settings={settings} update={update} versions={versions} />}
         {tab === 'models' && (
           <ModelsPanel
             settings={settings}

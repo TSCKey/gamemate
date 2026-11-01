@@ -30,10 +30,15 @@ import {
 } from './localModels'
 import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
 import { listVersions } from './games/minecraft'
+import { runningApps } from './games/apps'
+import { allGames, currentModpack, followForegroundGame, gameContext } from './games/current'
+import { listCurseForgeModpacks, type ModpackSummary } from './games/modpacks'
+import { discoverWiki } from './wiki'
 import {
   getSettings,
   onSettingsChanged,
   resetSettings,
+  setCustomGames,
   updateSettings,
   type Settings
 } from './settings'
@@ -124,12 +129,13 @@ function registerHandlers(): void {
 
   ipcMain.handle('assistant:ask', async (_event, messages: unknown) => {
     const history = parseChatMessages(messages)
-    const { minecraftVersion, webLookup } = getSettings()
+    const { webLookup } = getSettings()
+    const game = await gameContext()
     const last = history.at(-1)
     const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
     const askWith = async (engine: LlmEngine, reason?: string): Promise<AssistantReply> => {
       const reply = await ask(
-        { engine, minecraftVersion, webLookup, observations: recentObservations() },
+        { engine, game, webLookup, observations: recentObservations() },
         history
       )
       return reply.answeredBy ? { ...reply, answeredBy: { ...reply.answeredBy, reason } } : reply
@@ -144,15 +150,57 @@ function registerHandlers(): void {
     }
   })
 
-  // Only wiki pages and the policy pages GameMate links to, so a page can't open arbitrary
-  // programs or sites.
+  // Only pages on the games' wikis, Modrinth and the policy pages GameMate links to, so a page
+  // can't open arbitrary programs or sites.
   ipcMain.handle('app:open-source', (_event, url: unknown) => {
-    if (
-      typeof url === 'string' &&
-      (url.startsWith('https://minecraft.wiki/w/') || EXTERNAL_LINKS.includes(url))
-    ) {
-      shell.openExternal(url)
+    if (typeof url === 'string' && allowedLink(url)) shell.openExternal(url)
+  })
+
+  ipcMain.handle('games:state', () => gamesState())
+  ipcMain.handle('games:running-apps', () => runningApps())
+  ipcMain.handle('games:add', (_event, exe: unknown, name: unknown) => {
+    if (typeof exe !== 'string' || !/^[\w .()&+'-]{1,80}\.exe$/i.test(exe)) {
+      throw new Error('That program can’t be added.')
     }
+    const title = typeof name === 'string' ? name.trim().slice(0, 60) : ''
+    if (!title) throw new Error('Give the game a name.')
+    const { customGames } = getSettings()
+    if (customGames.length >= 30) throw new Error('You can add up to 30 games.')
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 30)
+    let id = `custom-${slug || 'game'}`
+    for (let n = 2; allGames().some((g) => g.id === id); n++) id = `custom-${slug || 'game'}-${n}`
+    setCustomGames([...customGames, { id, name: title, exe }])
+    updateSettings({ currentGame: id }, listVersions())
+    return gamesState()
+  })
+  ipcMain.handle('games:remove', (_event, id: unknown) => {
+    setCustomGames(getSettings().customGames.filter((g) => g.id !== id))
+    return gamesState()
+  })
+  ipcMain.handle('games:set-wiki', async (_event, id: unknown, address: unknown) => {
+    const { customGames } = getSettings()
+    const game = customGames.find((g) => g.id === id)
+    if (!game || typeof address !== 'string') throw new Error('Unknown game.')
+    const wiki = address.trim() ? await discoverWiki(address) : undefined
+    setCustomGames(customGames.map((g) => (g.id === game.id ? { ...g, wiki } : g)))
+    return gamesState()
+  })
+  ipcMain.handle('modpacks:list', () => cachedModpackList())
+  ipcMain.handle('modpacks:current', async (): Promise<ModpackSummary | null> => {
+    const pack = await currentModpack()
+    return pack
+      ? {
+          name: pack.name,
+          path: pack.path,
+          minecraftVersion: pack.minecraftVersion,
+          loader: pack.loader,
+          modCount: pack.mods.length
+        }
+      : null
   })
   // "Delete my data": everything GameMate stored on this PC, back to a fresh install.
   ipcMain.handle('app:delete-data', async () => {
@@ -323,22 +371,80 @@ function createWindow(): void {
   loadRenderer(mainWindow)
 }
 
+// What the game menus and settings need to know about each game.
+function gamesState(): {
+  games: {
+    id: string
+    name: string
+    wiki: string | null
+    examples: [string, string]
+    custom: boolean
+    exe: string | null
+  }[]
+  current: string
+} {
+  const { customGames, currentGame } = getSettings()
+  return {
+    games: allGames().map((g) => {
+      const custom = customGames.find((c) => c.id === g.id)
+      return {
+        id: g.id,
+        name: g.name,
+        wiki: g.wiki?.name ?? null,
+        examples: g.examples,
+        custom: Boolean(custom),
+        exe: custom?.exe ?? null
+      }
+    }),
+    current: currentGame
+  }
+}
+
+let modpackList: { at: number; list: Promise<ModpackSummary[]> } | null = null
+
+// Reading every pack's file takes a moment, so keep the list for a little while.
+function cachedModpackList(): Promise<ModpackSummary[]> {
+  if (!modpackList || Date.now() - modpackList.at > 30_000) {
+    modpackList = { at: Date.now(), list: listCurseForgeModpacks() }
+  }
+  return modpackList.list
+}
+
+function allowedLink(url: string): boolean {
+  if (EXTERNAL_LINKS.includes(url)) return true
+  let target: URL
+  try {
+    target = new URL(url)
+  } catch {
+    return false
+  }
+  const origins = new Set(['https://modrinth.com'])
+  for (const game of allGames()) {
+    if (game.wiki) origins.add(new URL(game.wiki.articlePath.replace('$1', '')).origin)
+  }
+  return target.protocol === 'https:' && origins.has(target.origin)
+}
+
 const STATUS_LABELS: Record<ObserverState['status'], string> = {
   off: 'Not watching',
   paused: 'Watching paused',
   'no-model': 'Pick a model to start watching',
-  'waiting-for-game': 'Waiting for Minecraft',
-  watching: 'Watching Minecraft',
-  analyzing: 'Watching Minecraft'
+  'waiting-for-game': 'Waiting for a game',
+  watching: 'Watching your game',
+  analyzing: 'Watching your game'
 }
 
 function updateTray(observer: ObserverState): void {
   if (!tray) return
   const watching = observer.status !== 'off'
-  tray.setToolTip(`GameMate · ${STATUS_LABELS[observer.status]}`)
+  const label =
+    observer.game && observer.status !== 'waiting-for-game'
+      ? STATUS_LABELS[observer.status].replace('your game', observer.game)
+      : STATUS_LABELS[observer.status]
+  tray.setToolTip(`GameMate · ${label}`)
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      { label: STATUS_LABELS[observer.status], enabled: false },
+      { label, enabled: false },
       ...(watching
         ? [
             {
@@ -373,7 +479,11 @@ function createTray(): void {
 function updateVoiceShortcut(settings: Settings): void {
   const active = globalShortcut.isRegistered(VOICE_SHORTCUT)
   if (settings.voiceInput && !active) {
-    voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => toggleOverlay(true))
+    voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => {
+      // The player is in their game: GameMate follows it before showing up.
+      followForegroundGame()
+      toggleOverlay(true)
+    })
     if (!voiceShortcutRegistered) console.warn(`Could not register ${VOICE_SHORTCUT}`)
   } else if (!settings.voiceInput && active) {
     globalShortcut.unregister(VOICE_SHORTCUT)
@@ -432,7 +542,11 @@ if (!app.requestSingleInstanceLock()) {
     startObserver(showToast)
 
     // Fails if another app (e.g. PowerToys Run) already owns the shortcut.
-    shortcutRegistered = globalShortcut.register(SHORTCUT, () => toggleOverlay())
+    shortcutRegistered = globalShortcut.register(SHORTCUT, () => {
+      // The player is in their game: GameMate follows it before showing up.
+      followForegroundGame()
+      toggleOverlay()
+    })
     if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
     updateVoiceShortcut(getSettings())
     onSettingsChanged(updateVoiceShortcut)

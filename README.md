@@ -2,13 +2,15 @@
 
 **Your local AI gaming companion.**
 
-GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It can look at your screen so you don't have to describe what you're seeing, it knows the real Minecraft crafting recipes, and if you like, it can watch your game and speak up when something important happens. You can even ask out loud and hear the answer.
+GameMate is a Windows desktop app that puts an AI assistant beside you while you play. Press **Alt + Space** in the middle of a game, type your question, and get an answer without leaving the game. It recognizes the game you're playing, can look at your screen so you don't have to describe what you're seeing, reads your game's wiki when it isn't sure, knows the real Minecraft crafting recipes and your CurseForge modpacks, and if you like, it can watch your game and speak up when something important happens. You can even ask out loud and hear the answer.
 
-By default everything runs **on your own computer**. GameMate comes with its own AI engine: download a model once from inside the app and it answers right on your PC, so your questions, screenshots and conversations stay there, there are no subscription or per-question fees, and it keeps working without an internet connection. Already use [Ollama](https://ollama.com)? GameMate can use your Ollama models instead. If you want smarter answers, you can switch on Google's Gemini with your own API key, and let GameMate look things up on the Minecraft Wiki.
+By default everything runs **on your own computer**. GameMate comes with its own AI engine: download a model once from inside the app and it answers right on your PC, so your questions, screenshots and conversations stay there, there are no subscription or per-question fees, and it keeps working without an internet connection. Already use [Ollama](https://ollama.com)? GameMate can use your Ollama models instead. If you want smarter answers, you can switch on Google's Gemini with your own API key, and let GameMate look things up on your game's wiki.
 
 ## Features
 
 - **Ask without leaving your game.** Press **Alt + Space** and a small window appears on top of your game. Type a question, read the answer, and press **Esc** to get back to playing.
+- **Many games.** GameMate recognizes Minecraft (Java and Bedrock), Terraria, Valheim, Elden Ring, Baldur's Gate 3, Satisfactory, Factorio, RimWorld, Don't Starve, Subnautica, No Man's Sky, Hollow Knight, Hades, Skyrim, The Witcher 3, Cyberpunk 2077 and Palworld, and you can add any other game, with its wiki.
+- **Knows your modpack.** GameMate reads your CurseForge modpacks (and the pack that's running in other launchers), so it knows which mods you have, and can read what a mod does.
 - **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe for your Minecraft version and shows it as a crafting grid, instead of guessing. Supports Minecraft Java Edition 26.1, 1.21.11, 1.21.4 and 1.20.4.
 - **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
 - **Talk to it.** Press **Alt + V** and ask your question out loud. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
@@ -17,9 +19,9 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **Nothing left running.** GameMate's AI starts when you ask something, frees your graphics card after a few idle minutes, and stops completely when GameMate quits.
 - **Chat window.** A full chat window for longer conversations.
 - **Runs in the background.** Closing the window keeps GameMate in the system tray, ready for **Alt + Space**.
-- **Looks things up.** Turn on wiki lookup and GameMate reads [minecraft.wiki](https://minecraft.wiki) for things that aren't crafted, like building a Nether portal, taming a wolf or what an enchantment does, and links to the page it used.
+- **Looks things up.** Turn on lookups and GameMate reads your game's wiki (for example [minecraft.wiki](https://minecraft.wiki), the Terraria Wiki or Eldenpedia) for bosses, items, places and mechanics, and links to the page it used.
 - **Local or cloud, your choice.** Use the local model for everything, or Gemini for questions, the companion, or both.
-- **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or wiki lookup.
+- **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or online lookups.
 
 ## Requirements
 
@@ -48,6 +50,16 @@ Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ 
 - Drag the 🎮 icon to move the window.
 - For the window to appear over your game, set the game to **windowed** or **borderless/windowed fullscreen**. Windows doesn't let other apps draw over exclusive fullscreen.
 
+### Games and modpacks
+
+GameMate always helps with one game, shown at the top of the chat window (for example **Terraria ▾**). Click it to switch games.
+
+- **Follow the game I'm playing** (on by default): when you press **Alt + Space**, or while the companion is watching, GameMate switches to the game in front by itself. It recognizes games by the name of their program.
+- **⚙ Settings → Games** has all the options:
+  - **Minecraft modpacks:** GameMate lists the modpacks you installed with CurseForge. Choose one, or leave **Detect the one I'm playing** to use the pack that's running, from any launcher. Answers then know which mods you have, and with lookups on, the AI can read what a mod does on Modrinth.
+  - **Your games:** start a game GameMate doesn't know, click **Add a game that's running…** and pick it. Add its wiki's address (any Fandom, wiki.gg or other MediaWiki wiki) so GameMate can look things up for it.
+  - **Games GameMate knows:** the games it recognizes by itself, with their wikis.
+
 ### Always-on companion
 
 Click the companion mode at the top of the chat window (for example **On-demand ▾**) to choose how much GameMate watches and talks on its own. **⚙ Settings → Companion** has the same choices plus the log:
@@ -64,7 +76,7 @@ Click the companion mode at the top of the chat window (for example **On-demand 
 - Comments appear in the top-right corner of the screen for a few seconds. They never take focus, so your keyboard and mouse stay in the game. Click a comment to dismiss it.
 - In any watching mode, GameMate remembers what it saw recently, so questions like "What should I do next?" get better answers.
 - Click **⏸ Pause** on the Companion page, or **Pause watching** in the tray icon's menu, to stop watching for a while. While GameMate is watching, the top of the chat window shows its status.
-- GameMate only watches while the Minecraft game window is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
+- GameMate only watches while a game it knows (or one you added) is the active window. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
 
 ### AI models
 
@@ -98,7 +110,7 @@ Click the AI name under the question box (for example **Qwen3.5 2B ▾**) to swi
   3. Paste it and click **Save**. GameMate checks it with Google, stores it encrypted on your PC, and lists the Gemini models your key can use.
   4. Pick a model. A Flash model is a good balance of speed and quality.
   5. To stop using Gemini, click **Turn off**. GameMate deletes your key and goes back to the local AI.
-- **Look things up:** turn on **Read minecraft.wiki**. When a question needs more than a crafting recipe, the AI reads the matching wiki page. The answer shows **Source:** with a link to it.
+- **Look things up:** turn on **Look things up online**. When a question is about a boss, item, place or mechanic, the AI reads the matching page on your game's wiki (and for Minecraft mods, the mod's Modrinth page). The answer shows **Source:** with a link to it and the wiki's license.
 - When questions go to Gemini, the AI name under the question box and the in-game window show **☁**.
 
 ### Voice
@@ -139,7 +151,13 @@ Another app may already use that shortcut, for example PowerToys Run. The chat w
 Switch the game to windowed or borderless fullscreen. In Minecraft, press **F11** to toggle fullscreen.
 
 **A recipe looks wrong or is missing**
-Make sure the Minecraft version at the top of the chat window matches the version you're playing. GameMate knows crafting-table recipes. Items that are smelted, brewed, traded or built in the world (such as Nether portals) don't have a crafting recipe.
+Make sure the Minecraft version matches the version you're playing (click the game at the top of the chat window). GameMate knows the crafting-table recipes of plain Minecraft. Items that are smelted, brewed, traded or built in the world (such as Nether portals) don't have a crafting recipe, and recipes for items from mods aren't included yet.
+
+**GameMate doesn't recognize my game**
+Add it in **⚙ Settings → Games → Add a game that's running…** while the game is open. You can also pick the game yourself at the top of the chat window.
+
+**My modpack isn't listed**
+GameMate lists packs installed with CurseForge in its default folder. For other launchers, start the pack and leave **Modpack** on **Detect the one I'm playing**; GameMate then reads the mods of the pack that's running.
 
 **The first answer takes a while**
 The very first time, your graphics card's driver prepares the AI for your card, which can take up to a minute. After that, answers come in seconds. Each time GameMate's AI starts, it also needs a few seconds to load the model.
@@ -182,13 +200,15 @@ Your game and the AI model share your graphics card. Try a smaller model, close 
 GameMate is local by default. The first time you open it, it shows a short summary of how it handles your data, which you can read again in **⚙ Settings → Privacy**. Two optional features use the internet, and only when you turn them on:
 
 - **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under the [Gemini API terms](https://ai.google.dev/gemini-api/terms) and [Google's Privacy Policy](https://policies.google.com/privacy). GameMate asks for your agreement before you can add a key, and Google requires you to be 18 or older. That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
-- **Wiki lookup** sends only the topic, such as "Nether Portal", to minecraft.wiki.
+- **Online lookups** send only the topic, such as "Nether Portal", to your game's wiki, and for Minecraft mods the mod's name to Modrinth.
 
 Otherwise, GameMate's AI runs on your own computer. Its engine only accepts requests from GameMate on this PC (`127.0.0.1`, with a new random key each time it starts), and Ollama, if you use it, is local too. AI models are downloaded once from Hugging Face, and the AI engine from GitHub, when you click **Download**, and every file is checked against a known checksum. GameMate takes screenshots only:
 
 - when you send a question with **📷 Screenshot** on,
 - when you press **Alt + Space** with **📷** turned on, and
-- while Minecraft is the active window, if you've turned on Observation, Commentary or Quiet mode. These modes are off by default. The tray icon and the chat window always show whether GameMate is watching.
+- while a game is the active window, if you've turned on Observation, Commentary or Quiet mode. These modes are off by default. The tray icon and the chat window always show whether GameMate is watching.
+
+To recognize your game, GameMate reads the name of the program in front, and for Minecraft it reads your launcher's modpack folders. This stays on your PC.
 
 Screenshots go only to the AI you chose and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
 
@@ -198,14 +218,14 @@ GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V**
 
 ## What GameMate won't do
 
-GameMate is an assistant, not a bot. It never plays games for you, controls your keyboard or mouse, provides cheats, or modifies game files or processes.
+GameMate is an assistant, not a bot. It never plays games for you, controls your keyboard or mouse, provides cheats, or modifies game files or processes. Use the companion in single-player and co-op games: competitive online games may not allow AI help during matches.
 
 ## Credits
 
 - GameMate's built-in AI engine is [llama.cpp](https://github.com/ggml-org/llama.cpp) (MIT License).
 - The built-in models are [Qwen3.5](https://huggingface.co/Qwen) by the Qwen team (Apache 2.0), in versions prepared by [Unsloth](https://huggingface.co/unsloth).
 - Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
-- Wiki answers use [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0).
+- Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 
 ## Building from source
@@ -223,4 +243,4 @@ To build a Windows installer, run `npm run build:win`.
 
 To refresh the bundled Minecraft data, run `node scripts/build-minecraft-data.mjs`.
 
-Built with Electron, React, TypeScript and Ollama. Speech recognition uses OpenAI's Whisper (MIT), converted by [onnx-community](https://huggingface.co/onnx-community) and run with [Transformers.js](https://github.com/huggingface/transformers.js) (Apache-2.0). Minecraft item and recipe data comes from [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data) (MIT). Wiki lookups read [minecraft.wiki](https://minecraft.wiki), whose content is licensed CC BY-NC-SA 3.0. GameMate is not affiliated with Mojang or Microsoft.
+Built with Electron, React, TypeScript, llama.cpp and Ollama. Speech recognition uses OpenAI's Whisper (MIT), converted by [onnx-community](https://huggingface.co/onnx-community) and run with [Transformers.js](https://github.com/huggingface/transformers.js) (Apache-2.0). Minecraft item and recipe data comes from [PrismarineJS/minecraft-data](https://github.com/PrismarineJS/minecraft-data) (MIT). Wiki lookups read each game's community wiki under that wiki's license. GameMate is not affiliated with Mojang or Microsoft.

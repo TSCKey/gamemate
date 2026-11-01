@@ -1352,3 +1352,44 @@ button.link:hover:not(:disabled) {
   background: none;
   text-decoration: underline;
 }
+
+/* Games page */
+
+.game-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px 16px;
+  padding: 8px 0 4px;
+}
+
+.game-list li {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-game {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.add-game select {
+  flex: 1 1 260px;
+  max-width: none;
+}
+
+.add-game input {
+  flex: 1 1 160px;
+}
+
+.game-wiki-form {
+  margin-top: 6px;
+}
+
+.game-wiki-form input {
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+}

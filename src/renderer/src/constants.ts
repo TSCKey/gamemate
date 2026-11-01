@@ -45,7 +45,7 @@ export const STATUS_TEXT: Record<CompanionState['status'], string> = {
   off: 'Not watching',
   paused: 'Paused',
   'no-model': 'Pick a model to start watching',
-  'waiting-for-game': 'Waiting for Minecraft to be the active window',
+  'waiting-for-game': 'Waiting for a game to be the active window',
   watching: 'Watching',
   analyzing: 'Looking at your screen…'
 }

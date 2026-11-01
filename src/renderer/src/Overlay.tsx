@@ -4,6 +4,7 @@ import RecipeCard from './components/RecipeCard'
 import Sources from './components/Sources'
 import { errorMessage, useSettings } from './useSettings'
 import { localModelInfo, useLocalModels } from './useLocalModels'
+import { useGames } from './useGames'
 import { speak, stopSpeaking } from './voice/speak'
 import { useVoiceInput } from './voice/useVoiceInput'
 
@@ -14,6 +15,8 @@ const WINDOW_PADDING = 24
 
 function Overlay(): React.JSX.Element {
   const { settings, models, update } = useSettings()
+  const games = useGames(settings)
+  const gameName = games?.games.find((g) => g.id === settings?.currentGame)?.name
   const localModels = useLocalModels()
   const [history, setHistory] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -241,6 +244,7 @@ function Overlay(): React.JSX.Element {
               ·{' '}
             </span>
           )}
+          {gameName && <span title="The game GameMate helps with">{gameName} · </span>}
           Enter to ask{voice.ready ? ` · ${appVoiceShortcut} to talk` : ''} · Esc to hide
         </div>
       </div>

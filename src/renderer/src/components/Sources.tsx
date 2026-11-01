@@ -1,6 +1,7 @@
 import type { WikiSource } from '../../../preload/index.d'
 
-// Links to the minecraft.wiki pages an answer used (the wiki's license asks for attribution).
+// Links to the wiki and mod pages an answer used, with each site's license (wiki texts are
+// shared under licenses that ask for attribution).
 function Sources({ sources }: { sources?: WikiSource[] }): React.JSX.Element | null {
   if (!sources?.length) return null
   return (
@@ -8,7 +9,7 @@ function Sources({ sources }: { sources?: WikiSource[] }): React.JSX.Element | n
       Source:{' '}
       {sources.map((s, i) => (
         <span key={s.url}>
-          {i > 0 && ', '}
+          {i > 0 && ' · '}
           <a
             href={s.url}
             onClick={(e) => {
@@ -17,10 +18,11 @@ function Sources({ sources }: { sources?: WikiSource[] }): React.JSX.Element | n
             }}
           >
             {s.title}
-          </a>
+          </a>{' '}
+          ({s.wiki}
+          {s.license && s.license !== 'see the mod page' ? `, ${s.license}` : ''})
         </span>
-      ))}{' '}
-      (minecraft.wiki, CC BY-NC-SA 3.0)
+      ))}
     </div>
   )
 }

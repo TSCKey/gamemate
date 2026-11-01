@@ -4,9 +4,10 @@
 // To keep the GPU free for the game, the model is only asked about the screen when a cheap
 // check on a tiny frame suggests something changed, and never more often than MIN_ANALYSIS_GAP_MS.
 import { BrowserWindow, screen, type NativeImage } from 'electron'
-import { captureDisplayImage, findWindow, toScreenshot } from './capture'
-import { foregroundHandle, handleFromSourceId, windowRect } from './foreground'
-import { GAME_WINDOW } from './games/minecraft'
+import { captureDisplayImage, toScreenshot } from './capture'
+import { windowRect } from './foreground'
+import { followForegroundGame } from './games/current'
+import type { GameProfile } from './games/catalog'
 import { complete } from './llm'
 import { engineFor, engineReady } from './engines'
 import { isAsking } from './assistant'
@@ -144,20 +145,25 @@ function analysisReason(frame: FrameStats, now: number): string | null {
   return null
 }
 
-function analysisPrompt(reason: string): string {
+function analysisPrompt(reason: string, game: GameProfile): string {
   const recent = state.events
     .slice(-3)
     .map((e) => `- ${Math.round((Date.now() - e.time) / 1000)}s ago: ${e.description}`)
     .join('\n')
-  return `You are GameMate, a friendly companion watching a Minecraft player's screen. Report the single most important thing happening right now.
+  // Dark areas matter in Minecraft (mobs spawn there), not in most other games.
+  const darkArea =
+    game.id === 'minecraft'
+      ? '- dark_area: the player is in a dark cave or area where mobs can spawn (4-6)\n'
+      : ''
+  return `You are GameMate, a friendly companion watching someone play ${game.name}. Report the single most important thing happening right now.
 Event types and importance (0-10):
-- death: the "You Died!" screen is shown (10)
-- low_health: the health bar shows 3 hearts or fewer (9)
-- hostile_mob: a creeper, zombie, skeleton, spider or other hostile mob is close to the player (7-9, higher if very close)
-- discovery: a village, structure, diamonds or another notable find is clearly visible (5-7)
-- dark_area: the player is in a dark cave or area where mobs can spawn (4-6)
-- other: something else a player would want to know about (1-5)
-- none: normal gameplay, menus, or not Minecraft (0)
+- death: the player died or failed (a death or game-over screen) (10)
+- low_health: the player's health is very low (9)
+- hostile_mob: an enemy, boss or other danger is close to the player (7-9, higher if very close)
+- discovery: a notable place, item, find or opportunity is clearly visible (5-7)
+${darkArea}- other: something else a player would want to know about (1-5)
+- none: normal gameplay, menus, loading screens, or not ${game.name} (0)
+In ${game.name}, watch especially for: ${game.watchFor}.
 "description": one short factual sentence about what is visible.
 "comment": what a friendly friend sitting next to the player would say about it, under 20 words, plain text. Leave it empty for "none".
 Only report what you can actually see. If unsure, use "none".
@@ -165,14 +171,25 @@ Why you are looking now: ${reason}
 ${recent ? `Already noticed recently (don't report the same thing again):\n${recent}` : ''}`
 }
 
-async function analyze(displayId: number, reason: string, settings: Settings): Promise<void> {
+async function analyze(
+  displayId: number,
+  reason: string,
+  settings: Settings,
+  game: GameProfile
+): Promise<void> {
   const image = await captureDisplayImage(displayId)
   if (!image) return
   setState({ status: 'analyzing' })
   try {
     const reply = await complete(
       engineFor('commentary'),
-      [{ role: 'user', content: analysisPrompt(reason), images: [toScreenshot(image).base64] }],
+      [
+        {
+          role: 'user',
+          content: analysisPrompt(reason, game),
+          images: [toScreenshot(image).base64]
+        }
+      ],
       // Thinking would make each look take several times longer.
       { jsonSchema: ANALYSIS_SCHEMA, fast: true }
     )
@@ -223,22 +240,18 @@ async function tick(): Promise<void> {
   if (state.paused) return setState({ status: 'paused' })
   if (!engineReady('commentary')) return setState({ status: 'no-model' })
 
-  // GAMEMATE_GAME_WINDOW lets developers point the observer at another window for testing.
-  const pattern = process.env.GAMEMATE_GAME_WINDOW
-    ? new RegExp(process.env.GAMEMATE_GAME_WINDOW)
-    : GAME_WINDOW
-  const game = await findWindow(pattern)
-  const handle = game && handleFromSourceId(game.id)
-  // Only watch while the game is the window in front: not while alt-tabbed or in GameMate.
-  if (!game || !handle || foregroundHandle() !== handle) {
+  // Only watch while a game is the window in front: not while alt-tabbed or in GameMate.
+  const found = followForegroundGame()
+  if (!found) {
     lastFrame = null
-    return setState({ status: 'waiting-for-game', game: game?.name ?? null })
+    return setState({ status: 'waiting-for-game', game: null })
   }
+  const { game, program } = found
   setState({ status: 'watching', game: game.name })
   // The player asked something: their question gets the GPU first.
   if (isAsking()) return
 
-  const rect = windowRect(handle)
+  const rect = windowRect(program.handle)
   const display = rect
     ? screen.getDisplayMatching(
         screen.screenToDipRect(null, {
@@ -258,7 +271,7 @@ async function tick(): Promise<void> {
 
   lastAnalysisAt = now
   lastFrame = frame
-  await analyze(display.id, reason, settings)
+  await analyze(display.id, reason, settings, game)
 }
 
 function loop(): void {

@@ -9,9 +9,57 @@ export interface RecipeView {
   totals: { label: string; count: number }[]
 }
 
+// A wiki or mod page an answer used.
 export interface WikiSource {
   title: string
   url: string
+  // e.g. "Terraria Wiki" or "Modrinth"
+  wiki: string
+  license: string
+}
+
+export interface WikiSite {
+  name: string
+  api: string
+  articlePath: string
+  license: string
+}
+
+export interface CustomGame {
+  id: string
+  name: string
+  exe: string
+  wiki?: WikiSite
+}
+
+export interface GameInfo {
+  id: string
+  name: string
+  // The game's wiki, if GameMate knows one.
+  wiki: string | null
+  examples: [string, string]
+  // Added by the player.
+  custom: boolean
+  exe: string | null
+}
+
+export interface GamesState {
+  games: GameInfo[]
+  current: string
+}
+
+// A program with an open window (to add it as a game).
+export interface RunningApp {
+  exe: string
+  title: string
+}
+
+export interface ModpackSummary {
+  name: string
+  path: string
+  minecraftVersion: string
+  loader: string
+  modCount: number
 }
 
 export interface AnsweredBy {
@@ -106,6 +154,11 @@ export interface Settings {
   privacyNoticeVersion: number
   geminiConsent: boolean
   closeToTray: boolean
+  currentGame: string
+  autoDetectGame: boolean
+  customGames: CustomGame[]
+  // 'auto' (the running pack), '' (none) or a pack's folder.
+  minecraftModpack: string
 }
 
 export interface ObservedEvent {
@@ -159,6 +212,20 @@ export interface Api {
   openSource: (url: string) => Promise<void>
   // Deletes the key, AI and speech models, companion log and settings stored by GameMate.
   deleteData: () => Promise<void>
+  games: {
+    state: () => Promise<GamesState>
+    runningApps: () => Promise<RunningApp[]>
+    add: (exe: string, name: string) => Promise<GamesState>
+    remove: (id: string) => Promise<GamesState>
+    // Finds the wiki from any page address ('' removes it).
+    setWiki: (id: string, address: string) => Promise<GamesState>
+  }
+  modpacks: {
+    // Packs installed with CurseForge, most recently played first.
+    list: () => Promise<ModpackSummary[]>
+    // The pack GameMate is using now (chosen, or the one running), if any.
+    current: () => Promise<ModpackSummary | null>
+  }
   // Models for the built-in engine: download (resolves when done), cancel, delete.
   localModels: {
     list: () => Promise<LocalModelStatus[]>

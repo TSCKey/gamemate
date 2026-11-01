@@ -15,6 +15,10 @@ export function PrivacySummary(): React.JSX.Element {
         watch your game. Screenshots stay in memory and are never saved to disk.
       </li>
       <li>
+        <strong>Recognizing your game:</strong> GameMate reads the name of the program in front, and
+        for Minecraft the modpack folders of your launcher. This stays on your PC.
+      </li>
+      <li>
         <strong>Your microphone</strong> is only used when voice input is on and you press the voice
         shortcut or 🎤. Speech is turned into text on this PC.
       </li>
@@ -22,10 +26,10 @@ export function PrivacySummary(): React.JSX.Element {
         <strong>Chats and the companion log</strong> are kept only while GameMate is open.
       </li>
       <li>
-        <strong>Online features are off until you turn them on:</strong> looking things up on
-        minecraft.wiki (only the topic is sent) and Google Gemini (your questions and screenshots
-        are sent to Google). Downloads happen once, when you ask for them: AI and speech models come
-        from Hugging Face, and GameMate&apos;s AI engine from GitHub.
+        <strong>Online features are off until you turn them on:</strong> looking things up on your
+        game&apos;s wiki or Modrinth (only the topic is sent) and Google Gemini (your questions and
+        screenshots are sent to Google). Downloads happen once, when you ask for them: AI and speech
+        models come from Hugging Face, and GameMate&apos;s AI engine from GitHub.
       </li>
     </ul>
   )
@@ -55,6 +59,7 @@ function PrivacyPanel(): React.JSX.Element {
           <li>Your settings.</li>
           <li>Your Gemini API key, if you added one, encrypted by Windows.</li>
           <li>AI models, GameMate&apos;s AI engine and speech models you downloaded.</li>
+          <li>Games you added: their name, program and wiki address.</li>
         </ul>
       </Section>
 
@@ -69,9 +74,10 @@ function PrivacyPanel(): React.JSX.Element {
             <ExternalLink href={LINKS.googlePrivacy}>Google Privacy Policy</ExternalLink>.
           </li>
           <li>
-            <strong>minecraft.wiki:</strong>{' '}
-            <ExternalLink href={LINKS.wikiDisclaimer}>wiki disclaimers</ExternalLink>. Page text is
-            available under CC BY-NC-SA 3.0, so answers that use it link to the page.
+            <strong>Game wikis and Modrinth:</strong> each wiki&apos;s text is under its own license
+            (shown with every answer that uses it, for example{' '}
+            <ExternalLink href={LINKS.wikiDisclaimer}>minecraft.wiki</ExternalLink>), so answers
+            link to the page.
           </li>
         </ul>
       </Section>

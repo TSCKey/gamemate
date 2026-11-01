@@ -4,31 +4,14 @@ import { Field, Section, Toggle } from './ui'
 function GeneralPanel({
   settings,
   update,
-  versions,
   appInfo
 }: {
   settings: Settings
   update: (patch: Partial<Settings>) => void
-  versions: string[]
   appInfo: AppInfo | null
 }): React.JSX.Element {
   return (
     <>
-      <Section title="Game">
-        <Field label="Minecraft version" help="Recipes are shown for this version.">
-          <select
-            value={settings.minecraftVersion}
-            onChange={(e) => update({ minecraftVersion: e.target.value })}
-          >
-            {versions.map((v) => (
-              <option key={v} value={v}>
-                Minecraft {v}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </Section>
-
       <Section title="In-game window">
         <Field
           label="Shortcut"
