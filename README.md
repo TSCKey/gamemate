@@ -254,6 +254,12 @@ GameMate is an assistant, not a bot. It never plays games for you, controls your
 - Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Pictures come from the same wikis, are credited with the wiki's name and link to their page there. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 
+## License and code signing
+
+GameMate is free software: you can share and change it under the [GNU General Public License v3.0 or later](LICENSE).
+
+**Code signing policy:** see [docs/CODE_SIGNING.md](docs/CODE_SIGNING.md). GameMate has applied for free code signing by the SignPath Foundation; until then, the installer is unsigned and Windows shows a SmartScreen warning.
+
 ## Building from source
 
 For developers who want to run GameMate from the code:
