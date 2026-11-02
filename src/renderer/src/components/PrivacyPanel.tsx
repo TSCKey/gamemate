@@ -87,7 +87,8 @@ function PrivacyPanel(): React.JSX.Element {
             <strong>Game wikis and Modrinth:</strong> each wiki&apos;s text is under its own license
             (shown with every answer that uses it, for example{' '}
             <ExternalLink href={LINKS.wikiDisclaimer}>minecraft.wiki</ExternalLink>), so answers
-            link to the page.
+            link to the page. Pictures in answers are downloaded from the same wikis and link to
+            their page there.
           </li>
         </ul>
       </Section>

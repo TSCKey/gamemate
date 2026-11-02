@@ -7,6 +7,7 @@ import PrivacyNotice from '../components/PrivacyNotice'
 import SetupCard from '../components/SetupCard'
 import { PRIVACY_NOTICE_VERSION } from '../constants'
 import RecipeCard from '../components/RecipeCard'
+import Pictures from '../components/Pictures'
 import Sources from '../components/Sources'
 import AnsweredByLabel from '../components/AnsweredByLabel'
 import SettingsScreen, { type SettingsTab } from './SettingsScreen'
@@ -293,6 +294,7 @@ function App(): React.JSX.Element {
             {m.recipes?.map((r, j) => (
               <RecipeCard key={j} recipe={r} />
             ))}
+            <Pictures pictures={m.pictures} />
             <Sources sources={m.sources} />
             {onAuto && m.answeredBy && <AnsweredByLabel by={m.answeredBy} />}
           </div>

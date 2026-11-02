@@ -165,6 +165,23 @@ export interface RecipeView {
   shapeless: boolean
   grid: (string | null)[][]
   totals: { label: string; count: number }[]
+  // The item each ingredient label shows as its icon ("Any Planks" → "Oak Planks").
+  iconItems: Record<string, string>
+  // Game icons by ingredient label, and a picture of the crafted item (from the wiki).
+  icons?: Record<string, string>
+  picture?: WikiPicture
+}
+
+// A picture from a game's wiki: an area map, or the picture of a page's subject.
+export interface WikiPicture {
+  // The picture itself as a data: URL (GameMate downloads and checks it; windows never go online).
+  src: string
+  // What it shows, e.g. "Map of Forgotten Crossroads".
+  caption: string
+  // The picture's page on the wiki, which credits its source.
+  url: string
+  wiki: string
+  kind: 'map' | 'picture'
 }
 
 // ── Chat ────────────────────────────────────────────────────────────────────────────────────
@@ -188,6 +205,8 @@ export interface ChatMessage {
   recipes?: RecipeView[]
   // Wiki and mod pages the answer used.
   sources?: WikiSource[]
+  // Pictures from those wikis (maps, the things the answer is about).
+  pictures?: WikiPicture[]
   // Which AI answered (assistant messages only).
   answeredBy?: AnsweredBy
 }

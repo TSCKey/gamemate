@@ -119,7 +119,7 @@ function rankItems(data: VersionData, query: string): Match[] {
     .sort((a, b) => b.score - a.score)
 }
 
-function toView(item: Item, recipe: RawRecipe): RecipeView {
+function toView(data: VersionData, item: Item, recipe: RawRecipe): RecipeView {
   const labelOf = (i: number | null): string | null =>
     i === null ? null : recipe.ingredients[i].label
   const grid =
@@ -131,12 +131,21 @@ function toView(item: Item, recipe: RawRecipe): RecipeView {
         )
   const counts = new Map<string, number>()
   for (const cell of grid.flat()) if (cell) counts.set(cell, (counts.get(cell) ?? 0) + 1)
+  // Each ingredient shows the icon of one accepted item: the oak one when there is a choice
+  // ("Any Planks" → Oak Planks), as players know it best, otherwise the first.
+  const iconItems: Record<string, string> = {}
+  for (const ingredient of recipe.ingredients) {
+    const pick = ingredient.options.find((o) => o.startsWith('oak_')) ?? ingredient.options[0]
+    const first = data.items.find((i) => i.name === pick)
+    iconItems[ingredient.label] = first?.displayName ?? ingredient.label
+  }
   return {
     item: item.displayName,
     count: recipe.count,
     shapeless: recipe.type === 'shapeless',
     grid,
-    totals: [...counts].map(([label, count]) => ({ label, count }))
+    totals: [...counts].map(([label, count]) => ({ label, count })),
+    iconItems
   }
 }
 
@@ -186,7 +195,7 @@ export function lookupRecipe(version: string, query: string): RecipeLookup {
       views: []
     }
   }
-  const views = recipes.map((r) => toView(item, r))
+  const views = recipes.map((r) => toView(data, item, r))
   const header = `Minecraft ${version} crafting recipe${views.length > 1 ? 's' : ''} for ${item.displayName}:`
   return { text: [header, ...views.map(describe)].join('\n\n'), views }
 }

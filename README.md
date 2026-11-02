@@ -20,6 +20,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **Chat window.** A full chat window for longer conversations.
 - **Runs in the background.** Closing the window keeps GameMate in the system tray, ready for **Alt + Space**.
 - **Looks things up.** Turn on lookups and GameMate reads your game's wiki (for example [minecraft.wiki](https://minecraft.wiki), the Terraria Wiki or Eldenpedia) for bosses, items, places and mechanics, and links to the page it used.
+- **Shows pictures.** With lookups on, answers come with pictures from the wiki: ask for a map ("map of the Forgotten Crossroads") and you get the area map, ask about a boss or item and you see it, and Minecraft recipe cards show the real game icons and the crafted item.
 - **Local or cloud, your choice.** Use the local model for everything, or Gemini for questions, the companion, or both.
 - **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or online lookups.
 
@@ -113,7 +114,7 @@ Click the AI name under the question box (for example **Qwen3.5 2B ▾**) to swi
   3. Paste it and click **Save**. GameMate checks it with Google, stores it encrypted on your PC, and lists the Gemini models your key can use.
   4. Pick a model. A Flash model is a good balance of speed and quality.
   5. To stop using Gemini, click **Turn off**. GameMate deletes your key and goes back to the local AI.
-- **Look things up:** turn on **Look things up online**. When a question is about a boss, item, place or mechanic, the AI reads the matching page on your game's wiki (and for Minecraft mods, the mod's Modrinth page). The answer shows **Source:** with a link to it and the wiki's license.
+- **Look things up:** turn on **Look things up online**. When a question is about a boss, item, place or mechanic, the AI reads the matching page on your game's wiki (and for Minecraft mods, the mod's Modrinth page). The answer shows **Source:** with a link to it and the wiki's license. If the page has a fitting picture, it appears under the answer: the area map when you ask for a map or where something is, otherwise the page's main picture. Click a picture to open it on the wiki.
 - When questions go to Gemini, the AI name under the question box and the in-game window show **☁**.
 
 ### Voice
@@ -214,7 +215,7 @@ Your game and the AI model share your graphics card. Try a smaller model, close 
 GameMate is local by default. The first time you open it, it shows a short summary of how it handles your data, which you can read again in **⚙ Settings → Privacy**. Two optional features use the internet, and only when you turn them on:
 
 - **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under the [Gemini API terms](https://ai.google.dev/gemini-api/terms) and [Google's Privacy Policy](https://policies.google.com/privacy). GameMate asks for your agreement before you can add a key, and Google requires you to be 18 or older. That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
-- **Online lookups** send only the topic, such as "Nether Portal", to your game's wiki, and for Minecraft mods the mod's name to Modrinth.
+- **Online lookups** send only the topic, such as "Nether Portal", to your game's wiki, and for Minecraft mods the mod's name to Modrinth. The pictures in answers are downloaded from the same wikis by GameMate itself; GameMate's windows never go online.
 
 Otherwise, GameMate's AI runs on your own computer. Its engine only accepts requests from GameMate on this PC (`127.0.0.1`, with a new random key each time it starts), and Ollama, if you use it, is local too. AI models are downloaded once from Hugging Face, and the AI engine from GitHub, when you click **Download**, and every file is checked against a known checksum. Update checks only ask GitHub for the latest GameMate version, and you can turn them off. GameMate takes screenshots only:
 
@@ -242,7 +243,7 @@ GameMate is an assistant, not a bot. It never plays games for you, controls your
 - The built-in models are [Qwen3.5](https://huggingface.co/Qwen) by the Qwen team (Apache 2.0), in versions prepared by [Unsloth](https://huggingface.co/unsloth).
 - Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
 - The natural voice is [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (Apache 2.0), run with [kokoro-js](https://github.com/hexgrad/kokoro) (Apache 2.0). Its pronunciation step uses [eSpeak NG](https://github.com/espeak-ng/espeak-ng) (GPL-3.0) through [phonemizer.js](https://github.com/xenova/phonemizer.js).
-- Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Mod descriptions come from [Modrinth](https://modrinth.com).
+- Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Pictures come from the same wikis, are credited with the wiki's name and link to their page there. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 
 ## Building from source

@@ -946,6 +946,79 @@ kbd {
   opacity: 0.8;
 }
 
+/* Recipe icons and the crafted item's picture */
+
+.recipe-icon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  /* Minecraft icons are pixel art: keep them crisp when scaled up. */
+  image-rendering: pixelated;
+}
+
+.recipe-arrow {
+  align-self: center;
+  font-size: 22px;
+  opacity: 0.7;
+}
+
+.recipe .recipe-picture {
+  width: 96px;
+  margin: 0;
+}
+
+.recipe .recipe-picture img {
+  max-height: 120px;
+}
+
+/* Pictures from game wikis */
+
+.pictures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.picture {
+  margin: 0;
+  max-width: 100%;
+}
+
+.picture a {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.picture img {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+}
+
+/* Maps are worth the space. */
+.picture.is-map img {
+  max-height: 420px;
+}
+
+.picture figcaption {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+/* The in-game window is small: smaller pictures. */
+.overlay-answer .picture img {
+  max-height: 160px;
+}
+
+.overlay-answer .picture.is-map img {
+  max-height: 240px;
+}
+
 /* Answer sources */
 
 .sources {

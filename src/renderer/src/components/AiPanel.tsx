@@ -236,7 +236,7 @@ function AiPanel({
       <Section title="Look things up">
         <Field
           label="Look things up online"
-          help="Lets the AI read your game's wiki (and Modrinth for Minecraft mods) when it isn't sure, for things like bosses, items or building a Nether portal. Only the topic is sent, and answers link to the page."
+          help="Lets the AI read your game's wiki (and Modrinth for Minecraft mods) when it isn't sure, for things like bosses, items or building a Nether portal. Only the topic is sent, and answers link to the page and can show its pictures, like maps."
         >
           <Toggle
             label="Look things up online"

@@ -1,4 +1,5 @@
 import type { RecipeView } from '../../../preload/index.d'
+import { Picture } from './Pictures'
 
 const GRID_SIZE = 3
 
@@ -21,10 +22,23 @@ function RecipeCard({ recipe }: { recipe: RecipeView }): React.JSX.Element {
               className={cell ? 'recipe-slot' : 'recipe-slot is-empty'}
               title={cell ?? ''}
             >
-              {cell}
+              {/* The game's icon when GameMate could get it from the wiki, otherwise the name. */}
+              {cell && recipe.icons?.[cell] ? (
+                <img className="recipe-icon" src={recipe.icons[cell]} alt={cell} />
+              ) : (
+                cell
+              )}
             </div>
           ))}
       </div>
+      {recipe.picture && (
+        <>
+          <div className="recipe-arrow" aria-hidden="true">
+            →
+          </div>
+          <Picture picture={recipe.picture} className="recipe-picture" />
+        </>
+      )}
       <div className="recipe-info">
         <div className="recipe-title">
           {recipe.item}

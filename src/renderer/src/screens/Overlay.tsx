@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ChatMessage } from '../../../preload/index.d'
 import RecipeCard from '../components/RecipeCard'
+import Pictures from '../components/Pictures'
 import Sources from '../components/Sources'
 import { errorMessage, useSettings } from '../hooks/useSettings'
 import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
@@ -225,6 +226,7 @@ function Overlay(): React.JSX.Element {
                 {lastAnswer.recipes?.map((r, i) => (
                   <RecipeCard key={i} recipe={r} />
                 ))}
+                <Pictures pictures={lastAnswer.pictures} />
                 <Sources sources={lastAnswer.sources} />
               </div>
             )}

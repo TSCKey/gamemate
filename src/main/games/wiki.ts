@@ -4,7 +4,7 @@ export type { WikiSite, WikiSource }
 // questions GameMate's own data can't answer. Only the search words are sent. Wiki text is under
 // the wiki's license (usually Creative Commons), so every answer that uses it links to the page.
 
-const USER_AGENT = 'GameMate/1.0 (https://github.com/TSCKey/gamemate)'
+export const USER_AGENT = 'GameMate/1.0 (https://github.com/TSCKey/gamemate)'
 const TIMEOUT_MS = 8_000
 const MAX_CHARS = 4_000
 const CACHE_MS = 30 * 60_000
@@ -19,7 +19,8 @@ export interface WikiLookup {
 
 const cache = new Map<string, { at: number; result: WikiLookup }>()
 
-async function api<T>(apiUrl: string, params: Record<string, string>): Promise<T> {
+// Calls a wiki's MediaWiki API (JSON, format version 2).
+export async function queryWiki<T>(apiUrl: string, params: Record<string, string>): Promise<T> {
   const url = `${apiUrl}?${new URLSearchParams({ format: 'json', formatversion: '2', ...params })}`
   const res = await fetch(url, {
     headers: { 'User-Agent': USER_AGENT },
@@ -124,7 +125,7 @@ function bestTitle(query: string, titles: string[]): string | undefined {
 }
 
 async function findTitle(site: WikiSite, query: string): Promise<string | undefined> {
-  const search = await api<{ query?: { search?: { title: string }[] } }>(site.api, {
+  const search = await queryWiki<{ query?: { search?: { title: string }[] } }>(site.api, {
     action: 'query',
     list: 'search',
     srsearch: query,
@@ -134,7 +135,7 @@ async function findTitle(site: WikiSite, query: string): Promise<string | undefi
   const found = bestTitle(query, search?.query?.search?.map((r) => r.title) ?? [])
   if (found) return found
   // Some wikis have full-text search turned off; title suggestions still work.
-  const suggest = await api<[string, string[]]>(site.api, {
+  const suggest = await queryWiki<[string, string[]]>(site.api, {
     action: 'opensearch',
     search: query,
     namespace: '0',
@@ -144,13 +145,13 @@ async function findTitle(site: WikiSite, query: string): Promise<string | undefi
 }
 
 async function pageText(site: WikiSite, title: string): Promise<{ title: string; text: string }> {
-  const extracts = await api<{ query?: { pages?: { title: string; extract?: string }[] } }>(
+  const extracts = await queryWiki<{ query?: { pages?: { title: string; extract?: string }[] } }>(
     site.api,
     { action: 'query', prop: 'extracts', explaintext: '1', redirects: '1', titles: title }
   ).catch(() => null)
   const page = extracts?.query?.pages?.[0]
   if (page?.extract) return { title: page.title, text: page.extract }
-  const parsed = await api<{ parse?: { title: string; text?: string } }>(site.api, {
+  const parsed = await queryWiki<{ parse?: { title: string; text?: string } }>(site.api, {
     action: 'parse',
     page: title,
     prop: 'text',
@@ -196,9 +197,9 @@ async function readPage(site: WikiSite, title: string): Promise<WikiLookup> {
 // Question words that make wiki searches worse.
 const QUESTION_WORDS = new Set(
   `a about an and any anything are at be best can could do does explain find for from game games
-  get good have hello help hey hi how i if in is it know many me much my need ok on or play
-  playing please should so some tell thanks that there this to use want way what when where which
-  who why will with work works would you`.split(/\s+/)
+  get good have hello help hey hi how i if image in is it know many me much my need ok on or photo
+  picture play playing please should show so some tell thanks that there this to use want way what
+  when where which who why will with work works would you`.split(/\s+/)
 )
 const prefetched = new Map<string, { at: number; result: WikiLookup[] }>()
 
@@ -272,7 +273,7 @@ export async function prefetchWiki(
   const hit = prefetched.get(key)
   if (hit && Date.now() - hit.at < CACHE_MS) return hit.result
 
-  const data = await api<{
+  const data = await queryWiki<{
     query?: {
       normalized?: { from: string; to: string }[]
       redirects?: { from: string; to: string }[]
@@ -409,7 +410,7 @@ export async function discoverWiki(address: string): Promise<WikiSite> {
     throw new Error('Enter the wiki’s address, starting with https://')
   }
   for (const path of ['/api.php', '/w/api.php', '/mediawiki/api.php']) {
-    const info = await api<{
+    const info = await queryWiki<{
       query?: {
         general?: { sitename: string; server: string; articlepath: string }
         rightsinfo?: { text?: string }

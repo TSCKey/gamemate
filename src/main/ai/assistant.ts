@@ -12,7 +12,9 @@ import {
   type WikiSite,
   type WikiSource
 } from '../games/wiki'
-import type { AnsweredBy } from '../../shared/types'
+import { minecraftIcons, pagePicture } from '../games/pictures'
+import { allowWiki } from '../system/links'
+import type { AnsweredBy, WikiPicture } from '../../shared/types'
 export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.
@@ -22,6 +24,11 @@ const MAX_HISTORY = 12
 // How long a wiki page found up-front may hold up the answer; past that the AI looks it up.
 const PREFETCH_WIKI_MS = 2500
 const CRAFTING_INTENT = /\b(craft\w*|recipes?|make|made|build|create|need for)\b/i
+// Questions that want a map rather than a picture of the place.
+const MAP_INTENT = /\b(maps?|where (?:is|are)|location of|how (?:do i|to) get to)\b/i
+// How long pictures may still be loading once the answer is written; slow ones are left out.
+const PICTURE_WAIT_MS = 4000
+const MAX_PICTURES = 2
 
 export interface AssistantReply {
   role: 'assistant'
@@ -29,6 +36,8 @@ export interface AssistantReply {
   recipes?: RecipeView[]
   // Wiki and mod pages the answer used.
   sources?: WikiSource[]
+  // Pictures from those wikis.
+  pictures?: WikiPicture[]
   // Which AI answered, and in Auto mode why.
   answeredBy?: AnsweredBy
 }
@@ -70,16 +79,25 @@ function minecraftRules(ctx: AssistantContext): string {
   return rules.join('\n')
 }
 
+// GameMate attaches the wiki's pictures itself; the AI must not claim it can't show them.
+const PICTURE_RULE =
+  'GameMate shows the player pictures from the wiki pages you use, such as the area map when they ask for a map or where a place is. Never say you cannot show a map or picture; describe the way in words and let the picture do the rest.'
+
 function wikiRules(ctx: AssistantContext): string {
   const { game } = ctx
   if (ctx.webLookup && game.wiki) {
-    return game.minecraft
-      ? `If there is no crafting recipe, or the question is about how something works, structures to build (like a Nether portal), mobs, biomes, enchantments, potions, trading or anything you are not sure about, call wiki_lookup and base your answer on the page. GameMate shows the player a link to it.`
-      : `For any question about a specific boss, enemy, item, place, quest, character, recipe or game mechanic in ${game.name}, ALWAYS call wiki_lookup first and base your answer on the page; GameMate shows the player a link to it. Only skip it for small talk or questions about what is on screen.`
+    return [wikiLookupRule(ctx), PICTURE_RULE].join('\n')
   }
   return game.minecraft
     ? `If there is no crafting recipe, the thing is probably built in the world or obtained another way: explain that from your general knowledge, without inventing a crafting recipe.`
     : `Answer from what you know about ${game.name}, and say so when you are not sure.`
+}
+
+function wikiLookupRule(ctx: AssistantContext): string {
+  const { game } = ctx
+  return game.minecraft
+    ? `If there is no crafting recipe, or the question is about how something works, structures to build (like a Nether portal), mobs, biomes, enchantments, potions, trading or anything you are not sure about, call wiki_lookup and base your answer on the page. GameMate shows the player a link to it.`
+    : `For any question about a specific boss, enemy, item, place, quest, character, recipe or game mechanic in ${game.name}, ALWAYS call wiki_lookup first and base your answer on the page; GameMate shows the player a link to it. Only skip it for small talk or questions about what is on screen.`
 }
 
 function systemPrompt(ctx: AssistantContext): string {
@@ -205,6 +223,65 @@ interface Collected {
   sources: WikiSource[]
   // The question was about another game (game_wiki was used).
   otherGame?: boolean
+  // The player asked for a map.
+  wantMap: boolean
+  // Pictures of the wiki pages used, and recipe icons, loading while the AI writes.
+  pictures: Promise<WikiPicture | null>[]
+  recipeArt: Promise<void>[]
+}
+
+// Starts loading the picture of a wiki page the answer uses (online lookups only).
+function addPagePicture(
+  ctx: AssistantContext,
+  out: Collected,
+  site: WikiSite,
+  title: string
+): void {
+  // When the player wants a map, a page about the map item itself isn't the place they mean.
+  if (out.wantMap && /^maps?$/i.test(title.trim())) return
+  if (ctx.webLookup && out.pictures.length < MAX_PICTURES) {
+    out.pictures.push(pagePicture(site, title, out.wantMap))
+  }
+}
+
+// Adds a recipe card, and starts loading its game icons and the crafted item's picture.
+function addRecipe(ctx: AssistantContext, out: Collected, view: RecipeView): void {
+  if (out.recipes.some((r) => r.item === view.item && r.count === view.count)) return
+  out.recipes.push(view)
+  const site = ctx.game.wiki
+  if (!ctx.webLookup || !ctx.game.minecraft || !site) return
+  out.recipeArt.push(
+    (async () => {
+      const [icons, picture] = await Promise.all([
+        minecraftIcons(site, Object.values(view.iconItems)),
+        pagePicture(site, view.item, false)
+      ])
+      view.icons = Object.fromEntries(
+        Object.entries(view.iconItems)
+          .filter(([, item]) => icons[item])
+          .map(([label, item]) => [label, icons[item]])
+      )
+      if (picture) view.picture = picture
+    })().catch(() => undefined)
+  )
+}
+
+// Waits a little for the pictures still loading, then keeps the ones that arrived.
+async function finishPictures(ctx: AssistantContext, out: Collected): Promise<WikiPicture[]> {
+  const deadline = new Promise<null>((resolve) => setTimeout(() => resolve(null), PICTURE_WAIT_MS))
+  await Promise.all(out.recipeArt.map((art) => Promise.race([art, deadline])))
+  // A recipe card already shows the item's picture.
+  if (out.recipes.length) return []
+  const found = await Promise.all(out.pictures.map((p) => Promise.race([p, deadline])))
+  const pictures: WikiPicture[] = []
+  for (const picture of found) {
+    if (!picture || pictures.some((p) => p.url === picture.url)) continue
+    // An answer about another game doesn't need the current game's pictures.
+    if (out.otherGame && picture.wiki === ctx.game.wiki?.name) continue
+    pictures.push(picture)
+  }
+  // A map question gets one map: the place asked about (looked up first).
+  return out.wantMap ? pictures.slice(0, 1) : pictures
 }
 
 // Small models sometimes skip the tool and guess. For crafting questions that name an item,
@@ -214,7 +291,7 @@ function prefetchRecipes(ctx: AssistantContext, question: string, out: Collected
   if (!version || !CRAFTING_INTENT.test(question)) return null
   const texts = findMentionedItems(version, question).map((name) => {
     const result = lookupRecipe(version, name)
-    out.recipes.push(...result.views)
+    for (const view of result.views) addRecipe(ctx, out, view)
     return result.text
   })
   return texts.length ? `Recipe data for this question:\n\n${texts.join('\n\n')}` : null
@@ -235,7 +312,10 @@ async function prefetchPage(
     timeout
   ])
   if (!pages.length) return null
-  for (const page of pages) addSource(out, page.source)
+  for (const page of pages) {
+    addSource(out, page.source)
+    if (page.source) addPagePicture(ctx, out, site, page.source.title)
+  }
   const texts = pages.map((page) => page.text).join('\n\n')
   return `GameMate looked these wiki pages up for this question (the player hasn't seen them; use them only if they fit the question, and call wiki_lookup if you need a different page):\n\n${texts}`
 }
@@ -262,12 +342,7 @@ async function runTool(
       case 'minecraft_recipe': {
         if (!mc?.recipeVersion) return 'No recipe data for this game version.'
         const result = lookupRecipe(mc.recipeVersion, arg('item'))
-        // Skip recipes already looked up for this question.
-        for (const view of result.views) {
-          if (!out.recipes.some((r) => r.item === view.item && r.count === view.count)) {
-            out.recipes.push(view)
-          }
-        }
+        for (const view of result.views) addRecipe(ctx, out, view)
         return result.text
       }
       case 'minecraft_search_items':
@@ -277,6 +352,7 @@ async function runTool(
         if (!ctx.webLookup || !ctx.game.wiki) return 'Wiki lookups are turned off.'
         const result = await lookupWiki(ctx.game.wiki, arg('topic'))
         addSource(out, result.source)
+        if (result.source) addPagePicture(ctx, out, ctx.game.wiki, result.source.title)
         return result.text
       }
       case 'game_wiki': {
@@ -286,8 +362,11 @@ async function runTool(
         out.otherGame = true
         const site = otherWikis.get(name)
         if (!site) return `No wiki found for "${arg('game')}". Answer from what you know.`
+        // Its pages may be opened from the answer.
+        allowWiki(site)
         const result = await lookupWiki(site, arg('topic'))
         addSource(out, result.source)
+        if (result.source) addPagePicture(ctx, out, site, result.source.title)
         return result.text
       }
       case 'modpack_mods':
@@ -338,8 +417,14 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
     )
   ]
 
-  const out: Collected = { recipes: [], sources: [] }
   const question = history[lastIndex]?.content ?? ''
+  const out: Collected = {
+    recipes: [],
+    sources: [],
+    wantMap: MAP_INTENT.test(question),
+    pictures: [],
+    recipeArt: []
+  }
   const known = prefetchRecipes(ctx, question, out) ?? (await prefetchPage(ctx, question, out))
   if (known) messages.splice(messages.length - 1, 0, { role: 'system', content: known })
   const tools = toolsFor(ctx)
@@ -382,6 +467,7 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
       const sources = out.otherGame
         ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
         : out.sources
+      const pictures = await finishPictures(ctx, out)
       return {
         role: 'assistant',
         content,
@@ -390,7 +476,8 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
           model: ctx.engine.model
         },
         ...(out.recipes.length ? { recipes: out.recipes } : {}),
-        ...(sources.length ? { sources } : {})
+        ...(sources.length ? { sources } : {}),
+        ...(pictures.length ? { pictures } : {})
       }
     }
     // Text written before a tool call was only a lead-in; the real answer follows the lookup.
