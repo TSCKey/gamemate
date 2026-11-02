@@ -300,25 +300,18 @@ kbd {
   gap: 10px;
 }
 
+/* GameMate's logo (src/renderer/src/assets/logo.png). */
 .brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  color: var(--accent-text);
-  background: linear-gradient(135deg, #6fd08a, #3c9a58);
 }
 
 .brand-mark.is-large {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  font-size: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
 }
 
 .brand-name {

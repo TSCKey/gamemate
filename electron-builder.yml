@@ -6,6 +6,7 @@ files:
   - '!**/.vscode/*'
   - '!src/*'
   - '!tests/*'
+  - '!docs/*'
   - '!scripts/*'
   - '!.github/*'
   - '!{electron.vite.config,vitest.config}.{js,ts,mjs,cjs,mts}'

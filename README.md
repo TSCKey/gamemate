@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/logo.png" alt="GameMate" width="360">
+</p>
+
 # GameMate
 
 **Your local AI gaming companion.**

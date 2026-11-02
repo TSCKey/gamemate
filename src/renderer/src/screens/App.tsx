@@ -16,6 +16,7 @@ import { useVoiceInput } from '../voice/useVoiceInput'
 import { errorMessage, useSettings } from '../hooks/useSettings'
 import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
 import { useGames, useModpack } from '../hooks/useGames'
+import logo from '../assets/logo.png'
 
 const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
 
@@ -190,7 +191,7 @@ function App(): React.JSX.Element {
     <div className="chat">
       <header className="chat-header">
         <div className="brand">
-          <span className="brand-mark">GM</span>
+          <img className="brand-mark" src={logo} alt="" />
           <span className="brand-name">GameMate</span>
         </div>
         <div className="chips">
@@ -246,7 +247,7 @@ function App(): React.JSX.Element {
         )}
         {messages.length === 0 && !loading && !needsSetup && (
           <div className="chat-empty">
-            <div className="brand-mark is-large">GM</div>
+            <img className="brand-mark is-large" src={logo} alt="GameMate" />
             <h2>What can I help with?</h2>
             <div className="suggestions">
               {suggestions.map((q) => (
