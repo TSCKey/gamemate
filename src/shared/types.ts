@@ -32,8 +32,16 @@ export type LocalBackend = (typeof LOCAL_BACKENDS)[number]
 export const ANSWER_ENGINES = [...ENGINES, 'auto'] as const
 export type AnswerEngine = (typeof ANSWER_ENGINES)[number]
 
-// Bump when the privacy notice changes in a way players should see again.
-export const PRIVACY_NOTICE_VERSION = 1
+// The current Terms of Use and Privacy Policy (docs/TERMS.md and docs/PRIVACY.md). Bump it when
+// either changes in a way players must accept again.
+export const TERMS_VERSION = 1
+
+// When the player gave each optional consent (ISO date, '' if given before GameMate kept dates).
+export interface ConsentDates {
+  games?: string
+  lookups?: string
+  gemini?: string
+}
 
 // Speech recognition models ('listen') and GameMate's natural voice ('speak').
 export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro'
@@ -72,8 +80,12 @@ export interface Settings {
   geminiModel: string
   // Let the AI look things up on game wikis and Modrinth.
   webLookup: boolean
-  // Version of the privacy notice the player has read (0 = not shown yet).
-  privacyNoticeVersion: number
+  // The Terms of Use version the player accepted (0 = not accepted), and when. Without the
+  // current version GameMate can't be used (see termsAccepted).
+  termsVersion: number
+  termsAcceptedAt: string
+  // When each optional consent was given, kept on this PC as the record of it.
+  consents: ConsentDates
   // The player agreed to send data to Google to use Gemini (required before a key is saved).
   geminiConsent: boolean
   // Closing the window keeps GameMate in the tray (for the shortcuts and companion) instead

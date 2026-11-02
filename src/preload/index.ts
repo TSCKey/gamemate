@@ -54,6 +54,11 @@ const api: Api = {
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
   openLogs: () => ipcRenderer.invoke('app:open-logs'),
+  quit: () => ipcRenderer.invoke('app:quit'),
+  legal: {
+    accept: (ageConfirmed) => ipcRenderer.invoke('legal:accept', ageConfirmed),
+    withdraw: () => ipcRenderer.invoke('legal:withdraw')
+  },
   updates: {
     state: () => ipcRenderer.invoke('updates:state'),
     check: () => ipcRenderer.invoke('updates:check'),

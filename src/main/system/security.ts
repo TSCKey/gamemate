@@ -21,6 +21,13 @@ export function isOwnPage(url: string): boolean {
   return page.href === RENDERER_FILE
 }
 
+// A check run before every request (used to hold some back until the Terms are accepted).
+let gate: ((channel: string) => void) | null = null
+
+export function gateChannels(check: (channel: string) => void): void {
+  gate = check
+}
+
 // ipcMain.handle, refusing calls that don't come from the top frame of a GameMate page.
 export function handle(
   channel: string,
@@ -31,6 +38,7 @@ export function handle(
     if (!frame || frame.parent || !isOwnPage(frame.url)) {
       throw new Error(`Refused ${channel}: not called from GameMate.`)
     }
+    gate?.(channel)
     return listener(event, ...args)
   })
 }

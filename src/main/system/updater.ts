@@ -3,7 +3,7 @@
 // installed app; the check sends nothing but the request for the latest version.
 import { app, BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
-import { getSettings, onSettingsChanged } from './settings'
+import { getSettings, onSettingsChanged, termsAccepted, type Settings } from './settings'
 import type { UpdateState } from '../../shared/types'
 export type { UpdateState }
 
@@ -22,8 +22,12 @@ export function updateState(): UpdateState {
   return state
 }
 
+// Automatic checks are on, and the player has accepted the Terms (nothing goes online before).
+const checksAllowed = (settings: Settings = getSettings()): boolean =>
+  settings.autoUpdate && termsAccepted(settings)
+
 export async function checkForUpdates(): Promise<UpdateState> {
-  if (!app.isPackaged) return state
+  if (!app.isPackaged || !termsAccepted()) return state
   if (state.status === 'checking' || state.status === 'downloading' || state.status === 'ready') {
     return state
   }
@@ -49,7 +53,7 @@ export function installUpdate(): void {
 function schedule(): void {
   if (timer) clearInterval(timer)
   timer = null
-  if (!getSettings().autoUpdate) return
+  if (!checksAllowed()) return
   timer = setInterval(() => void checkForUpdates(), CHECK_EVERY_MS)
   timer.unref()
 }
@@ -79,11 +83,13 @@ export function startUpdater(): void {
       })
     }
   })
-  let auto = getSettings().autoUpdate
+  let auto = checksAllowed()
   onSettingsChanged((settings) => {
-    if (settings.autoUpdate !== auto) {
-      auto = settings.autoUpdate
+    if (checksAllowed(settings) !== auto) {
+      auto = checksAllowed(settings)
       schedule()
+      // Just accepted the Terms (or turned checks on): check soon.
+      if (auto) setTimeout(() => void checkForUpdates(), FIRST_CHECK_MS).unref()
     }
   })
   schedule()

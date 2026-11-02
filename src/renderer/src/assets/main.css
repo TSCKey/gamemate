@@ -1475,3 +1475,109 @@ button.link:hover:not(:disabled) {
   color: #f0c36a;
   background-color: rgba(210, 153, 34, 0.15);
 }
+
+/* Terms of Use and Privacy Policy */
+
+.terms-gate {
+  max-width: 600px;
+}
+
+.terms-gate .check {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 10px;
+  line-height: 1.4;
+}
+
+.terms-gate .check input {
+  margin-top: 3px;
+}
+
+.terms-read {
+  margin-top: 10px;
+}
+
+.terms-delete-ask {
+  align-self: center;
+  font-size: 13px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.consent-off {
+  color: var(--text-3);
+}
+
+/* The reader opens above the acceptance screen. */
+.modal-backdrop.is-top {
+  z-index: 20;
+}
+
+.legal-reader {
+  max-width: 760px;
+  padding-top: 0;
+}
+
+.legal-tabs {
+  position: sticky;
+  top: 0;
+  display: flex;
+  gap: 6px;
+  padding: 14px 0 10px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-tabs button.is-active {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.legal-tabs .legal-close {
+  margin-left: auto;
+}
+
+.legal-doc {
+  line-height: 1.55;
+}
+
+.legal-doc h2 {
+  margin: 16px 0 4px;
+  font-size: 20px;
+}
+
+.legal-doc h3 {
+  margin: 18px 0 6px;
+  font-size: 15px;
+}
+
+.legal-doc h4 {
+  margin: 12px 0 4px;
+  font-size: 14px;
+}
+
+.legal-doc p,
+.legal-doc ul {
+  margin: 6px 0;
+}
+
+.legal-doc ul {
+  padding-left: 20px;
+}
+
+.legal-doc table {
+  width: 100%;
+  margin: 8px 0;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.legal-doc th,
+.legal-doc td {
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--border);
+}

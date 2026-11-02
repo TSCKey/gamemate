@@ -3,9 +3,9 @@ import type { AppInfo, CaptureSource, ChatMessage, CompanionState } from '../../
 import CompanionMenu from '../components/CompanionMenu'
 import GameMenu from '../components/GameMenu'
 import ModelMenu from '../components/ModelMenu'
-import PrivacyNotice from '../components/PrivacyNotice'
+import TermsGate from '../legal/TermsGate'
 import SetupCard from '../components/SetupCard'
-import { PRIVACY_NOTICE_VERSION } from '../constants'
+import { TERMS_VERSION } from '../constants'
 import RecipeCard from '../components/RecipeCard'
 import Pictures from '../components/Pictures'
 import Sources from '../components/Sources'
@@ -88,16 +88,19 @@ function App(): React.JSX.Element {
   useEffect(() => {
     window.api.getAppInfo().then(setAppInfo)
     window.api.companion.getState().then(setCompanion)
-    const stopCompanion = window.api.companion.onState(setCompanion)
+    return window.api.companion.onState(setCompanion)
+  }, [])
+
+  // Listing the screens and windows to capture waits until the Terms of Use are accepted.
+  const accepted = !!settings && settings.termsVersion >= TERMS_VERSION
+  useEffect(() => {
+    if (!accepted) return
     // eslint-disable-next-line react-hooks/set-state-in-effect -- state is only set after the IPC call resolves
     loadSources()
     // Windows open and close while GameMate is in the background; refresh when it regains focus.
     window.addEventListener('focus', loadSources)
-    return () => {
-      stopCompanion()
-      window.removeEventListener('focus', loadSources)
-    }
-  }, [loadSources])
+    return () => window.removeEventListener('focus', loadSources)
+  }, [loadSources, accepted])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -156,16 +159,9 @@ function App(): React.JSX.Element {
     }
   }
 
+  // GameMate can't be used until the current Terms of Use are accepted.
   const notice =
-    settings && settings.privacyNoticeVersion < PRIVACY_NOTICE_VERSION ? (
-      <PrivacyNotice
-        onAccept={() => update({ privacyNoticeVersion: PRIVACY_NOTICE_VERSION })}
-        onMore={() => {
-          update({ privacyNoticeVersion: PRIVACY_NOTICE_VERSION })
-          setSettingsTab('privacy')
-        }}
-      />
-    ) : null
+    settings && settings.termsVersion < TERMS_VERSION ? <TermsGate settings={settings} /> : null
 
   if (settingsTab && settings) {
     return (

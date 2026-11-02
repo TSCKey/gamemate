@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import type { Settings } from '../../../preload/index.d'
 import { LINKS } from '../constants'
-import { ExternalLink, Section } from './ui'
+import { LegalReader, type LegalDoc } from '../legal/LegalReader'
+import { ExternalLink, Field, Section } from './ui'
 
-// What GameMate does with data, in plain words. Shown on first start and in Settings → Privacy.
+// What GameMate does with data, in plain words. Shown on first start and in Settings → Privacy &
+// legal.
 export function PrivacySummary(): React.JSX.Element {
   return (
     <ul className="privacy-list">
@@ -38,9 +41,57 @@ export function PrivacySummary(): React.JSX.Element {
   )
 }
 
-function PrivacyPanel(): React.JSX.Element {
+const dateOf = (iso: string | undefined): string =>
+  iso ? new Date(iso).toLocaleDateString(undefined, { dateStyle: 'long' }) : ''
+
+// One optional consent: whether it's given (and since when), and a way to withdraw it that is as
+// easy as giving it.
+function ConsentRow({
+  label,
+  given,
+  since,
+  where,
+  onWithdraw
+}: {
+  label: string
+  given: boolean
+  since: string | undefined
+  where: string
+  onWithdraw: () => void
+}): React.JSX.Element {
+  return (
+    <Field
+      label={label}
+      help={
+        given
+          ? since
+            ? `Given on ${dateOf(since)}. You can also change this in ${where}.`
+            : `Given. You can also change this in ${where}.`
+          : `Not given. You can turn this on in ${where}.`
+      }
+    >
+      {given ? (
+        <button type="button" onClick={onWithdraw}>
+          Withdraw
+        </button>
+      ) : (
+        <span className="consent-off">Off</span>
+      )}
+    </Field>
+  )
+}
+
+function PrivacyPanel({
+  settings,
+  update
+}: {
+  settings: Settings
+  update: (patch: Partial<Settings>) => void
+}): React.JSX.Element {
   const [confirming, setConfirming] = useState(false)
   const [deleted, setDeleted] = useState(false)
+  const [withdrawing, setWithdrawing] = useState(false)
+  const [reading, setReading] = useState<LegalDoc | null>(null)
 
   const deleteData = async (): Promise<void> => {
     await window.api.deleteData()
@@ -50,6 +101,51 @@ function PrivacyPanel(): React.JSX.Element {
 
   return (
     <>
+      <Section
+        title="Terms of Use and Privacy Policy"
+        description={
+          settings.termsAcceptedAt
+            ? `You accepted the Terms of Use on ${dateOf(settings.termsAcceptedAt)}.`
+            : undefined
+        }
+      >
+        <div className="button-row">
+          <button type="button" onClick={() => setReading('terms')}>
+            Read the Terms of Use
+          </button>
+          <button type="button" onClick={() => setReading('privacy')}>
+            Read the Privacy Policy
+          </button>
+        </div>
+      </Section>
+
+      <Section
+        title="Your consents"
+        description="Optional features that send data to other services. Withdrawing one only turns that feature off; the rest of GameMate keeps working."
+      >
+        <ConsentRow
+          label="Finding your games"
+          given={settings.deviceConsent}
+          since={settings.consents.games}
+          where="Settings → Games"
+          onWithdraw={() => update({ deviceConsent: false })}
+        />
+        <ConsentRow
+          label="Online lookups"
+          given={settings.webLookup}
+          since={settings.consents.lookups}
+          where="Settings → AI & online"
+          onWithdraw={() => update({ webLookup: false })}
+        />
+        <ConsentRow
+          label="Google Gemini"
+          given={settings.geminiConsent}
+          since={settings.consents.gemini}
+          where="Settings → AI & online"
+          onWithdraw={() => update({ geminiConsent: false })}
+        />
+      </Section>
+
       <Section title="How GameMate handles your data">
         <PrivacySummary />
       </Section>
@@ -94,6 +190,30 @@ function PrivacyPanel(): React.JSX.Element {
       </Section>
 
       <Section
+        title="Withdraw my acceptance of the Terms"
+        description="GameMate stops working until you accept the Terms of Use again: it goes offline, the companion stops and the AI is closed. Your settings and downloads stay unless you also delete your data."
+      >
+        {withdrawing ? (
+          <div className="button-row">
+            <button
+              type="button"
+              className="danger"
+              onClick={() => window.api.legal.withdraw().then(() => setWithdrawing(false))}
+            >
+              Yes, withdraw
+            </button>
+            <button type="button" onClick={() => setWithdrawing(false)}>
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button type="button" className="danger" onClick={() => setWithdrawing(true)}>
+            Withdraw acceptance
+          </button>
+        )}
+      </Section>
+
+      <Section
         title="Delete my data"
         description="Removes everything above from this PC and resets GameMate as if it were just installed. Data already sent to Google is covered by Google's policies."
       >
@@ -114,6 +234,7 @@ function PrivacyPanel(): React.JSX.Element {
           </button>
         )}
       </Section>
+      {reading && <LegalReader doc={reading} onDoc={setReading} onClose={() => setReading(null)} />}
     </>
   )
 }

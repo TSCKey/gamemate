@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { GamesState, ModpackSummary, Settings } from '../../../preload/index.d'
+import { TERMS_VERSION } from '../constants'
 
 // The games GameMate knows (built in and added by the player) and which one is current.
 export function useGames(settings: Settings | null): GamesState | null {
@@ -17,12 +18,16 @@ export function useGames(settings: Settings | null): GamesState | null {
 // The Minecraft modpack in use, refreshed when the choice changes or GameMate gets focus.
 export function useModpack(settings: Settings | null): ModpackSummary | null {
   const [pack, setPack] = useState<ModpackSummary | null>(null)
-  const relevant = settings?.currentGame === 'minecraft'
+  // Reading modpack folders waits until the Terms of Use are accepted.
+  const relevant = settings?.currentGame === 'minecraft' && settings.termsVersion >= TERMS_VERSION
   const choice = settings?.minecraftModpack
   useEffect(() => {
     if (!relevant) return
     const load = (): void => {
-      window.api.modpacks.current().then(setPack)
+      window.api.modpacks
+        .current()
+        .then(setPack)
+        .catch(() => setPack(null))
     }
     load()
     window.addEventListener('focus', load)

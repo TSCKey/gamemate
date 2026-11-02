@@ -1,7 +1,7 @@
 // Values shared by several screens.
 import type { CommentaryFrequency, CompanionMode, CompanionState } from '../../preload/index.d'
 
-export { PRIVACY_NOTICE_VERSION } from '../../shared/types'
+export { TERMS_VERSION } from '../../shared/types'
 
 export const LINKS = {
   geminiTerms: 'https://ai.google.dev/gemini-api/terms',

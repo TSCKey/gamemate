@@ -48,6 +48,41 @@ function GeminiConsent({ onAgree }: { onAgree: () => void }): React.JSX.Element 
   )
 }
 
+// What the player agrees to before GameMate looks things up online.
+function LookupsConsent({
+  onAgree,
+  onCancel
+}: {
+  onAgree: () => void
+  onCancel: () => void
+}): React.JSX.Element {
+  return (
+    <div className="consent">
+      <p>If you turn on online lookups:</p>
+      <ul className="privacy-list">
+        <li>
+          When a question is about something in a game, GameMate sends the topic (for example
+          &quot;Ender Dragon&quot;) to that game&apos;s wiki, and for Minecraft mods the mod&apos;s
+          name to Modrinth. Your question itself is not sent.
+        </li>
+        <li>
+          GameMate downloads the page and its pictures to show them to you. The wikis see your IP
+          address, like any website you visit, and handle it under their own privacy policies.
+        </li>
+        <li>You can turn lookups off any time here or in Settings → Privacy &amp; legal.</li>
+      </ul>
+      <div className="button-row">
+        <button type="button" className="primary" onClick={onAgree}>
+          Turn on lookups
+        </button>
+        <button type="button" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function AiPanel({
   settings,
   update,
@@ -65,6 +100,7 @@ function AiPanel({
   const [error, setError] = useState<string | null>(null)
 
   const consent = settings.geminiConsent
+  const [askLookups, setAskLookups] = useState(false)
 
   useEffect(() => {
     if (!consent) return
@@ -241,9 +277,19 @@ function AiPanel({
           <Toggle
             label="Look things up online"
             checked={settings.webLookup}
-            onChange={(webLookup) => update({ webLookup })}
+            // Turning lookups on is a consent: explain it first. Turning them off is immediate.
+            onChange={(webLookup) => (webLookup ? setAskLookups(true) : update({ webLookup }))}
           />
         </Field>
+        {askLookups && !settings.webLookup && (
+          <LookupsConsent
+            onAgree={() => {
+              update({ webLookup: true })
+              setAskLookups(false)
+            }}
+            onCancel={() => setAskLookups(false)}
+          />
+        )}
       </Section>
     </>
   )

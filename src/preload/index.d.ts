@@ -50,6 +50,12 @@ export interface Api {
   deleteData: () => Promise<void>
   // Opens the folder with GameMate's log file.
   openLogs: () => Promise<void>
+  quit: () => Promise<void>
+  // Accepting the Terms of Use (with the age confirmation) and withdrawing that acceptance.
+  legal: {
+    accept: (ageConfirmed: boolean) => Promise<Settings>
+    withdraw: () => Promise<Settings>
+  }
   updates: {
     state: () => Promise<UpdateState>
     check: () => Promise<UpdateState>

@@ -17,7 +17,7 @@ const TABS: { id: SettingsTab; icon: string; label: string }[] = [
   { id: 'companion', icon: '🎮', label: 'Companion' },
   { id: 'voice', icon: '🎙️', label: 'Voice' },
   { id: 'ai', icon: '☁️', label: 'AI & online' },
-  { id: 'privacy', icon: '🔒', label: 'Privacy' }
+  { id: 'privacy', icon: '🔒', label: 'Privacy & legal' }
 ]
 
 function SettingsScreen({
@@ -89,7 +89,7 @@ function SettingsScreen({
             localName={localModelInfo(settings, localModels, models).name}
           />
         )}
-        {tab === 'privacy' && <PrivacyPanel />}
+        {tab === 'privacy' && <PrivacyPanel settings={settings} update={update} />}
       </main>
     </div>
   )

@@ -14,7 +14,7 @@ import {
   ENGINES,
   LOCAL_BACKENDS,
   ANSWER_ENGINES,
-  PRIVACY_NOTICE_VERSION
+  TERMS_VERSION
 } from '../../shared/types'
 import type {
   CompanionMode,
@@ -34,7 +34,7 @@ export {
   ENGINES,
   LOCAL_BACKENDS,
   ANSWER_ENGINES,
-  PRIVACY_NOTICE_VERSION
+  TERMS_VERSION
 }
 export type {
   CompanionMode,
@@ -70,7 +70,9 @@ const DEFAULTS: Settings = {
   commentaryEngine: 'local',
   geminiModel: '',
   webLookup: false,
-  privacyNoticeVersion: 0,
+  termsVersion: 0,
+  termsAcceptedAt: '',
+  consents: {},
   geminiConsent: false,
   closeToTray: true,
   autoUpdate: true,
@@ -96,6 +98,13 @@ export function getSettings(): Settings {
     try {
       const saved = JSON.parse(readFileSync(file(), 'utf8')) as Partial<Settings>
       current = { ...DEFAULTS, ...saved }
+      // From before GameMate recorded consent dates: the consent stands, its date is unknown.
+      current.consents = {
+        ...(current.geminiConsent ? { gemini: '' } : {}),
+        ...(current.deviceConsent ? { games: '' } : {}),
+        ...(current.webLookup ? { lookups: '' } : {}),
+        ...saved.consents
+      }
       // Players who set GameMate up with Ollama before the built-in engine existed keep it.
       if (saved.localBackend === undefined && saved.model) current.localBackend = 'ollama'
     } catch {
@@ -148,9 +157,6 @@ export function updateSettings(patch: unknown): Settings {
     next.geminiModel = p.geminiModel
   }
   if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
-  if (p.privacyNoticeVersion === PRIVACY_NOTICE_VERSION) {
-    next.privacyNoticeVersion = PRIVACY_NOTICE_VERSION
-  }
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
   if (typeof p.deviceConsent === 'boolean') next.deviceConsent = p.deviceConsent
@@ -181,7 +187,45 @@ export function updateSettings(patch: unknown): Settings {
     next.answersEngine = 'local'
     next.commentaryEngine = 'local'
   }
+  next.consents = consentDates(next)
 
+  save(next)
+  return next
+}
+
+// Records when each optional consent is given, and forgets the date when it is withdrawn.
+function consentDates(next: Settings): Settings['consents'] {
+  const now = new Date().toISOString()
+  const date = (on: boolean, was: string | undefined): string | undefined =>
+    on ? (was ?? now) : undefined
+  const dates = {
+    gemini: date(next.geminiConsent, next.consents.gemini),
+    games: date(next.deviceConsent, next.consents.games),
+    lookups: date(next.webLookup, next.consents.lookups)
+  }
+  return Object.fromEntries(Object.entries(dates).filter(([, d]) => d !== undefined))
+}
+
+// Whether the player has accepted the current Terms of Use. Until then GameMate doesn't go
+// online or look at anything on the PC.
+export function termsAccepted(settings: Settings = getSettings()): boolean {
+  return settings.termsVersion >= TERMS_VERSION
+}
+
+export function acceptTerms(): Settings {
+  const next = {
+    ...getSettings(),
+    termsVersion: TERMS_VERSION,
+    termsAcceptedAt: new Date().toISOString()
+  }
+  save(next)
+  return next
+}
+
+// Withdrawing acceptance closes GameMate to use until the player accepts again. Optional consents
+// stay as they were, since they only matter while GameMate is in use.
+export function withdrawTerms(): Settings {
+  const next = { ...getSettings(), termsVersion: 0, termsAcceptedAt: '' }
   save(next)
   return next
 }

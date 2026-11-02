@@ -158,7 +158,7 @@ GameMate checks for a new version when it starts and every few hours, downloads 
 
 ## Troubleshooting
 
-If something goes wrong, **⚙ Settings → Privacy → Open log folder** opens GameMate's log, which you can attach to a bug report. It doesn't contain your questions or answers.
+If something goes wrong, **⚙ Settings → Privacy & legal → Open log folder** opens GameMate's log, which you can attach to a bug report. It doesn't contain your questions or answers.
 
 **"Windows protected your PC" when installing**
 The installer isn't code-signed yet, so Windows SmartScreen doesn't recognize it. Click **More info**, then **Run anyway**.
@@ -216,7 +216,7 @@ Your game and the AI model share your graphics card. Try a smaller model, close 
 
 ## Privacy
 
-GameMate is local by default. The first time you open it, it shows a short summary of how it handles your data, which you can read again in **⚙ Settings → Privacy**. Two optional features use the internet, and only when you turn them on:
+GameMate is local by default. The first time you open it, it shows a short summary of how it handles your data and asks you to accept the [Terms of Use](docs/TERMS.md) and confirm your age (16 or older, or younger with a parent's or guardian's permission). The full [Privacy Policy](docs/PRIVACY.md) explains everything below in detail. Both can be read again in **⚙ Settings → Privacy & legal**, where you can also see and withdraw each consent you gave, or withdraw your acceptance of the Terms (GameMate then stays closed to use until you accept again). GameMate goes online for nothing, not even update checks, before you accept. Optional features use the internet only when you turn them on:
 
 - **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under the [Gemini API terms](https://ai.google.dev/gemini-api/terms) and [Google's Privacy Policy](https://policies.google.com/privacy). GameMate asks for your agreement before you can add a key, and Google requires you to be 18 or older. That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
 - **Online lookups** send only the topic, such as "Nether Portal", to your game's wiki, and for Minecraft mods the mod's name to Modrinth. The pictures in answers are downloaded from the same wikis by GameMate itself; GameMate's windows never go online.
@@ -231,11 +231,11 @@ GameMate looks for games only after you allow it in **⚙ Settings → Games**. 
 
 Screenshots go only to the AI you chose and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
 
-GameMate keeps a small log file on your PC of what it did, such as starting the AI or checking for updates, to help find problems. It never contains your questions or answers and is never sent anywhere. **⚙ Settings → Privacy → Open log folder** shows it.
+GameMate keeps a small log file on your PC of what it did, such as starting the AI or checking for updates, to help find problems. It never contains your questions or answers and is never sent anywhere. **⚙ Settings → Privacy & legal → Open log folder** shows it.
 
 GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models are downloaded once from Hugging Face when you click **Download**.
 
-**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy** to remove everything GameMate stored on your PC (settings, your Gemini key, the log, and the AI engine, AI models and speech models you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
+**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy & legal** (or on the first-start screen) to remove everything GameMate stored on your PC (settings, your Gemini key, the log, and the AI engine, AI models and speech models you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
 
 ## What GameMate won't do
 

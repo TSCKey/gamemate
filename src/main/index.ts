@@ -15,8 +15,15 @@ import { registerAssistantHandlers } from './ipc/assistant'
 import { registerGameHandlers } from './ipc/games'
 import { registerModelHandlers } from './ipc/models'
 import { registerVoiceHandlers } from './ipc/voice'
+import { registerLegalHandlers } from './ipc/legal'
 import { startLogging } from './system/log'
-import { flushSettings, getSettings, onSettingsChanged, type Settings } from './system/settings'
+import {
+  flushSettings,
+  getSettings,
+  onSettingsChanged,
+  termsAccepted,
+  type Settings
+} from './system/settings'
 import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
 import { createToast, showToast } from './windows/toast'
@@ -42,6 +49,7 @@ let voiceShortcutRegistered = false
 let quitting = false
 
 function registerHandlers(): void {
+  registerLegalHandlers()
   registerAssistantHandlers()
   registerGameHandlers()
   registerModelHandlers()
@@ -149,7 +157,7 @@ function updateTray(observer: ObserverState): void {
           ]
         : []),
       { type: 'separator' },
-      { label: `Ask GameMate (${SHORTCUT})`, click: () => toggleOverlay() },
+      { label: `Ask GameMate (${SHORTCUT})`, click: () => openOverlay() },
       { label: 'Open GameMate', click: showMainWindow },
       { type: 'separator' },
       {
@@ -170,16 +178,24 @@ function createTray(): void {
   onObserverState(updateTray)
 }
 
+// The in-game window, from a shortcut or the tray. Before the Terms are accepted, the main window
+// opens instead, where the player can accept them.
+function openOverlay(voice = false): void {
+  if (!termsAccepted()) {
+    showMainWindow()
+    return
+  }
+  // The player is in their game: GameMate follows it before showing up.
+  followForegroundGame()
+  warmUp()
+  toggleOverlay(voice)
+}
+
 // The voice shortcut only exists while voice input is on, so the key stays free for games.
 function updateVoiceShortcut(settings: Settings): void {
   const active = globalShortcut.isRegistered(VOICE_SHORTCUT)
   if (settings.voiceInput && !active) {
-    voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => {
-      // The player is in their game: GameMate follows it before showing up.
-      followForegroundGame()
-      warmUp()
-      toggleOverlay(true)
-    })
+    voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => openOverlay(true))
     if (!voiceShortcutRegistered) console.warn(`Could not register ${VOICE_SHORTCUT}`)
   } else if (!settings.voiceInput && active) {
     globalShortcut.unregister(VOICE_SHORTCUT)
@@ -244,12 +260,7 @@ if (!app.requestSingleInstanceLock()) {
     startUpdater()
 
     // Fails if another app (e.g. PowerToys Run) already owns the shortcut.
-    shortcutRegistered = globalShortcut.register(SHORTCUT, () => {
-      // The player is in their game: GameMate follows it before showing up.
-      followForegroundGame()
-      warmUp()
-      toggleOverlay()
-    })
+    shortcutRegistered = globalShortcut.register(SHORTCUT, () => openOverlay())
     if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
     updateVoiceShortcut(getSettings())
     onSettingsChanged(updateVoiceShortcut)

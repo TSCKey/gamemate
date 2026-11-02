@@ -14,6 +14,7 @@ import { isAsking } from '../ai/assistant'
 import {
   getSettings,
   onSettingsChanged,
+  termsAccepted,
   type CommentaryFrequency,
   type Settings
 } from '../system/settings'
@@ -70,10 +71,12 @@ let lastCommentAt = 0
 let showComment: (text: string, displayId: number) => void = () => {}
 const stateListeners: ((state: ObserverState) => void)[] = []
 
+// Watching needs a watching mode and accepted Terms of Use.
 const observes = (s: Settings): boolean =>
-  s.companionMode === 'observation' ||
-  s.companionMode === 'commentary' ||
-  s.companionMode === 'quiet'
+  termsAccepted(s) &&
+  (s.companionMode === 'observation' ||
+    s.companionMode === 'commentary' ||
+    s.companionMode === 'quiet')
 
 function setState(patch: Partial<ObserverState>): void {
   state = { ...state, ...patch }

@@ -8,7 +8,11 @@ const EXTERNAL_LINKS = [
   'https://aistudio.google.com/apikey',
   'https://ai.google.dev/gemini-api/terms',
   'https://policies.google.com/privacy',
-  'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer'
+  'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer',
+  // In the Terms of Use and Privacy Policy.
+  'mailto:TSCKey1@outlook.com',
+  'https://www.edpb.europa.eu/about-edpb/about-edpb/members_en',
+  'https://sdaia.gov.sa'
 ]
 
 // Wikis of other games the player asked about (found by name while answering).
