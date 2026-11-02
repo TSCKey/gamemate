@@ -295,6 +295,15 @@ const QUESTION_WORDS = new Set(
 )
 const prefetched = new Map<string, { at: number; result: WikiLookup[] }>()
 
+// The meaningful words of a question, for a web search: "What are the characters currently in
+// meta in Overwatch?" -> "characters currently meta overwatch".
+export function searchTerms(question: string): string[] {
+  // "best" doesn't help find a wiki page, but does help a web search ("best build").
+  return words(question).filter(
+    (w) => (w === 'best' || !QUESTION_WORDS.has(w)) && !TITLE_JOINERS.has(w) && w.length > 1
+  )
+}
+
 // Small words that belong inside page titles ("Rivers of Blood", "The End").
 const TITLE_JOINERS = new Set(['of', 'the'])
 

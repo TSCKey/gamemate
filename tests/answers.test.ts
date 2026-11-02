@@ -15,13 +15,34 @@ vi.mock('electron', () => ({
 }))
 vi.mock('koffi', () => ({ default: {} }))
 
-// A stand-in AI: each call returns the next scripted reply.
+// A stand-in AI: each call returns the next scripted reply, and the messages it got are kept.
 const replies: LlmReply[] = []
+const seen: { role: string; content: string }[][] = []
 vi.mock('../src/main/ai/llm', () => ({
-  complete: async (): Promise<LlmReply> => replies.shift() ?? { content: '', toolCalls: [] }
+  complete: async (_engine: unknown, messages: { role: string; content: string }[]) => {
+    seen.push(messages)
+    return replies.shift() ?? { content: '', toolCalls: [] }
+  }
+}))
+// A stand-in Google search.
+const searches: string[] = []
+vi.mock('../src/main/ai/gemini', () => ({
+  searchWeb: async (_key: string, _model: string, query: string) => {
+    searches.push(query)
+    return {
+      text: 'Tank: Hazard. Damage: Sojourn. Support: Juno.',
+      sources: [
+        {
+          title: 'reddit.com',
+          url: 'https://vertexaisearch.cloud.google.com/grounding-api-redirect/r'
+        }
+      ],
+      suggestions: '<div>chips</div>'
+    }
+  }
 }))
 
-const { ask, isNonAnswer, NO_ANSWER } = await import('../src/main/ai/assistant')
+const { ask, isNonAnswer, NO_ANSWER, webSearchQuery } = await import('../src/main/ai/assistant')
 
 const ctx = {
   engine: { provider: 'builtin' as const, model: 'test' },
@@ -32,6 +53,8 @@ const question = [{ role: 'user' as const, content: 'How do I beat Last Judge?' 
 
 beforeEach(() => {
   replies.length = 0
+  seen.length = 0
+  searches.length = 0
 })
 
 describe('replies that are not answers', () => {
@@ -72,5 +95,38 @@ describe('when the AI has no answer', () => {
   it('passes real answers through', async () => {
     replies.push({ content: 'Dodge his dive, then strike twice.', toolCalls: [] })
     expect((await ask(ctx, question)).content).toBe('Dodge his dive, then strike twice.')
+  })
+})
+
+describe('questions about what is current', () => {
+  it('get a web search query made from their key words', () => {
+    expect(
+      webSearchQuery('What are the characters currently in meta in Overwatch?', 'Overwatch')
+    ).toBe('characters currently meta overwatch')
+    expect(webSearchQuery('Who is meta right now?', 'Overwatch')).toBe('Overwatch meta right now')
+    expect(webSearchQuery('Best build for Hornet?', 'Hollow Knight: Silksong')).toBe(
+      'Hollow Knight: Silksong best build hornet'
+    )
+    expect(webSearchQuery('How do I make a bed?', 'Minecraft')).toBeNull()
+  })
+
+  it('are searched before the AI answers, and the answer shows what was used', async () => {
+    replies.push({ content: 'Hazard, Sojourn and Juno are strong right now.', toolCalls: [] })
+    const reply = await ask(
+      { ...ctx, game: { name: 'Overwatch' }, search: { apiKey: 'key', model: 'gemini-test' } },
+      [{ role: 'user', content: 'What are the characters currently in meta in Overwatch?' }]
+    )
+    expect(searches).toEqual(['characters currently meta overwatch'])
+    expect(JSON.stringify(seen[0])).toContain('Tank: Hazard')
+    expect(reply.sources?.[0].wiki).toBe('Google Search')
+    expect(reply.searchSuggestions).toBe('<div>chips</div>')
+  })
+
+  it('are not searched without web search turned on', async () => {
+    replies.push({ content: 'Probably Hazard.', toolCalls: [] })
+    await ask({ ...ctx, game: { name: 'Overwatch' } }, [
+      { role: 'user', content: 'Who is meta right now?' }
+    ])
+    expect(searches).toEqual([])
   })
 })

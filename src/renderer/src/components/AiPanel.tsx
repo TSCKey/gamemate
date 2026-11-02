@@ -61,10 +61,11 @@ function SearchConsent({
       <p>If you turn on web search:</p>
       <ul className="privacy-list">
         <li>
-          When the wiki doesn&apos;t have the answer, or for patches, strategies and tips, the AI
-          writes a short search query (for example &quot;Silksong Last Judge tips&quot;), and
-          GameMate sends only that query to Google, through Gemini with your API key. Your
-          conversation and screenshots are not sent with it.
+          For questions about what&apos;s current (the meta, patches, seasons) or what players
+          recommend, and when the wiki doesn&apos;t have the answer, GameMate or the AI makes a
+          short search query from the key words of your question and the game&apos;s name (for
+          example &quot;Overwatch characters currently meta&quot;). Only that query goes to Google,
+          through Gemini with your API key. Your conversation and screenshots are not sent with it.
         </li>
         <li>
           Google searches the web, including forums like Reddit, under the{' '}

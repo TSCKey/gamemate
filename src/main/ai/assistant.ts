@@ -9,11 +9,12 @@ import {
   findWikiForGame,
   lookupWiki,
   prefetchWiki,
+  searchTerms,
   type WikiSite,
   type WikiSource
 } from '../games/wiki'
 import { minecraftIcons, pagePicture } from '../games/pictures'
-import { searchWeb } from './gemini'
+import { searchWeb, type WebSearchResult } from './gemini'
 import { allowWiki } from '../system/links'
 import type { AnsweredBy, WikiPicture } from '../../shared/types'
 export type { AnsweredBy }
@@ -24,6 +25,12 @@ const MAX_TOOL_ROUNDS = 4
 const MAX_HISTORY = 12
 // How long a wiki page found up-front may hold up the answer; past that the AI looks it up.
 const PREFETCH_WIKI_MS = 2500
+// Questions about what's current or what players think, which wikis rarely keep up with: with
+// web search on, GameMate searches before asking the AI (small models often don't call the tool).
+const WEB_INTENT =
+  /\b(meta|tier ?lists?|current(ly)?|right now|nowadays|latest|newest|recent(ly)?|this (season|patch|update)|seasons? \d+|patch(es)?|updates?|nerf(s|ed)?|buff(s|ed)?|reddit|community|trending|popular|pros?|news|release date|best (builds?|loadouts?|teams?|comps?|heroes|hero|characters?|weapons?|decks?|class(es)?|agents?|legends?|picks?))\b/i
+// How long that search may hold up the answer.
+const PREFETCH_SEARCH_MS = 15_000
 const CRAFTING_INTENT = /\b(craft\w*|recipes?|make|made|build|create|need for)\b/i
 // Questions that want a map rather than a picture of the place.
 const MAP_INTENT = /\b(maps?|where (?:is|are)|location of|how (?:do i|to) get to)\b/i
@@ -138,7 +145,7 @@ function systemPrompt(ctx: AssistantContext): string {
     minecraftRules(ctx),
     wikiRules(ctx),
     ctx.search
-      ? 'When the wiki has no answer, or the question is about recent patches, community strategies, builds or tips, call web_search with a short query that names the game.'
+      ? 'When the wiki has no answer, or the question is about what is current (the meta, tier lists, the latest patch or season, nerfs and buffs) or what players recommend (strategies, builds, tips), call web_search with a short query that names the game.'
       : '',
     'Never invent game facts you are unsure about.'
   ]
@@ -366,7 +373,61 @@ async function prefetchPage(
     if (page.source) addPagePicture(ctx, out, site, page.source.title)
   }
   const texts = pages.map((page) => page.text).join('\n\n')
-  return `GameMate looked these wiki pages up for this question (the player hasn't seen them; use them only if they fit the question, and call wiki_lookup if you need a different page):\n\n${texts}`
+  const more = ctx.search
+    ? 'call wiki_lookup for a different page, or web_search for current or community information'
+    : 'call wiki_lookup if you need a different page'
+  return `GameMate looked these wiki pages up for this question (the player hasn't seen them; use them only if they fit the question, and ${more}):\n\n${texts}`
+}
+
+// The search GameMate runs before asking the AI, for questions about what's current or what
+// players think: the question's own key words and the game's name ("Overwatch characters
+// currently meta"). Null when the question isn't that kind.
+export function webSearchQuery(question: string, gameName: string): string | null {
+  if (!WEB_INTENT.test(question)) return null
+  const terms = searchTerms(question)
+  if (!terms.length) return null
+  // Name the game unless the question already does.
+  const named = searchTerms(gameName).every((w) => terms.includes(w))
+  return [...(named ? [] : [gameName]), ...terms].join(' ').slice(0, 120)
+}
+
+// Runs a web search and records what it used. Logs only whether it worked, never the query.
+async function runSearch(
+  ctx: AssistantContext,
+  out: Collected,
+  query: string
+): Promise<WebSearchResult | null> {
+  if (!ctx.search) return null
+  try {
+    const result = await searchWeb(ctx.search.apiKey, ctx.search.model, query)
+    console.info(`Web search ran (${result.sources.length} pages)`)
+    out.asked.push(query)
+    for (const source of result.sources) {
+      addSource(out, { title: source.title, url: source.url, wiki: 'Google Search', license: '' })
+    }
+    out.searchSuggestions ??= result.suggestions
+    return result
+  } catch (error) {
+    console.warn('Web search failed:', error instanceof Error ? error.message : error)
+    throw error
+  }
+}
+
+// Searches the web before asking the AI when the question is about what's current or what
+// players think. A slow search is skipped; the AI can still search itself.
+async function prefetchSearch(
+  ctx: AssistantContext,
+  question: string,
+  out: Collected
+): Promise<string | null> {
+  const query = ctx.search ? webSearchQuery(question, ctx.game.name) : null
+  if (!query) return null
+  const timeout = new Promise<null>((resolve) =>
+    setTimeout(() => resolve(null), PREFETCH_SEARCH_MS)
+  )
+  const result = await Promise.race([runSearch(ctx, out, query).catch(() => null), timeout])
+  if (!result) return null
+  return `GameMate searched the web for "${query}" (Google results, more current than the wiki; prefer them for what is current):\n\n${result.text}`
 }
 
 // Small models sometimes write a tool call as plain text (or start to); it is never part of the
@@ -445,16 +506,8 @@ async function runTool(
         return mc?.modpack ? searchMods(mc.modpack, arg('query')) : 'No modpack in use.'
       case 'web_search': {
         if (!ctx.search) return 'Web search is turned off.'
-        const result = await searchWeb(ctx.search.apiKey, ctx.search.model, arg('query'))
-        for (const source of result.sources) {
-          addSource(out, {
-            title: source.title,
-            url: source.url,
-            wiki: 'Google Search',
-            license: ''
-          })
-        }
-        out.searchSuggestions ??= result.suggestions
+        const result = await runSearch(ctx, out, arg('query'))
+        if (!result) return 'Web search is turned off.'
         return `Web search results for "${arg('query')}":\n\n${result.text}`
       }
       case 'mod_info': {
@@ -512,8 +565,15 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
     recipeArt: [],
     asked: []
   }
-  const known = prefetchRecipes(ctx, question, out) ?? (await prefetchPage(ctx, question, out))
-  if (known) messages.splice(messages.length - 1, 0, { role: 'system', content: known })
+  // Recipes, or the wiki page the question is about, and a web search for what's current.
+  const recipes = prefetchRecipes(ctx, question, out)
+  const [page, web] = await Promise.all([
+    recipes ? null : prefetchPage(ctx, question, out),
+    prefetchSearch(ctx, question, out)
+  ])
+  for (const known of [recipes ?? page, web]) {
+    if (known) messages.splice(messages.length - 1, 0, { role: 'system', content: known })
+  }
   const tools = toolsFor(ctx)
 
   let written = ''
