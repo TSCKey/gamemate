@@ -117,6 +117,12 @@ const DIRECT_STYLE = [
 const DETAILED_STYLE = [
   'The player likes detailed answers: answer the question in the first sentence, then explain the details, steps and useful tips in a few short paragraphs.'
 ]
+// Small models without an answer sometimes reply with the search they would run instead.
+const NO_ANSWER_RULE =
+  'If what you know and what you looked up do not answer the question, say in one sentence that you could not find a reliable answer. Never reply with a search query, a tool call or a list of things to look up.'
+
+// Shown instead of a reply that isn't an answer (see isNonAnswer).
+export const NO_ANSWER = 'I couldn’t find a reliable answer to that.'
 
 function systemPrompt(ctx: AssistantContext): string {
   const { game } = ctx
@@ -126,6 +132,7 @@ function systemPrompt(ctx: AssistantContext): string {
     `The player is playing ${playing}.`,
     `If the player asks about a different game, help with that game just as well: never say you can only help with ${playing}.${ctx.webLookup ? ` For facts about another game, call game_wiki with its name (not wiki_lookup, which only covers ${playing}).` : ''}`,
     ...(ctx.detailed ? DETAILED_STYLE : DIRECT_STYLE),
+    NO_ANSWER_RULE,
     'Write plain text: no Markdown, headings or bold.',
     'When the user attaches a screenshot, it shows their screen right now: base your answer on what is actually visible in it, and say so if something is unclear or not visible.',
     minecraftRules(ctx),
@@ -268,6 +275,8 @@ interface Collected {
   recipeArt: Promise<void>[]
   // Google's Search Suggestions from a web search.
   searchSuggestions?: string
+  // The searches and lookups made for this question (queries, topics, item names).
+  asked: string[]
 }
 
 // Starts loading the picture of a wiki page the answer uses (online lookups only).
@@ -363,7 +372,30 @@ async function prefetchPage(
 // Small models sometimes write a tool call as plain text (or start to); it is never part of the
 // answer.
 function withoutToolText(text: string): string {
-  return text.replace(/<tool_call>[\s\S]*?(<\/tool_call>|$)/g, '').replace(/<[a-z_]*$/, '')
+  return text
+    .replace(/<tool_call>[\s\S]*?(<\/tool_call>|$)/g, '')
+    .replace(/<function=[\s\S]*?(<\/function>|$)/g, '')
+    .replace(/<[a-z_]*$/, '')
+}
+
+const TOOL_NAMES =
+  /\b(web_search|wiki_lookup|game_wiki|minecraft_recipe|minecraft_search_items|modpack_mods|mod_info)\b/
+const plain = (text: string): string =>
+  text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+
+// A reply that isn't an answer: nothing, a tool call written out as text (JSON, "web_search(…)",
+// Qwen's <function=…> tags), or just one of the searches or lookups made for this question.
+export function isNonAnswer(text: string, asked: string[] = []): boolean {
+  const t = text.trim()
+  if (!t) return true
+  if (/^[{[]/.test(t) && /"(name|arguments|query|topic|parameters)"\s*:/.test(t)) return true
+  if (/<\/?(tool_call|function|parameter)\b|<function=/.test(t)) return true
+  if (TOOL_NAMES.test(t) && t.length < 300) return true
+  const said = plain(t)
+  return asked.some((q) => plain(q) === said)
 }
 
 function addSource(out: Collected, source: WikiSource | null): void {
@@ -477,7 +509,8 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
     sources: [],
     wantMap: MAP_INTENT.test(question),
     pictures: [],
-    recipeArt: []
+    recipeArt: [],
+    asked: []
   }
   const known = prefetchRecipes(ctx, question, out) ?? (await prefetchPage(ctx, question, out))
   if (known) messages.splice(messages.length - 1, 0, { role: 'system', content: known })
@@ -517,23 +550,7 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
       const content =
         answered ||
         withoutToolText((await complete(ctx.engine, messages, { fast: true, onText })).content)
-      // An answer about another game doesn't need pages from the current game's wiki.
-      const sources = out.otherGame
-        ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
-        : out.sources
-      const pictures = await finishPictures(ctx, out)
-      return {
-        role: 'assistant',
-        content,
-        answeredBy: {
-          provider: ctx.engine.provider === 'gemini' ? 'gemini' : 'local',
-          model: ctx.engine.model
-        },
-        ...(out.recipes.length ? { recipes: out.recipes } : {}),
-        ...(sources.length ? { sources } : {}),
-        ...(pictures.length ? { pictures } : {}),
-        ...(out.searchSuggestions ? { searchSuggestions: out.searchSuggestions } : {})
-      }
+      return finish(ctx, out, content)
     }
     // Text written before a tool call was only a lead-in; the real answer follows the lookup.
     startOver()
@@ -544,6 +561,9 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
       raw: reply.raw
     })
     for (const call of reply.toolCalls) {
+      for (const value of Object.values(call.arguments ?? {})) {
+        if (typeof value === 'string') out.asked.push(value)
+      }
       messages.push({
         role: 'tool',
         name: call.name,
@@ -552,5 +572,34 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
       })
     }
   }
-  throw new Error('The model did not produce an answer.')
+  // Still looking things up after every round: no answer.
+  return finish(ctx, out, '')
+}
+
+// The reply, with what the answer used. A reply that isn't an answer becomes a plain "couldn't
+// find a reliable answer" (and loses the pictures, which would suggest otherwise).
+async function finish(
+  ctx: AssistantContext,
+  out: Collected,
+  content: string
+): Promise<AssistantReply> {
+  const noAnswer = isNonAnswer(content, out.asked)
+  if (noAnswer) ctx.onText?.(NO_ANSWER)
+  // An answer about another game doesn't need pages from the current game's wiki.
+  const sources = out.otherGame
+    ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
+    : out.sources
+  const pictures = noAnswer ? [] : await finishPictures(ctx, out)
+  return {
+    role: 'assistant',
+    content: noAnswer ? NO_ANSWER : content,
+    answeredBy: {
+      provider: ctx.engine.provider === 'gemini' ? 'gemini' : 'local',
+      model: ctx.engine.model
+    },
+    ...(out.recipes.length && !noAnswer ? { recipes: out.recipes } : {}),
+    ...(sources.length ? { sources } : {}),
+    ...(pictures.length ? { pictures } : {}),
+    ...(out.searchSuggestions ? { searchSuggestions: out.searchSuggestions } : {})
+  }
 }
