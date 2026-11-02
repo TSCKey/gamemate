@@ -1,20 +1,33 @@
 # Builds the Windows installer and publishes it as a GitHub Release when a version tag (like
-# v1.0.1) is pushed, so releases no longer need a personal token on a developer's PC. The tag
-# must match the version in package.json.
+# v1.0.2) is pushed, so releases don't need a personal token on a developer's PC. The tag must
+# match the version in package.json, and its message becomes the release notes:
+#   git tag -a v1.0.2 -F notes.md && git push origin v1.0.2
+# It can also be run by hand (Actions → Release → Run workflow) to rebuild an existing tag's
+# release, replacing its files.
 name: Release
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to build, e.g. v1.0.2'
+        required: true
 
 permissions:
   contents: write
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   release:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TAG }}
       - uses: actions/setup-node@v5
         with:
           node-version: 22
@@ -23,11 +36,25 @@ jobs:
         shell: bash
         run: |
           version="v$(node -p "require('./package.json').version")"
-          if [ "$version" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME doesn't match package.json ($version)." && exit 1
+          if [ "$version" != "$TAG" ]; then
+            echo "Tag $TAG doesn't match package.json ($version)." && exit 1
           fi
       - run: npm ci
       - run: npm test
-      - run: npm run release:win
+      # Build only; the files are uploaded below in one step. (electron-builder's own publishing
+      # uploads each file separately and lost the installer when they raced.)
+      - run: npm run build
+      - run: npx electron-builder --win --publish never
+      - name: Publish the installer and update files
+        shell: bash
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${TAG#v}"
+          files=(dist/GameMate-Setup-$version.exe dist/GameMate-Setup-$version.exe.blockmap dist/latest.yml)
+          ls -l "${files[@]}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "${files[@]}" --clobber
+          else
+            gh release create "$TAG" "${files[@]}" --title "$version" --notes-from-tag
+          fi
