@@ -18,6 +18,7 @@ import { registerVoiceHandlers } from './ipc/voice'
 import { startLogging } from './system/log'
 import { flushSettings, getSettings, onSettingsChanged, type Settings } from './system/settings'
 import { createOverlay, toggleOverlay } from './windows/overlay'
+import { themeTitleBar } from './windows/titleBar'
 import { createToast, showToast } from './windows/toast'
 import { shutdownSpeech } from './voice/tts'
 import { registerModelScheme, serveModels } from './voice/voiceModels'
@@ -84,7 +85,8 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     title: 'GameMate',
-    ...(process.platform === 'linux' ? { icon } : {}),
+    // The title bar and taskbar icon (the installed app's .exe has it too).
+    icon,
     webPreferences: {
       preload: preloadPath,
       sandbox: true,
@@ -93,6 +95,7 @@ function createWindow(): void {
     }
   })
 
+  themeTitleBar(mainWindow)
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
   })
