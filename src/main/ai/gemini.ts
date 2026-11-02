@@ -73,10 +73,8 @@ async function call<T>(apiKey: string, path: string, body?: object): Promise<T> 
     }
     if (res.status === 403) throw new Error('This API key is not allowed to use Gemini.')
     if (res.status === 429) {
-      // Google names the limit that was reached (e.g. the search allowance); keep that part.
-      const which = detail.split(/[.\n]/)[0].slice(0, 160)
       throw new Error(
-        `Gemini’s usage limit was reached${which ? ` (${which})` : ''}. Try again later or switch to the local model.`
+        'Gemini’s usage limit was reached. Try again later or switch to the local model.'
       )
     }
     throw new Error(`Gemini error ${res.status}${detail ? `: ${detail}` : ''}`)

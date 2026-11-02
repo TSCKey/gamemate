@@ -241,8 +241,6 @@ export interface ChatMessage {
   pictures?: WikiPicture[]
   // Google's Search Suggestions (HTML), shown when the answer used a web search.
   searchSuggestions?: string
-  // Something the player should know about this answer (e.g. web search didn't work).
-  notice?: string
   // Which AI answered (assistant messages only).
   answeredBy?: AnsweredBy
 }

@@ -48,8 +48,6 @@ export interface AssistantReply {
   pictures?: WikiPicture[]
   // Google's Search Suggestions, shown whenever the answer used a web search.
   searchSuggestions?: string
-  // Something the player should know about this answer (e.g. web search didn't work).
-  notice?: string
   // Which AI answered, and in Auto mode why.
   answeredBy?: AnsweredBy
 }
@@ -286,8 +284,6 @@ interface Collected {
   searchSuggestions?: string
   // The searches and lookups made for this question (queries, topics, item names).
   asked: string[]
-  // Why web search failed for this question (it isn't tried again).
-  searchError?: string
 }
 
 // Starts loading the picture of a wiki page the answer uses (online lookups only).
@@ -401,7 +397,7 @@ async function runSearch(
   out: Collected,
   query: string
 ): Promise<WebSearchResult | null> {
-  if (!ctx.search || out.searchError) return null
+  if (!ctx.search) return null
   try {
     const result = await searchWeb(ctx.search.apiKey, ctx.search.model, query)
     console.info(`Web search ran (${result.sources.length} pages)`)
@@ -412,9 +408,8 @@ async function runSearch(
     out.searchSuggestions ??= result.suggestions
     return result
   } catch (error) {
-    out.searchError = error instanceof Error ? error.message : String(error)
-    console.warn('Web search failed:', out.searchError)
-    return null
+    console.warn('Web search failed:', error instanceof Error ? error.message : error)
+    throw error
   }
 }
 
@@ -430,7 +425,7 @@ async function prefetchSearch(
   const timeout = new Promise<null>((resolve) =>
     setTimeout(() => resolve(null), PREFETCH_SEARCH_MS)
   )
-  const result = await Promise.race([runSearch(ctx, out, query), timeout])
+  const result = await Promise.race([runSearch(ctx, out, query).catch(() => null), timeout])
   if (!result) return null
   return `GameMate searched the web for "${query}" (Google results, more current than the wiki; prefer them for what is current):\n\n${result.text}`
 }
@@ -512,9 +507,7 @@ async function runTool(
       case 'web_search': {
         if (!ctx.search) return 'Web search is turned off.'
         const result = await runSearch(ctx, out, arg('query'))
-        if (!result) {
-          return `Web search is not working right now (${out.searchError ?? 'no result'}). Answer from what you know, or say you could not find a reliable answer.`
-        }
+        if (!result) return 'Web search is turned off.'
         return `Web search results for "${arg('query')}":\n\n${result.text}`
       }
       case 'mod_info': {
@@ -652,13 +645,11 @@ async function finish(
 ): Promise<AssistantReply> {
   const noAnswer = isNonAnswer(content, out.asked)
   if (noAnswer) ctx.onText?.(NO_ANSWER)
-  // The AI saying it found nothing: pictures and recipe cards would suggest otherwise.
-  const empty = noAnswer || saysNoAnswer(content)
   // An answer about another game doesn't need pages from the current game's wiki.
   const sources = out.otherGame
     ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
     : out.sources
-  const pictures = empty ? [] : await finishPictures(ctx, out)
+  const pictures = noAnswer ? [] : await finishPictures(ctx, out)
   return {
     role: 'assistant',
     content: noAnswer ? NO_ANSWER : content,
@@ -666,21 +657,9 @@ async function finish(
       provider: ctx.engine.provider === 'gemini' ? 'gemini' : 'local',
       model: ctx.engine.model
     },
-    ...(out.recipes.length && !empty ? { recipes: out.recipes } : {}),
+    ...(out.recipes.length && !noAnswer ? { recipes: out.recipes } : {}),
     ...(sources.length ? { sources } : {}),
     ...(pictures.length ? { pictures } : {}),
-    ...(out.searchSuggestions ? { searchSuggestions: out.searchSuggestions } : {}),
-    // Tell the player when web search didn't work, so a missing answer makes sense.
-    ...(out.searchError ? { notice: `Web search didn’t work: ${out.searchError}` } : {})
+    ...(out.searchSuggestions ? { searchSuggestions: out.searchSuggestions } : {})
   }
-}
-
-// A short reply in which the AI says it couldn't find the answer.
-export function saysNoAnswer(text: string): boolean {
-  return (
-    text.split(/\s+/).length <= 40 &&
-    /\b(could ?n[o’']?t|could not|can[’']?t|cannot|was(n[’']?t| not) able to|unable to) (find|locate|get)\b/i.test(
-      text
-    )
-  )
 }

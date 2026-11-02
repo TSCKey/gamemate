@@ -1628,11 +1628,3 @@ button.link:hover:not(:disabled) {
   border-radius: 8px;
   background: transparent;
 }
-
-/* A note under an answer, e.g. that web search didn't work */
-
-.answer-notice {
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--warning);
-}
