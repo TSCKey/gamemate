@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { htmlToText, prefetchWiki, type WikiSite } from './wiki'
+import { htmlToText, prefetchWiki, type WikiSite } from '../src/main/games/wiki'
 
 const site: WikiSite = {
   name: 'Test Wiki',

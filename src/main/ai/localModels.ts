@@ -7,8 +7,8 @@ import { existsSync } from 'fs'
 import { mkdir, rename, rm, statfs } from 'fs/promises'
 import { join } from 'path'
 import { promisify } from 'util'
-import { downloadVerified, partialPath, type DownloadSpec } from './download'
-import type { LocalModelStatus } from '../shared/types'
+import { downloadVerified, partialPath, type DownloadSpec } from '../system/download'
+import type { LocalModelStatus } from '../../shared/types'
 export type { LocalModelStatus }
 
 // llama.cpp (MIT), Vulkan build for Windows: runs on NVIDIA, AMD and Intel graphics cards and

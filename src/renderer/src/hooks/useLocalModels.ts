@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { LocalModelStatus, ModelInfo, Settings } from '../../preload/index.d'
+import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
 
 // Built-in engine models and their download progress, kept in sync with the main process.
 export function useLocalModels(): LocalModelStatus[] {

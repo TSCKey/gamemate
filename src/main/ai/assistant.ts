@@ -2,11 +2,17 @@
 // into a single answer from the chosen model (local, or Gemini if the player opted in).
 import type { ChatMessage } from './ollamaClient'
 import { complete, type LlmEngine, type LlmMessage, type LlmTool } from './llm'
-import { findMentionedItems, lookupRecipe, searchItems, type RecipeView } from './games/minecraft'
-import type { GameContext } from './games/current'
-import { modInfo, searchMods } from './games/modpacks'
-import { findWikiForGame, lookupWiki, prefetchWiki, type WikiSite, type WikiSource } from './wiki'
-import type { AnsweredBy } from '../shared/types'
+import { findMentionedItems, lookupRecipe, searchItems, type RecipeView } from '../games/minecraft'
+import type { GameContext } from '../games/current'
+import { modInfo, searchMods } from '../games/modpacks'
+import {
+  findWikiForGame,
+  lookupWiki,
+  prefetchWiki,
+  type WikiSite,
+  type WikiSource
+} from '../games/wiki'
+import type { AnsweredBy } from '../../shared/types'
 export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.

@@ -1,6 +1,6 @@
 // Web pages GameMate may open in the player's browser: its games' wikis, Modrinth and the
 // policy pages the settings link to. Anything else (other sites, programs, files) is refused.
-import { allGames } from './games/current'
+import { allGames } from '../games/current'
 
 // Policy and setup pages the settings screen links to.
 const EXTERNAL_LINKS = [

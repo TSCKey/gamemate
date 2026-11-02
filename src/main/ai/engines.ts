@@ -1,15 +1,15 @@
 // Picks the AI engine for a job from the player's settings, and in Auto mode decides
 // per question whether the local model or Gemini should answer.
-import { latestRecipeVersion } from './games/current'
-import { findMentionedItems } from './games/minecraft'
+import { latestRecipeVersion } from '../games/current'
+import { findMentionedItems } from '../games/minecraft'
 import { chatCompletion } from './llamaClient'
 import { withEngine } from './llamaEngine'
 import type { LlmEngine } from './llm'
 import { isLocalModelInstalled } from './localModels'
 import { preloadModel } from './ollamaClient'
 import { decide } from './router'
-import { getGeminiKey } from './secrets'
-import { getSettings } from './settings'
+import { getGeminiKey } from '../system/secrets'
+import { getSettings } from '../system/settings'
 
 export type Job = 'answers' | 'commentary'
 

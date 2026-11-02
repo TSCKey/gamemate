@@ -6,7 +6,7 @@ import { randomBytes } from 'crypto'
 import { once } from 'events'
 import { createServer, type AddressInfo } from 'net'
 import { promisify } from 'util'
-import { tieToGameMate } from './jobObject'
+import { tieToGameMate } from '../system/jobObject'
 import type { EngineServer } from './llamaClient'
 import { engineDir, engineExe, localModelFiles } from './localModels'
 

@@ -6,7 +6,7 @@ import { readdir, readFile, stat } from 'fs/promises'
 import { homedir } from 'os'
 import { basename, dirname, join } from 'path'
 import { promisify } from 'util'
-import type { WikiLookup } from '../wiki'
+import type { WikiLookup } from './wiki'
 import type { ModpackSummary } from '../../shared/types'
 export type { ModpackSummary }
 

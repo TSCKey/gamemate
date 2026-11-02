@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, rm, writeFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { readModpack, searchMods } from './modpacks'
+import { readModpack, searchMods } from '../src/main/games/modpacks'
 
 let dir = ''
 

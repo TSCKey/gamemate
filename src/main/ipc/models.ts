@@ -1,7 +1,7 @@
 // The built-in engine's models and the player's Gemini key.
-import { primeModel } from '../engines'
-import { listGeminiModels } from '../gemini'
-import { runningModel, stopEngine } from '../llamaEngine'
+import { primeModel } from '../ai/engines'
+import { listGeminiModels } from '../ai/gemini'
+import { runningModel, stopEngine } from '../ai/llamaEngine'
 import {
   cancelLocalModel,
   downloadLocalModel,
@@ -9,10 +9,10 @@ import {
   isLocalModelInstalled,
   localModelStatuses,
   removeLocalModel
-} from '../localModels'
-import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from '../secrets'
-import { handle } from '../security'
-import { getSettings, updateSettings } from '../settings'
+} from '../ai/localModels'
+import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from '../system/secrets'
+import { handle } from '../system/security'
+import { getSettings, updateSettings } from '../system/settings'
 
 export function registerModelHandlers(): void {
   handle('local-models:list', () => localModelStatuses())

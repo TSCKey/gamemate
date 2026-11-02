@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { decide, type QuestionInfo } from './router'
+import { decide, type QuestionInfo } from '../src/main/ai/router'
 
 const ask = (question: string, extra: Partial<QuestionInfo> = {}): boolean =>
   decide({ question, hasImages: false, messages: 1, mentionsItem: false, ...extra }).cloud

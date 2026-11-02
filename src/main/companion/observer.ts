@@ -4,16 +4,21 @@
 // To keep the GPU free for the game, the model is only asked about the screen when a cheap
 // check on a tiny frame suggests something changed, and never more often than MIN_ANALYSIS_GAP_MS.
 import { BrowserWindow, screen, type NativeImage } from 'electron'
-import { captureDisplayImage, toScreenshot } from './capture'
-import { windowRect } from './foreground'
-import { followForegroundGame } from './games/current'
-import type { GameProfile } from './games/catalog'
-import { complete } from './llm'
-import { engineFor, engineReady } from './engines'
-import { isAsking } from './assistant'
-import { getSettings, onSettingsChanged, type CommentaryFrequency, type Settings } from './settings'
-import { EVENT_TYPES } from '../shared/types'
-import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../shared/types'
+import { captureDisplayImage, toScreenshot } from '../windows/capture'
+import { windowRect } from '../system/foreground'
+import { followForegroundGame } from '../games/current'
+import type { GameProfile } from '../games/catalog'
+import { complete } from '../ai/llm'
+import { engineFor, engineReady } from '../ai/engines'
+import { isAsking } from '../ai/assistant'
+import {
+  getSettings,
+  onSettingsChanged,
+  type CommentaryFrequency,
+  type Settings
+} from '../system/settings'
+import { EVENT_TYPES } from '../../shared/types'
+import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../../shared/types'
 export { EVENT_TYPES }
 export type { EventType, ObservedEvent }
 

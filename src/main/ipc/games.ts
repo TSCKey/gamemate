@@ -4,9 +4,9 @@ import type { GamesState, SavedGame } from '../../shared/types'
 import { allGames, currentModpack } from '../games/current'
 import { scanLaunchers } from '../games/launchers'
 import { listCurseForgeModpacks, type ModpackSummary } from '../games/modpacks'
-import { handle } from '../security'
-import { getSettings, setGames, updateSettings } from '../settings'
-import { discoverWiki, findWikiForGame } from '../wiki'
+import { handle } from '../system/security'
+import { getSettings, setGames, updateSettings } from '../system/settings'
+import { discoverWiki, findWikiForGame } from '../games/wiki'
 
 // What the game menus and settings need to know about each game.
 function gamesState(): GamesState {

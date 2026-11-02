@@ -1,5 +1,5 @@
 import type { LocalModelStatus, Settings } from '../../../preload/index.d'
-import { formatSize } from '../useLocalModels'
+import { formatSize } from '../hooks/useLocalModels'
 import { Progress } from './ModelsPanel'
 
 // First start: GameMate's own AI isn't downloaded yet. One click gets it.

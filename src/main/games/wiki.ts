@@ -1,5 +1,5 @@
 // Looks things up on a game's wiki (any MediaWiki site: minecraft.wiki, wiki.gg, Fandom, …) for
-import type { WikiSite, WikiSource } from '../shared/types'
+import type { WikiSite, WikiSource } from '../../shared/types'
 export type { WikiSite, WikiSource }
 // questions GameMate's own data can't answer. Only the search words are sent. Wiki text is under
 // the wiki's license (usually Creative Commons), so every answer that uses it links to the page.

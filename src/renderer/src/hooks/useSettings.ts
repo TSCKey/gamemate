@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { ModelInfo, Settings } from '../../preload/index.d'
+import type { ModelInfo, Settings } from '../../../preload/index.d'
 
 export function errorMessage(error: unknown): string {
   const text = error instanceof Error ? error.message : String(error)

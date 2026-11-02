@@ -1,12 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { ChatMessage } from '../../preload/index.d'
-import RecipeCard from './components/RecipeCard'
-import Sources from './components/Sources'
-import { errorMessage, useSettings } from './useSettings'
-import { localModelInfo, useLocalModels } from './useLocalModels'
-import { useGames } from './useGames'
-import { speak, stopSpeaking } from './voice/speak'
-import { useVoiceInput } from './voice/useVoiceInput'
+import type { ChatMessage } from '../../../preload/index.d'
+import RecipeCard from '../components/RecipeCard'
+import Sources from '../components/Sources'
+import { errorMessage, useSettings } from '../hooks/useSettings'
+import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
+import { useGames } from '../hooks/useGames'
+import { speak, stopSpeaking } from '../voice/speak'
+import { useVoiceInput } from '../voice/useVoiceInput'
 
 // Reopening after this long starts a new conversation instead of continuing the old one.
 const FRESH_CONVERSATION_MS = 10 * 60 * 1000

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { AnswerEngine, Engine, Settings } from '../../../preload/index.d'
-import { errorMessage } from '../useSettings'
+import { errorMessage } from '../hooks/useSettings'
 import { LINKS } from '../constants'
 import { ExternalLink, Field, Section, Toggle } from './ui'
 

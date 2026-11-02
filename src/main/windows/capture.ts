@@ -1,6 +1,6 @@
 // Capture module: lists capturable screens/windows and grabs a screenshot of one.
 import { BrowserWindow, desktopCapturer, screen, type NativeImage } from 'electron'
-import type { CaptureSource, Screenshot } from '../shared/types'
+import type { CaptureSource, Screenshot } from '../../shared/types'
 export type { CaptureSource, Screenshot }
 
 // Large enough for the vision model to read the scene, small enough to keep inference fast.

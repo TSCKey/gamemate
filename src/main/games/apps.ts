@@ -1,7 +1,7 @@
 // Programs with an open window, so the player can pick their game when adding it to GameMate.
 import { desktopCapturer } from 'electron'
 import { basename } from 'path'
-import { handleFromSourceId, windowProgram } from '../foreground'
+import { handleFromSourceId, windowProgram } from '../system/foreground'
 import type { RunningApp } from '../../shared/types'
 export type { RunningApp }
 

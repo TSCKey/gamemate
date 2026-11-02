@@ -7,7 +7,7 @@ import { dirname, join, normalize, relative } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { pathToFileURL } from 'url'
-import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../shared/types'
+import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../../shared/types'
 export type { SpeechModelId, ListenModelId, SpeechModelStatus }
 
 export const MODEL_SCHEME = 'gm-model'

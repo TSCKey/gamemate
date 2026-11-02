@@ -6,7 +6,7 @@ import type {
   RunningApp,
   Settings
 } from '../../../preload/index.d'
-import { errorMessage } from '../useSettings'
+import { errorMessage } from '../hooks/useSettings'
 import { Field, Section, Toggle } from './ui'
 
 const LAUNCHERS: Record<GameInfo['launcher'], string> = {

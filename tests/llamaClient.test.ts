@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { chatCompletion, toOpenAiMessages } from './llamaClient'
+import { chatCompletion, toOpenAiMessages } from '../src/main/ai/llamaClient'
 
 const server = { url: 'http://127.0.0.1:1', apiKey: 'key' }
 

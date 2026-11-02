@@ -1,12 +1,12 @@
 // Questions to GameMate's AI.
-import { ask, type AssistantReply } from '../assistant'
-import { isUnreachable, routeQuestion } from '../engines'
+import { ask, type AssistantReply } from '../ai/assistant'
+import { isUnreachable, routeQuestion } from '../ai/engines'
 import { gameContext } from '../games/current'
-import type { LlmEngine } from '../llm'
-import { listModels, type ChatMessage } from '../ollamaClient'
-import { recentObservations } from '../observer'
-import { handle } from '../security'
-import { getSettings } from '../settings'
+import type { LlmEngine } from '../ai/llm'
+import { listModels, type ChatMessage } from '../ai/ollamaClient'
+import { recentObservations } from '../companion/observer'
+import { handle } from '../system/security'
+import { getSettings } from '../system/settings'
 
 const VALID_ROLES = new Set(['user', 'assistant'])
 const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024

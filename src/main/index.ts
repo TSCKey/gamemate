@@ -2,25 +2,25 @@ import { app, BrowserWindow, globalShortcut, session, Menu, nativeImage, Tray } 
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { unloadModels } from './ollamaClient'
-import { warmUp } from './engines'
-import { runningModel, stopEngine } from './llamaEngine'
-import { startUpdater } from './updater'
-import { clearGeminiKey } from './secrets'
+import { unloadModels } from './ai/ollamaClient'
+import { warmUp } from './ai/engines'
+import { runningModel, stopEngine } from './ai/llamaEngine'
+import { startUpdater } from './system/updater'
+import { clearGeminiKey } from './system/secrets'
 import { followForegroundGame } from './games/current'
-import { hardenWindows } from './security'
-import { allowedLink } from './links'
+import { hardenWindows } from './system/security'
+import { allowedLink } from './system/links'
 import { registerAppHandlers } from './ipc/app'
 import { registerAssistantHandlers } from './ipc/assistant'
 import { registerGameHandlers } from './ipc/games'
 import { registerModelHandlers } from './ipc/models'
 import { registerVoiceHandlers } from './ipc/voice'
-import { startLogging } from './log'
-import { flushSettings, getSettings, onSettingsChanged, type Settings } from './settings'
-import { createOverlay, toggleOverlay } from './overlay'
-import { createToast, showToast } from './toast'
-import { shutdownSpeech } from './tts'
-import { registerModelScheme, serveModels } from './voiceModels'
+import { startLogging } from './system/log'
+import { flushSettings, getSettings, onSettingsChanged, type Settings } from './system/settings'
+import { createOverlay, toggleOverlay } from './windows/overlay'
+import { createToast, showToast } from './windows/toast'
+import { shutdownSpeech } from './voice/tts'
+import { registerModelScheme, serveModels } from './voice/voiceModels'
 import {
   getObserverState,
   onObserverState,
@@ -28,7 +28,7 @@ import {
   startObserver,
   stopObserver,
   type ObserverState
-} from './observer'
+} from './companion/observer'
 
 const SHORTCUT = 'Alt+Space'
 const VOICE_SHORTCUT = 'Alt+V'

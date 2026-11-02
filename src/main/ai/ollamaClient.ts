@@ -2,7 +2,7 @@
 // See https://github.com/ollama/ollama/blob/main/docs/api.md
 
 import { forEachLine } from './lines'
-import type { ModelInfo } from '../shared/types'
+import type { ModelInfo } from '../../shared/types'
 export type { ModelInfo }
 
 const OLLAMA_URL = 'http://127.0.0.1:11434'

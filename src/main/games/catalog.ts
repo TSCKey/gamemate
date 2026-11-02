@@ -1,7 +1,7 @@
 // The games GameMate helps with: Minecraft (built in, with its recipes, wiki and modpacks) and the
 // games the player's scan found or the player added. Nothing about other games is built in except
 // a few hints for well-known competitive games.
-import type { WikiSite } from '../wiki'
+import type { WikiSite } from './wiki'
 import type { SavedGame } from '../../shared/types'
 export type { SavedGame }
 

@@ -1,7 +1,7 @@
 // The floating question window opened with the global shortcut, shown on top of games.
 import { app, BrowserWindow, screen } from 'electron'
 import { captureDisplay, type Screenshot } from './capture'
-import { getSettings } from './settings'
+import { getSettings } from '../system/settings'
 
 const WIDTH = 640
 const MIN_HEIGHT = 72

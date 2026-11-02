@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { speak } from './voice/speak'
-import { hush, say } from './voice/natural'
+import { speak } from '../voice/speak'
+import { hush, say } from '../voice/natural'
 
 // Transparent space around the bubble, so its shadow isn't clipped by the window edge.
 const WINDOW_PADDING = 12

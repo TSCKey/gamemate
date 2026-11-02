@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { forEachLine } from './lines'
+import { forEachLine } from '../src/main/ai/lines'
 
 function streamOf(chunks: (string | Uint8Array)[]): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder()

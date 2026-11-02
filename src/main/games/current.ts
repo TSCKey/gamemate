@@ -2,9 +2,9 @@
 // game (only after they allowed detection), or picked by the player. For Minecraft this also
 // works out the modpack in use.
 import { basename } from 'path'
-import { foregroundHandle, windowProgram, type WindowProgram } from '../foreground'
-import { getSettings, updateSettings } from '../settings'
-import type { WikiSite } from '../wiki'
+import { foregroundHandle, windowProgram, type WindowProgram } from '../system/foreground'
+import { getSettings, updateSettings } from '../system/settings'
+import type { WikiSite } from './wiki'
 import { MINECRAFT, savedGameProfile, type GameProfile } from './catalog'
 import { listVersions } from './minecraft'
 import { gameDirOfProcess, readModpack, type Modpack } from './modpacks'

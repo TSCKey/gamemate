@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
-import { formatSize } from '../useLocalModels'
+import { formatSize } from '../hooks/useLocalModels'
 import { Field, Section, Toggle } from './ui'
 
 export function Progress({ value }: { value: number }): React.JSX.Element {

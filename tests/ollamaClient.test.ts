@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { chatOnce } from './ollamaClient'
+import { chatOnce } from '../src/main/ai/ollamaClient'
 
 afterEach(() => vi.unstubAllGlobals())
 

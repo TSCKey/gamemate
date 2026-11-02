@@ -1,15 +1,15 @@
 // Speech recognition models and GameMate's voice.
-import { handle } from '../security'
-import { getSettings } from '../settings'
-import { hushToast, sayInToast } from '../toast'
-import { listVoices, speak, stopSpeaking } from '../tts'
+import { handle } from '../system/security'
+import { getSettings } from '../system/settings'
+import { hushToast, sayInToast } from '../windows/toast'
+import { listVoices, speak, stopSpeaking } from '../voice/tts'
 import {
   downloadSpeechModel,
   isSpeechModelId,
   isSpeechModelInstalled,
   removeSpeechModel,
   speechModelStatuses
-} from '../voiceModels'
+} from '../voice/voiceModels'
 
 export function registerVoiceHandlers(): void {
   handle('voice:models', () => speechModelStatuses())

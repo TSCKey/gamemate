@@ -2,9 +2,9 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { isListenModelId, KOKORO_VOICES } from './voiceModels'
-import { isLocalModelId, LOCAL_MODELS } from './localModels'
-import type { SavedGame } from './games/catalog'
+import { isListenModelId, KOKORO_VOICES } from '../voice/voiceModels'
+import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
+import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
 import {
   COMPANION_MODES,
@@ -15,7 +15,7 @@ import {
   LOCAL_BACKENDS,
   ANSWER_ENGINES,
   PRIVACY_NOTICE_VERSION
-} from '../shared/types'
+} from '../../shared/types'
 import type {
   CompanionMode,
   CommentaryFrequency,
@@ -25,7 +25,7 @@ import type {
   LocalBackend,
   AnswerEngine,
   Settings
-} from '../shared/types'
+} from '../../shared/types'
 export {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,

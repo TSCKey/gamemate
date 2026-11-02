@@ -4,7 +4,7 @@
 import { app, BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { getSettings, onSettingsChanged } from './settings'
-import type { UpdateState } from '../shared/types'
+import type { UpdateState } from '../../shared/types'
 export type { UpdateState }
 
 const FIRST_CHECK_MS = 15_000

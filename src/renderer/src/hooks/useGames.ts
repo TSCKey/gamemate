@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { GamesState, ModpackSummary, Settings } from '../../preload/index.d'
+import type { GamesState, ModpackSummary, Settings } from '../../../preload/index.d'
 
 // The games GameMate knows (built in and added by the player) and which one is current.
 export function useGames(settings: Settings | null): GamesState | null {
