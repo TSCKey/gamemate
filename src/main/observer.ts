@@ -22,6 +22,7 @@ const MAX_ANALYSIS_GAP_MS = 60_000
 // Mean per-pixel brightness change (0-1) that counts as a new scene.
 const SCENE_CHANGE_THRESHOLD = 0.08
 const DIFF_FRAME_WIDTH = 64
+const COMMENTARY_WIDTH = 768
 const MAX_EVENTS = 30
 // Don't comment on the same kind of event again this soon (deaths are always worth a word).
 const SAME_EVENT_COOLDOWN_MS = 3 * 60_000
@@ -177,7 +178,9 @@ async function analyze(
   settings: Settings,
   game: GameProfile
 ): Promise<void> {
-  const image = await captureDisplayImage(displayId)
+  // Smaller than a screenshot sent with a question: enough to see what is happening, and the
+  // model reads it much faster.
+  const image = await captureDisplayImage(displayId, COMMENTARY_WIDTH)
   if (!image) return
   setState({ status: 'analyzing' })
   try {

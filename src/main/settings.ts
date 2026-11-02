@@ -1,6 +1,6 @@
 // User settings shared by the main window and the floating window, saved to userData.
 import { app, BrowserWindow } from 'electron'
-import { readFileSync, writeFileSync } from 'fs'
+import { readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { isListenModelId, KOKORO_VOICES, type ListenModelId } from './voiceModels'
 import { isLocalModelId, LOCAL_MODELS } from './localModels'
@@ -248,13 +248,30 @@ export function resetSettings(): Settings {
   return { ...DEFAULTS }
 }
 
-function save(next: Settings): void {
-  current = next
+// Sliders and typing change settings many times a second; they are written to disk shortly
+// after the last change, and right away when GameMate quits.
+const WRITE_DELAY_MS = 500
+let writeTimer: NodeJS.Timeout | null = null
+
+// Writes the settings now. A temporary file is renamed over the old one, so a crash mid-write
+// can't leave a half-written settings file behind.
+export function flushSettings(): void {
+  if (writeTimer) clearTimeout(writeTimer)
+  writeTimer = null
+  if (!current) return
   try {
-    writeFileSync(file(), JSON.stringify(next, null, 2))
+    const temp = `${file()}.tmp`
+    writeFileSync(temp, JSON.stringify(current, null, 2))
+    renameSync(temp, file())
   } catch (error) {
     console.error('Could not save settings', error)
   }
+}
+
+function save(next: Settings): void {
+  current = next
+  if (writeTimer) clearTimeout(writeTimer)
+  writeTimer = setTimeout(flushSettings, WRITE_DELAY_MS)
   for (const win of BrowserWindow.getAllWindows()) win.webContents.send('settings:changed', next)
   for (const listener of listeners) listener(next)
 }

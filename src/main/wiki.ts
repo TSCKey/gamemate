@@ -186,6 +186,12 @@ export async function lookupWiki(site: WikiSite, query: string): Promise<WikiLoo
 
   const title = await findTitle(site, q)
   if (!title) return { text: `The ${site.name} has no page about "${q}".`, source: null }
+  const result = await readPage(site, title)
+  cache.set(key, { at: Date.now(), result })
+  return result
+}
+
+async function readPage(site: WikiSite, title: string): Promise<WikiLookup> {
   const page = await pageText(site, title)
   const text = trimExtract(page.text)
   const source: WikiSource = {
@@ -200,7 +206,115 @@ export async function lookupWiki(site: WikiSite, query: string): Promise<WikiLoo
       : `The ${site.name} page "${source.title}" has no readable text.`,
     source: text ? source : null
   }
-  cache.set(key, { at: Date.now(), result })
+  return result
+}
+
+// Question words that make wiki searches worse.
+const QUESTION_WORDS = new Set(
+  `a about an and any anything are at be best can could do does explain find for from game games
+  get good have hello help hey hi how i if in is it know many me much my need ok on or play
+  playing please should so some tell thanks that there this to use want way what when where which
+  who why will with work works would you`.split(/\s+/)
+)
+const prefetched = new Map<string, { at: number; result: WikiLookup[] }>()
+
+// Small words that belong inside page titles ("Rivers of Blood", "The End").
+const TITLE_JOINERS = new Set(['of', 'the'])
+
+// Finds the page a question is clearly about before the AI is asked, which saves it a lookup
+// round. The question's own phrases are tried as page titles ("how do I beat the Ender Dragon"
+// finds "Ender Dragon"), longest first, and never the page about the game itself.
+export async function prefetchWiki(
+  site: WikiSite,
+  question: string,
+  gameName: string
+): Promise<WikiLookup[]> {
+  const game = new Set(words(gameName))
+  // Runs of meaningful words: question words split them.
+  const runs: string[][] = [[]]
+  for (const word of words(question)) {
+    if (QUESTION_WORDS.has(word)) runs.push([])
+    else runs[runs.length - 1].push(word)
+  }
+  // Longest phrases first; a phrase may start with "the" but not end with a joiner.
+  const phrases: string[][] = []
+  for (let size = 4; size > 0; size--) {
+    for (const run of runs) {
+      for (let i = 0; i + size <= run.length; i++) {
+        const phrase = run.slice(i, i + size)
+        const meaningful = phrase.filter((w) => !TITLE_JOINERS.has(w))
+        if (
+          meaningful.some((w) => !game.has(w)) &&
+          !TITLE_JOINERS.has(phrase.at(-1)!) &&
+          phrase[0] !== 'of'
+        ) {
+          phrases.push(phrase)
+        }
+      }
+    }
+  }
+  if (!phrases.length) return []
+
+  // Wikis title pages "Ender Dragon", "Ender dragon" or "Rivers of Blood", about one thing
+  // ("Diamond").
+  const capital = (w: string): string => w.charAt(0).toUpperCase() + w.slice(1)
+  const tried = new Map<string, number>()
+  for (const phrase of phrases) {
+    const singular = [...phrase.slice(0, -1), phrase.at(-1)!.replace(/(?<=[^s])s$/, '')]
+    for (const form of [phrase, singular]) {
+      const titled = form.map((w, i) => (i > 0 && TITLE_JOINERS.has(w) ? w : capital(w)))
+      for (const title of [titled.join(' '), capital(form.join(' '))]) {
+        if (!tried.has(title)) tried.set(title, phrase.filter((w) => !TITLE_JOINERS.has(w)).length)
+      }
+    }
+  }
+  const titles = [...tried.keys()].slice(0, 50)
+  const key = `${site.api} prefetch ${titles.join('|')}`
+  const hit = prefetched.get(key)
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.result
+
+  const data = await api<{
+    query?: {
+      normalized?: { from: string; to: string }[]
+      redirects?: { from: string; to: string }[]
+      pages?: { title: string; missing?: boolean; invalid?: boolean }[]
+    }
+  }>(site.api, { action: 'query', titles: titles.join('|'), redirects: '1' }).catch(() => null)
+  const query = data?.query
+  const follow = (title: string): string => {
+    const normal = query?.normalized?.find((n) => n.from === title)?.to ?? title
+    return query?.redirects?.find((r) => r.from === normal)?.to ?? normal
+  }
+  const existing = new Set(
+    (query?.pages ?? []).filter((pg) => !pg.missing && !pg.invalid).map((pg) => pg.title)
+  )
+  // A page named exactly like a phrase beats one reached through a redirect ("tame" leads to
+  // "Taming", but "wolf" is the subject); longer phrases beat shorter ones. Two equally good
+  // pages ("creeper" and "damage") are both read.
+  const scored = new Map<string, number>()
+  for (const [title, size] of tried) {
+    const page = follow(title)
+    const direct = page.toLowerCase() === title.toLowerCase()
+    // A redirect only counts when it leads somewhere named like the phrase ("Tame" → "Taming"),
+    // not to an unrelated page ("Five" → "Music Disc 5").
+    const stems = words(title).map((w) => w.slice(0, 3))
+    const related = direct || words(page).some((w) => stems.some((s) => w.startsWith(s)))
+    const score = size * 2 + (direct ? 1 : 0)
+    if (
+      related &&
+      existing.has(page) &&
+      !page.includes('/') &&
+      !/\(disambiguation\)/i.test(page) &&
+      !words(page).every((w) => game.has(w))
+    ) {
+      scored.set(page, Math.max(score, scored.get(page) ?? 0))
+    }
+  }
+  const top = Math.max(0, ...scored.values())
+  const best = [...scored].filter(([, score]) => score === top).slice(0, 2)
+  const pages = await Promise.all(best.map(([title]) => readPage(site, title)))
+  const result = pages.filter((page) => page.source)
+  prefetched.set(key, { at: Date.now(), result })
   return result
 }
 

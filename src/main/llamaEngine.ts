@@ -15,6 +15,10 @@ const START_TIMEOUT_MS = 180_000
 // Enough for GameMate's prompts, a screenshot and a few looked-up pages, without reserving the
 // model's full (very large) context in graphics memory.
 const CONTEXT_TOKENS = 12288
+// Small models can think for thousands of tokens before answering (over a minute); a cap keeps
+// the first words of an answer within seconds.
+const THINKING_TOKENS = 512
+const THINKING_DONE = 'Okay, I have thought enough; time to answer.'
 
 interface Running {
   modelId: string
@@ -112,6 +116,7 @@ async function start(modelId: string): Promise<Running> {
     // Only GameMate may talk to it: local address, random port and a random key.
     ...['--host', '127.0.0.1', '--port', String(port), '--api-key', apiKey],
     ...['-c', String(CONTEXT_TOKENS), '-np', '1', '--cache-ram', '256', '--no-webui'],
+    ...['--reasoning-budget', String(THINKING_TOKENS), '--reasoning-budget-message', THINKING_DONE],
     ...(gpu ? ['-dev', gpu] : [])
   ]
   const proc = spawn(engineExe(), args, {

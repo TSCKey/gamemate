@@ -220,7 +220,8 @@ export interface AppInfo {
 
 export interface Api {
   listModels: () => Promise<ModelInfo[]>
-  ask: (messages: ChatMessage[]) => Promise<ChatMessage>
+  // onText receives the answer so far while it is written (empty when it starts over).
+  ask: (messages: ChatMessage[], onText?: (text: string) => void) => Promise<ChatMessage>
   listCaptureSources: () => Promise<CaptureSource[]>
   captureScreenshot: (sourceId: string) => Promise<Screenshot>
   getSettings: () => Promise<Settings>

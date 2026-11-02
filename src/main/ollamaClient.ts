@@ -1,6 +1,8 @@
 // Minimal client for the local Ollama HTTP API.
 // See https://github.com/ollama/ollama/blob/main/docs/api.md
 
+import { forEachLine } from './lines'
+
 const OLLAMA_URL = 'http://127.0.0.1:11434'
 const REQUEST_TIMEOUT_MS = 120_000
 
@@ -118,19 +120,79 @@ export async function chatOnce(
     format?: object
     // false skips a reasoning model's thinking step, for fast background calls.
     think?: boolean
+    // Receives the answer's text as Ollama writes it.
+    onText?: (delta: string) => void
   } = {}
 ): Promise<OllamaMessage> {
   usedModels.add(model)
-  const data = await request<ChatResponse>('/api/chat', {
-    method: 'POST',
-    body: JSON.stringify({ model, messages, stream: false, ...options })
+  const { onText, ...rest } = options
+  if (!onText) {
+    const data = await request<ChatResponse>('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ model, messages, stream: false, ...rest })
+    })
+    return data.message
+  }
+  const res = await streamRequest('/api/chat', { model, messages, stream: true, ...rest })
+  // Ollama streams one JSON object per line.
+  const message: OllamaMessage = { role: 'assistant', content: '' }
+  await forEachLine(res, (line) => {
+    const chunk = JSON.parse(line) as { message?: OllamaMessage; error?: string }
+    if (chunk.error) throw new Error(`Ollama error: ${chunk.error}`)
+    const part = chunk.message
+    if (!part) return
+    if (part.content) {
+      message.content += part.content
+      onText(part.content)
+    }
+    if (part.tool_calls?.length)
+      message.tool_calls = [...(message.tool_calls ?? []), ...part.tool_calls]
   })
-  return data.message
+  return message
+}
+
+async function streamRequest(path: string, body: object): Promise<ReadableStream<Uint8Array>> {
+  let res: Response
+  try {
+    res = await fetch(`${OLLAMA_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+    })
+  } catch (error) {
+    if (error instanceof Error && error.name === 'TimeoutError') {
+      throw new Error('Ollama took too long to respond.', { cause: error })
+    }
+    throw new Error(`Could not reach Ollama at ${OLLAMA_URL}. Is it running?`, { cause: error })
+  }
+  if (!res.ok || !res.body) {
+    const text = await res.text().catch(() => '')
+    let detail = text
+    try {
+      detail = (JSON.parse(text) as { error?: string }).error ?? text
+    } catch {
+      // not JSON
+    }
+    throw new Error(`Ollama error ${res.status}: ${detail || res.statusText}`)
+  }
+  return res.body
 }
 
 // Asks Ollama to unload the models GameMate used, so they stop holding memory and GPU once
 // GameMate quits (Ollama would otherwise keep them loaded for a few minutes). Models that
 // only other apps loaded are left alone.
+// Loads a model into memory ahead of a question, so the answer doesn't wait for it.
+export async function preloadModel(model: string): Promise<void> {
+  usedModels.add(model)
+  await fetch(`${OLLAMA_URL}/api/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model }),
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+  })
+}
+
 export async function unloadModels(timeoutMs = 3000): Promise<void> {
   const models = [...usedModels]
   usedModels.clear()

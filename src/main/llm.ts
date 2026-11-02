@@ -34,6 +34,8 @@ export interface LlmOptions {
   jsonSchema?: object
   // Skip slow reasoning (used for frequent background checks).
   fast?: boolean
+  // Receives the answer's text as it is written (engines that can stream it).
+  onText?: (delta: string) => void
 }
 
 export interface LlmReply {
@@ -87,7 +89,8 @@ async function viaOllama(
       function: { name: t.name, description: t.description, parameters: t.parameters as never }
     })),
     format: options.jsonSchema,
-    ...(options.fast ? { think: false } : {})
+    ...(options.fast ? { think: false } : {}),
+    onText: options.onText
   })
   return {
     content: reply.content,

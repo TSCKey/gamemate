@@ -5,10 +5,14 @@ import { complete, type LlmEngine, type LlmMessage, type LlmTool } from './llm'
 import { findMentionedItems, lookupRecipe, searchItems, type RecipeView } from './games/minecraft'
 import type { GameContext } from './games/current'
 import { modInfo, searchMods } from './games/modpacks'
-import { findWikiForGame, lookupWiki, type WikiSite, type WikiSource } from './wiki'
+import { findWikiForGame, lookupWiki, prefetchWiki, type WikiSite, type WikiSource } from './wiki'
 
 // Stops a confused model from looping on tool calls forever.
 const MAX_TOOL_ROUNDS = 4
+// Recent messages sent along with a question: older ones only slow every answer down.
+const MAX_HISTORY = 12
+// How long a wiki page found up-front may hold up the answer; past that the AI looks it up.
+const PREFETCH_WIKI_MS = 2500
 const CRAFTING_INTENT = /\b(craft\w*|recipes?|make|made|build|create|need for)\b/i
 
 export interface AssistantReply {
@@ -34,6 +38,8 @@ export interface AssistantContext {
   observations?: string[]
   // Allow looking things up online (the game's wiki, mod pages).
   webLookup: boolean
+  // Receives the answer so far while it is written; an empty string means it starts over.
+  onText?: (text: string) => void
 }
 
 let asking = 0
@@ -212,6 +218,32 @@ function prefetchRecipes(ctx: AssistantContext, question: string, out: Collected
   return texts.length ? `Recipe data for this question:\n\n${texts.join('\n\n')}` : null
 }
 
+// Reads the wiki page the question is clearly about before asking the AI, saving it a whole
+// lookup round. Slow wikis are skipped; the AI can still call wiki_lookup itself.
+async function prefetchPage(
+  ctx: AssistantContext,
+  question: string,
+  out: Collected
+): Promise<string | null> {
+  const site = ctx.game.wiki
+  if (!ctx.webLookup || !site || !question.trim()) return null
+  const timeout = new Promise<[]>((resolve) => setTimeout(() => resolve([]), PREFETCH_WIKI_MS))
+  const pages = await Promise.race([
+    prefetchWiki(site, question, ctx.game.name).catch(() => []),
+    timeout
+  ])
+  if (!pages.length) return null
+  for (const page of pages) addSource(out, page.source)
+  const texts = pages.map((page) => page.text).join('\n\n')
+  return `GameMate looked these wiki pages up for this question (the player hasn't seen them; use them only if they fit the question, and call wiki_lookup if you need a different page):\n\n${texts}`
+}
+
+// Small models sometimes write a tool call as plain text (or start to); it is never part of the
+// answer.
+function withoutToolText(text: string): string {
+  return text.replace(/<tool_call>[\s\S]*?(<\/tool_call>|$)/g, '').replace(/<[a-z_]*$/, '')
+}
+
 function addSource(out: Collected, source: WikiSource | null): void {
   if (source && !out.sources.some((s) => s.url === source.url)) out.sources.push(source)
 }
@@ -281,7 +313,10 @@ export async function ask(ctx: AssistantContext, history: ChatMessage[]): Promis
   }
 }
 
-async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<AssistantReply> {
+async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<AssistantReply> {
+  let history = full.slice(-MAX_HISTORY)
+  // Start at a question, not halfway through an exchange.
+  while (history.length > 1 && history[0].role !== 'user') history = history.slice(1)
   // Only the latest message keeps its screenshot: older ones would slow every reply
   // and describe a screen that has since changed.
   const lastIndex = history.length - 1
@@ -302,20 +337,45 @@ async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<As
   ]
 
   const out: Collected = { recipes: [], sources: [] }
-  const known = prefetchRecipes(ctx, history[lastIndex]?.content ?? '', out)
+  const question = history[lastIndex]?.content ?? ''
+  const known = prefetchRecipes(ctx, question, out) ?? (await prefetchPage(ctx, question, out))
   if (known) messages.splice(messages.length - 1, 0, { role: 'system', content: known })
   const tools = toolsFor(ctx)
 
+  let written = ''
+  let shown = ''
+  const onText = ctx.onText
+    ? (delta: string): void => {
+        written += delta
+        const text = withoutToolText(written)
+        if (text !== shown) ctx.onText?.((shown = text))
+      }
+    : undefined
+  const startOver = (): void => {
+    written = ''
+    if (shown) ctx.onText?.((shown = ''))
+  }
+
   for (let round = 0; round <= MAX_TOOL_ROUNDS; round++) {
     // On the last round, withhold tools so the model has to answer.
+    if (round === MAX_TOOL_ROUNDS) {
+      messages.push({
+        role: 'system',
+        content:
+          'You have looked up enough. Answer the player now from what you found; no more lookups.'
+      })
+    }
     const reply = await complete(ctx.engine, messages, {
-      tools: round < MAX_TOOL_ROUNDS && tools.length ? tools : undefined
+      tools: round < MAX_TOOL_ROUNDS && tools.length ? tools : undefined,
+      onText
     })
     if (reply.toolCalls.length === 0) {
       // Small models sometimes put the whole answer in their thinking; ask once more without it.
-      const content = reply.content.trim()
-        ? reply.content
-        : (await complete(ctx.engine, messages, { fast: true })).content
+      const answered = withoutToolText(reply.content).trim()
+      if (!answered) startOver()
+      const content =
+        answered ||
+        withoutToolText((await complete(ctx.engine, messages, { fast: true, onText })).content)
       // An answer about another game doesn't need pages from the current game's wiki.
       const sources = out.otherGame
         ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
@@ -331,6 +391,8 @@ async function answer(ctx: AssistantContext, history: ChatMessage[]): Promise<As
         ...(sources.length ? { sources } : {})
       }
     }
+    // Text written before a tool call was only a lead-in; the real answer follows the lookup.
+    startOver()
     messages.push({
       role: 'assistant',
       content: reply.content,

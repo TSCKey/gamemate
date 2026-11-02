@@ -16,7 +16,7 @@ import { listModels, unloadModels, type ChatMessage } from './ollamaClient'
 import { captureSource, listSources } from './capture'
 import { ask, type AssistantReply } from './assistant'
 import type { LlmEngine } from './llm'
-import { isUnreachable, routeQuestion } from './engines'
+import { isUnreachable, primeModel, routeQuestion, warmUp } from './engines'
 import { listGeminiModels } from './gemini'
 import { runningModel, stopEngine } from './llamaEngine'
 import { checkForUpdates, installUpdate, startUpdater, updateState } from './updater'
@@ -37,6 +37,7 @@ import { listCurseForgeModpacks, type ModpackSummary } from './games/modpacks'
 import type { SavedGame } from './games/catalog'
 import { discoverWiki, findWikiForGame } from './wiki'
 import {
+  flushSettings,
   getSettings,
   onSettingsChanged,
   resetSettings,
@@ -130,15 +131,22 @@ function senderWindow(event: Electron.IpcMainInvokeEvent): BrowserWindow {
 function registerHandlers(): void {
   ipcMain.handle('ollama:list-models', () => listModels())
 
-  ipcMain.handle('assistant:ask', async (_event, messages: unknown) => {
+  ipcMain.handle('assistant:ask', async (event, messages: unknown, requestId: unknown) => {
     const history = parseChatMessages(messages)
+    // The answer is shown while it is written, when the window asked for that.
+    const onText =
+      typeof requestId === 'number'
+        ? (text: string): void => {
+            if (!event.sender.isDestroyed()) event.sender.send('assistant:text', requestId, text)
+          }
+        : undefined
     const { webLookup } = getSettings()
     const game = await gameContext(history.at(-1)?.content)
     const last = history.at(-1)
     const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
     const askWith = async (engine: LlmEngine, reason?: string): Promise<AssistantReply> => {
       const reply = await ask(
-        { engine, game, webLookup, observations: recentObservations() },
+        { engine, game, webLookup, observations: recentObservations(), onText },
         history
       )
       return reply.answeredBy ? { ...reply, answeredBy: { ...reply.answeredBy, reason } } : reply
@@ -149,6 +157,7 @@ function registerHandlers(): void {
       // Auto mode: if the chosen AI is offline or out of quota, the other one answers.
       if (!route.fallback || !isUnreachable(error)) throw error
       const what = route.engine.provider === 'gemini' ? 'Gemini' : 'the local model'
+      onText?.('')
       return askWith(route.fallback, `${what} couldn’t be reached`)
     }
   })
@@ -233,6 +242,8 @@ function registerHandlers(): void {
     if (done && !isLocalModelInstalled(getSettings().builtinModel)) {
       updateSettings({ builtinModel: id })
     }
+    const settings = getSettings()
+    if (done && settings.localBackend === 'builtin' && settings.builtinModel === id) primeModel(id)
   })
   ipcMain.handle('local-models:cancel', async (_event, id: unknown) => {
     if (isLocalModelId(id)) await cancelLocalModel(id)
@@ -529,6 +540,7 @@ function updateVoiceShortcut(settings: Settings): void {
     voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => {
       // The player is in their game: GameMate follows it before showing up.
       followForegroundGame()
+      warmUp()
       toggleOverlay(true)
     })
     if (!voiceShortcutRegistered) console.warn(`Could not register ${VOICE_SHORTCUT}`)
@@ -595,6 +607,7 @@ if (!app.requestSingleInstanceLock()) {
     shortcutRegistered = globalShortcut.register(SHORTCUT, () => {
       // The player is in their game: GameMate follows it before showing up.
       followForegroundGame()
+      warmUp()
       toggleOverlay()
     })
     if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
@@ -636,6 +649,7 @@ app.on('will-quit', (event) => {
   cleanedUp = true
   stopObserver()
   shutdownSpeech()
+  flushSettings()
   globalShortcut.unregisterAll()
   Promise.allSettled([unloadModels(), stopEngine()]).finally(() => app.quit())
 })

@@ -1,6 +1,7 @@
 // Talks to the built-in engine (llama.cpp's llama-server) through its OpenAI-compatible
 // chat API. Kept free of Electron so it can be tested against a running server directly.
 import type { LlmMessage, LlmOptions, LlmReply, LlmToolCall } from './llm'
+import { forEachLine } from './lines'
 
 const TIMEOUT_MS = 180_000
 // Room for thinking plus the answer; quick background checks get much less.
@@ -129,13 +130,70 @@ function parseArguments(text: string): Record<string, unknown> {
   }
 }
 
-async function send(server: EngineServer, body: object): Promise<LlmReply> {
+interface StreamChunk {
+  choices?: {
+    delta?: {
+      content?: string | null
+      reasoning_content?: string | null
+      tool_calls?: {
+        index: number
+        id?: string
+        function?: { name?: string; arguments?: string }
+      }[]
+    }
+  }[]
+  error?: { message?: string }
+}
+
+// Reads a streamed answer (server-sent events), passing the visible text on as it arrives.
+async function readStream(
+  body: ReadableStream<Uint8Array>,
+  onText: (delta: string) => void
+): Promise<LlmReply> {
+  let content = ''
+  let reasoning = ''
+  const calls: { id?: string; name: string; args: string }[] = []
+  await forEachLine(body, (line) => {
+    if (!line.startsWith('data:')) return
+    const data = line.slice(5).trim()
+    if (data === '[DONE]') return
+    const chunk = JSON.parse(data) as StreamChunk
+    if (chunk.error) throw new Error(`The built-in AI failed: ${chunk.error.message ?? ''}`)
+    const delta = chunk.choices?.[0]?.delta
+    if (!delta) return
+    if (delta.content) {
+      content += delta.content
+      onText(delta.content)
+    }
+    if (delta.reasoning_content) reasoning += delta.reasoning_content
+    for (const call of delta.tool_calls ?? []) {
+      // A tool call arrives in pieces: name first, then its arguments bit by bit.
+      const slot = (calls[call.index] ??= { name: '', args: '' })
+      if (call.id) slot.id = call.id
+      if (call.function?.name) slot.name += call.function.name
+      if (call.function?.arguments) slot.args += call.function.arguments
+    }
+  })
+  return {
+    content,
+    toolCalls: calls
+      .filter(Boolean)
+      .map((c) => ({ id: c.id, name: c.name, arguments: parseArguments(c.args) })),
+    raw: reasoning ? { reasoning_content: reasoning } : undefined
+  }
+}
+
+async function send(
+  server: EngineServer,
+  body: object,
+  onText?: (delta: string) => void
+): Promise<LlmReply> {
   let res: Response
   try {
     res = await fetch(`${server.url}/v1/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${server.apiKey}` },
-      body: JSON.stringify(body),
+      body: JSON.stringify(onText ? { ...body, stream: true } : body),
       signal: AbortSignal.timeout(TIMEOUT_MS)
     })
   } catch (error) {
@@ -145,6 +203,7 @@ async function send(server: EngineServer, body: object): Promise<LlmReply> {
     throw new Error('The built-in AI stopped unexpectedly. Try again.', { cause: error })
   }
 
+  if (onText && res.ok && res.body) return readStream(res.body, onText)
   const data = (await res.json().catch(() => ({}))) as CompletionResponse
   if (!res.ok) {
     const detail = data.error?.message ?? res.statusText
@@ -195,10 +254,14 @@ export async function chatCompletion(
     // Fast background calls skip the model's thinking step.
     ...(options.fast ? { chat_template_kwargs: { enable_thinking: false } } : {})
   }
-  const reply = await send(server, body)
+  const reply = await send(server, body, options.onText)
   if (!reply.content.trim() && reply.toolCalls.length === 0 && !options.fast) {
     // Small models sometimes put the whole answer in their thinking; ask again without it.
-    return send(server, { ...body, chat_template_kwargs: { enable_thinking: false } })
+    return send(
+      server,
+      { ...body, chat_template_kwargs: { enable_thinking: false } },
+      options.onText
+    )
   }
   return reply
 }

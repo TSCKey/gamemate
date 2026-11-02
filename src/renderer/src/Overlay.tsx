@@ -21,6 +21,8 @@ function Overlay(): React.JSX.Element {
   const [history, setHistory] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
+  // The answer so far, while it is being written.
+  const [written, setWritten] = useState('')
   const [error, setError] = useState<string | null>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -93,7 +95,7 @@ function Overlay(): React.JSX.Element {
       ]
       setHistory(next)
       setInput('')
-      const reply = await window.api.ask(next)
+      const reply = await window.api.ask(next, setWritten)
       setHistory([...next, reply])
       const say = settings?.speakAnswers
       if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
@@ -102,6 +104,7 @@ function Overlay(): React.JSX.Element {
     } catch (e) {
       setError(errorMessage(e))
     } finally {
+      setWritten('')
       setThinking(false)
       lastActivity.current = Date.now()
     }
@@ -214,7 +217,8 @@ function Overlay(): React.JSX.Element {
                 {lastQuestion.content}
               </div>
             )}
-            {thinking && <div className="overlay-pending">Thinking…</div>}
+            {thinking && written && <div className="overlay-answer">{written}</div>}
+            {thinking && !written && <div className="overlay-pending">Thinking…</div>}
             {!thinking && lastAnswer && (
               <div className="overlay-answer">
                 {lastAnswer.content}

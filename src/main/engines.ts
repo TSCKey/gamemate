@@ -2,8 +2,11 @@
 // per question whether the local model or Gemini should answer.
 import { latestRecipeVersion } from './games/current'
 import { findMentionedItems } from './games/minecraft'
+import { chatCompletion } from './llamaClient'
+import { withEngine } from './llamaEngine'
 import type { LlmEngine } from './llm'
 import { isLocalModelInstalled } from './localModels'
+import { preloadModel } from './ollamaClient'
 import { decide } from './router'
 import { getGeminiKey } from './secrets'
 import { getSettings } from './settings'
@@ -40,6 +43,39 @@ function available(make: () => LlmEngine): LlmEngine | null {
   } catch {
     return null
   }
+}
+
+// Starts loading the local model when the player opens GameMate, so it is ready by the time
+// they have typed or said their question. Gemini needs no warming up.
+export function warmUp(): void {
+  if (getSettings().answersEngine === 'gemini') return
+  const engine = available(localEngine)
+  if (!engine) return
+  const loading =
+    engine.provider === 'builtin'
+      ? withEngine(engine.model, async () => {})
+      : preloadModel(engine.model)
+  loading.catch(() => undefined)
+}
+
+// Runs a model once right after it is downloaded: the graphics driver prepares its programs on
+// the first run (which can take half a minute) and keeps them for later, so the player's first
+// real question isn't slow.
+export function primeModel(modelId: string): void {
+  const filler = 'GameMate is a gaming companion. '.repeat(40)
+  withEngine(modelId, (server) =>
+    chatCompletion(
+      server,
+      [
+        {
+          role: 'user',
+          content: `${filler}
+Reply with just OK.`
+        }
+      ],
+      { fast: true }
+    )
+  ).catch(() => undefined)
 }
 
 // Throws a message the player can act on when the chosen engine isn't set up yet.

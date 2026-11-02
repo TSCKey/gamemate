@@ -39,6 +39,8 @@ function App(): React.JSX.Element {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'capturing' | 'thinking'>('idle')
+  // The answer so far, while it is being written.
+  const [written, setWritten] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [sources, setSources] = useState<CaptureSource[]>([])
   const [sourceId, setSourceId] = useState('')
@@ -97,7 +99,7 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, status])
+  }, [messages, status, written])
 
   const send = async (
     text: string = input,
@@ -128,7 +130,7 @@ function App(): React.JSX.Element {
     setStatus('thinking')
 
     try {
-      const reply = await window.api.ask(history)
+      const reply = await window.api.ask(history, setWritten)
       setMessages([...history, reply])
       const say = settings?.speakAnswers
       if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
@@ -137,6 +139,7 @@ function App(): React.JSX.Element {
     } catch (e) {
       setError(errorMessage(e))
     } finally {
+      setWritten('')
       setStatus('idle')
     }
   }
@@ -294,7 +297,8 @@ function App(): React.JSX.Element {
             {onAuto && m.answeredBy && <AnsweredByLabel by={m.answeredBy} />}
           </div>
         ))}
-        {loading && (
+        {loading && written && <div className="bubble bubble-assistant">{written}</div>}
+        {loading && !written && (
           <div className="bubble bubble-assistant bubble-pending">
             {status === 'capturing' ? 'Capturing screen…' : 'Thinking…'}
           </div>

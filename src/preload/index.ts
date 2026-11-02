@@ -16,10 +16,23 @@ function listen<T extends unknown[]>(channel: string, callback: (...args: T) => 
   return () => ipcRenderer.removeListener(channel, handler)
 }
 
+let lastRequest = 0
+
 // Only these narrow functions reach the renderer; ipcRenderer itself is never exposed.
 const api: Api = {
   listModels: () => ipcRenderer.invoke('ollama:list-models'),
-  ask: (messages) => ipcRenderer.invoke('assistant:ask', messages),
+  ask: async (messages, onText) => {
+    if (!onText) return ipcRenderer.invoke('assistant:ask', messages)
+    const id = ++lastRequest
+    const stop = listen<[number, string]>('assistant:text', (requestId, text) => {
+      if (requestId === id) onText(text)
+    })
+    try {
+      return await ipcRenderer.invoke('assistant:ask', messages, id)
+    } finally {
+      stop()
+    }
+  },
   listCaptureSources: () => ipcRenderer.invoke('capture:list-sources'),
   captureScreenshot: (sourceId) => ipcRenderer.invoke('capture:screenshot', sourceId),
   getSettings: () => ipcRenderer.invoke('settings:get'),
