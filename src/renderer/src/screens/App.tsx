@@ -302,6 +302,7 @@ function App(): React.JSX.Element {
             <Pictures pictures={m.pictures} />
             <Sources sources={m.sources} />
             <SearchSuggestions html={m.searchSuggestions} />
+            {m.notice && <div className="answer-notice">{m.notice}</div>}
             {onAuto && m.answeredBy && <AnsweredByLabel by={m.answeredBy} />}
           </div>
         ))}

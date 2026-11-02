@@ -26,9 +26,11 @@ vi.mock('../src/main/ai/llm', () => ({
 }))
 // A stand-in Google search.
 const searches: string[] = []
+let searchFails = false
 vi.mock('../src/main/ai/gemini', () => ({
   searchWeb: async (_key: string, _model: string, query: string) => {
     searches.push(query)
+    if (searchFails) throw new Error('Gemini’s usage limit was reached (Quota exceeded).')
     return {
       text: 'Tank: Hazard. Damage: Sojourn. Support: Juno.',
       sources: [
@@ -42,7 +44,8 @@ vi.mock('../src/main/ai/gemini', () => ({
   }
 }))
 
-const { ask, isNonAnswer, NO_ANSWER, webSearchQuery } = await import('../src/main/ai/assistant')
+const { ask, isNonAnswer, NO_ANSWER, saysNoAnswer, webSearchQuery } =
+  await import('../src/main/ai/assistant')
 
 const ctx = {
   engine: { provider: 'builtin' as const, model: 'test' },
@@ -55,6 +58,7 @@ beforeEach(() => {
   replies.length = 0
   seen.length = 0
   searches.length = 0
+  searchFails = false
 })
 
 describe('replies that are not answers', () => {
@@ -128,5 +132,34 @@ describe('questions about what is current', () => {
       { role: 'user', content: 'Who is meta right now?' }
     ])
     expect(searches).toEqual([])
+  })
+})
+
+describe('when web search fails', () => {
+  it('tries once, and the answer says why', async () => {
+    searchFails = true
+    // The AI also asks for a search; it isn't tried again.
+    replies.push({
+      content: '',
+      toolCalls: [{ name: 'web_search', arguments: { query: 'ow meta' } }]
+    })
+    replies.push({ content: 'I could not find a reliable answer for that.', toolCalls: [] })
+    const reply = await ask(
+      { ...ctx, game: { name: 'Overwatch' }, search: { apiKey: 'key', model: 'gemini-test' } },
+      [{ role: 'user', content: 'What are the most picked characters this season?' }]
+    )
+    expect(searches).toHaveLength(1)
+    expect(reply.notice).toMatch(/Web search didn.t work: .*usage limit/)
+    expect(JSON.stringify(seen.at(-1))).toContain('Web search is not working right now')
+  })
+})
+
+describe('replies that say nothing was found', () => {
+  it('are recognized, so no pictures are shown with them', () => {
+    expect(saysNoAnswer('I could not find a reliable answer for the most picked characters.')).toBe(
+      true
+    )
+    expect(saysNoAnswer('I couldn’t find anything about that.')).toBe(true)
+    expect(saysNoAnswer('Kiriko and Ana are picked most this season.')).toBe(false)
   })
 })

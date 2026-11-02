@@ -226,6 +226,7 @@ function Overlay(): React.JSX.Element {
                 <Pictures pictures={lastAnswer.pictures} />
                 <Sources sources={lastAnswer.sources} />
                 <SearchSuggestions html={lastAnswer.searchSuggestions} />
+                {lastAnswer.notice && <div className="answer-notice">{lastAnswer.notice}</div>}
               </div>
             )}
             {(error || voice.error) && <div className="overlay-error">{error ?? voice.error}</div>}
