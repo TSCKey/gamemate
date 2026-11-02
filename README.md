@@ -256,7 +256,7 @@ npm install
 npm run dev
 ```
 
-To build a Windows installer, run `npm run build:win`; it ends up in `dist/`. To publish a release that installed copies update to, raise `version` in `package.json` and run `npm run release:win` with a GitHub token in `GH_TOKEN`.
+To build a Windows installer, run `npm run build:win`; it ends up in `dist/`. To publish a release that installed copies update to, raise `version` in `package.json`, commit, and push a matching tag whose message is the release notes (`git tag -a v1.0.2 -F notes.md`, then `git push origin v1.0.2`). GitHub Actions builds the installer and publishes it.
 
 To refresh the bundled Minecraft data, run `node scripts/build-minecraft-data.mjs`.
 
