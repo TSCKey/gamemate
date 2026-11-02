@@ -4,20 +4,11 @@
 import { app, BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { getSettings, onSettingsChanged } from './settings'
+import type { UpdateState } from '../shared/types'
+export type { UpdateState }
 
 const FIRST_CHECK_MS = 15_000
 const CHECK_EVERY_MS = 6 * 60 * 60_000
-
-export interface UpdateState {
-  status: 'dev' | 'idle' | 'checking' | 'none' | 'downloading' | 'ready' | 'error'
-  version: string
-  // The new version, while downloading or ready.
-  available?: string
-  // 0-1 while downloading.
-  progress?: number
-  error?: string
-  checkedAt?: number
-}
 
 let state: UpdateState = { status: 'idle', version: app.getVersion() }
 let timer: NodeJS.Timeout | null = null
@@ -79,7 +70,8 @@ export function startUpdater(): void {
   autoUpdater.on('update-downloaded', (info) =>
     setState({ status: 'ready', available: info.version, progress: 1 })
   )
-  autoUpdater.on('error', () => {
+  autoUpdater.on('error', (error) => {
+    console.warn('Update failed:', error.message)
     if (state.status === 'downloading') {
       setState({
         status: 'error',

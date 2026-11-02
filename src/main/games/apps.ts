@@ -2,6 +2,8 @@
 import { desktopCapturer } from 'electron'
 import { basename } from 'path'
 import { handleFromSourceId, windowProgram } from '../foreground'
+import type { RunningApp } from '../../shared/types'
+export type { RunningApp }
 
 // Parts of Windows itself, which are never games.
 const NOT_GAMES = new Set([
@@ -14,12 +16,6 @@ const NOT_GAMES = new Set([
   'systemsettings.exe',
   'lockapp.exe'
 ])
-
-export interface RunningApp {
-  // Program file name, e.g. "Terraria.exe".
-  exe: string
-  title: string
-}
 
 export async function runningApps(): Promise<RunningApp[]> {
   const sources = await desktopCapturer.getSources({

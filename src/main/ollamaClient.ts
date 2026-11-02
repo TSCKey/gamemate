@@ -2,6 +2,8 @@
 // See https://github.com/ollama/ollama/blob/main/docs/api.md
 
 import { forEachLine } from './lines'
+import type { ModelInfo } from '../shared/types'
+export type { ModelInfo }
 
 const OLLAMA_URL = 'http://127.0.0.1:11434'
 const REQUEST_TIMEOUT_MS = 120_000
@@ -44,11 +46,6 @@ export interface ToolDefinition {
   }
 }
 
-export interface ModelInfo {
-  name: string
-  vision: boolean
-}
-
 interface TagsResponse {
   models: { name: string }[]
 }
@@ -63,6 +60,11 @@ interface ChatResponse {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  return (await send(path, init)).json() as Promise<T>
+}
+
+// Fetches from Ollama, turning failures into messages the player can act on.
+async function send(path: string, init?: RequestInit): Promise<Response> {
   let res: Response
   try {
     res = await fetch(`${OLLAMA_URL}${path}`, {
@@ -87,8 +89,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     }
     throw new Error(`Ollama error ${res.status}: ${detail || res.statusText}`)
   }
-
-  return (await res.json()) as T
+  return res
 }
 
 async function supportsVision(model: string): Promise<boolean> {
@@ -133,10 +134,14 @@ export async function chatOnce(
     })
     return data.message
   }
-  const res = await streamRequest('/api/chat', { model, messages, stream: true, ...rest })
+  const res = await send('/api/chat', {
+    method: 'POST',
+    body: JSON.stringify({ model, messages, stream: true, ...rest })
+  })
+  if (!res.body) throw new Error('Ollama sent no answer.')
   // Ollama streams one JSON object per line.
   const message: OllamaMessage = { role: 'assistant', content: '' }
-  await forEachLine(res, (line) => {
+  await forEachLine(res.body, (line) => {
     const chunk = JSON.parse(line) as { message?: OllamaMessage; error?: string }
     if (chunk.error) throw new Error(`Ollama error: ${chunk.error}`)
     const part = chunk.message
@@ -149,34 +154,6 @@ export async function chatOnce(
       message.tool_calls = [...(message.tool_calls ?? []), ...part.tool_calls]
   })
   return message
-}
-
-async function streamRequest(path: string, body: object): Promise<ReadableStream<Uint8Array>> {
-  let res: Response
-  try {
-    res = await fetch(`${OLLAMA_URL}${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
-    })
-  } catch (error) {
-    if (error instanceof Error && error.name === 'TimeoutError') {
-      throw new Error('Ollama took too long to respond.', { cause: error })
-    }
-    throw new Error(`Could not reach Ollama at ${OLLAMA_URL}. Is it running?`, { cause: error })
-  }
-  if (!res.ok || !res.body) {
-    const text = await res.text().catch(() => '')
-    let detail = text
-    try {
-      detail = (JSON.parse(text) as { error?: string }).error ?? text
-    } catch {
-      // not JSON
-    }
-    throw new Error(`Ollama error ${res.status}: ${detail || res.statusText}`)
-  }
-  return res.body
 }
 
 // Asks Ollama to unload the models GameMate used, so they stop holding memory and GPU once

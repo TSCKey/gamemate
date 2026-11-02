@@ -141,20 +141,27 @@ async function start(modelId: string): Promise<Running> {
   proc.stderr?.on('data', collect)
   proc.on('error', (error) => run.log.push(`error: ${error.message}`))
   tieToGameMate(proc.pid)
-  proc.on('exit', () => {
+  proc.on('exit', (code) => {
     // If it stops on its own (crash), the next question starts it again.
     if (activeRun === run) {
+      console.warn(
+        `AI engine stopped unexpectedly (exit code ${code}):\n${run.log.slice(-15).join('\n')}`
+      )
       activeRun = null
       current = null
       currentModel = ''
     }
   })
+  const started = Date.now()
+  console.info(`AI engine starting ${modelId} on ${gpu ?? 'the default device'}`)
   try {
     await waitUntilReady(run)
   } catch (error) {
+    console.error(`AI engine failed to start:\n${run.log.slice(-15).join('\n')}`)
     proc.kill()
     throw error
   }
+  console.info(`AI engine ready in ${((Date.now() - started) / 1000).toFixed(1)} s`)
   return run
 }
 
@@ -213,7 +220,9 @@ export async function stopEngine(): Promise<void> {
   current = null
   currentModel = ''
   activeRun = null
-  if (pending) await stopProcess(await pending.catch(() => null))
+  if (!pending) return
+  console.info('AI engine stopped')
+  await stopProcess(await pending.catch(() => null))
 }
 
 // The model the engine has loaded right now, if any.

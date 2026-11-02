@@ -1,73 +1,29 @@
-import {
-  app,
-  shell,
-  BrowserWindow,
-  globalShortcut,
-  session,
-  ipcMain,
-  Menu,
-  nativeImage,
-  Tray
-} from 'electron'
+import { app, BrowserWindow, globalShortcut, session, Menu, nativeImage, Tray } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import { listModels, unloadModels, type ChatMessage } from './ollamaClient'
-import { captureSource, listSources } from './capture'
-import { ask, type AssistantReply } from './assistant'
-import type { LlmEngine } from './llm'
-import { isUnreachable, primeModel, routeQuestion, warmUp } from './engines'
-import { listGeminiModels } from './gemini'
+import { unloadModels } from './ollamaClient'
+import { warmUp } from './engines'
 import { runningModel, stopEngine } from './llamaEngine'
-import { checkForUpdates, installUpdate, startUpdater, updateState } from './updater'
+import { startUpdater } from './updater'
+import { clearGeminiKey } from './secrets'
+import { followForegroundGame } from './games/current'
+import { hardenWindows } from './security'
+import { allowedLink } from './links'
+import { registerAppHandlers } from './ipc/app'
+import { registerAssistantHandlers } from './ipc/assistant'
+import { registerGameHandlers } from './ipc/games'
+import { registerModelHandlers } from './ipc/models'
+import { registerVoiceHandlers } from './ipc/voice'
+import { startLogging } from './log'
+import { flushSettings, getSettings, onSettingsChanged, type Settings } from './settings'
+import { createOverlay, toggleOverlay } from './overlay'
+import { createToast, showToast } from './toast'
+import { shutdownSpeech } from './tts'
+import { registerModelScheme, serveModels } from './voiceModels'
 import {
-  cancelLocalModel,
-  downloadLocalModel,
-  isLocalModelId,
-  isLocalModelInstalled,
-  localModelStatuses,
-  removeAllLocalModels,
-  removeLocalModel
-} from './localModels'
-import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from './secrets'
-import { runningApps } from './games/apps'
-import { allGames, currentModpack, followForegroundGame, gameContext } from './games/current'
-import { scanLaunchers } from './games/launchers'
-import { listCurseForgeModpacks, type ModpackSummary } from './games/modpacks'
-import type { SavedGame } from './games/catalog'
-import { discoverWiki, findWikiForGame } from './wiki'
-import {
-  flushSettings,
-  getSettings,
-  onSettingsChanged,
-  resetSettings,
-  setGames,
-  updateSettings,
-  type Settings
-} from './settings'
-import {
-  createOverlay,
-  hideOverlay,
-  setOverlayHeight,
-  takePendingScreenshot,
-  toggleOverlay
-} from './overlay'
-import { createToast, hideToast, hushToast, sayInToast, setToastHeight, showToast } from './toast'
-import { listVoices, shutdownSpeech, speak, stopSpeaking } from './tts'
-import {
-  downloadSpeechModel,
-  isSpeechModelId,
-  isSpeechModelInstalled,
-  registerModelScheme,
-  removeSpeechModel,
-  serveModels,
-  speechModelStatuses
-} from './voiceModels'
-import {
-  clearEvents,
   getObserverState,
   onObserverState,
-  recentObservations,
   setPaused,
   startObserver,
   stopObserver,
@@ -76,16 +32,6 @@ import {
 
 const SHORTCUT = 'Alt+Space'
 const VOICE_SHORTCUT = 'Alt+V'
-const VALID_ROLES = new Set(['user', 'assistant'])
-const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024
-const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/
-// Policy and setup pages the settings screen links to.
-const EXTERNAL_LINKS = [
-  'https://aistudio.google.com/apikey',
-  'https://ai.google.dev/gemini-api/terms',
-  'https://policies.google.com/privacy',
-  'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer'
-]
 
 const preloadPath = join(__dirname, '../preload/index.js')
 let mainWindow: BrowserWindow | null = null
@@ -94,240 +40,17 @@ let shortcutRegistered = false
 let voiceShortcutRegistered = false
 let quitting = false
 
-function isImageList(value: unknown): value is string[] {
-  return (
-    Array.isArray(value) &&
-    value.length <= 4 &&
-    value.every(
-      (img) =>
-        typeof img === 'string' && img.length <= MAX_IMAGE_BASE64_LENGTH && BASE64_PATTERN.test(img)
-    )
-  )
-}
-
-// Renderer input is untrusted: check its shape and keep only known fields.
-function parseChatMessages(value: unknown): ChatMessage[] {
-  if (!Array.isArray(value)) throw new Error('Invalid chat messages.')
-  return value.map((m) => {
-    if (
-      typeof m !== 'object' ||
-      m === null ||
-      !VALID_ROLES.has(m.role) ||
-      typeof m.content !== 'string' ||
-      (m.images !== undefined && !isImageList(m.images))
-    ) {
-      throw new Error('Invalid chat messages.')
-    }
-    return { role: m.role, content: m.content, ...(m.images ? { images: m.images } : {}) }
-  })
-}
-
-function senderWindow(event: Electron.IpcMainInvokeEvent): BrowserWindow {
-  const win = BrowserWindow.fromWebContents(event.sender)
-  if (!win) throw new Error('No window for this request.')
-  return win
-}
-
 function registerHandlers(): void {
-  ipcMain.handle('ollama:list-models', () => listModels())
-
-  ipcMain.handle('assistant:ask', async (event, messages: unknown, requestId: unknown) => {
-    const history = parseChatMessages(messages)
-    // The answer is shown while it is written, when the window asked for that.
-    const onText =
-      typeof requestId === 'number'
-        ? (text: string): void => {
-            if (!event.sender.isDestroyed()) event.sender.send('assistant:text', requestId, text)
-          }
-        : undefined
-    const { webLookup } = getSettings()
-    const game = await gameContext(history.at(-1)?.content)
-    const last = history.at(-1)
-    const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
-    const askWith = async (engine: LlmEngine, reason?: string): Promise<AssistantReply> => {
-      const reply = await ask(
-        { engine, game, webLookup, observations: recentObservations(), onText },
-        history
-      )
-      return reply.answeredBy ? { ...reply, answeredBy: { ...reply.answeredBy, reason } } : reply
-    }
-    try {
-      return await askWith(route.engine, route.reason)
-    } catch (error) {
-      // Auto mode: if the chosen AI is offline or out of quota, the other one answers.
-      if (!route.fallback || !isUnreachable(error)) throw error
-      const what = route.engine.provider === 'gemini' ? 'Gemini' : 'the local model'
-      onText?.('')
-      return askWith(route.fallback, `${what} couldn’t be reached`)
-    }
-  })
-
-  // Only pages on the games' wikis, Modrinth and the policy pages GameMate links to, so a page
-  // can't open arbitrary programs or sites.
-  ipcMain.handle('app:open-source', (_event, url: unknown) => {
-    if (typeof url === 'string' && allowedLink(url)) shell.openExternal(url)
-  })
-
-  ipcMain.handle('updates:state', () => updateState())
-  ipcMain.handle('updates:check', () => checkForUpdates())
-  ipcMain.handle('updates:install', () => installUpdate())
-  ipcMain.handle('games:state', () => gamesState())
-  ipcMain.handle('games:scan', () => scanGames())
-  ipcMain.handle('games:running-apps', () => {
-    requireConsent()
-    return runningApps()
-  })
-  ipcMain.handle('games:add', (_event, exe: unknown, name: unknown) => {
-    requireConsent()
-    if (typeof exe !== 'string' || !/^[\w .()&+'-]{1,80}\.exe$/i.test(exe)) {
-      throw new Error('That program can’t be added.')
-    }
-    const title = typeof name === 'string' ? name.trim().slice(0, 60) : ''
-    if (!title) throw new Error('Give the game a name.')
-    const { games } = getSettings()
-    if (games.length >= 300) throw new Error('That’s too many games.')
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-      .slice(0, 30)
-    let id = `custom-${slug || 'game'}`
-    for (let n = 2; allGames().some((g) => g.id === id); n++) id = `custom-${slug || 'game'}-${n}`
-    setGames([...games, { id, name: title, launcher: 'manual', exe }])
-    updateSettings({ currentGame: id })
-    return gamesState()
-  })
-  ipcMain.handle('games:remove', (_event, id: unknown) => {
-    setGames(getSettings().games.filter((g) => g.id !== id))
-    return gamesState()
-  })
-  ipcMain.handle('games:set-wiki', async (_event, id: unknown, address: unknown) => {
-    const { games } = getSettings()
-    const game = games.find((g) => g.id === id)
-    if (!game || typeof address !== 'string') throw new Error('Unknown game.')
-    const wiki = address.trim() ? await discoverWiki(address) : undefined
-    setGames(games.map((g) => (g.id === game.id ? { ...g, wiki } : g)))
-    return gamesState()
-  })
-  ipcMain.handle('modpacks:list', () => (getSettings().deviceConsent ? cachedModpackList() : []))
-  ipcMain.handle('modpacks:current', async (): Promise<ModpackSummary | null> => {
-    const pack = await currentModpack()
-    return pack
-      ? {
-          name: pack.name,
-          path: pack.path,
-          minecraftVersion: pack.minecraftVersion,
-          loader: pack.loader,
-          modCount: pack.mods.length
-        }
-      : null
-  })
-  // "Delete my data": everything GameMate stored on this PC, back to a fresh install.
-  ipcMain.handle('app:delete-data', async () => {
-    clearGeminiKey()
-    clearEvents()
-    await stopEngine()
-    await Promise.all([
-      ...speechModelStatuses().map((m) => removeSpeechModel(m.id)),
-      removeAllLocalModels()
-    ])
-    resetSettings()
-  })
-
-  ipcMain.handle('local-models:list', () => localModelStatuses())
-  ipcMain.handle('local-models:download', async (_event, id: unknown) => {
-    if (!isLocalModelId(id)) throw new Error('Unknown model.')
-    const done = await downloadLocalModel(id)
-    // A freshly downloaded model is used if the chosen one isn't there yet.
-    if (done && !isLocalModelInstalled(getSettings().builtinModel)) {
-      updateSettings({ builtinModel: id })
-    }
-    const settings = getSettings()
-    if (done && settings.localBackend === 'builtin' && settings.builtinModel === id) primeModel(id)
-  })
-  ipcMain.handle('local-models:cancel', async (_event, id: unknown) => {
-    if (isLocalModelId(id)) await cancelLocalModel(id)
-  })
-  ipcMain.handle('local-models:remove', async (_event, id: unknown) => {
-    if (!isLocalModelId(id)) return
-    if (runningModel() === id) await stopEngine()
-    await removeLocalModel(id)
-  })
-  ipcMain.handle('gemini:status', () => ({ hasKey: hasGeminiKey() }))
-  ipcMain.handle('gemini:set-key', async (_event, key: unknown) => {
-    if (!getSettings().geminiConsent) throw new Error('Agree to the Gemini terms first.')
-    // Key formats change (newer ones contain dots), so only drop stray whitespace and quotes
-    // from copy-pasting and require characters that are safe in a header; Google does the
-    // real check below.
-    const trimmed =
-      typeof key === 'string' ? key.replace(/\s+/g, '').replace(/^["']|["']$/g, '') : ''
-    if (!/^[\x21-\x7e]{20,300}$/.test(trimmed)) {
-      throw new Error('That doesn’t look like a Gemini API key.')
-    }
-    // Check the key works before saving it.
-    const models = await listGeminiModels(trimmed)
-    setGeminiKey(trimmed)
-    return models
-  })
-  ipcMain.handle('gemini:clear-key', () => clearGeminiKey())
-  ipcMain.handle('gemini:models', () => {
-    const key = getGeminiKey()
-    return key ? listGeminiModels(key) : []
-  })
-
-  ipcMain.handle('capture:list-sources', (event) => listSources(senderWindow(event)))
-
-  ipcMain.handle('capture:screenshot', (event, sourceId: unknown) => {
-    if (typeof sourceId !== 'string' || !/^(screen|window):[\w:-]+$/.test(sourceId)) {
-      throw new Error('Invalid capture source.')
-    }
-    return captureSource(sourceId, senderWindow(event))
-  })
-
-  ipcMain.handle('settings:get', () => getSettings())
-  ipcMain.handle('settings:update', (_event, patch: unknown) => updateSettings(patch))
-  ipcMain.handle('app:info', () => ({
+  registerAssistantHandlers()
+  registerGameHandlers()
+  registerModelHandlers()
+  registerVoiceHandlers()
+  registerAppHandlers(() => ({
     shortcut: SHORTCUT,
     shortcutRegistered,
     voiceShortcut: VOICE_SHORTCUT,
     voiceShortcutRegistered
   }))
-
-  ipcMain.handle('voice:models', () => speechModelStatuses())
-  ipcMain.handle('voice:voices', () => listVoices())
-  ipcMain.handle('voice:speak', (_event, text: unknown) => {
-    if (typeof text !== 'string') return
-    const { voiceEngine, kokoroVoice, voiceName, voiceVolume, voiceRate } = getSettings()
-    // The natural voice runs in the pop-up window; Windows' voices run here.
-    const natural =
-      voiceEngine === 'kokoro' &&
-      isSpeechModelInstalled('kokoro') &&
-      sayInToast({ text, voice: kokoroVoice, speed: voiceRate, volume: voiceVolume })
-    if (!natural) speak(text, { voice: voiceName, volume: voiceVolume, rate: voiceRate })
-  })
-  ipcMain.handle('voice:stop', () => {
-    stopSpeaking()
-    hushToast()
-  })
-  ipcMain.handle('voice:download', (_event, id: unknown) => {
-    if (isSpeechModelId(id)) downloadSpeechModel(id)
-  })
-  ipcMain.handle('voice:remove', (_event, id: unknown) =>
-    isSpeechModelId(id) ? removeSpeechModel(id) : undefined
-  )
-
-  ipcMain.handle('overlay:hide', () => hideOverlay())
-  ipcMain.handle('overlay:set-height', (_event, height: unknown) => setOverlayHeight(height))
-  ipcMain.handle('overlay:take-screenshot', () => takePendingScreenshot())
-
-  ipcMain.handle('toast:hide', () => hideToast())
-  ipcMain.handle('toast:set-height', (_event, height: unknown) => setToastHeight(height))
-
-  ipcMain.handle('companion:get-state', () => getObserverState())
-  ipcMain.handle('companion:set-paused', (_event, paused: unknown) => {
-    if (typeof paused === 'boolean') setPaused(paused)
-  })
-  ipcMain.handle('companion:clear-events', () => clearEvents())
 }
 
 // HMR for renderer base on electron-vite cli.
@@ -390,96 +113,7 @@ function createWindow(): void {
     mainWindow = null
   })
 
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
   loadRenderer(mainWindow)
-}
-
-// What the game menus and settings need to know about each game.
-function gamesState(): {
-  games: {
-    id: string
-    name: string
-    wiki: string | null
-    examples: [string, string]
-    launcher: SavedGame['launcher'] | 'builtin'
-    competitive: boolean
-    exe: string | null
-  }[]
-  current: string
-} {
-  const { games, currentGame } = getSettings()
-  return {
-    games: allGames().map((g) => {
-      const saved = games.find((s) => s.id === g.id)
-      return {
-        id: g.id,
-        name: g.name,
-        wiki: g.wiki?.name ?? null,
-        examples: g.examples,
-        launcher: saved?.launcher ?? 'builtin',
-        competitive: Boolean(g.competitive),
-        exe: saved?.exe ?? null
-      }
-    }),
-    current: currentGame
-  }
-}
-
-function requireConsent(): void {
-  if (!getSettings().deviceConsent) {
-    throw new Error('Allow GameMate to look for games first (Settings → Games).')
-  }
-}
-
-// "Scan for games": the launchers' libraries on this PC, then each new game's wiki (only the
-// game's name is sent to wiki.gg and Fandom). Games added by hand and wikis set by the player stay.
-async function scanGames(): Promise<ReturnType<typeof gamesState>> {
-  requireConsent()
-  const found = await scanLaunchers()
-  const known = new Map(getSettings().games.map((g) => [g.id, g]))
-  const scanned: SavedGame[] = []
-  const queue = [...found]
-  // A few at a time, so the wikis aren't flooded with requests.
-  await Promise.all(
-    Array.from({ length: 6 }, async () => {
-      for (let game = queue.shift(); game; game = queue.shift()) {
-        const wiki = known.get(game.id)?.wiki ?? (await findWikiForGame(game.name)) ?? undefined
-        scanned.push({ ...game, wiki })
-      }
-    })
-  )
-  const manual = getSettings().games.filter((g) => g.launcher === 'manual')
-  setGames([...scanned.sort((a, b) => a.name.localeCompare(b.name)), ...manual])
-  return gamesState()
-}
-
-let modpackList: { at: number; list: Promise<ModpackSummary[]> } | null = null
-
-// Reading every pack's file takes a moment, so keep the list for a little while.
-function cachedModpackList(): Promise<ModpackSummary[]> {
-  if (!modpackList || Date.now() - modpackList.at > 30_000) {
-    modpackList = { at: Date.now(), list: listCurseForgeModpacks() }
-  }
-  return modpackList.list
-}
-
-function allowedLink(url: string): boolean {
-  if (EXTERNAL_LINKS.includes(url)) return true
-  let target: URL
-  try {
-    target = new URL(url)
-  } catch {
-    return false
-  }
-  const origins = new Set(['https://modrinth.com'])
-  for (const game of allGames()) {
-    if (game.wiki) origins.add(new URL(game.wiki.articlePath.replace('$1', '')).origin)
-  }
-  return target.protocol === 'https:' && origins.has(target.origin)
 }
 
 const STATUS_LABELS: Record<ObserverState['status'], string> = {
@@ -573,11 +207,14 @@ registerModelScheme()
 // Lets speech recognition and the natural voice use several CPU cores (WebAssembly threads).
 app.commandLine.appendSwitch('enable-features', 'SharedArrayBuffer')
 
+startLogging()
+
 // Only one GameMate may run: a second launch just opens the existing window.
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   app.on('second-instance', showMainWindow)
+  hardenWindows(allowedLink)
 
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.

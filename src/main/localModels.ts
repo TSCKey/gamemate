@@ -8,6 +8,8 @@ import { mkdir, rename, rm, statfs } from 'fs/promises'
 import { join } from 'path'
 import { promisify } from 'util'
 import { downloadVerified, partialPath, type DownloadSpec } from './download'
+import type { LocalModelStatus } from '../shared/types'
+export type { LocalModelStatus }
 
 // llama.cpp (MIT), Vulkan build for Windows: runs on NVIDIA, AMD and Intel graphics cards and
 // falls back to the processor. Pinned to the build behind llama.cpp's v0.8.0 release.
@@ -98,18 +100,6 @@ export const LOCAL_MODELS: CatalogModel[] = [
     )
   }
 ]
-
-export interface LocalModelStatus {
-  id: string
-  name: string
-  label: string
-  description: string
-  sizeMb: number
-  installed: boolean
-  // 0-1 while downloading, otherwise null.
-  progress: number | null
-  error: string | null
-}
 
 const engineRoot = (): string => join(app.getPath('userData'), 'engine')
 export const engineDir = (): string => join(engineRoot(), ENGINE.build)

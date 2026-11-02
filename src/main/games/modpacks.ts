@@ -7,6 +7,8 @@ import { homedir } from 'os'
 import { basename, dirname, join } from 'path'
 import { promisify } from 'util'
 import type { WikiLookup } from '../wiki'
+import type { ModpackSummary } from '../../shared/types'
+export type { ModpackSummary }
 
 export interface Mod {
   name: string
@@ -22,14 +24,6 @@ export interface Modpack {
   // e.g. "NeoForge 26.1.2.109" ('' if unknown).
   loader: string
   mods: Mod[]
-}
-
-export interface ModpackSummary {
-  name: string
-  path: string
-  minecraftVersion: string
-  loader: string
-  modCount: number
 }
 
 interface CurseForgeInstance {

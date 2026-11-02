@@ -12,6 +12,10 @@ import { complete } from './llm'
 import { engineFor, engineReady } from './engines'
 import { isAsking } from './assistant'
 import { getSettings, onSettingsChanged, type CommentaryFrequency, type Settings } from './settings'
+import { EVENT_TYPES } from '../shared/types'
+import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../shared/types'
+export { EVENT_TYPES }
+export type { EventType, ObservedEvent }
 
 const TICK_MS = 4_000
 const MIN_ANALYSIS_GAP_MS = 12_000
@@ -33,36 +37,8 @@ const FREQUENCY: Record<CommentaryFrequency, { cooldownMs: number; minImportance
   frequent: { cooldownMs: 40_000, minImportance: 4 }
 }
 
-export const EVENT_TYPES = [
-  'none',
-  'hostile_mob',
-  'low_health',
-  'death',
-  'dark_area',
-  'discovery',
-  'other'
-] as const
-export type EventType = (typeof EVENT_TYPES)[number]
-
-export interface ObservedEvent {
-  time: number
-  type: Exclude<EventType, 'none'>
-  importance: number
-  description: string
-  comment: string
-  // Whether GameMate showed the comment to the player.
-  spoken: boolean
-}
-
-export type ObserverStatus =
-  'off' | 'paused' | 'no-model' | 'needs-consent' | 'waiting-for-game' | 'watching' | 'analyzing'
-
-export interface ObserverState {
-  status: ObserverStatus
-  game: string | null
-  paused: boolean
-  events: ObservedEvent[]
-}
+export type ObserverState = CompanionState
+export type ObserverStatus = CompanionStatus
 
 interface FrameStats {
   pixels: Float32Array

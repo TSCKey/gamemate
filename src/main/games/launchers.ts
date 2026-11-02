@@ -5,8 +5,8 @@ import { execFile } from 'child_process'
 import { readdir, readFile } from 'fs/promises'
 import { join } from 'path'
 import { promisify } from 'util'
-
-export type Launcher = 'steam' | 'epic' | 'battlenet' | 'riot'
+import type { Launcher } from '../../shared/types'
+export type { Launcher }
 
 export interface InstalledGame {
   // Stable per launcher, e.g. "steam-2767030".

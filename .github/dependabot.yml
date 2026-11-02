@@ -1,0 +1,18 @@
+# Opens pull requests when GameMate's packages or CI actions have updates (security fixes in
+# Electron's Chromium especially). Small updates come grouped into one weekly pull request.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

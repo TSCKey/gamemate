@@ -2,7 +2,8 @@
 // games the player's scan found or the player added. Nothing about other games is built in except
 // a few hints for well-known competitive games.
 import type { WikiSite } from '../wiki'
-import type { Launcher } from './launchers'
+import type { SavedGame } from '../../shared/types'
+export type { SavedGame }
 
 export interface GameProfile {
   id: string
@@ -22,17 +23,6 @@ export interface GameProfile {
   watchFor: string
   // Example questions for an empty chat.
   examples: [string, string]
-}
-
-// A game found by a scan or added by the player.
-export interface SavedGame {
-  id: string
-  name: string
-  launcher: Launcher | 'manual'
-  installDir?: string
-  // Program file name, for games added from the running programs.
-  exe?: string
-  wiki?: WikiSite
 }
 
 export const MINECRAFT: GameProfile = {

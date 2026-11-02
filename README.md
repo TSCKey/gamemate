@@ -153,6 +153,8 @@ GameMate checks for a new version when it starts and every few hours, downloads 
 
 ## Troubleshooting
 
+If something goes wrong, **⚙ Settings → Privacy → Open log folder** opens GameMate's log, which you can attach to a bug report. It doesn't contain your questions or answers.
+
 **"Windows protected your PC" when installing**
 The installer isn't code-signed yet, so Windows SmartScreen doesn't recognize it. Click **More info**, then **Run anyway**.
 
@@ -224,9 +226,11 @@ GameMate looks for games only after you allow it in **⚙ Settings → Games**. 
 
 Screenshots go only to the AI you chose and are never saved to disk. What GameMate noticed is kept in memory only, and is forgotten when you switch back to On-demand or Disabled or quit GameMate. GameMate doesn't send your conversations anywhere, collect usage data or require an account. Choose **Disabled** to turn off all screen access.
 
+GameMate keeps a small log file on your PC of what it did, such as starting the AI or checking for updates, to help find problems. It never contains your questions or answers and is never sent anywhere. **⚙ Settings → Privacy → Open log folder** shows it.
+
 GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models are downloaded once from Hugging Face when you click **Download**.
 
-**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy** to remove everything GameMate stored on your PC (settings, your Gemini key, and the AI engine, AI models and speech models you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
+**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy** to remove everything GameMate stored on your PC (settings, your Gemini key, the log, and the AI engine, AI models and speech models you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
 
 ## What GameMate won't do
 

@@ -53,6 +53,7 @@ const api: Api = {
   },
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
+  openLogs: () => ipcRenderer.invoke('app:open-logs'),
   updates: {
     state: () => ipcRenderer.invoke('updates:state'),
     check: () => ipcRenderer.invoke('updates:check'),

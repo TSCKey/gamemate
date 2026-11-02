@@ -63,6 +63,13 @@ function PrivacyPanel(): React.JSX.Element {
           <li>Your Gemini API key, if you added one, encrypted by Windows.</li>
           <li>AI models, GameMate&apos;s AI engine and speech models you downloaded.</li>
           <li>Games found or added: their name, folder or program, and wiki address.</li>
+          <li>
+            A log of what GameMate did (like starting the AI or checking for updates), for finding
+            problems. It never contains your questions or answers and is never sent anywhere.{' '}
+            <button type="button" className="link-button" onClick={() => window.api.openLogs()}>
+              Open log folder
+            </button>
+          </li>
         </ul>
       </Section>
 

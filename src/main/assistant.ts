@@ -6,6 +6,8 @@ import { findMentionedItems, lookupRecipe, searchItems, type RecipeView } from '
 import type { GameContext } from './games/current'
 import { modInfo, searchMods } from './games/modpacks'
 import { findWikiForGame, lookupWiki, prefetchWiki, type WikiSite, type WikiSource } from './wiki'
+import type { AnsweredBy } from '../shared/types'
+export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.
 const MAX_TOOL_ROUNDS = 4
@@ -23,12 +25,6 @@ export interface AssistantReply {
   sources?: WikiSource[]
   // Which AI answered, and in Auto mode why.
   answeredBy?: AnsweredBy
-}
-
-export interface AnsweredBy {
-  provider: 'local' | 'gemini'
-  model: string
-  reason?: string
 }
 
 export interface AssistantContext {

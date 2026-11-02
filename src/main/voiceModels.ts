@@ -7,6 +7,8 @@ import { dirname, join, normalize, relative } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { pathToFileURL } from 'url'
+import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../shared/types'
+export type { SpeechModelId, ListenModelId, SpeechModelStatus }
 
 export const MODEL_SCHEME = 'gm-model'
 
@@ -93,20 +95,7 @@ export const SPEECH_MODELS = {
       ...KOKORO_VOICES.map((v) => `voices/${v}.bin`)
     ]
   }
-} as const
-export type SpeechModelId = keyof typeof SPEECH_MODELS
-export type ListenModelId = 'fast' | 'accurate' | 'best'
-
-export interface SpeechModelStatus {
-  id: SpeechModelId
-  // Speech recognition ('listen') or GameMate's voice ('speak').
-  kind: 'listen' | 'speak'
-  sizeMb: number
-  installed: boolean
-  // 0-1 while downloading, otherwise null.
-  progress: number | null
-  error: string | null
-}
+} as const satisfies Record<SpeechModelId, unknown>
 
 const modelsDir = (): string => join(app.getPath('userData'), 'models')
 const modelDir = (id: SpeechModelId): string => join(modelsDir(), SPEECH_MODELS[id].repo)

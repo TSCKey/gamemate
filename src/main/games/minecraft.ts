@@ -3,6 +3,8 @@
 import { app } from 'electron'
 import { readFileSync } from 'fs'
 import { join } from 'path'
+import type { RecipeView } from '../../shared/types'
+export type { RecipeView }
 
 interface Ingredient {
   label: string
@@ -24,15 +26,6 @@ interface VersionData {
   source: string
   items: Item[]
   recipes: Record<string, RawRecipe[]>
-}
-
-// What the UI renders: a crafting grid of ingredient labels.
-export interface RecipeView {
-  item: string
-  count: number
-  shapeless: boolean
-  grid: (string | null)[][]
-  totals: { label: string; count: number }[]
 }
 
 const dataDir = (): string => join(app.getAppPath(), 'resources', 'minecraft')

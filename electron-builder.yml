@@ -50,6 +50,16 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
+# Switch off Electron features GameMate never uses, so an installed copy can't be started as
+# plain Node, take Node options from the environment, accept a debugger, or run a modified
+# app.asar.
+electronFuses:
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
 # Installers and update files are published as GitHub Releases; the app checks there for updates.
 publish:
   provider: github

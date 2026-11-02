@@ -1,4 +1,6 @@
 // Looks things up on a game's wiki (any MediaWiki site: minecraft.wiki, wiki.gg, Fandom, …) for
+import type { WikiSite, WikiSource } from '../shared/types'
+export type { WikiSite, WikiSource }
 // questions GameMate's own data can't answer. Only the search words are sent. Wiki text is under
 // the wiki's license (usually Creative Commons), so every answer that uses it links to the page.
 
@@ -9,24 +11,6 @@ const CACHE_MS = 30 * 60_000
 // Sections that rarely help a player mid-game.
 const SKIP_SECTIONS =
   /^(history|gallery|trivia|references|videos|sounds|data values|achievements|advancements|issues|external links|development|see also|navigation|patch history|version history|update history|changelog|bugs|cut content|concept art|transcript|dialogue|official images)/i
-
-export interface WikiSite {
-  // e.g. "Terraria Wiki"
-  name: string
-  // The site's api.php address.
-  api: string
-  // Page address with $1 in place of the title, e.g. "https://terraria.wiki.gg/wiki/$1".
-  articlePath: string
-  // License of the wiki's text, shown with every answer that uses it.
-  license: string
-}
-
-export interface WikiSource {
-  title: string
-  url: string
-  wiki: string
-  license: string
-}
 
 export interface WikiLookup {
   text: string
@@ -221,6 +205,20 @@ const prefetched = new Map<string, { at: number; result: WikiLookup[] }>()
 // Small words that belong inside page titles ("Rivers of Blood", "The End").
 const TITLE_JOINERS = new Set(['of', 'the'])
 
+// A word and the singular forms it may have ("wolves" → "wolf", "berries" → "berry").
+function singulars(word: string): string[] {
+  return [
+    ...new Set([
+      word,
+      word.replace(/ies$/, 'y'),
+      word.replace(/ves$/, 'f'),
+      word.replace(/ves$/, 'fe'),
+      word.replace(/(ch|sh|x|ss)es$/, '$1'),
+      word.replace(/(?<=[^s])s$/, '')
+    ])
+  ]
+}
+
 // Finds the page a question is clearly about before the AI is asked, which saves it a lookup
 // round. The question's own phrases are tried as page titles ("how do I beat the Ender Dragon"
 // finds "Ender Dragon"), longest first, and never the page about the game itself.
@@ -260,8 +258,9 @@ export async function prefetchWiki(
   const capital = (w: string): string => w.charAt(0).toUpperCase() + w.slice(1)
   const tried = new Map<string, number>()
   for (const phrase of phrases) {
-    const singular = [...phrase.slice(0, -1), phrase.at(-1)!.replace(/(?<=[^s])s$/, '')]
-    for (const form of [phrase, singular]) {
+    const last = phrase[phrase.length - 1]
+    const forms = singulars(last).map((word) => [...phrase.slice(0, -1), word])
+    for (const form of forms) {
       const titled = form.map((w, i) => (i > 0 && TITLE_JOINERS.has(w) ? w : capital(w)))
       for (const title of [titled.join(' '), capital(form.join(' '))]) {
         if (!tried.has(title)) tried.set(title, phrase.filter((w) => !TITLE_JOINERS.has(w)).length)

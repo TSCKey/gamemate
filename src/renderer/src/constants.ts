@@ -1,8 +1,7 @@
 // Values shared by several screens.
 import type { CommentaryFrequency, CompanionMode, CompanionState } from '../../preload/index.d'
 
-// Bump when the privacy notice changes in a way players should see again (matches main/settings.ts).
-export const PRIVACY_NOTICE_VERSION = 1
+export { PRIVACY_NOTICE_VERSION } from '../../shared/types'
 
 export const LINKS = {
   geminiTerms: 'https://ai.google.dev/gemini-api/terms',

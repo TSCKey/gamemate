@@ -1,24 +1,13 @@
 // Capture module: lists capturable screens/windows and grabs a screenshot of one.
 import { BrowserWindow, desktopCapturer, screen, type NativeImage } from 'electron'
+import type { CaptureSource, Screenshot } from '../shared/types'
+export type { CaptureSource, Screenshot }
 
 // Large enough for the vision model to read the scene, small enough to keep inference fast.
 const MAX_CAPTURE_WIDTH = 1280
 const JPEG_QUALITY = 80
 // Time for the OS to repaint after GameMate hides itself before a full-screen capture.
 const HIDE_DELAY_MS = 250
-
-export interface CaptureSource {
-  id: string
-  name: string
-  type: 'screen' | 'window'
-}
-
-export interface Screenshot {
-  // Base64-encoded JPEG, without the data: prefix (the format Ollama expects).
-  base64: string
-  width: number
-  height: number
-}
 
 function captureSize(
   display = screen.getPrimaryDisplay(),
