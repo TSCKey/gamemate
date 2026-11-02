@@ -61,8 +61,8 @@ Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ 
 GameMate always helps with one game, shown at the top of the chat window (for example **VALORANT ▾**). Click it to switch games. Minecraft is always there; your other games come from a scan.
 
 1. Open **⚙ Settings → Games**. GameMate explains what it would look at; tick **Allow GameMate to look for games on this PC** and click **Allow and scan for games**. Nothing on your PC is looked at before that.
-2. GameMate reads the game lists of Steam, Epic Games, Battle.net and Riot, and finds a wiki for each game on wiki.gg or Fandom (only the game's name is sent). Click **Scan for games** again after installing a game.
-3. If a wiki is missing or wrong, paste its address next to the game. Games no launcher knows can be added with **Add a game that's running…**.
+2. GameMate reads the game lists of Steam, Epic Games, Battle.net and Riot, and finds a wiki for each game on wiki.gg or Fandom (only the game's name is sent). When a game has several, it picks the liveliest one: the most active editors, then the most pages. Click **Scan for games** again after installing a game.
+3. To use a different wiki, click **Other wikis** next to the game to pick one of the wikis GameMate found, with their size, or **Change** to paste any wiki's address. A wiki you choose stays when you scan again. Some wikis block apps like GameMate; those can't be used. Games no launcher knows can be added with **Add a game that's running…**.
 
 - **Follow the game I'm playing** (on once you allow detection): when you press **Alt + Space**, or while the companion is watching, GameMate switches to the game in front by itself.
 - **Minecraft modpacks:** GameMate lists the modpacks you installed with CurseForge. Choose one, or leave **Detect the one I'm playing** to use the pack that's running, from any launcher. Answers then know which mods you have, and with lookups on, the AI can read what a mod does on Modrinth.
@@ -119,6 +119,7 @@ Click the AI name under the question box (for example **Qwen3.5 2B ▾**) to swi
   3. Paste it and click **Save**. GameMate checks it with Google, stores it encrypted on your PC, and lists the Gemini models your key can use.
   4. Pick a model. A Flash model is a good balance of speed and quality.
   5. To stop using Gemini, click **Turn off**. GameMate deletes your key and goes back to the local AI.
+- **Answer length:** answers get straight to the point in a sentence or three. Turn on **Detailed answers** in **⚙ Settings → AI & online** for longer explanations with steps and tips.
 - **Look things up:** turn on **Look things up online**. When a question is about a boss, item, place or mechanic, the AI reads the matching page on your game's wiki (and for Minecraft mods, the mod's Modrinth page). The answer shows **Source:** with a link to it and the wiki's license. If the page has a fitting picture, it appears under the answer: the area map when you ask for a map or where something is, otherwise the page's main picture. Click a picture to open it on the wiki.
 - When questions go to Gemini, the AI name under the question box and the in-game window show **☁**.
 

@@ -16,6 +16,7 @@ export const AFTER_TERMS = new Set([
   'games:running-apps',
   'games:add',
   'games:set-wiki',
+  'games:wiki-choices',
   'modpacks:list',
   'modpacks:current',
   'local-models:download',

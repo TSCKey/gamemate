@@ -4,7 +4,8 @@ import type {
   GamesState,
   ModpackSummary,
   RunningApp,
-  Settings
+  Settings,
+  WikiChoice
 } from '../../../preload/index.d'
 import { errorMessage } from '../hooks/useSettings'
 import { Field, Section, Toggle } from './ui'
@@ -61,6 +62,20 @@ function GameRow({
   const [editing, setEditing] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // The wikis found for this game, once the player asks for them.
+  const [choices, setChoices] = useState<WikiChoice[] | null>(null)
+
+  const showChoices = async (): Promise<void> => {
+    setBusy(true)
+    setError(null)
+    try {
+      setChoices(await window.api.games.wikiChoices(game.id))
+    } catch (e) {
+      setError(errorMessage(e))
+    } finally {
+      setBusy(false)
+    }
+  }
 
   const saveWiki = async (value: string): Promise<void> => {
     setBusy(true)
@@ -69,6 +84,7 @@ function GameRow({
       onChange(await window.api.games.setWiki(game.id, value))
       setAddress('')
       setEditing(false)
+      setChoices(null)
     } catch (e) {
       setError(errorMessage(e))
     } finally {
@@ -120,7 +136,31 @@ function GameRow({
             <button type="button" className="link" onClick={() => setEditing(true)}>
               Change
             </button>
+            {' · '}
+            <button type="button" className="link" disabled={busy} onClick={showChoices}>
+              {busy && !choices ? 'Looking…' : 'Other wikis'}
+            </button>
           </div>
+        )}
+        {choices && (
+          <ul className="wiki-choices">
+            {choices.length === 0 && <li>No other wikis found for {game.name}.</li>}
+            {choices.map((c) => (
+              <li key={c.address}>
+                <span>
+                  <strong>{c.name}</strong> ({new URL(c.address).host}): {c.articles} pages,{' '}
+                  {c.activeUsers} active editors
+                </span>
+                {c.current ? (
+                  <span className="badge">In use</span>
+                ) : (
+                  <button type="button" disabled={busy} onClick={() => saveWiki(c.address)}>
+                    Use
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         )}
         {error && <div className="error-text">{error}</div>}
       </div>
@@ -267,7 +307,11 @@ function GamesPanel({
         ) : (
           <>
             <Field
-              label={scanning ? 'Scanning…' : `${found.length} games found`}
+              label={
+                scanning
+                  ? 'Scanning…'
+                  : `${found.length} ${found.length === 1 ? 'game' : 'games'} found`
+              }
               help="Looks through Steam, Epic Games, Battle.net and Riot, and finds each game's wiki. Run it again after installing a game."
             >
               <button type="button" className="primary" onClick={scan} disabled={scanning}>
@@ -304,7 +348,7 @@ function GamesPanel({
       {consent && (
         <Section
           title="Your games"
-          description="Wikis were found by each game's name. If one is missing or wrong, paste the right address."
+          description="Each game's wiki was found by its name: the liveliest one when there are several. Pick another with Other wikis, or paste any wiki's address with Change."
         >
           {found.map((g) => (
             <GameRow key={g.id} game={g} onChange={setGames} />

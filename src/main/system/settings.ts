@@ -71,6 +71,7 @@ const DEFAULTS: Settings = {
   commentaryEngine: 'local',
   geminiModel: '',
   webLookup: false,
+  detailedAnswers: false,
   termsVersion: 0,
   termsAcceptedAt: '',
   consents: {},
@@ -160,6 +161,7 @@ export function updateSettings(patch: unknown): Settings {
     next.geminiModel = p.geminiModel
   }
   if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
+  if (typeof p.detailedAnswers === 'boolean') next.detailedAnswers = p.detailedAnswers
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
   if (typeof p.deviceConsent === 'boolean') next.deviceConsent = p.deviceConsent

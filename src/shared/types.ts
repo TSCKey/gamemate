@@ -80,6 +80,8 @@ export interface Settings {
   geminiModel: string
   // Let the AI look things up on game wikis and Modrinth.
   webLookup: boolean
+  // Long, detailed answers instead of short, direct ones.
+  detailedAnswers: boolean
   // The Terms of Use version the player accepted (0 = not accepted), and when. Without the
   // current version GameMate can't be used (see termsAccepted).
   termsVersion: number
@@ -122,6 +124,18 @@ export interface SavedGame {
   installDir?: string
   exe?: string
   wiki?: WikiSite
+  // The player chose this wiki, so scans keep it.
+  wikiChosen?: boolean
+}
+
+// A wiki the player can pick for a game, with how big and lively it is.
+export interface WikiChoice {
+  name: string
+  // Its address (e.g. https://terraria.wiki.gg), which identifies it.
+  address: string
+  articles: number
+  activeUsers: number
+  current: boolean
 }
 
 // What the game menus and settings show about each game.

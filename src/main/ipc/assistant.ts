@@ -52,7 +52,7 @@ export function registerAssistantHandlers(): void {
             if (!event.sender.isDestroyed()) event.sender.send('assistant:text', requestId, text)
           }
         : undefined
-    const { webLookup } = getSettings()
+    const { webLookup, detailedAnswers } = getSettings()
     const game = await gameContext(history.at(-1)?.content)
     const last = history.at(-1)
     const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
@@ -61,7 +61,14 @@ export function registerAssistantHandlers(): void {
       const what = `${engine.provider} ${engine.model}`
       const started = Date.now()
       const reply = await ask(
-        { engine, game, webLookup, observations: recentObservations(), onText },
+        {
+          engine,
+          game,
+          webLookup,
+          detailed: detailedAnswers,
+          observations: recentObservations(),
+          onText
+        },
         history
       ).catch((error: unknown) => {
         console.warn(`Answer by ${what} failed:`, error instanceof Error ? error.message : error)

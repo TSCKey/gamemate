@@ -1,12 +1,12 @@
 // Games, their wikis and Minecraft modpacks.
 import { runningApps } from '../games/apps'
-import type { GamesState, SavedGame } from '../../shared/types'
+import type { GamesState, SavedGame, WikiChoice } from '../../shared/types'
 import { allGames, currentModpack } from '../games/current'
 import { scanLaunchers } from '../games/launchers'
 import { listCurseForgeModpacks, type ModpackSummary } from '../games/modpacks'
 import { handle } from '../system/security'
 import { getSettings, setGames, updateSettings } from '../system/settings'
-import { discoverWiki, findWikiForGame } from '../games/wiki'
+import { discoverWiki, findWikiCandidates, findWikiForGame } from '../games/wiki'
 
 // What the game menus and settings need to know about each game.
 function gamesState(): GamesState {
@@ -46,7 +46,13 @@ async function scanGames(): Promise<GamesState> {
   await Promise.all(
     Array.from({ length: 6 }, async () => {
       for (let game = queue.shift(); game; game = queue.shift()) {
-        const wiki = known.get(game.id)?.wiki ?? (await findWikiForGame(game.name)) ?? undefined
+        // Each scan looks again for the best wiki, except the ones the player chose.
+        const before = known.get(game.id)
+        if (before?.wiki && before.wikiChosen) {
+          scanned.push({ ...game, wiki: before.wiki, wikiChosen: true })
+          continue
+        }
+        const wiki = (await findWikiForGame(game.name)) ?? before?.wiki
         scanned.push({ ...game, wiki })
       }
     })
@@ -102,8 +108,23 @@ export function registerGameHandlers(): void {
     const game = games.find((g) => g.id === id)
     if (!game || typeof address !== 'string') throw new Error('Unknown game.')
     const wiki = address.trim() ? await discoverWiki(address) : undefined
-    setGames(games.map((g) => (g.id === game.id ? { ...g, wiki } : g)))
+    setGames(games.map((g) => (g.id === game.id ? { ...g, wiki, wikiChosen: Boolean(wiki) } : g)))
     return gamesState()
+  })
+  // The wikis found for a game, best first, to pick from.
+  handle('games:wiki-choices', async (_event, id: unknown): Promise<WikiChoice[]> => {
+    requireConsent()
+    const game = getSettings().games.find((g) => g.id === id)
+    if (!game) throw new Error('Unknown game.')
+    const origin = (articlePath: string): string => new URL(articlePath.replace('$1', '')).origin
+    const current = game.wiki ? origin(game.wiki.articlePath) : ''
+    return (await findWikiCandidates(game.name)).map((c) => ({
+      name: c.site.name,
+      address: origin(c.site.articlePath),
+      articles: c.articles,
+      activeUsers: c.activeUsers,
+      current: origin(c.site.articlePath) === current
+    }))
   })
   handle('modpacks:list', () => (getSettings().deviceConsent ? cachedModpackList() : []))
   handle('modpacks:current', async (): Promise<ModpackSummary | null> => {

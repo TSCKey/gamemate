@@ -269,6 +269,23 @@ function AiPanel({
         )}
       </Section>
 
+      <Section title="Answers">
+        <Field
+          label="Detailed answers"
+          help={
+            settings.detailedAnswers
+              ? 'Answers explain the details, steps and useful tips.'
+              : 'Answers get straight to the point in a sentence or three. Turn this on for longer explanations.'
+          }
+        >
+          <Toggle
+            label="Detailed answers"
+            checked={settings.detailedAnswers}
+            onChange={(detailedAnswers) => update({ detailedAnswers })}
+          />
+        </Field>
+      </Section>
+
       <Section title="Look things up">
         <Field
           label="Look things up online"

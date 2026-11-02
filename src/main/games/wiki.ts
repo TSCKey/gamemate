@@ -7,6 +7,8 @@ export type { WikiSite, WikiSource }
 export const USER_AGENT = 'GameMate/1.0 (https://github.com/TSCKey/gamemate)'
 const TIMEOUT_MS = 8_000
 const MAX_CHARS = 4_000
+// The intro's share when the page has sections the question is about.
+const INTRO_CHARS = 1_200
 const CACHE_MS = 30 * 60_000
 // Sections that rarely help a player mid-game.
 const SKIP_SECTIONS =
@@ -33,21 +35,63 @@ export async function queryWiki<T>(apiUrl: string, params: Record<string, string
 export const pageUrl = (site: WikiSite, title: string): string =>
   site.articlePath.replace('$1', encodeURIComponent(title.replace(/ /g, '_')))
 
-// Keeps the intro and useful sections, in order, up to MAX_CHARS.
-function trimExtract(extract: string): string {
+// Section names worth reading first for a kind of question ("where is …" → Location).
+const QUESTION_SECTIONS: [RegExp, string[]][] = [
+  [/\b(where|find|found|location|located)\b/i, ['locat', 'spawn', 'found', 'obtai', 'map']],
+  [/\b(get|obtain|farm|farming)\b/i, ['obtai', 'locat', 'drop', 'farm']],
+  [/\b(beat|defeat|kill|fight|boss|cheese)\b/i, ['strat', 'tips', 'behav', 'attac', 'fight']],
+  [/\b(craft\w*|make|recipes?|build)\b/i, ['craft', 'recip', 'usage', 'obtai']],
+  [/\b(drops?|loot)\b/i, ['drop', 'loot']]
+]
+
+// What a question is about, as word beginnings to look for in section names.
+export function focusFor(question: string): string[] {
+  const stems = new Set<string>()
+  for (const [pattern, sections] of QUESTION_SECTIONS) {
+    if (pattern.test(question)) sections.forEach((stem) => stems.add(stem))
+  }
+  for (const word of words(question)) {
+    if (word.length >= 4 && !QUESTION_WORDS.has(word)) stems.add(word.slice(0, 5))
+  }
+  return [...stems]
+}
+
+const matches = (heading: string, focus: string[]): boolean =>
+  words(heading).some((w) =>
+    focus.some((stem) => w.startsWith(stem) || stem.startsWith(w.slice(0, 5)))
+  )
+
+// Keeps the intro and the useful sections up to MAX_CHARS: first the sections the question is
+// about (for "what does a creeper drop?", Drops), then the others in page order.
+export function trimExtract(extract: string, focus: string[] = []): string {
   const parts = extract.split(/\n(?===+ [^=]+ ==+)/)
-  const kept: string[] = []
-  let length = 0
-  let skipping = false
+  // Top-level sections with their subsections.
+  const groups: { heading: string; parts: string[] }[] = [{ heading: '', parts: [] }]
   for (const part of parts) {
     const heading = /^(=+) ([^=]+?) =+/.exec(part)
-    if (heading) {
-      // A top-level section decides whether its subsections are kept too.
-      if (heading[1].length === 2) skipping = SKIP_SECTIONS.test(heading[2].trim())
-      if (skipping) continue
-    }
+    if (heading && heading[1].length === 2) groups.push({ heading: heading[2].trim(), parts: [] })
+    groups[groups.length - 1].parts.push(part)
+  }
+  const [intro, ...sections] = groups
+  const useful = sections.filter((g) => !SKIP_SECTIONS.test(g.heading))
+  const wanted = (g: { heading: string; parts: string[] }): boolean =>
+    focus.length > 0 &&
+    g.parts.some((part) => matches(/^=+ ([^=]+?) =+/.exec(part)?.[1] ?? '', focus))
+  const first = useful.filter(wanted)
+  // When the page has sections the question is about, a long intro (often an info box) must not
+  // use up the space before them.
+  const lead =
+    first.length && intro.parts.join('\n').length > INTRO_CHARS
+      ? { heading: '', parts: [intro.parts.join('\n').slice(0, INTRO_CHARS) + '…'] }
+      : intro
+  const ordered = [lead, ...first, ...useful.filter((g) => !wanted(g))]
+
+  const kept: string[] = []
+  let length = 0
+  for (const part of ordered.flatMap((g) => g.parts)) {
     const clean = part.replace(/\n{3,}/g, '\n\n').trim()
-    if (!clean) continue
+    // Skip headings left without text.
+    if (!clean || /^=+ [^=]+ =+$/.test(clean)) continue
     if (length + clean.length > MAX_CHARS) {
       kept.push(clean.slice(0, MAX_CHARS - length) + '…')
       break
@@ -56,6 +100,22 @@ function trimExtract(extract: string): string {
     length += clean.length
   }
   return kept.join('\n\n')
+}
+
+// True when a page's plain text has a section without any text: the wiki built it from a table
+// or template that plain text leaves out (minecraft.wiki's Drops, for example).
+export function hasEmptySection(text: string): boolean {
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+  const level = (line: string): number => /^(=+) [^=]+ =+$/.exec(line)?.[1].length ?? 0
+  return lines.some((line, i) => {
+    const here = level(line)
+    if (!here) return false
+    const next = lines[i + 1]
+    return next === undefined || (level(next) > 0 && level(next) <= here)
+  })
 }
 
 const ENTITIES: Record<string, string> = {
@@ -144,22 +204,54 @@ async function findTitle(site: WikiSite, query: string): Promise<string | undefi
   return bestTitle(query, suggest?.[1] ?? [])
 }
 
-async function pageText(site: WikiSite, title: string): Promise<{ title: string; text: string }> {
+// Pages read recently, as plain text, so different questions about a page don't fetch it again.
+const pages = new Map<string, { at: number; page: Promise<{ title: string; text: string }> }>()
+
+function pageText(site: WikiSite, title: string): Promise<{ title: string; text: string }> {
+  const key = `${site.api} ${title}`
+  const hit = pages.get(key)
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.page
+  const page = fetchPageText(site, title)
+  pages.set(key, { at: Date.now(), page })
+  page.catch(() => pages.delete(key))
+  return page
+}
+
+// The page's plain text, or its rendered text when the plain text misses parts (tables and
+// templates, such as lists of drops or stats) or the wiki has no plain-text version.
+async function fetchPageText(
+  site: WikiSite,
+  title: string
+): Promise<{ title: string; text: string }> {
   const extracts = await queryWiki<{ query?: { pages?: { title: string; extract?: string }[] } }>(
     site.api,
     { action: 'query', prop: 'extracts', explaintext: '1', redirects: '1', titles: title }
   ).catch(() => null)
   const page = extracts?.query?.pages?.[0]
-  if (page?.extract) return { title: page.title, text: page.extract }
+  if (page?.extract && !hasEmptySection(page.extract)) {
+    return { title: page.title, text: page.extract }
+  }
   const parsed = await queryWiki<{ parse?: { title: string; text?: string } }>(site.api, {
     action: 'parse',
-    page: title,
+    page: page?.title ?? title,
     prop: 'text',
     redirects: '1',
     disableeditsection: '1',
     disablelimitreport: '1'
+  }).catch((error: unknown) => {
+    if (page?.extract) return null
+    throw error
   })
-  return { title: parsed.parse?.title ?? title, text: htmlToText(parsed.parse?.text ?? '') }
+  if (!parsed?.parse?.text) return { title: page?.title ?? title, text: page?.extract ?? '' }
+  return {
+    title: parsed.parse.title ?? title,
+    text: htmlToText(withoutContents(parsed.parse.text))
+  }
+}
+
+// The rendered page's table of contents would only repeat the section names.
+function withoutContents(html: string): string {
+  return html.replace(/<div[^>]*\bid="toc"[\s\S]*?<\/ul>\s*<\/div>/i, '')
 }
 
 export async function lookupWiki(site: WikiSite, query: string): Promise<WikiLookup> {
@@ -171,14 +263,14 @@ export async function lookupWiki(site: WikiSite, query: string): Promise<WikiLoo
 
   const title = await findTitle(site, q)
   if (!title) return { text: `The ${site.name} has no page about "${q}".`, source: null }
-  const result = await readPage(site, title)
+  const result = await readPage(site, title, focusFor(q))
   cache.set(key, { at: Date.now(), result })
   return result
 }
 
-async function readPage(site: WikiSite, title: string): Promise<WikiLookup> {
+async function readPage(site: WikiSite, title: string, focus: string[] = []): Promise<WikiLookup> {
   const page = await pageText(site, title)
-  const text = trimExtract(page.text)
+  const text = trimExtract(page.text, focus)
   const source: WikiSource = {
     title: page.title,
     url: pageUrl(site, page.title),
@@ -269,22 +361,29 @@ export async function prefetchWiki(
     }
   }
   const titles = [...tried.keys()].slice(0, 50)
-  const key = `${site.api} prefetch ${titles.join('|')}`
+  const focus = focusFor(question)
+  // The same page is cut differently for different questions.
+  const key = `${site.api} prefetch ${titles.join('|')} ${focus.join(',')}`
   const hit = prefetched.get(key)
   if (hit && Date.now() - hit.at < CACHE_MS) return hit.result
 
   const data = await queryWiki<{
     query?: {
       normalized?: { from: string; to: string }[]
-      redirects?: { from: string; to: string }[]
+      redirects?: { from: string; to: string; tofragment?: string }[]
       pages?: { title: string; missing?: boolean; invalid?: boolean }[]
     }
   }>(site.api, { action: 'query', titles: titles.join('|'), redirects: '1' }).catch(() => null)
   const query = data?.query
-  const follow = (title: string): string => {
+  const redirectOf = (title: string): { to: string; tofragment?: string } | undefined => {
     const normal = query?.normalized?.find((n) => n.from === title)?.to ?? title
-    return query?.redirects?.find((r) => r.from === normal)?.to ?? normal
+    return query?.redirects?.find((r) => r.from === normal)
   }
+  const follow = (title: string): string =>
+    redirectOf(title)?.to ?? query?.normalized?.find((n) => n.from === title)?.to ?? title
+  // Redirects to a section ("Mantis Village" → "Fungal Wastes#Mantis Village"): that section is
+  // what the question is about.
+  const sectionOf = new Map<string, string>()
   const existing = new Set(
     (query?.pages ?? []).filter((pg) => !pg.missing && !pg.invalid).map((pg) => pg.title)
   )
@@ -298,7 +397,10 @@ export async function prefetchWiki(
     // A redirect only counts when it leads somewhere named like the phrase ("Tame" → "Taming"),
     // not to an unrelated page ("Five" → "Music Disc 5").
     const stems = words(title).map((w) => w.slice(0, 3))
-    const related = direct || words(page).some((w) => stems.some((s) => w.startsWith(s)))
+    const fragment = redirectOf(title)?.tofragment
+    if (fragment) sectionOf.set(page, fragment)
+    const related =
+      direct || Boolean(fragment) || words(page).some((w) => stems.some((s) => w.startsWith(s)))
     const score = size * 2 + (direct ? 1 : 0)
     if (
       related &&
@@ -312,18 +414,30 @@ export async function prefetchWiki(
   }
   const top = Math.max(0, ...scored.values())
   const best = [...scored].filter(([, score]) => score === top).slice(0, 2)
-  const pages = await Promise.all(best.map(([title]) => readPage(site, title)))
-  const result = pages.filter((page) => page.source)
+  const read = await Promise.all(
+    best.map(([title]) => {
+      const section = sectionOf.get(title)
+      return readPage(site, title, section ? [...focus, ...focusFor(section)] : focus)
+    })
+  )
+  const result = read.filter((page) => page.source)
   prefetched.set(key, { at: Date.now(), result })
   return result
 }
 
-async function siteAt(api: string): Promise<WikiSite | null> {
+// A wiki that may cover a game, with how big and lively it is.
+export interface WikiCandidate {
+  site: WikiSite
+  articles: number
+  activeUsers: number
+}
+
+async function siteInfo(api: string): Promise<WikiCandidate | null> {
   const info = await fetch(
     `${api}?${new URLSearchParams({
       action: 'query',
       meta: 'siteinfo',
-      siprop: 'general|rightsinfo',
+      siprop: 'general|rightsinfo|statistics',
       format: 'json',
       formatversion: '2'
     })}`,
@@ -332,14 +446,20 @@ async function siteAt(api: string): Promise<WikiSite | null> {
     .then((res) => (res.ok ? res.json() : null))
     .catch(() => null)
   const general = info?.query?.general as
-    { sitename: string; server: string; articlepath: string } | undefined
+    { sitename: string; server: string; articlepath: string; scriptpath?: string } | undefined
   if (!general) return null
   const server = general.server.startsWith('//') ? `https:${general.server}` : general.server
+  const stats = info?.query?.statistics as { articles?: number; activeusers?: number } | undefined
   return {
-    name: general.sitename,
-    api,
-    articlePath: `${server}${general.articlepath}`,
-    license: info?.query?.rightsinfo?.text || 'see the wiki for its license'
+    site: {
+      name: general.sitename,
+      // The wiki's own address (Fandom answers for several names, e.g. silksong.fandom.com).
+      api: `${server}${general.scriptpath ?? ''}/api.php`,
+      articlePath: `${server}${general.articlepath}`,
+      license: info?.query?.rightsinfo?.text || 'see the wiki for its license'
+    },
+    articles: stats?.articles ?? 0,
+    activeUsers: stats?.activeusers ?? 0
   }
 }
 
@@ -370,11 +490,13 @@ function nameWords(text: string): string[] {
   )
 }
 
-// Looks for a game's community wiki on wiki.gg and Fandom by its name, e.g. "Marvel Rivals" ->
-// marvelrivals.wiki.gg. Only the game's name is sent. Null if none is found.
-export async function findWikiForGame(name: string): Promise<WikiSite | null> {
+// The community wikis for a game on wiki.gg and Fandom, found by its name ("Marvel Rivals" ->
+// marvelrivals.wiki.gg), best first: the liveliest (most active editors), then the biggest. A
+// wiki that moved elsewhere keeps its pages but loses its editors, so it ranks low. Only the
+// game's name is sent.
+export async function findWikiCandidates(name: string): Promise<WikiCandidate[]> {
   const parts = nameWords(name)
-  if (!parts.length) return null
+  if (!parts.length) return []
   // Also without a trailing number ("Overwatch 2") or the part after a colon ("Call of Duty: …").
   const noNumber = parts.filter((p, i) => !(i === parts.length - 1 && /^\d+$/.test(p)))
   const beforeColon = name.includes(':') ? nameWords(name.split(':')[0]) : []
@@ -386,17 +508,26 @@ export async function findWikiForGame(name: string): Promise<WikiSite | null> {
     )
   ]
   const gameWords = new Set(parts.filter((p) => !/^\d+$/.test(p)))
-  for (const slug of slugs) {
-    for (const api of [`https://${slug}.wiki.gg/api.php`, `https://${slug}.fandom.com/api.php`]) {
-      const site = await siteAt(api)
-      if (!site) continue
-      // Make sure the wiki is about this game: most words of its name are the game's words.
-      const named = nameWords(site.name).filter((w) => !GENERIC.has(w) && !/^\d+$/.test(w))
-      const shared = named.filter((w) => gameWords.has(w)).length
-      if (named.length && shared * 2 >= named.length) return site
-    }
+  const found = await Promise.all(
+    slugs.flatMap((slug) =>
+      [`https://${slug}.wiki.gg/api.php`, `https://${slug}.fandom.com/api.php`].map(siteInfo)
+    )
+  )
+  const candidates = new Map<string, WikiCandidate>()
+  for (const candidate of found) {
+    if (!candidate || candidates.has(candidate.site.api)) continue
+    // Make sure the wiki is about this game: most words of its name are the game's words.
+    const named = nameWords(candidate.site.name).filter((w) => !GENERIC.has(w) && !/^\d+$/.test(w))
+    const shared = named.filter((w) => gameWords.has(w)).length
+    if (named.length && shared * 2 >= named.length) candidates.set(candidate.site.api, candidate)
   }
-  return null
+  return [...candidates.values()].sort(
+    (a, b) => b.activeUsers - a.activeUsers || b.articles - a.articles
+  )
+}
+
+export async function findWikiForGame(name: string): Promise<WikiSite | null> {
+  return (await findWikiCandidates(name))[0]?.site ?? null
 }
 
 // Finds a MediaWiki site from any address on it (for games players add themselves).

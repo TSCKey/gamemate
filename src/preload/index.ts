@@ -72,7 +72,8 @@ const api: Api = {
     runningApps: () => ipcRenderer.invoke('games:running-apps'),
     add: (exe, name) => ipcRenderer.invoke('games:add', exe, name),
     remove: (id) => ipcRenderer.invoke('games:remove', id),
-    setWiki: (id, address) => ipcRenderer.invoke('games:set-wiki', id, address)
+    setWiki: (id, address) => ipcRenderer.invoke('games:set-wiki', id, address),
+    wikiChoices: (id) => ipcRenderer.invoke('games:wiki-choices', id)
   },
   modpacks: {
     list: () => ipcRenderer.invoke('modpacks:list'),

@@ -1592,3 +1592,27 @@ button.link:hover:not(:disabled) {
 .shortcut-field .error-text {
   margin-top: 6px;
 }
+
+/* Choosing a game's wiki */
+
+.wiki-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.wiki-choices li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--text-2);
+}
+
+.wiki-choices strong {
+  color: var(--text);
+}

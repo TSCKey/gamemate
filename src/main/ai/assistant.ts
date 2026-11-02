@@ -49,6 +49,8 @@ export interface AssistantContext {
   observations?: string[]
   // Allow looking things up online (the game's wiki, mod pages).
   webLookup: boolean
+  // The player prefers long, detailed answers over short, direct ones.
+  detailed?: boolean
   // Receives the answer so far while it is written; an empty string means it starts over.
   onText?: (text: string) => void
 }
@@ -100,14 +102,25 @@ function wikiLookupRule(ctx: AssistantContext): string {
     : `For any question about a specific boss, enemy, item, place, quest, character, recipe or game mechanic in ${game.name}, ALWAYS call wiki_lookup first and base your answer on the page; GameMate shows the player a link to it. Only skip it for small talk or questions about what is on screen.`
 }
 
+// How answers are written. Players asked for direct answers: small models otherwise restate the
+// question, say where they looked and add tips nobody asked for.
+const DIRECT_STYLE = [
+  'Answer like a friend next to the player who just glanced at the screen: put the answer itself in the first sentence, and stop once the question is answered.',
+  'Most answers are one to three short sentences. Only when the player asks how to do something that takes several steps, list the steps briefly.',
+  'Do not repeat the question, do not say where the information comes from ("the wiki says", "I found"), and do not add tips or facts the player did not ask for.'
+]
+const DETAILED_STYLE = [
+  'The player likes detailed answers: answer the question in the first sentence, then explain the details, steps and useful tips in a few short paragraphs.'
+]
+
 function systemPrompt(ctx: AssistantContext): string {
   const { game } = ctx
   const playing = game.minecraft?.edition ? `Minecraft ${game.minecraft.edition}` : game.name
   return [
     'You are GameMate, a friendly AI companion that helps people while they play video games.',
     `The player is playing ${playing}.`,
-    `If the player asks about a different game, help with that game just as well: never say you can only help with ${playing}.${ctx.webLookup ? ' For facts about another game, call game_wiki with its name (not wiki_lookup, which only covers ${playing}).' : ''}`,
-    'Answer clearly and briefly (a few sentences), like a knowledgeable friend sitting next to the player.',
+    `If the player asks about a different game, help with that game just as well: never say you can only help with ${playing}.${ctx.webLookup ? ` For facts about another game, call game_wiki with its name (not wiki_lookup, which only covers ${playing}).` : ''}`,
+    ...(ctx.detailed ? DETAILED_STYLE : DIRECT_STYLE),
     'Write plain text: no Markdown, headings or bold.',
     'When the user attaches a screenshot, it shows their screen right now: base your answer on what is actually visible in it, and say so if something is unclear or not visible.',
     minecraftRules(ctx),

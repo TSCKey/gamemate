@@ -15,7 +15,8 @@ import type {
   Settings,
   SpeechModelId,
   SpeechModelStatus,
-  UpdateState
+  UpdateState,
+  WikiChoice
 } from '../shared/types'
 
 export type * from '../shared/types'
@@ -74,6 +75,8 @@ export interface Api {
     remove: (id: string) => Promise<GamesState>
     // Finds the wiki from any page address ('' removes it).
     setWiki: (id: string, address: string) => Promise<GamesState>
+    // The wikis found for a game, best first.
+    wikiChoices: (id: string) => Promise<WikiChoice[]>
   }
   modpacks: {
     // Packs installed with CurseForge, most recently played first.
