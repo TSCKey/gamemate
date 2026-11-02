@@ -93,6 +93,9 @@ export interface Settings {
   closeToTray: boolean
   // Check GitHub for new versions now and then (the installed app only).
   autoUpdate: boolean
+  // The keys that open the in-game window, and that open it listening for a spoken question.
+  shortcut: string
+  voiceShortcut: string
   // The player allowed GameMate to look at this PC for games: launcher libraries, modpack
   // folders and the program in front. Nothing is detected without it.
   deviceConsent: boolean

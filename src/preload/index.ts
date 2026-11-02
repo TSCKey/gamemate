@@ -55,6 +55,7 @@ const api: Api = {
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
   openLogs: () => ipcRenderer.invoke('app:open-logs'),
   quit: () => ipcRenderer.invoke('app:quit'),
+  pauseShortcuts: (paused) => ipcRenderer.invoke('shortcuts:pause', paused),
   legal: {
     accept: (ageConfirmed) => ipcRenderer.invoke('legal:accept', ageConfirmed),
     withdraw: () => ipcRenderer.invoke('legal:withdraw')

@@ -53,6 +53,7 @@ Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ 
 - When the **📷** button is lit, GameMate includes a screenshot of your screen, taken at the moment you pressed **Alt + Space**. Click **📷** to turn this on or off. GameMate's own window never appears in the screenshot.
 - Follow-up questions continue the same conversation. Click **✕** to start a new one. The conversation starts fresh by itself if you haven't used GameMate for 10 minutes.
 - Drag the 🎮 icon to move the window.
+- Prefer other keys? Click **Change** next to **Shortcut** (or **Voice shortcut**) in **⚙ Settings → General** and press the keys you want, for example **Ctrl + Shift + G** or **F9**. Shortcuts need Alt, the Windows key or Ctrl + Shift (or be an F key), so they don't get in the way of typing in other apps.
 - For the window to appear over your game, set the game to **windowed** or **borderless/windowed fullscreen**. Windows doesn't let other apps draw over exclusive fullscreen.
 
 ### Games and modpacks
@@ -164,7 +165,7 @@ If something goes wrong, **⚙ Settings → Privacy & legal → Open log folder*
 The installer isn't code-signed yet, so Windows SmartScreen doesn't recognize it. Click **More info**, then **Run anyway**.
 
 **Alt + Space does nothing**
-Another app may already use that shortcut, for example PowerToys Run. The chat window shows a notice when this happens. Change or turn off the other app's shortcut, then restart GameMate. Also check that GameMate is still running in the system tray.
+Another app may already use that shortcut, for example PowerToys Run. The chat window shows a notice when this happens. Pick a different shortcut in **⚙ Settings → General**, or change or turn off the other app's shortcut and restart GameMate. Also check that GameMate is still running in the system tray.
 
 **The GameMate window doesn't show up over my game**
 Switch the game to windowed or borderless fullscreen. In Minecraft, press **F11** to toggle fullscreen.

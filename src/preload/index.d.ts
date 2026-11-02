@@ -51,6 +51,8 @@ export interface Api {
   // Opens the folder with GameMate's log file.
   openLogs: () => Promise<void>
   quit: () => Promise<void>
+  // Pauses the in-game shortcuts while the player picks a new one.
+  pauseShortcuts: (paused: boolean) => Promise<void>
   // Accepting the Terms of Use (with the age confirmation) and withdrawing that acceptance.
   legal: {
     accept: (ageConfirmed: boolean) => Promise<Settings>

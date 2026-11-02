@@ -86,10 +86,17 @@ function App(): React.JSX.Element {
   }, [])
 
   useEffect(() => {
-    window.api.getAppInfo().then(setAppInfo)
     window.api.companion.getState().then(setCompanion)
     return window.api.companion.onState(setCompanion)
   }, [])
+
+  // Whether the shortcuts work, asked again when the player changes them.
+  const shortcutKey = settings
+    ? `${settings.shortcut}|${settings.voiceShortcut}|${settings.voiceInput}`
+    : ''
+  useEffect(() => {
+    window.api.getAppInfo().then(setAppInfo)
+  }, [shortcutKey])
 
   // Listing the screens and windows to capture waits until the Terms of Use are accepted.
   const accepted = !!settings && settings.termsVersion >= TERMS_VERSION

@@ -116,7 +116,7 @@ function VoicePanel({
           help={
             settings.voiceInput && appInfo?.voiceShortcutRegistered === false
               ? `${appInfo.voiceShortcut} is used by another app. Use the 🎤 button instead.`
-              : `In a game, press ${appInfo?.voiceShortcut ?? 'Alt+V'} and ask out loud. GameMate stops listening when you pause.`
+              : `In a game, press ${settings.voiceShortcut} and ask out loud. GameMate stops listening when you pause.`
           }
         >
           <Toggle

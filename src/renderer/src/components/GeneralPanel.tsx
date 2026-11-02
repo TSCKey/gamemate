@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { AppInfo, Settings, UpdateState } from '../../../preload/index.d'
+import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT } from '../../../shared/shortcuts'
+import ShortcutField from './ShortcutField'
 import { Field, Section, Toggle } from './ui'
 
 function updateText(u: UpdateState): string {
@@ -83,11 +85,31 @@ function GeneralPanel({
           label="Shortcut"
           help={
             appInfo?.shortcutRegistered === false
-              ? 'Another app is using this shortcut, so it is off. Close that app and restart GameMate.'
+              ? 'Another app is using this shortcut, so it is off. Pick a different one, or close that app and restart GameMate.'
               : 'Opens a small window over your game to ask a question.'
           }
         >
-          <kbd>{appInfo?.shortcut ?? 'Alt+Space'}</kbd>
+          <ShortcutField
+            value={settings.shortcut}
+            fallback={DEFAULT_SHORTCUT}
+            other={settings.voiceShortcut}
+            onChange={(shortcut) => update({ shortcut })}
+          />
+        </Field>
+        <Field
+          label="Voice shortcut"
+          help={
+            appInfo?.voiceShortcutRegistered === false
+              ? 'Another app is using this shortcut, so it is off. Pick a different one.'
+              : 'Opens the in-game window listening for a spoken question. Works while voice input is on (Settings → Voice).'
+          }
+        >
+          <ShortcutField
+            value={settings.voiceShortcut}
+            fallback={DEFAULT_VOICE_SHORTCUT}
+            other={settings.shortcut}
+            onChange={(voiceShortcut) => update({ voiceShortcut })}
+          />
         </Field>
         <Field
           label="Send a screenshot with questions"

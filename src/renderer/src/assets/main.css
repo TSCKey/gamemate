@@ -1581,3 +1581,14 @@ button.link:hover:not(:disabled) {
   vertical-align: top;
   border: 1px solid var(--border);
 }
+
+/* Picking a shortcut in Settings */
+
+.shortcut-field kbd.is-picking {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.shortcut-field .error-text {
+  margin-top: 6px;
+}

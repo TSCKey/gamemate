@@ -6,6 +6,7 @@ import { isListenModelId, KOKORO_VOICES } from '../voice/voiceModels'
 import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
+import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT, isValidShortcut } from '../../shared/shortcuts'
 import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
@@ -76,6 +77,8 @@ const DEFAULTS: Settings = {
   geminiConsent: false,
   closeToTray: true,
   autoUpdate: true,
+  shortcut: DEFAULT_SHORTCUT,
+  voiceShortcut: DEFAULT_VOICE_SHORTCUT,
   deviceConsent: false,
   currentGame: 'minecraft',
   autoDetectGame: true,
@@ -161,6 +164,13 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
   if (typeof p.deviceConsent === 'boolean') next.deviceConsent = p.deviceConsent
   if (typeof p.autoUpdate === 'boolean') next.autoUpdate = p.autoUpdate
+  if (isValidShortcut(p.shortcut)) next.shortcut = p.shortcut
+  if (isValidShortcut(p.voiceShortcut)) next.voiceShortcut = p.voiceShortcut
+  // The two shortcuts must differ; a change that makes them equal is ignored.
+  if (next.shortcut === next.voiceShortcut) {
+    next.shortcut = getSettings().shortcut
+    next.voiceShortcut = getSettings().voiceShortcut
+  }
   if (
     typeof p.currentGame === 'string' &&
     (p.currentGame === 'minecraft' || next.games.some((g) => g.id === p.currentGame))

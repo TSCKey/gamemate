@@ -16,6 +16,7 @@ const WINDOW_PADDING = 24
 
 function Overlay(): React.JSX.Element {
   const { settings, models, update } = useSettings()
+  const voiceShortcut = settings?.voiceShortcut ?? ''
   const games = useGames(settings)
   const gameName = games?.games.find((g) => g.id === settings?.currentGame)?.name
   const localModels = useLocalModels()
@@ -28,7 +29,6 @@ function Overlay(): React.JSX.Element {
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const lastActivity = useRef(0)
-  const [appVoiceShortcut, setAppVoiceShortcut] = useState('')
 
   const engine = settings?.answersEngine ?? 'local'
   const cloud = engine !== 'local'
@@ -64,10 +64,6 @@ function Overlay(): React.JSX.Element {
   )
 
   useEffect(() => window.api.overlay.onListen(() => listenRef.current()), [])
-
-  useEffect(() => {
-    window.api.getAppInfo().then((info) => setAppVoiceShortcut(info.voiceShortcut))
-  }, [])
 
   // Grow and shrink the window with its content.
   useLayoutEffect(() => {
@@ -176,7 +172,7 @@ function Overlay(): React.JSX.Element {
               title={
                 voice.status === 'listening'
                   ? 'Listening, click to stop'
-                  : `Ask by voice (${appVoiceShortcut})`
+                  : `Ask by voice (${voiceShortcut})`
               }
             >
               🎤
@@ -251,7 +247,7 @@ function Overlay(): React.JSX.Element {
             </span>
           )}
           {gameName && <span title="The game GameMate helps with">{gameName} · </span>}
-          Enter to ask{voice.ready ? ` · ${appVoiceShortcut} to talk` : ''} · Esc to hide
+          Enter to ask{voice.ready ? ` · ${voiceShortcut} to talk` : ''} · Esc to hide
         </div>
       </div>
     </div>

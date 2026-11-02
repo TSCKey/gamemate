@@ -38,14 +38,13 @@ import {
   type ObserverState
 } from './companion/observer'
 
-const SHORTCUT = 'Alt+Space'
-const VOICE_SHORTCUT = 'Alt+V'
-
 const preloadPath = join(__dirname, '../preload/index.js')
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
-let shortcutRegistered = false
-let voiceShortcutRegistered = false
+// The shortcuts registered right now ('' = none), and whether they are paused while the player
+// picks a new one in Settings.
+const registered = { main: '', voice: '' }
+let shortcutsPaused = false
 let quitting = false
 
 function registerHandlers(): void {
@@ -54,12 +53,22 @@ function registerHandlers(): void {
   registerGameHandlers()
   registerModelHandlers()
   registerVoiceHandlers()
-  registerAppHandlers(() => ({
-    shortcut: SHORTCUT,
-    shortcutRegistered,
-    voiceShortcut: VOICE_SHORTCUT,
-    voiceShortcutRegistered
-  }))
+  registerAppHandlers(
+    () => {
+      const settings = getSettings()
+      return {
+        shortcut: settings.shortcut,
+        shortcutRegistered: shortcutsPaused || registered.main === settings.shortcut,
+        voiceShortcut: settings.voiceShortcut,
+        voiceShortcutRegistered:
+          shortcutsPaused || !settings.voiceInput || registered.voice === settings.voiceShortcut
+      }
+    },
+    (paused) => {
+      shortcutsPaused = paused
+      updateShortcuts(getSettings())
+    }
+  )
 }
 
 // HMR for renderer base on electron-vite cli.
@@ -157,7 +166,7 @@ function updateTray(observer: ObserverState): void {
           ]
         : []),
       { type: 'separator' },
-      { label: `Ask GameMate (${SHORTCUT})`, click: () => openOverlay() },
+      { label: `Ask GameMate (${getSettings().shortcut})`, click: () => openOverlay() },
       { label: 'Open GameMate', click: showMainWindow },
       { type: 'separator' },
       {
@@ -191,15 +200,29 @@ function openOverlay(voice = false): void {
   toggleOverlay(voice)
 }
 
-// The voice shortcut only exists while voice input is on, so the key stays free for games.
-function updateVoiceShortcut(settings: Settings): void {
-  const active = globalShortcut.isRegistered(VOICE_SHORTCUT)
-  if (settings.voiceInput && !active) {
-    voiceShortcutRegistered = globalShortcut.register(VOICE_SHORTCUT, () => openOverlay(true))
-    if (!voiceShortcutRegistered) console.warn(`Could not register ${VOICE_SHORTCUT}`)
-  } else if (!settings.voiceInput && active) {
-    globalShortcut.unregister(VOICE_SHORTCUT)
-    voiceShortcutRegistered = false
+// Registers the player's shortcuts, again whenever they change. The voice shortcut only exists
+// while voice input is on, so the key stays free for games. Registering fails when another app
+// (e.g. PowerToys Run) already owns the keys; Settings then says so.
+function updateShortcuts(settings: Settings): void {
+  const wanted = {
+    main: shortcutsPaused ? '' : settings.shortcut,
+    voice: shortcutsPaused || !settings.voiceInput ? '' : settings.voiceShortcut
+  }
+  const which = ['main', 'voice'] as const
+  // Free the old keys first, so the two shortcuts can swap.
+  for (const w of which) {
+    if (registered[w] && registered[w] !== wanted[w]) {
+      globalShortcut.unregister(registered[w])
+      registered[w] = ''
+    }
+  }
+  for (const w of which) {
+    if (!wanted[w] || registered[w] === wanted[w]) continue
+    if (globalShortcut.register(wanted[w], () => openOverlay(w === 'voice'))) {
+      registered[w] = wanted[w]
+    } else {
+      console.warn(`Could not register ${wanted[w]}`)
+    }
   }
 }
 
@@ -241,6 +264,9 @@ if (!app.requestSingleInstanceLock()) {
   app.whenReady().then(() => {
     // Set app user model id for windows
     electronApp.setAppUserModelId('com.gamemate.app')
+    // GameMate has no menu bar. Without this, Electron's default menu (File, Edit, View, Window)
+    // pops up whenever Alt is pressed, as with the Alt + Space shortcut.
+    Menu.setApplicationMenu(null)
 
     // Default open or close DevTools by F12 in development
     // and ignore CommandOrControl + R in production.
@@ -259,11 +285,10 @@ if (!app.requestSingleInstanceLock()) {
     startObserver(showToast)
     startUpdater()
 
-    // Fails if another app (e.g. PowerToys Run) already owns the shortcut.
-    shortcutRegistered = globalShortcut.register(SHORTCUT, () => openOverlay())
-    if (!shortcutRegistered) console.warn(`Could not register ${SHORTCUT}`)
-    updateVoiceShortcut(getSettings())
-    onSettingsChanged(updateVoiceShortcut)
+    updateShortcuts(getSettings())
+    onSettingsChanged(updateShortcuts)
+    // The tray menu names the shortcut.
+    onSettingsChanged(() => updateTray(getObserverState()))
     // Free the built-in engine's memory as soon as its model is no longer the one in use.
     onSettingsChanged((settings) => {
       const running = runningModel()
@@ -302,7 +327,12 @@ app.on('will-quit', (event) => {
   shutdownSpeech()
   flushSettings()
   globalShortcut.unregisterAll()
-  Promise.allSettled([unloadModels(), stopEngine()]).finally(() => app.quit())
+  Promise.allSettled([unloadModels(), stopEngine()]).finally(() => {
+    // Quit again once Electron has finished with this quit: when there was nothing to clean up
+    // the cleanup ends at once, and a quit asked for during this event is ignored, which left
+    // GameMate running in the background. (app.exit would skip installing a downloaded update.)
+    setImmediate(() => app.quit())
+  })
 })
 
 // GameMate lives in the tray, so closing every window doesn't quit it.

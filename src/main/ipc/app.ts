@@ -21,7 +21,12 @@ function senderWindow(event: IpcMainInvokeEvent): BrowserWindow {
   return win
 }
 
-export function registerAppHandlers(appInfo: () => AppInfo): void {
+export function registerAppHandlers(
+  appInfo: () => AppInfo,
+  pauseShortcuts: (paused: boolean) => void
+): void {
+  // While the player picks a new shortcut, the current ones don't open the in-game window.
+  handle('shortcuts:pause', (_event, paused: unknown) => pauseShortcuts(paused === true))
   // Only pages on the games' wikis, Modrinth and the policy pages GameMate links to, so a page
   // can't open arbitrary programs or sites.
   handle('app:open-source', (_event, url: unknown) => {
