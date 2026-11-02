@@ -71,6 +71,7 @@ const DEFAULTS: Settings = {
   commentaryEngine: 'local',
   geminiModel: '',
   webLookup: false,
+  webSearch: false,
   detailedAnswers: false,
   termsVersion: 0,
   termsAcceptedAt: '',
@@ -107,6 +108,7 @@ export function getSettings(): Settings {
         ...(current.geminiConsent ? { gemini: '' } : {}),
         ...(current.deviceConsent ? { games: '' } : {}),
         ...(current.webLookup ? { lookups: '' } : {}),
+        ...(current.webSearch ? { search: '' } : {}),
         ...saved.consents
       }
       // Players who set GameMate up with Ollama before the built-in engine existed keep it.
@@ -161,6 +163,7 @@ export function updateSettings(patch: unknown): Settings {
     next.geminiModel = p.geminiModel
   }
   if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
+  if (typeof p.webSearch === 'boolean') next.webSearch = p.webSearch
   if (typeof p.detailedAnswers === 'boolean') next.detailedAnswers = p.detailedAnswers
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
@@ -194,10 +197,11 @@ export function updateSettings(patch: unknown): Settings {
     next.currentGame = 'minecraft'
     next.minecraftModpack = 'auto'
   }
-  // Nothing goes to Google without the player's consent.
+  // Nothing goes to Google without the player's consent (web search goes through Gemini too).
   if (!next.geminiConsent) {
     next.answersEngine = 'local'
     next.commentaryEngine = 'local'
+    next.webSearch = false
   }
   next.consents = consentDates(next)
 
@@ -213,7 +217,8 @@ function consentDates(next: Settings): Settings['consents'] {
   const dates = {
     gemini: date(next.geminiConsent, next.consents.gemini),
     games: date(next.deviceConsent, next.consents.games),
-    lookups: date(next.webLookup, next.consents.lookups)
+    lookups: date(next.webLookup, next.consents.lookups),
+    search: date(next.webSearch, next.consents.search)
   }
   return Object.fromEntries(Object.entries(dates).filter(([, d]) => d !== undefined))
 }

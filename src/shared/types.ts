@@ -41,6 +41,7 @@ export interface ConsentDates {
   games?: string
   lookups?: string
   gemini?: string
+  search?: string
 }
 
 // Speech recognition models ('listen') and GameMate's natural voice ('speak').
@@ -80,6 +81,8 @@ export interface Settings {
   geminiModel: string
   // Let the AI look things up on game wikis and Modrinth.
   webLookup: boolean
+  // Let the AI search the web with Google, through Gemini (needs Gemini).
+  webSearch: boolean
   // Long, detailed answers instead of short, direct ones.
   detailedAnswers: boolean
   // The Terms of Use version the player accepted (0 = not accepted), and when. Without the
@@ -236,6 +239,8 @@ export interface ChatMessage {
   sources?: WikiSource[]
   // Pictures from those wikis (maps, the things the answer is about).
   pictures?: WikiPicture[]
+  // Google's Search Suggestions (HTML), shown when the answer used a web search.
+  searchSuggestions?: string
   // Which AI answered (assistant messages only).
   answeredBy?: AnsweredBy
 }

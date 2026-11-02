@@ -29,12 +29,20 @@ export interface GeminiFunction {
 export interface GeminiRequest {
   systemInstruction?: { parts: { text: string }[] }
   contents: GeminiContent[]
-  tools?: { functionDeclarations: GeminiFunction[] }[]
+  tools?: ({ functionDeclarations: GeminiFunction[] } | { googleSearch: Record<string, never> })[]
   generationConfig?: { responseMimeType?: string; responseSchema?: object }
 }
 
 interface GeminiResponse {
-  candidates?: { content?: GeminiContent; finishReason?: string }[]
+  candidates?: {
+    content?: GeminiContent
+    finishReason?: string
+    // Present when Google Search was used.
+    groundingMetadata?: {
+      groundingChunks?: { web?: { uri?: string; title?: string } }[]
+      searchEntryPoint?: { renderedContent?: string }
+    }
+  }[]
   promptFeedback?: { blockReason?: string }
 }
 
@@ -112,4 +120,50 @@ export async function generate(
     throw new Error(`Gemini didn't answer${reason ? ` (${reason})` : ''}.`)
   }
   return { role: 'model', parts: content.parts ?? [] }
+}
+
+export interface WebSearchResult {
+  // What Google's results say, summarized by Gemini.
+  text: string
+  // The pages it used (Google's links, which lead to them).
+  sources: { title: string; url: string }[]
+  // Google's Search Suggestions (HTML), which Google requires apps to show with these results.
+  suggestions?: string
+}
+
+// Searches the web with Google Search through Gemini. Only the query is sent.
+export async function searchWeb(
+  apiKey: string,
+  model: string,
+  query: string
+): Promise<WebSearchResult> {
+  if (!/^[\w.-]+$/.test(model)) throw new Error('Invalid Gemini model name.')
+  const data = await call<GeminiResponse>(apiKey, `models/${model}:generateContent`, {
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: `Search the web for: ${query}\nSummarize the key facts you find in a few sentences of plain text.`
+          }
+        ]
+      }
+    ],
+    tools: [{ googleSearch: {} }]
+  } satisfies GeminiRequest)
+  const candidate = data.candidates?.[0]
+  const text = (candidate?.content?.parts ?? [])
+    .filter((p) => p.text && !p.thought)
+    .map((p) => p.text)
+    .join('')
+    .trim()
+  const sources = (candidate?.groundingMetadata?.groundingChunks ?? [])
+    .map((chunk) => chunk.web)
+    .filter((web): web is { uri: string; title?: string } => Boolean(web?.uri))
+    .map((web) => ({ title: web.title || new URL(web.uri).host, url: web.uri }))
+  return {
+    text: text || 'The web search found nothing useful.',
+    sources: sources.filter((s, i) => sources.findIndex((o) => o.url === s.url) === i).slice(0, 5),
+    suggestions: candidate?.groundingMetadata?.searchEntryPoint?.renderedContent
+  }
 }

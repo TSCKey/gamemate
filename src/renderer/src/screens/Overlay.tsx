@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ChatMessage } from '../../../preload/index.d'
 import RecipeCard from '../components/RecipeCard'
 import Pictures from '../components/Pictures'
+import SearchSuggestions from '../components/SearchSuggestions'
 import Sources from '../components/Sources'
 import { errorMessage, useSettings } from '../hooks/useSettings'
 import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
@@ -224,6 +225,7 @@ function Overlay(): React.JSX.Element {
                 ))}
                 <Pictures pictures={lastAnswer.pictures} />
                 <Sources sources={lastAnswer.sources} />
+                <SearchSuggestions html={lastAnswer.searchSuggestions} />
               </div>
             )}
             {(error || voice.error) && <div className="overlay-error">{error ?? voice.error}</div>}

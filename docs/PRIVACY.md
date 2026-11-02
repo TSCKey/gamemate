@@ -13,7 +13,7 @@ Email: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate runs on your PC. **We do not receive, collect or store any of your data.** There is no GameMate server, no account, no advertising, no analytics and no tracking.
 - Everything GameMate keeps stays on your PC, in your Windows user folder.
-- GameMate only connects to other companies' services when you use a feature that needs them. Features that send your data elsewhere (Google Gemini, online lookups, finding your games' wikis) are **off until you turn them on**, and you can turn them off at any time.
+- GameMate only connects to other companies' services when you use a feature that needs them. Features that send your data elsewhere (Google Gemini, web search, online lookups, finding your games' wikis) are **off until you turn them on**, and you can turn them off at any time.
 - **Delete my data** in **Settings → Privacy & legal** removes everything GameMate stored on your PC.
 
 ## 3. What GameMate keeps on your PC
@@ -47,6 +47,10 @@ GameMate reads the game lists of Steam, Epic Games, Battle.net and Riot on your 
 ### Online lookups (Settings → AI & online)
 
 When a question is about something in a game, GameMate sends **the topic** (for example "Ender Dragon") to that game's wiki (such as minecraft.wiki, a Fandom wiki or a wiki.gg wiki), and for Minecraft mods the mod's name to Modrinth, and downloads the page text and pictures it shows you. Your question itself is not sent.
+
+### Web search (Settings → AI & online)
+
+Only available while Gemini is on. When the wiki has no answer, or for questions about patches, strategies and tips, the AI writes a short **search query** (for example "Silksong Last Judge tips"), and GameMate sends only that query to Google through the Gemini API with your API key. Your conversation, screenshots and other questions are not sent with it. Google searches the web (including forums such as Reddit) and returns a summary, the pages it used and its search suggestions, which GameMate shows with the answer. Google processes the query under the Gemini API terms and its privacy policy (see Google Gemini below). Searches count toward your API key's free Google Search allowance; if billing is turned on for your key, Google may charge for searches beyond it.
 
 ### Google Gemini (Settings → AI & online)
 

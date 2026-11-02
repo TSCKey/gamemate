@@ -48,6 +48,48 @@ function GeminiConsent({ onAgree }: { onAgree: () => void }): React.JSX.Element 
   )
 }
 
+// What the player agrees to before GameMate searches the web through Gemini.
+function SearchConsent({
+  onAgree,
+  onCancel
+}: {
+  onAgree: () => void
+  onCancel: () => void
+}): React.JSX.Element {
+  return (
+    <div className="consent">
+      <p>If you turn on web search:</p>
+      <ul className="privacy-list">
+        <li>
+          When the wiki doesn&apos;t have the answer, or for patches, strategies and tips, the AI
+          writes a short search query (for example &quot;Silksong Last Judge tips&quot;), and
+          GameMate sends only that query to Google, through Gemini with your API key. Your
+          conversation and screenshots are not sent with it.
+        </li>
+        <li>
+          Google searches the web, including forums like Reddit, under the{' '}
+          <ExternalLink href={LINKS.geminiTerms}>Gemini API terms</ExternalLink> and{' '}
+          <ExternalLink href={LINKS.googlePrivacy}>Google Privacy Policy</ExternalLink>. Answers
+          show the pages it used and Google&apos;s search suggestions.
+        </li>
+        <li>
+          Searches count toward your key&apos;s free Google Search allowance; with billing turned on
+          for your key, Google may charge for searches beyond it.
+        </li>
+        <li>You can turn web search off any time here or in Settings → Privacy &amp; legal.</li>
+      </ul>
+      <div className="button-row">
+        <button type="button" className="primary" onClick={onAgree}>
+          Turn on web search
+        </button>
+        <button type="button" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // What the player agrees to before GameMate looks things up online.
 function LookupsConsent({
   onAgree,
@@ -101,6 +143,9 @@ function AiPanel({
 
   const consent = settings.geminiConsent
   const [askLookups, setAskLookups] = useState(false)
+  const [askSearch, setAskSearch] = useState(false)
+  // Web search goes through Gemini, so it needs Gemini turned on with a key.
+  const searchPossible = consent && hasKey
 
   useEffect(() => {
     if (!consent) return
@@ -305,6 +350,30 @@ function AiPanel({
               setAskLookups(false)
             }}
             onCancel={() => setAskLookups(false)}
+          />
+        )}
+        <Field
+          label="Search the web"
+          help={
+            searchPossible
+              ? 'Lets the AI search the web with Google (through Gemini) for patches, strategies and tips the wiki doesn’t cover. Only the search query is sent.'
+              : 'Searches the web with Google for what the wiki doesn’t cover. Needs Gemini: turn it on and add your key above first.'
+          }
+        >
+          <Toggle
+            label="Search the web"
+            checked={settings.webSearch}
+            disabled={!searchPossible}
+            onChange={(webSearch) => (webSearch ? setAskSearch(true) : update({ webSearch }))}
+          />
+        </Field>
+        {askSearch && !settings.webSearch && searchPossible && (
+          <SearchConsent
+            onAgree={() => {
+              update({ webSearch: true })
+              setAskSearch(false)
+            }}
+            onCancel={() => setAskSearch(false)}
           />
         )}
       </Section>

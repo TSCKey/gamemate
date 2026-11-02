@@ -8,6 +8,7 @@ import SetupCard from '../components/SetupCard'
 import { TERMS_VERSION } from '../constants'
 import RecipeCard from '../components/RecipeCard'
 import Pictures from '../components/Pictures'
+import SearchSuggestions from '../components/SearchSuggestions'
 import Sources from '../components/Sources'
 import AnsweredByLabel from '../components/AnsweredByLabel'
 import SettingsScreen, { type SettingsTab } from './SettingsScreen'
@@ -300,6 +301,7 @@ function App(): React.JSX.Element {
             ))}
             <Pictures pictures={m.pictures} />
             <Sources sources={m.sources} />
+            <SearchSuggestions html={m.searchSuggestions} />
             {onAuto && m.answeredBy && <AnsweredByLabel by={m.answeredBy} />}
           </div>
         ))}

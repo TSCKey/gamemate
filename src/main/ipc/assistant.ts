@@ -6,6 +6,7 @@ import type { LlmEngine } from '../ai/llm'
 import { listModels, type ChatMessage } from '../ai/ollamaClient'
 import { recentObservations } from '../companion/observer'
 import { handle } from '../system/security'
+import { getGeminiKey } from '../system/secrets'
 import { getSettings } from '../system/settings'
 
 const VALID_ROLES = new Set(['user', 'assistant'])
@@ -52,7 +53,10 @@ export function registerAssistantHandlers(): void {
             if (!event.sender.isDestroyed()) event.sender.send('assistant:text', requestId, text)
           }
         : undefined
-    const { webLookup, detailedAnswers } = getSettings()
+    const { webLookup, detailedAnswers, webSearch, geminiConsent, geminiModel } = getSettings()
+    // Web search goes through Gemini: only with the player's consents, key and model.
+    const apiKey = webSearch && geminiConsent && geminiModel ? getGeminiKey() : null
+    const search = apiKey ? { apiKey, model: geminiModel } : undefined
     const game = await gameContext(history.at(-1)?.content)
     const last = history.at(-1)
     const route = routeQuestion(last?.content ?? '', Boolean(last?.images?.length), history.length)
@@ -66,6 +70,7 @@ export function registerAssistantHandlers(): void {
           game,
           webLookup,
           detailed: detailedAnswers,
+          search,
           observations: recentObservations(),
           onText
         },

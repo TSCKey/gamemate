@@ -138,6 +138,13 @@ function PrivacyPanel({
           onWithdraw={() => update({ webLookup: false })}
         />
         <ConsentRow
+          label="Web search (Google)"
+          given={settings.webSearch}
+          since={settings.consents.search}
+          where="Settings → AI & online"
+          onWithdraw={() => update({ webSearch: false })}
+        />
+        <ConsentRow
           label="Google Gemini"
           given={settings.geminiConsent}
           since={settings.consents.gemini}

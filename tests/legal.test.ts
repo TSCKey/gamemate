@@ -59,6 +59,15 @@ describe('legal documents', () => {
     }
   })
 
+  it('opens the links from web search, but not Google in general', async () => {
+    const { allowedLink } = await import('../src/main/system/links')
+    expect(allowedLink('https://vertexaisearch.cloud.google.com/grounding-api-redirect/x')).toBe(
+      true
+    )
+    expect(allowedLink('https://www.google.com/search?q=silksong')).toBe(true)
+    expect(allowedLink('https://www.google.com/maps')).toBe(false)
+  })
+
   it('only links to pages GameMate may open', async () => {
     const { allowedLink } = await import('../src/main/system/links')
     for (const doc of ['TERMS.md', 'PRIVACY.md']) {

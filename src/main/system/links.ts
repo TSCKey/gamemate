@@ -22,8 +22,15 @@ export function allowWiki(site: WikiSite): void {
   otherWikis.add(new URL(site.articlePath.replace('$1', '')).origin)
 }
 
+// Pages from web search: Google's links to the results, and its Search Suggestions.
+const SEARCH_LINKS = [
+  'https://vertexaisearch.cloud.google.com/grounding-api-redirect/',
+  'https://www.google.com/search?'
+]
+
 export function allowedLink(url: string): boolean {
   if (EXTERNAL_LINKS.includes(url)) return true
+  if (SEARCH_LINKS.some((prefix) => url.startsWith(prefix))) return true
   let target: URL
   try {
     target = new URL(url)

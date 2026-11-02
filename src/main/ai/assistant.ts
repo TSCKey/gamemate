@@ -13,6 +13,7 @@ import {
   type WikiSource
 } from '../games/wiki'
 import { minecraftIcons, pagePicture } from '../games/pictures'
+import { searchWeb } from './gemini'
 import { allowWiki } from '../system/links'
 import type { AnsweredBy, WikiPicture } from '../../shared/types'
 export type { AnsweredBy }
@@ -38,6 +39,8 @@ export interface AssistantReply {
   sources?: WikiSource[]
   // Pictures from those wikis.
   pictures?: WikiPicture[]
+  // Google's Search Suggestions, shown whenever the answer used a web search.
+  searchSuggestions?: string
   // Which AI answered, and in Auto mode why.
   answeredBy?: AnsweredBy
 }
@@ -51,6 +54,8 @@ export interface AssistantContext {
   webLookup: boolean
   // The player prefers long, detailed answers over short, direct ones.
   detailed?: boolean
+  // Web search through Gemini with Google Search (only with the player's consent and key).
+  search?: { apiKey: string; model: string }
   // Receives the answer so far while it is written; an empty string means it starts over.
   onText?: (text: string) => void
 }
@@ -125,6 +130,9 @@ function systemPrompt(ctx: AssistantContext): string {
     'When the user attaches a screenshot, it shows their screen right now: base your answer on what is actually visible in it, and say so if something is unclear or not visible.',
     minecraftRules(ctx),
     wikiRules(ctx),
+    ctx.search
+      ? 'When the wiki has no answer, or the question is about recent patches, community strategies, builds or tips, call web_search with a short query that names the game.'
+      : '',
     'Never invent game facts you are unsure about.'
   ]
     .filter(Boolean)
@@ -227,8 +235,25 @@ function toolsFor(ctx: AssistantContext): LlmTool[] {
     ...(ctx.webLookup && ctx.game.wiki ? [wikiTool(ctx)] : []),
     ...(ctx.webLookup ? [OTHER_GAME_TOOL] : []),
     ...(mc?.modpack ? [MODPACK_TOOL] : []),
-    ...(mc?.modpack && ctx.webLookup ? [MOD_INFO_TOOL] : [])
+    ...(mc?.modpack && ctx.webLookup ? [MOD_INFO_TOOL] : []),
+    ...(ctx.search ? [WEB_SEARCH_TOOL] : [])
   ]
+}
+
+const WEB_SEARCH_TOOL: LlmTool = {
+  name: 'web_search',
+  description:
+    "Search the web with Google for what the game's wiki doesn't cover: recent patches and changes, community strategies, builds and tips (for example from Reddit), or games without a wiki.",
+  parameters: {
+    type: 'object',
+    properties: {
+      query: {
+        type: 'string',
+        description: 'A short search query that names the game, e.g. "Silksong Last Judge tips"'
+      }
+    },
+    required: ['query']
+  }
 }
 
 interface Collected {
@@ -241,6 +266,8 @@ interface Collected {
   // Pictures of the wiki pages used, and recipe icons, loading while the AI writes.
   pictures: Promise<WikiPicture | null>[]
   recipeArt: Promise<void>[]
+  // Google's Search Suggestions from a web search.
+  searchSuggestions?: string
 }
 
 // Starts loading the picture of a wiki page the answer uses (online lookups only).
@@ -384,6 +411,20 @@ async function runTool(
       }
       case 'modpack_mods':
         return mc?.modpack ? searchMods(mc.modpack, arg('query')) : 'No modpack in use.'
+      case 'web_search': {
+        if (!ctx.search) return 'Web search is turned off.'
+        const result = await searchWeb(ctx.search.apiKey, ctx.search.model, arg('query'))
+        for (const source of result.sources) {
+          addSource(out, {
+            title: source.title,
+            url: source.url,
+            wiki: 'Google Search',
+            license: ''
+          })
+        }
+        out.searchSuggestions ??= result.suggestions
+        return `Web search results for "${arg('query')}":\n\n${result.text}`
+      }
       case 'mod_info': {
         if (!ctx.webLookup) return 'Online lookups are turned off.'
         const result = await modInfo(arg('mod'))
@@ -490,7 +531,8 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
         },
         ...(out.recipes.length ? { recipes: out.recipes } : {}),
         ...(sources.length ? { sources } : {}),
-        ...(pictures.length ? { pictures } : {})
+        ...(pictures.length ? { pictures } : {}),
+        ...(out.searchSuggestions ? { searchSuggestions: out.searchSuggestions } : {})
       }
     }
     // Text written before a tool call was only a lead-in; the real answer follows the lookup.

@@ -39,7 +39,7 @@ Some games, especially competitive online games, do not allow outside help durin
 
 Some features connect to services of other companies. Each of them has its own terms, which apply when you use them through GameMate:
 
-- **Google Gemini** (only if you turn it on): [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms) and [Google Privacy Policy](https://policies.google.com/privacy).
+- **Google Gemini and web search** (only if you turn them on): [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms) and [Google Privacy Policy](https://policies.google.com/privacy). Web search results come from websites run by others, which GameMate does not check.
 - **Game wikis and Modrinth** (only if you turn on online lookups): each wiki's text and pictures are shared by their authors under the wiki's own license, which GameMate shows with every answer that uses them.
 - **Hugging Face** (AI and speech models) and **GitHub** (GameMate's AI engine and updates): only when you download something or check for updates.
 
