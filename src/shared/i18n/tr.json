@@ -355,7 +355,9 @@
       "voice": "Sesle sorduğumda",
       "always": "Her zaman"
     },
-    "naturalVoice": "Doğal ses"
+    "naturalVoice": "Doğal ses",
+    "englishOnlyModel": "Yalnızca İngilizce sürüm yüklü. {{language}} konuşmak için çok dilli sürümü indirin.",
+    "englishOnlyWorks": "Yalnızca İngilizce sürüm yüklü. İngilizce için çalışır; başka dillerde de konuşmak için çok dilli sürümü indirin."
   },
   "useLocalModels": {
     "builtInAi": "Yerleşik yapay zekâ",

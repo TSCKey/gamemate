@@ -358,7 +358,9 @@
       "voice": "Cuando pregunto con la voz",
       "always": "Siempre"
     },
-    "naturalVoice": "Voz natural"
+    "naturalVoice": "Voz natural",
+    "englishOnlyModel": "Tienes la versión solo en inglés. Descarga la versión multilingüe para hablar en {{language}}.",
+    "englishOnlyWorks": "Tienes la versión solo en inglés. Funciona en inglés; descarga la versión multilingüe para hablar también en otros idiomas."
   },
   "useLocalModels": {
     "builtInAi": "IA integrada",

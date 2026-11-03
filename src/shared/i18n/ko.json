@@ -352,7 +352,9 @@
       "voice": "음성으로 질문할 때",
       "always": "항상"
     },
-    "naturalVoice": "자연스러운 목소리"
+    "naturalVoice": "자연스러운 목소리",
+    "englishOnlyModel": "영어 전용 버전이 설치되어 있습니다. {{language}}로 말하려면 다국어 버전을 다운로드하세요.",
+    "englishOnlyWorks": "영어 전용 버전이 설치되어 있습니다. 영어로는 사용할 수 있으며, 다른 언어로도 말하려면 다국어 버전을 다운로드하세요."
   },
   "useLocalModels": {
     "builtInAi": "내장 AI",

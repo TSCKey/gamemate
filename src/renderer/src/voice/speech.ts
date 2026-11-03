@@ -1,5 +1,7 @@
 // Speech-to-text client: one shared Whisper worker per window.
 import type { SpeechRequest, SpeechResponse } from './speech.worker'
+import type { LanguageCode } from '../../../shared/languages'
+import { whisperOptions } from '../../../shared/speech'
 
 let worker: Worker | null = null
 let nextId = 1
@@ -27,12 +29,24 @@ export function preloadSpeechModel(repo: string): void {
   getWorker().postMessage({ type: 'load', repo } satisfies SpeechRequest)
 }
 
-export function transcribe(repo: string, audio: Float32Array): Promise<string> {
+export function transcribe(
+  repo: string,
+  audio: Float32Array,
+  language: LanguageCode
+): Promise<string> {
   const w = getWorker()
   w.postMessage({ type: 'load', repo } satisfies SpeechRequest)
   const id = nextId++
   return new Promise((resolve, reject) => {
     pending.set(id, { resolve, reject })
-    w.postMessage({ type: 'transcribe', id, audio } satisfies SpeechRequest, [audio.buffer])
+    w.postMessage(
+      {
+        type: 'transcribe',
+        id,
+        audio,
+        options: whisperOptions(repo, language)
+      } satisfies SpeechRequest,
+      [audio.buffer]
+    )
   })
 }

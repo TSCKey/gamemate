@@ -3,6 +3,9 @@
 import { env, pipeline, type AutomaticSpeechRecognitionPipeline } from '@huggingface/transformers'
 import ortWasmUrl from 'onnxruntime-web/ort-wasm-simd-threaded.asyncify.wasm?url'
 import ortMjsUrl from 'onnxruntime-web/ort-wasm-simd-threaded.asyncify.mjs?url'
+import type { whisperOptions } from '../../../shared/speech'
+
+type WhisperOptions = ReturnType<typeof whisperOptions>
 
 env.allowRemoteModels = false
 env.allowLocalModels = true
@@ -24,7 +27,8 @@ if (onnx.wasm) {
 }
 
 export type SpeechRequest =
-  { type: 'load'; repo: string } | { type: 'transcribe'; id: number; audio: Float32Array }
+  | { type: 'load'; repo: string }
+  | { type: 'transcribe'; id: number; audio: Float32Array; options: WhisperOptions }
 
 export type SpeechResponse =
   | { type: 'loaded'; repo: string }
@@ -56,7 +60,7 @@ self.onmessage = async (event: MessageEvent<SpeechRequest>) => {
       post({ type: 'loaded', repo: request.repo })
     } else {
       const recognize = await load(loadedRepo)
-      const output = await recognize(request.audio)
+      const output = await recognize(request.audio, request.options)
       const text = (Array.isArray(output) ? output[0] : output).text
       post({ type: 'result', id: request.id, text: text.trim() })
     }

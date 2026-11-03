@@ -355,7 +355,9 @@
       "voice": "Wenn ich per Sprache frage",
       "always": "Immer"
     },
-    "naturalVoice": "Natürliche Stimme"
+    "naturalVoice": "Natürliche Stimme",
+    "englishOnlyModel": "Du hast die Version nur für Englisch. Lade die mehrsprachige Version herunter, um auf {{language}} zu sprechen.",
+    "englishOnlyWorks": "Du hast die Version nur für Englisch. Sie funktioniert auf Englisch; lade die mehrsprachige Version herunter, um auch andere Sprachen zu sprechen."
   },
   "useLocalModels": {
     "builtInAi": "Integrierte KI",

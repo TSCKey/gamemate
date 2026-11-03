@@ -4,12 +4,7 @@ import { recordQuestion, type Recording } from './recorder'
 import { preloadSpeechModel, transcribe } from './speech'
 import { stopSpeaking } from './speak'
 import { t } from '../i18n'
-
-const REPOS: Record<Settings['speechModel'], string> = {
-  fast: 'onnx-community/whisper-tiny.en',
-  accurate: 'onnx-community/whisper-base.en',
-  best: 'onnx-community/whisper-small.en'
-}
+import { canListen } from '../../../shared/speech'
 
 export type VoiceStatus = 'idle' | 'listening' | 'transcribing'
 
@@ -40,9 +35,10 @@ export function useVoiceInput(
     return window.api.voice.onModels(setModels)
   }, [])
 
-  const repo = settings ? REPOS[settings.speechModel] : ''
-  const ready =
-    !!settings?.voiceInput && !!models.find((m) => m.id === settings.speechModel)?.installed
+  const language = settings?.language || 'en'
+  const model = models.find((m) => m.id === settings?.speechModel)
+  const repo = model?.repo ?? ''
+  const ready = !!settings?.voiceInput && canListen(model, language)
 
   // Load the model in the background as soon as voice input is usable.
   useEffect(() => {
@@ -64,7 +60,7 @@ export function useVoiceInput(
         return
       }
       setStatus('transcribing')
-      const text = await transcribe(repo, audio)
+      const text = await transcribe(repo, audio, language)
       setStatus('idle')
       // Whisper writes "[BLANK_AUDIO]" or similar when it hears nothing useful.
       const clean = text.replace(/\[[^\]]*\]|\([^)]*\)/g, '').trim()
@@ -82,7 +78,7 @@ export function useVoiceInput(
             : String(e)
       )
     }
-  }, [repo])
+  }, [repo, language])
 
   const toggle = useCallback(() => {
     if (!ready) return

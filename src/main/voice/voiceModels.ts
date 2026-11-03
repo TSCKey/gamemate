@@ -8,6 +8,7 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { pathToFileURL } from 'url'
 import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../../shared/types'
+import { checkFile } from './checksum'
 import { t } from '../system/i18n'
 export type { SpeechModelId, ListenModelId, SpeechModelStatus }
 
@@ -59,28 +60,32 @@ export const KOKORO_VOICES = [
   'bm_lewis'
 ]
 
-// Speech recognition: Whisper (MIT), converted to ONNX by onnx-community, 8-bit quantized.
-// Voice: Kokoro-82M (Apache 2.0). Pinned revisions so every install gets the same files.
+// Speech recognition: multilingual Whisper (MIT), converted to ONNX by onnx-community, 8-bit
+// quantized. `legacyRepo` is the English-only version GameMate 1.0.3 downloaded, still used for
+// English. Voice: Kokoro-82M (Apache 2.0). Pinned revisions so every install gets the same files.
 export const SPEECH_MODELS = {
   fast: {
     kind: 'listen',
-    repo: 'onnx-community/whisper-tiny.en',
-    revision: '2575352d61be1bf7225cf8f8b268a4678025fc58',
+    repo: 'onnx-community/whisper-tiny',
+    revision: 'ff4177021cc41f7db950912b73ea4fdf7d01d8e7',
+    legacyRepo: 'onnx-community/whisper-tiny.en',
     sizeMb: 45,
     files: WHISPER_FILES
   },
   accurate: {
     kind: 'listen',
-    repo: 'onnx-community/whisper-base.en',
-    revision: '51eefc0af78b103839eda9e7e4f4186acc6517fe',
-    sizeMb: 80,
+    repo: 'onnx-community/whisper-base',
+    revision: '27a07b4b52b3a4c5886134bb4320e93e1a4bbc7c',
+    legacyRepo: 'onnx-community/whisper-base.en',
+    sizeMb: 81,
     files: WHISPER_FILES
   },
   best: {
     kind: 'listen',
-    repo: 'onnx-community/whisper-small.en',
-    revision: '482fb8ba081b6e906f92efe103622316b2a0cc69',
-    sizeMb: 250,
+    repo: 'onnx-community/whisper-small',
+    revision: '36050c46d777d46dc4b5f43f6d90574fc38f8732',
+    legacyRepo: 'onnx-community/whisper-small.en',
+    sizeMb: 253,
     files: WHISPER_FILES
   },
   kokoro: {
@@ -100,6 +105,12 @@ export const SPEECH_MODELS = {
 
 const modelsDir = (): string => join(app.getPath('userData'), 'models')
 const modelDir = (id: SpeechModelId): string => join(modelsDir(), SPEECH_MODELS[id].repo)
+const legacyDir = (id: SpeechModelId): string | null => {
+  const model = SPEECH_MODELS[id]
+  return 'legacyRepo' in model ? join(modelsDir(), model.legacyRepo) : null
+}
+const hasFiles = (dir: string, files: readonly string[]): boolean =>
+  files.every((f) => existsSync(join(dir, f)))
 const downloads = new Map<SpeechModelId, { progress: number; error: string | null }>()
 
 export function isSpeechModelId(value: unknown): value is SpeechModelId {
@@ -116,11 +127,17 @@ export function isSpeechModelInstalled(id: SpeechModelId): boolean {
 
 function status(id: SpeechModelId): SpeechModelStatus {
   const dl = downloads.get(id)
+  const model = SPEECH_MODELS[id]
+  const installed = !dl && hasFiles(modelDir(id), model.files)
+  const legacy = legacyDir(id)
+  const englishOnly = !installed && !!legacy && hasFiles(legacy, model.files)
   return {
     id,
-    kind: SPEECH_MODELS[id].kind,
-    sizeMb: SPEECH_MODELS[id].sizeMb,
-    installed: !dl && SPEECH_MODELS[id].files.every((f) => existsSync(join(modelDir(id), f))),
+    kind: model.kind,
+    sizeMb: model.sizeMb,
+    installed,
+    englishOnly,
+    repo: installed ? model.repo : englishOnly && 'legacyRepo' in model ? model.legacyRepo : '',
     progress: dl && !dl.error ? dl.progress : null,
     error: dl?.error ?? null
   }
@@ -152,11 +169,13 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     )
     if (!listing.ok)
       throw new Error(t('errors.download.serverAnswered', { status: listing.status }))
-    const sizes = new Map(
-      ((await listing.json()) as { path: string; size: number }[]).map((f) => [f.path, f.size])
+    const listed = new Map(
+      ((await listing.json()) as { path: string; size: number; lfs?: { oid?: string } }[]).map(
+        (f) => [f.path, { size: f.size, sha256: f.lfs?.oid }]
+      )
     )
     const files: readonly string[] = SPEECH_MODELS[id].files
-    const total = files.reduce<number>((sum, f) => sum + (sizes.get(f) ?? 0), 0)
+    const total = files.reduce<number>((sum, f) => sum + (listed.get(f)?.size ?? 0), 0)
     let received = 0
     let lastBroadcast = 0
 
@@ -177,8 +196,9 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
         }
       })
       await pipeline(body, createWriteStream(file))
-      const expected = sizes.get(name)
-      if (expected !== undefined && (await stat(file)).size !== expected) {
+      // Large files are checked by their sha256, small ones by size.
+      const expected = listed.get(name)
+      if (expected && !(await checkFile(file, expected))) {
         throw new Error(t('errors.download.incomplete'))
       }
     }
@@ -186,6 +206,9 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     await rm(dir, { recursive: true, force: true })
     await mkdir(dirname(dir), { recursive: true })
     await rename(tmp, dir)
+    // The multilingual model replaces 1.0.3's English-only one.
+    const legacy = legacyDir(id)
+    if (legacy) await rm(legacy, { recursive: true, force: true })
     downloads.delete(id)
   } catch (error) {
     state.error = t(
@@ -203,6 +226,8 @@ export async function removeSpeechModel(id: SpeechModelId): Promise<void> {
   if (downloads.has(id) && !downloads.get(id)?.error) return
   downloads.delete(id)
   await rm(modelDir(id), { recursive: true, force: true })
+  const legacy = legacyDir(id)
+  if (legacy) await rm(legacy, { recursive: true, force: true })
   broadcast()
 }
 

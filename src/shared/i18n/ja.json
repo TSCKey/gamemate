@@ -352,7 +352,9 @@
       "voice": "音声で質問したとき",
       "always": "常に"
     },
-    "naturalVoice": "自然な声"
+    "naturalVoice": "自然な声",
+    "englishOnlyModel": "英語専用版が入っています。{{language}}で話すには多言語版をダウンロードしてください。",
+    "englishOnlyWorks": "英語専用版が入っています。英語では使えます。ほかの言語でも話すには多言語版をダウンロードしてください。"
   },
   "useLocalModels": {
     "builtInAi": "内蔵 AI",

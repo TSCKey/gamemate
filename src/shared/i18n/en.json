@@ -355,7 +355,9 @@
       "voice": "When I ask by voice",
       "always": "Always"
     },
-    "naturalVoice": "Natural voice"
+    "naturalVoice": "Natural voice",
+    "englishOnlyModel": "You have the English-only version. Download the multilingual version to talk in {{language}}.",
+    "englishOnlyWorks": "You have the English-only version. It works for English; download the multilingual version to talk in other languages too."
   },
   "useLocalModels": {
     "builtInAi": "Built-in AI",

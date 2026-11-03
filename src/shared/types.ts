@@ -289,6 +289,10 @@ export interface SpeechModelStatus {
   kind: 'listen' | 'speak'
   sizeMb: number
   installed: boolean
+  // Only GameMate 1.0.3's English-only version of this speech model is on disk.
+  englishOnly: boolean
+  // The model to load: the installed one, the English-only one, or '' when neither is there.
+  repo: string
   // 0-1 while downloading, otherwise null.
   progress: number | null
   error: string | null

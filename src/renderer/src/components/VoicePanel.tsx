@@ -9,6 +9,8 @@ import type {
 import { speak } from '../voice/speak'
 import { Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
+import { languageInfo } from '../../../shared/languages'
+import { canListen } from '../../../shared/speech'
 
 // Kokoro's English voices: a = American, b = British, f = female, m = male.
 const KOKORO_VOICES = [
@@ -93,6 +95,7 @@ function VoicePanel({
   const kokoro = models.find((m) => m.id === 'kokoro')
   const selected = models.find((m) => m.id === settings.speechModel)
   const natural = settings.voiceEngine === 'kokoro'
+  const language = settings.language || 'en'
 
   return (
     <>
@@ -134,6 +137,14 @@ function VoicePanel({
                 help={
                   m.error ? (
                     <span className="error-text">{m.error}</span>
+                  ) : m.englishOnly ? (
+                    language === 'en' ? (
+                      t('voicePanel.englishOnlyWorks')
+                    ) : (
+                      t('voicePanel.englishOnlyModel', {
+                        language: languageInfo(language).nativeName
+                      })
+                    )
                   ) : (
                     t(`voicePanel.speechModels.${m.id}.help`)
                   )
@@ -142,7 +153,7 @@ function VoicePanel({
                 <ModelButton model={m} />
               </Field>
             ))}
-            {!selected?.installed && (
+            {!canListen(selected, language) && (
               <p className="field-help">{t('voicePanel.downloadTheSelectedModelOnce')}</p>
             )}
           </>

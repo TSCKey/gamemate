@@ -352,7 +352,9 @@
       "voice": "我用语音提问时",
       "always": "始终"
     },
-    "naturalVoice": "自然声音"
+    "naturalVoice": "自然声音",
+    "englishOnlyModel": "你安装的是仅英语版本。下载多语言版本即可用{{language}}交谈。",
+    "englishOnlyWorks": "你安装的是仅英语版本。它可用于英语；下载多语言版本即可用其他语言交谈。"
   },
   "useLocalModels": {
     "builtInAi": "内置 AI",
