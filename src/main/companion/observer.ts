@@ -20,6 +20,7 @@ import {
 } from '../system/settings'
 import { EVENT_TYPES } from '../../shared/types'
 import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../../shared/types'
+import { languageInfo, type LanguageCode } from '../../shared/languages'
 export { EVENT_TYPES }
 export type { EventType, ObservedEvent }
 
@@ -130,7 +131,8 @@ function analysisReason(frame: FrameStats, now: number): string | null {
   return null
 }
 
-function analysisPrompt(reason: string, game: GameProfile): string {
+// The companion's instructions for one look at the screen; the comment is in the player's language.
+export function analysisPrompt(reason: string, game: GameProfile, language: LanguageCode): string {
   const recent = state.events
     .slice(-3)
     .map((e) => `- ${Math.round((Date.now() - e.time) / 1000)}s ago: ${e.description}`)
@@ -151,6 +153,7 @@ ${darkArea}- other: something else a player would want to know about (1-5)
 In ${game.name}, watch especially for: ${game.watchFor}.
 "description": one short factual sentence about what is visible.
 "comment": what a friendly friend sitting next to the player would say about it, under 20 words, plain text. Leave it empty for "none".
+Write "comment" in ${languageInfo(language).englishName}; "description" stays in English.
 Only report what you can actually see. If unsure, use "none".
 Why you are looking now: ${reason}
 ${recent ? `Already noticed recently (don't report the same thing again):\n${recent}` : ''}`
@@ -173,7 +176,7 @@ async function analyze(
       [
         {
           role: 'user',
-          content: analysisPrompt(reason, game),
+          content: analysisPrompt(reason, game, settings.language || 'en'),
           images: [toScreenshot(image).base64]
         }
       ],

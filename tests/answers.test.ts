@@ -42,7 +42,8 @@ vi.mock('../src/main/ai/gemini', () => ({
   }
 }))
 
-const { ask, isNonAnswer, noAnswer, webSearchQuery } = await import('../src/main/ai/assistant')
+const { answerLanguageRule, ask, isNonAnswer, noAnswer, webSearchQuery } =
+  await import('../src/main/ai/assistant')
 
 const ctx = {
   engine: { provider: 'builtin' as const, model: 'test' },
@@ -128,5 +129,38 @@ describe('questions about what is current', () => {
       { role: 'user', content: 'Who is meta right now?' }
     ])
     expect(searches).toEqual([])
+  })
+})
+
+describe('the answer language', () => {
+  it('is the player’s language', async () => {
+    await ask({ ...ctx, language: 'de' }, question)
+    expect(seen[0][0].content).toContain('answer in German')
+  })
+
+  it('asks for wiki lookups by English name when lookups are on', () => {
+    expect(answerLanguageRule('de', true)).toContain('wiki_lookup with an English topic')
+    expect(answerLanguageRule('de', false)).not.toContain('wiki_lookup')
+  })
+
+  it('is not set for English players', async () => {
+    await ask({ ...ctx, language: 'en' }, question)
+    expect(seen[0][0].content).toContain('Answer in the language the player writes or speaks in.')
+    expect(seen[0][0].content).not.toMatch(/answer in English|English topic/)
+  })
+
+  it('is used for the companion’s comments', async () => {
+    const { analysisPrompt } = await import('../src/main/companion/observer')
+    const { MINECRAFT } = await import('../src/main/games/catalog')
+    expect(analysisPrompt('the scene changed', MINECRAFT, 'ar')).toContain('"comment" in Arabic')
+    expect(analysisPrompt('the scene changed', MINECRAFT, 'en')).toContain('"comment" in English')
+  })
+})
+
+describe('the answer language without lookups', () => {
+  it('does not ask for a wiki lookup', async () => {
+    await ask({ ...ctx, language: 'de', webLookup: false }, question)
+    expect(seen[0][0].content).toContain('answer in German')
+    expect(seen[0][0].content).not.toContain('wiki_lookup with an English topic')
   })
 })

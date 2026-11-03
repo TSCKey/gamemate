@@ -54,7 +54,8 @@ export function registerAssistantHandlers(): void {
             if (!event.sender.isDestroyed()) event.sender.send('assistant:text', requestId, text)
           }
         : undefined
-    const { webLookup, detailedAnswers, webSearch, geminiConsent, geminiModel } = getSettings()
+    const { webLookup, detailedAnswers, webSearch, geminiConsent, geminiModel, language } =
+      getSettings()
     // Web search goes through Gemini: only with the player's consents, key and model.
     const apiKey = webSearch && geminiConsent && geminiModel ? getGeminiKey() : null
     const search = apiKey ? { apiKey, model: geminiModel } : undefined
@@ -70,6 +71,7 @@ export function registerAssistantHandlers(): void {
           engine,
           game,
           webLookup,
+          language: language || 'en',
           detailed: detailedAnswers,
           search,
           observations: recentObservations(),

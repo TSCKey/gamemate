@@ -18,6 +18,7 @@ import { searchWeb, type WebSearchResult } from './gemini'
 import { allowWiki } from '../system/links'
 import type { AnsweredBy, WikiPicture } from '../../shared/types'
 import { t } from '../system/i18n'
+import { languageInfo, type LanguageCode } from '../../shared/languages'
 export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.
@@ -66,6 +67,8 @@ export interface AssistantContext {
   search?: { apiKey: string; model: string }
   // Receives the answer so far while it is written; an empty string means it starts over.
   onText?: (text: string) => void
+  // The language the player chose for GameMate (English when not given).
+  language?: LanguageCode
 }
 
 let asking = 0
@@ -133,6 +136,18 @@ const NO_ANSWER_RULE =
 // What the player sees when the AI found nothing it can stand behind.
 export const noAnswer = (): string => t('answers.noAnswer')
 
+// Answers follow the player: the language they ask in, else the one they chose. Wikis are mostly
+// English, so lookups use English topics; web searches stay in the player's language.
+export function answerLanguageRule(language: LanguageCode, canLookUp = true): string {
+  const rule = 'Answer in the language the player writes or speaks in.'
+  if (language === 'en') return rule
+  const answer = `${rule.slice(0, -1)}; if unclear, answer in ${languageInfo(language).englishName}.`
+  // GameMate's own page search only understands English titles, so the AI has to look it up.
+  return canLookUp
+    ? `${answer} The game's wiki is in English and GameMate can't search it with the player's words: for questions about something in the game, first call wiki_lookup with an English topic (its English name).`
+    : answer
+}
+
 function systemPrompt(ctx: AssistantContext): string {
   const { game } = ctx
   const playing = game.minecraft?.edition ? `Minecraft ${game.minecraft.edition}` : game.name
@@ -141,6 +156,7 @@ function systemPrompt(ctx: AssistantContext): string {
     `The player is playing ${playing}.`,
     `If the player asks about a different game, help with that game just as well: never say you can only help with ${playing}.${ctx.webLookup ? ` For facts about another game, call game_wiki with its name (not wiki_lookup, which only covers ${playing}).` : ''}`,
     ...(ctx.detailed ? DETAILED_STYLE : DIRECT_STYLE),
+    answerLanguageRule(ctx.language ?? 'en', ctx.webLookup && !!ctx.game.wiki),
     NO_ANSWER_RULE,
     'Write plain text: no Markdown, headings or bold.',
     'When the user attaches a screenshot, it shows their screen right now: base your answer on what is actually visible in it, and say so if something is unclear or not visible.',
