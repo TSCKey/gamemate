@@ -37,6 +37,8 @@ export interface LlmOptions {
   fast?: boolean
   // Receives the answer's text as it is written (engines that can stream it).
   onText?: (delta: string) => void
+  // Aborted when the player stops the answer: the request is closed.
+  signal?: AbortSignal
 }
 
 export interface LlmReply {
@@ -91,7 +93,8 @@ async function viaOllama(
     })),
     format: options.jsonSchema,
     ...(options.fast ? { think: false } : {}),
-    onText: options.onText
+    onText: options.onText,
+    signal: options.signal
   })
   return {
     content: reply.content,
@@ -186,7 +189,7 @@ async function viaGemini(
         }
       : {})
   }
-  const content = await generate(apiKey, model, request)
+  const content = await generate(apiKey, model, request, options.signal)
   return {
     // Thought summaries are not part of the answer.
     content: content.parts

@@ -19,6 +19,7 @@ import { allowWiki } from '../system/links'
 import type { AnsweredBy, WikiPicture } from '../../shared/types'
 import { t } from '../system/i18n'
 import { languageInfo, type LanguageCode } from '../../shared/languages'
+import { throwIfStopped } from './stop'
 export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.
@@ -69,6 +70,8 @@ export interface AssistantContext {
   onText?: (text: string) => void
   // The language the player chose for GameMate (English when not given).
   language?: LanguageCode
+  // Aborted when the player stops the answer (■).
+  signal?: AbortSignal
 }
 
 let asking = 0
@@ -552,6 +555,7 @@ export async function ask(ctx: AssistantContext, history: ChatMessage[]): Promis
 }
 
 async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<AssistantReply> {
+  throwIfStopped(ctx.signal)
   let history = full.slice(-MAX_HISTORY)
   // Start at a question, not halfway through an exchange.
   while (history.length > 1 && history[0].role !== 'user') history = history.slice(1)
@@ -592,6 +596,7 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
   for (const known of [recipes ?? page, web]) {
     if (known) messages.splice(messages.length - 1, 0, { role: 'system', content: known })
   }
+  throwIfStopped(ctx.signal)
   const tools = toolsFor(ctx)
 
   let written = ''
@@ -617,9 +622,11 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
           'You have looked up enough. Answer the player now from what you found; no more lookups.'
       })
     }
+    throwIfStopped(ctx.signal)
     const reply = await complete(ctx.engine, messages, {
       tools: round < MAX_TOOL_ROUNDS && tools.length ? tools : undefined,
-      onText
+      onText,
+      signal: ctx.signal
     })
     if (reply.toolCalls.length === 0) {
       // Small models sometimes put the whole answer in their thinking; ask once more without it.
@@ -627,7 +634,9 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
       if (!answered) startOver()
       const content =
         answered ||
-        withoutToolText((await complete(ctx.engine, messages, { fast: true, onText })).content)
+        withoutToolText(
+          (await complete(ctx.engine, messages, { fast: true, onText, signal: ctx.signal })).content
+        )
       return finish(ctx, out, content)
     }
     // Text written before a tool call was only a lead-in; the real answer follows the lookup.
@@ -648,6 +657,7 @@ async function answer(ctx: AssistantContext, full: ChatMessage[]): Promise<Assis
         callId: call.id,
         content: await runTool(call, ctx, out)
       })
+      throwIfStopped(ctx.signal)
     }
   }
   // Still looking things up after every round: no answer.

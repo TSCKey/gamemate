@@ -119,6 +119,9 @@ function App(): React.JSX.Element {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, status, written])
 
+  // The question being answered, so ■ can take it back: the chat as it was and what was typed.
+  const asking = useRef<{ before: ChatMessage[]; typed: string } | null>(null)
+
   const send = async (
     text: string = input,
     withScreenshot = willAttach,
@@ -143,23 +146,42 @@ function App(): React.JSX.Element {
 
     const content = typed || t('app.whatIsHappeningOnMy')
     const history: ChatMessage[] = [...messages, { role: 'user', content, images }]
+    const mine = { before: messages, typed: text }
+    asking.current = mine
     setMessages(history)
     setInput('')
     setStatus('thinking')
 
     try {
       const reply = await window.api.ask(history, setWritten)
+      // Stopped with ■ meanwhile: the chat is already back to how it was.
+      if (asking.current !== mine) return
       setMessages([...history, reply])
       const say = settings?.speakAnswers
       if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
         speak(reply.content)
       }
     } catch (e) {
-      setError(errorMessage(e))
+      if (asking.current === mine) setError(errorMessage(e))
     } finally {
-      setWritten('')
-      setStatus('idle')
+      if (asking.current === mine) {
+        asking.current = null
+        setWritten('')
+        setStatus('idle')
+      }
     }
+  }
+
+  // ■: the answer stops, the question leaves the chat and goes back into the box to fix it.
+  const stop = (): void => {
+    const stopped = asking.current
+    if (!stopped) return
+    asking.current = null
+    window.api.stopAsking()
+    setMessages(stopped.before)
+    setInput(stopped.typed)
+    setWritten('')
+    setStatus('idle')
   }
 
   // Spoken questions are sent as soon as they're transcribed.
@@ -418,13 +440,25 @@ function App(): React.JSX.Element {
                 🎤
               </button>
             )}
-            <button
-              type="submit"
-              className="primary"
-              disabled={!ready || loading || (!input.trim() && !willAttach)}
-            >
-              {t('app.send')}
-            </button>
+            {status === 'thinking' ? (
+              <button
+                type="button"
+                className="primary stop-button"
+                onClick={stop}
+                title={t('app.stop')}
+                aria-label={t('app.stop')}
+              >
+                ■
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="primary"
+                disabled={!ready || loading || (!input.trim() && !willAttach)}
+              >
+                {t('app.send')}
+              </button>
+            )}
           </div>
         </div>
       </form>

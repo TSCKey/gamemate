@@ -416,7 +416,8 @@
     "send": "Gönder",
     "whatIsHappeningOnMy": "Ekranımda ne oluyor?",
     "pressShortcutInAnyGame": "Herhangi bir oyunda, oyundan çıkmadan sormak için <kbd>{{shortcut}}</kbd> tuşuna bas.",
-    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> başka bir uygulama tarafından kullanılıyor, bu yüzden oyun içi kısayol kapalı. O uygulamayı kapat ve GameMate'i yeniden başlat."
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> başka bir uygulama tarafından kullanılıyor, bu yüzden oyun içi kısayol kapalı. O uygulamayı kapat ve GameMate'i yeniden başlat.",
+    "stop": "Durdur"
   },
   "overlay": {
     "dragToMove": "Taşımak için sürükle",
@@ -564,7 +565,8 @@
     "wiki": {
       "address": "https:// ile başlayan wiki adresini gir",
       "notFound": "Bu adreste wiki bulunamadı. GameMate, Fandom ve wiki.gg gibi MediaWiki siteleriyle çalışır."
-    }
+    },
+    "answerStopped": "Yanıtı durdurdun."
   },
   "answers": {
     "reason": {

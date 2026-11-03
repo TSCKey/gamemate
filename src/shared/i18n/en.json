@@ -416,7 +416,8 @@
     "send": "Send",
     "whatIsHappeningOnMy": "What is happening on my screen?",
     "pressShortcutInAnyGame": "Press <kbd>{{shortcut}}</kbd> in any game to ask without leaving it.",
-    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> is used by another app, so the in-game shortcut is off. Close that app and restart GameMate."
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> is used by another app, so the in-game shortcut is off. Close that app and restart GameMate.",
+    "stop": "Stop"
   },
   "overlay": {
     "dragToMove": "Drag to move",
@@ -564,7 +565,8 @@
     "wiki": {
       "address": "Enter the wiki’s address, starting with https://",
       "notFound": "No wiki found at that address. GameMate works with MediaWiki sites such as Fandom and wiki.gg."
-    }
+    },
+    "answerStopped": "You stopped the answer."
   },
   "answers": {
     "reason": {

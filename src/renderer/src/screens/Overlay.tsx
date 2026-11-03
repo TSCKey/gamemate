@@ -79,10 +79,15 @@ function Overlay(): React.JSX.Element {
     return () => observer.disconnect()
   }, [])
 
+  // The question being answered, so ■ can take it back: the conversation as it was and the text.
+  const asking = useRef<{ before: ChatMessage[]; text: string } | null>(null)
+
   const send = async (text: string = input, byVoice = false): Promise<void> => {
     const content = text.trim()
     if (!content || !model || thinking) return
 
+    const mine = { before: history, text }
+    asking.current = mine
     setError(null)
     setThinking(true)
     lastActivity.current = Date.now()
@@ -93,21 +98,40 @@ function Overlay(): React.JSX.Element {
         ...history,
         { role: 'user', content, ...(shot ? { images: [shot.base64] } : {}) }
       ]
+      if (asking.current !== mine) return
       setHistory(next)
       setInput('')
       const reply = await window.api.ask(next, setWritten)
+      // Stopped with ■ meanwhile: the conversation is already back to how it was.
+      if (asking.current !== mine) return
       setHistory([...next, reply])
       const say = settings?.speakAnswers
       if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
         speak(reply.content)
       }
     } catch (e) {
-      setError(errorMessage(e))
+      if (asking.current === mine) setError(errorMessage(e))
     } finally {
-      setWritten('')
-      setThinking(false)
+      if (asking.current === mine) {
+        asking.current = null
+        setWritten('')
+        setThinking(false)
+      }
       lastActivity.current = Date.now()
     }
+  }
+
+  // ■: the answer stops, the question goes back into the box to fix it.
+  const stop = (): void => {
+    const stopped = asking.current
+    if (!stopped) return
+    asking.current = null
+    window.api.stopAsking()
+    setHistory(stopped.before)
+    setInput(stopped.text)
+    setWritten('')
+    setThinking(false)
+    inputRef.current?.focus()
   }
 
   // Spoken questions are sent as soon as they're transcribed.
@@ -155,6 +179,17 @@ function Overlay(): React.JSX.Element {
             disabled={!model || voice.status !== 'idle'}
             autoFocus
           />
+          {thinking && (
+            <button
+              type="button"
+              className="overlay-toggle overlay-stop"
+              onClick={stop}
+              title={t('app.stop')}
+              aria-label={t('app.stop')}
+            >
+              ■
+            </button>
+          )}
           {voice.ready && (
             <button
               type="button"

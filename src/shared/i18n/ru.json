@@ -422,7 +422,8 @@
     "send": "Отправить",
     "whatIsHappeningOnMy": "Что происходит у меня на экране?",
     "pressShortcutInAnyGame": "Нажмите <kbd>{{shortcut}}</kbd> в любой игре, чтобы спросить, не выходя из неё.",
-    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> занято другим приложением, поэтому сочетание в игре отключено. Закройте то приложение и перезапустите GameMate."
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> занято другим приложением, поэтому сочетание в игре отключено. Закройте то приложение и перезапустите GameMate.",
+    "stop": "Остановить"
   },
   "overlay": {
     "dragToMove": "Перетащите, чтобы переместить",
@@ -570,7 +571,8 @@
     "wiki": {
       "address": "Введите адрес вики, начиная с https://",
       "notFound": "По этому адресу вики не найдена. GameMate работает с сайтами MediaWiki, такими как Fandom и wiki.gg."
-    }
+    },
+    "answerStopped": "Вы остановили ответ."
   },
   "answers": {
     "reason": {

@@ -27,6 +27,8 @@ export interface Api {
   listModels: () => Promise<ModelInfo[]>
   // onText receives the answer so far while it is written (empty when it starts over).
   ask: (messages: ChatMessage[], onText?: (text: string) => void) => Promise<ChatMessage>
+  // Stops the answer to the question this window asked last (the ■ button).
+  stopAsking: () => Promise<void>
   listCaptureSources: () => Promise<CaptureSource[]>
   captureScreenshot: (sourceId: string) => Promise<Screenshot>
   getSettings: () => Promise<Settings>

@@ -413,7 +413,8 @@
     "send": "보내기",
     "whatIsHappeningOnMy": "지금 내 화면에서 무슨 일이 일어나고 있어?",
     "pressShortcutInAnyGame": "어떤 게임에서든 <kbd>{{shortcut}}</kbd>을(를) 누르면 게임을 떠나지 않고 질문할 수 있습니다.",
-    "shortcutIsUsedByAnother": "다른 앱이 <kbd>{{shortcut}}</kbd>을(를) 쓰고 있어 게임 내 단축키가 꺼져 있습니다. 그 앱을 닫고 GameMate를 다시 시작하세요."
+    "shortcutIsUsedByAnother": "다른 앱이 <kbd>{{shortcut}}</kbd>을(를) 쓰고 있어 게임 내 단축키가 꺼져 있습니다. 그 앱을 닫고 GameMate를 다시 시작하세요.",
+    "stop": "중지"
   },
   "overlay": {
     "dragToMove": "드래그해서 이동",
@@ -561,7 +562,8 @@
     "wiki": {
       "address": "https://로 시작하는 위키 주소를 입력하세요",
       "notFound": "그 주소에서 위키를 찾지 못했습니다. GameMate는 Fandom, wiki.gg 같은 MediaWiki 사이트에서 작동합니다."
-    }
+    },
+    "answerStopped": "답변을 중지했습니다."
   },
   "answers": {
     "reason": {

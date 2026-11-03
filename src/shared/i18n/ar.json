@@ -428,7 +428,8 @@
     "send": "إرسال",
     "whatIsHappeningOnMy": "ماذا يحدث على شاشتي؟",
     "pressShortcutInAnyGame": "اضغط <kbd>{{shortcut}}</kbd> في أي لعبة لتسأل دون مغادرتها.",
-    "shortcutIsUsedByAnother": "يستخدم تطبيق آخر <kbd>{{shortcut}}</kbd>، لذا فالاختصار داخل اللعبة متوقف. أغلق ذلك التطبيق وأعد تشغيل GameMate."
+    "shortcutIsUsedByAnother": "يستخدم تطبيق آخر <kbd>{{shortcut}}</kbd>، لذا فالاختصار داخل اللعبة متوقف. أغلق ذلك التطبيق وأعد تشغيل GameMate.",
+    "stop": "إيقاف"
   },
   "overlay": {
     "dragToMove": "اسحب للتحريك",
@@ -576,7 +577,8 @@
     "wiki": {
       "address": "أدخل عنوان الويكي، بدءًا بـ https://",
       "notFound": "لم يُعثَر على ويكي في هذا العنوان. يعمل GameMate مع مواقع MediaWiki مثل Fandom وwiki.gg."
-    }
+    },
+    "answerStopped": "أوقفتَ الإجابة."
   },
   "answers": {
     "reason": {

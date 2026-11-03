@@ -5,6 +5,7 @@ import { forEachLine } from './lines'
 import type { ModelInfo } from '../../shared/types'
 import { t } from '../system/i18n'
 import { UnreachableError } from './errors'
+import { requestSignal, throwIfStopped } from './stop'
 export type { ModelInfo }
 
 const OLLAMA_URL = 'http://127.0.0.1:11434'
@@ -72,9 +73,10 @@ async function send(path: string, init?: RequestInit): Promise<Response> {
     res = await fetch(`${OLLAMA_URL}${path}`, {
       ...init,
       headers: { 'Content-Type': 'application/json', ...init?.headers },
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+      signal: requestSignal(REQUEST_TIMEOUT_MS, init?.signal ?? undefined)
     })
   } catch (error) {
+    throwIfStopped(init?.signal ?? undefined)
     if (error instanceof Error && error.name === 'TimeoutError') {
       throw new UnreachableError(t('errors.ollama.timeout'), { cause: error })
     }
@@ -129,20 +131,24 @@ export async function chatOnce(
     think?: boolean
     // Receives the answer's text as Ollama writes it.
     onText?: (delta: string) => void
+    // Aborted when the player stops the answer.
+    signal?: AbortSignal
   } = {}
 ): Promise<OllamaMessage> {
   usedModels.add(model)
-  const { onText, ...rest } = options
+  const { onText, signal, ...rest } = options
   if (!onText) {
     const data = await request<ChatResponse>('/api/chat', {
       method: 'POST',
-      body: JSON.stringify({ model, messages, stream: false, ...rest })
+      body: JSON.stringify({ model, messages, stream: false, ...rest }),
+      signal
     })
     return data.message
   }
   const res = await send('/api/chat', {
     method: 'POST',
-    body: JSON.stringify({ model, messages, stream: true, ...rest })
+    body: JSON.stringify({ model, messages, stream: true, ...rest }),
+    signal
   })
   if (!res.body) throw new Error(t('errors.ollama.noAnswer'))
   // Ollama streams one JSON object per line.

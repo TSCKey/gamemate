@@ -4,6 +4,7 @@ import type { LlmMessage, LlmOptions, LlmReply, LlmToolCall } from './llm'
 import { forEachLine } from './lines'
 import { t } from '../system/i18n'
 import { UnreachableError } from './errors'
+import { requestSignal, throwIfStopped } from './stop'
 
 const TIMEOUT_MS = 180_000
 // Room for thinking plus the answer; quick background checks get much less.
@@ -190,7 +191,8 @@ async function readStream(
 async function send(
   server: EngineServer,
   body: object,
-  onText?: (delta: string) => void
+  onText?: (delta: string) => void,
+  stop?: AbortSignal
 ): Promise<LlmReply> {
   let res: Response
   try {
@@ -198,9 +200,10 @@ async function send(
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${server.apiKey}` },
       body: JSON.stringify(onText ? { ...body, stream: true } : body),
-      signal: AbortSignal.timeout(TIMEOUT_MS)
+      signal: requestSignal(TIMEOUT_MS, stop)
     })
   } catch (error) {
+    throwIfStopped(stop)
     if (error instanceof Error && error.name === 'TimeoutError') {
       throw new UnreachableError(t('errors.builtin.timeout'), { cause: error })
     }
@@ -258,13 +261,14 @@ export async function chatCompletion(
     // Fast background calls skip the model's thinking step.
     ...(options.fast ? { chat_template_kwargs: { enable_thinking: false } } : {})
   }
-  const reply = await send(server, body, options.onText)
+  const reply = await send(server, body, options.onText, options.signal)
   if (!reply.content.trim() && reply.toolCalls.length === 0 && !options.fast) {
     // Small models sometimes put the whole answer in their thinking; ask again without it.
     return send(
       server,
       { ...body, chat_template_kwargs: { enable_thinking: false } },
-      options.onText
+      options.onText,
+      options.signal
     )
   }
   return reply

@@ -413,7 +413,8 @@
     "send": "发送",
     "whatIsHappeningOnMy": "我的屏幕上正在发生什么?",
     "pressShortcutInAnyGame": "在任何游戏中按 <kbd>{{shortcut}}</kbd>,无需离开游戏即可提问。",
-    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> 已被另一个应用使用,因此游戏内快捷键已关闭。请关闭那个应用并重新启动 GameMate。"
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> 已被另一个应用使用,因此游戏内快捷键已关闭。请关闭那个应用并重新启动 GameMate。",
+    "stop": "停止"
   },
   "overlay": {
     "dragToMove": "拖动以移动",
@@ -561,7 +562,8 @@
     "wiki": {
       "address": "请输入以 https:// 开头的 Wiki 地址",
       "notFound": "在该地址未找到 Wiki。GameMate 支持 Fandom 和 wiki.gg 等 MediaWiki 网站。"
-    }
+    },
+    "answerStopped": "你已停止回答。"
   },
   "answers": {
     "reason": {

@@ -413,7 +413,8 @@
     "send": "送信",
     "whatIsHappeningOnMy": "画面で何が起きている?",
     "pressShortcutInAnyGame": "どのゲームでも <kbd>{{shortcut}}</kbd> を押せば、ゲームを離れずに質問できます。",
-    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> はほかのアプリが使っているため、ゲーム内ショートカットはオフです。そのアプリを閉じて GameMate を再起動してください。"
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> はほかのアプリが使っているため、ゲーム内ショートカットはオフです。そのアプリを閉じて GameMate を再起動してください。",
+    "stop": "停止"
   },
   "overlay": {
     "dragToMove": "ドラッグして移動",
@@ -561,7 +562,8 @@
     "wiki": {
       "address": "https:// で始まる Wiki のアドレスを入力してください",
       "notFound": "そのアドレスに Wiki が見つかりません。GameMate は Fandom や wiki.gg などの MediaWiki サイトに対応しています。"
-    }
+    },
+    "answerStopped": "回答を停止しました。"
   },
   "answers": {
     "reason": {

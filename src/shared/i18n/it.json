@@ -419,7 +419,8 @@
     "send": "Invia",
     "whatIsHappeningOnMy": "Cosa sta succedendo sul mio schermo?",
     "pressShortcutInAnyGame": "Premi <kbd>{{shortcut}}</kbd> in qualsiasi gioco per chiedere senza uscirne.",
-    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> è usata da un'altra app, quindi la scorciatoia in gioco è disattivata. Chiudi quell'app e riavvia GameMate."
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> è usata da un'altra app, quindi la scorciatoia in gioco è disattivata. Chiudi quell'app e riavvia GameMate.",
+    "stop": "Interrompi"
   },
   "overlay": {
     "dragToMove": "Trascina per spostare",
@@ -567,7 +568,8 @@
     "wiki": {
       "address": "Inserisci l'indirizzo della wiki, a partire da https://",
       "notFound": "Nessuna wiki trovata a questo indirizzo. GameMate funziona con i siti MediaWiki come Fandom e wiki.gg."
-    }
+    },
+    "answerStopped": "Hai interrotto la risposta."
   },
   "answers": {
     "reason": {

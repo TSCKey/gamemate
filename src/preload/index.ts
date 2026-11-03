@@ -22,17 +22,20 @@ let lastRequest = 0
 const api: Api = {
   listModels: () => ipcRenderer.invoke('ollama:list-models'),
   ask: async (messages, onText) => {
-    if (!onText) return ipcRenderer.invoke('assistant:ask', messages)
     const id = ++lastRequest
-    const stop = listen<[number, string]>('assistant:text', (requestId, text) => {
-      if (requestId === id) onText(text)
-    })
+    const stop = onText
+      ? listen<[number, string]>('assistant:text', (requestId, text) => {
+          if (requestId === id) onText(text)
+        })
+      : () => {}
     try {
-      return await ipcRenderer.invoke('assistant:ask', messages, id)
+      return await ipcRenderer.invoke('assistant:ask', messages, id, !!onText)
     } finally {
       stop()
     }
   },
+  // Stops the question this window asked last, if it is still being answered.
+  stopAsking: () => ipcRenderer.invoke('assistant:stop', lastRequest),
   listCaptureSources: () => ipcRenderer.invoke('capture:list-sources'),
   captureScreenshot: (sourceId) => ipcRenderer.invoke('capture:screenshot', sourceId),
   getSettings: () => ipcRenderer.invoke('settings:get'),

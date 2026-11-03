@@ -113,6 +113,11 @@ button.primary:hover:not(:disabled) {
   background-color: var(--accent-hover);
 }
 
+/* ■ in place of Send while GameMate answers. */
+button.stop-button {
+  min-width: 44px;
+}
+
 button.danger {
   color: #ffb3ae;
   background-color: var(--danger-soft);
@@ -1084,6 +1089,12 @@ html.is-overlay body {
 .overlay-toggle:hover:not(:disabled) {
   opacity: 1;
   background: transparent;
+  border-color: var(--border-strong);
+}
+
+/* ■ while GameMate answers: always visible, unlike the other toggles. */
+.overlay-stop {
+  opacity: 1;
   border-color: var(--border-strong);
 }
 

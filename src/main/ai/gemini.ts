@@ -1,5 +1,6 @@
 import { t } from '../system/i18n'
 import { UnreachableError } from './errors'
+import { requestSignal, throwIfStopped } from './stop'
 // Minimal client for Google's Gemini API (generateContent), used only when the player opts in.
 // The API key is sent in a header, never in the URL.
 // See https://ai.google.dev/api/generate-content
@@ -48,16 +49,22 @@ interface GeminiResponse {
   promptFeedback?: { blockReason?: string }
 }
 
-async function call<T>(apiKey: string, path: string, body?: object): Promise<T> {
+async function call<T>(
+  apiKey: string,
+  path: string,
+  body?: object,
+  stop?: AbortSignal
+): Promise<T> {
   let res: Response
   try {
     res = await fetch(`${BASE}/${path}`, {
       method: body ? 'POST' : 'GET',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
       body: body ? JSON.stringify(body) : undefined,
-      signal: AbortSignal.timeout(TIMEOUT_MS)
+      signal: requestSignal(TIMEOUT_MS, stop)
     })
   } catch (error) {
+    throwIfStopped(stop)
     if (error instanceof Error && error.name === 'TimeoutError') {
       throw new UnreachableError(t('errors.gemini.timeout'), { cause: error })
     }
@@ -112,10 +119,11 @@ export async function listGeminiModels(apiKey: string): Promise<string[]> {
 export async function generate(
   apiKey: string,
   model: string,
-  request: GeminiRequest
+  request: GeminiRequest,
+  stop?: AbortSignal
 ): Promise<GeminiContent> {
   if (!/^[\w.-]+$/.test(model)) throw new Error('Invalid Gemini model name.')
-  const data = await call<GeminiResponse>(apiKey, `models/${model}:generateContent`, request)
+  const data = await call<GeminiResponse>(apiKey, `models/${model}:generateContent`, request, stop)
   const content = data.candidates?.[0]?.content
   if (!content) {
     const reason = data.promptFeedback?.blockReason ?? data.candidates?.[0]?.finishReason

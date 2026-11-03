@@ -52,6 +52,7 @@ Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ 
 3. Press **Esc** (or **Alt + Space** again) to hide it and keep playing.
 
 - When the **📷** button is lit, GameMate includes a screenshot of your screen, taken at the moment you pressed **Alt + Space**. Click **📷** to turn this on or off. GameMate's own window never appears in the screenshot.
+- Asked the wrong thing, or the answer is taking too long? Click **■** while GameMate is answering. It stops, and your question goes back into the box so you can fix it.
 - Follow-up questions continue the same conversation. Click **✕** to start a new one. The conversation starts fresh by itself if you haven't used GameMate for 10 minutes.
 - Drag the 🎮 icon to move the window.
 - Prefer other keys? Click **Change** next to **Shortcut** (or **Voice shortcut**) in **⚙ Settings → General** and press the keys you want, for example **Ctrl + Shift + G** or **F9**. Shortcuts need Alt, the Windows key or Ctrl + Shift (or be an F key), so they don't get in the way of typing in other apps.
@@ -168,6 +169,7 @@ GameMate checks for a new version when it starts and every few hours, downloads 
 
 - The top of the window shows your Minecraft version and the companion mode. Click either to change it, or click **⚙** for all settings.
 - Type your question and press **Enter** to send it. Use **Shift + Enter** for a new line. On a new chat, click one of the suggestions to try GameMate out.
+- While GameMate is answering, **Send** becomes **■**. Click it to stop the answer; your question goes back into the message box so you can change it and ask again.
 - To ask about what's on screen, click **📷 Screenshot** under the message box and choose your game window or screen. GameMate takes a fresh screenshot each time you send a question. With it on, you can also press **Enter** with an empty message to ask "What is happening on my screen?".
 - Click **New chat** to clear the conversation.
 - Click the AI name under the question box to pick which AI answers. Get more models in **⚙ Settings → Models**.
