@@ -90,6 +90,7 @@ const api: Api = {
   voice: {
     models: () => ipcRenderer.invoke('voice:models'),
     voices: () => ipcRenderer.invoke('voice:voices'),
+    openWindowsVoices: () => ipcRenderer.invoke('voice:open-windows-voices'),
     speak: (text) => ipcRenderer.invoke('voice:speak', text),
     stop: () => ipcRenderer.invoke('voice:stop'),
     download: (id) => ipcRenderer.invoke('voice:download', id),

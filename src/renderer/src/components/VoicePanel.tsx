@@ -4,52 +4,16 @@ import type {
   Settings,
   ListenModelId,
   SpeakAnswers,
-  SpeechModelStatus
+  SpeechModelStatus,
+  SupertonicVoice,
+  WindowsVoice
 } from '../../../preload/index.d'
+import { SUPERTONIC_VOICES } from '../../../shared/types'
 import { speak } from '../voice/speak'
 import { Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
 import { languageInfo } from '../../../shared/languages'
 import { canListen } from '../../../shared/speech'
-
-// Kokoro's English voices: a = American, b = British, f = female, m = male.
-const KOKORO_VOICES = [
-  'af_heart',
-  'af_alloy',
-  'af_aoede',
-  'af_bella',
-  'af_jessica',
-  'af_kore',
-  'af_nicole',
-  'af_nova',
-  'af_river',
-  'af_sarah',
-  'af_sky',
-  'am_adam',
-  'am_echo',
-  'am_eric',
-  'am_fenrir',
-  'am_liam',
-  'am_michael',
-  'am_onyx',
-  'am_puck',
-  'am_santa',
-  'bf_alice',
-  'bf_emma',
-  'bf_isabella',
-  'bf_lily',
-  'bm_daniel',
-  'bm_fable',
-  'bm_george',
-  'bm_lewis'
-]
-
-function voiceLabel(id: string): string {
-  const name = id.slice(3)
-  return t(`voicePanel.kokoroVoice.${id.slice(0, 2)}`, {
-    name: `${name[0].toUpperCase()}${name.slice(1)}`
-  })
-}
 
 // Download, progress and remove for one model.
 function ModelButton({ model }: { model: SpeechModelStatus }): React.JSX.Element {
@@ -83,7 +47,7 @@ function VoicePanel({
   appInfo: AppInfo | null
 }): React.JSX.Element {
   const [models, setModels] = useState<SpeechModelStatus[]>([])
-  const [voices, setVoices] = useState<string[]>([])
+  const [voices, setVoices] = useState<WindowsVoice[]>([])
 
   useEffect(() => {
     window.api.voice.models().then(setModels)
@@ -92,9 +56,9 @@ function VoicePanel({
   }, [])
 
   const listen = models.filter((m) => m.kind === 'listen')
-  const kokoro = models.find((m) => m.id === 'kokoro')
+  const kokoro = models.find((m) => m.id === 'supertonic')
   const selected = models.find((m) => m.id === settings.speechModel)
-  const natural = settings.voiceEngine === 'kokoro'
+  const natural = settings.voiceEngine === 'natural'
   const language = settings.language || 'en'
 
   return (
@@ -174,7 +138,7 @@ function VoicePanel({
             onChange={(e) => update({ voiceEngine: e.target.value as Settings['voiceEngine'] })}
             aria-label={t('voicePanel.voiceType')}
           >
-            <option value="kokoro">{t('voicePanel.naturalKokoro')}</option>
+            <option value="natural">{t('voicePanel.naturalKokoro')}</option>
             <option value="windows">{t('voicePanel.windowsVoices')}</option>
           </select>
         </Field>
@@ -221,13 +185,13 @@ function VoicePanel({
         <Field label={t('voicePanel.voice')}>
           {natural ? (
             <select
-              value={settings.kokoroVoice}
-              onChange={(e) => update({ kokoroVoice: e.target.value })}
+              value={settings.naturalVoice}
+              onChange={(e) => update({ naturalVoice: e.target.value as SupertonicVoice })}
               aria-label={t('voicePanel.voice')}
             >
-              {KOKORO_VOICES.map((v) => (
+              {SUPERTONIC_VOICES.map((v) => (
                 <option key={v} value={v}>
-                  {voiceLabel(v)}
+                  {v}
                 </option>
               ))}
             </select>
@@ -239,8 +203,8 @@ function VoicePanel({
             >
               <option value="">{t('voicePanel.windowsDefault')}</option>
               {voices.map((v) => (
-                <option key={v} value={v}>
-                  {v}
+                <option key={v.name} value={v.name}>
+                  {v.name}
                 </option>
               ))}
             </select>

@@ -21,7 +21,7 @@ export type CommentaryFrequency = (typeof COMMENTARY_FREQUENCIES)[number]
 export const SPEAK_ANSWERS = ['off', 'voice', 'always'] as const
 export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
 
-export const VOICE_ENGINES = ['windows', 'kokoro'] as const
+export const VOICE_ENGINES = ['windows', 'natural'] as const
 export type VoiceEngine = (typeof VOICE_ENGINES)[number]
 
 export const ENGINES = ['local', 'gemini'] as const
@@ -69,12 +69,12 @@ export interface Settings {
   speakAnswers: SpeakAnswers
   // Read the companion's comments aloud.
   speakComments: boolean
-  // GameMate's voice: Windows' built-in voices, or Kokoro (natural, needs a download).
+  // GameMate's voice: Windows' built-in voices, or Supertonic (natural, needs a download).
   voiceEngine: VoiceEngine
-  // Windows voice name ('' = the system default voice).
+  // The preferred Windows voice ('' = the first one for GameMate's language).
   voiceName: string
-  // Kokoro voice id, e.g. 'af_heart'.
-  kokoroVoice: string
+  // Supertonic voice, e.g. 'F1'.
+  naturalVoice: SupertonicVoice
   voiceVolume: number
   voiceRate: number
   // Which AI answers questions (or 'auto' to decide per question), and which watches the game:
@@ -296,6 +296,12 @@ export interface SpeechModelStatus {
   // 0-1 while downloading, otherwise null.
   progress: number | null
   error: string | null
+}
+
+// A voice installed in Windows, with the language it speaks (BCP-47, e.g. 'de-DE').
+export interface WindowsVoice {
+  name: string
+  language: string
 }
 
 // Supertonic's voices: five female, five male.

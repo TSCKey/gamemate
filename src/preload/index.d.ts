@@ -16,7 +16,8 @@ import type {
   SpeechModelId,
   SpeechModelStatus,
   UpdateState,
-  WikiChoice
+  WikiChoice,
+  WindowsVoice
 } from '../shared/types'
 import type { LanguageCode } from '../shared/languages'
 
@@ -97,8 +98,10 @@ export interface Api {
   }
   voice: {
     models: () => Promise<SpeechModelStatus[]>
-    // Windows text-to-speech voices.
-    voices: () => Promise<string[]>
+    // Windows text-to-speech voices, with the language each speaks.
+    voices: () => Promise<WindowsVoice[]>
+    // Opens Windows' Settings → Speech, where voices in more languages can be added.
+    openWindowsVoices: () => Promise<void>
     // Speaks with the voice, volume and speed from settings, replacing anything still playing.
     speak: (text: string) => Promise<void>
     stop: () => Promise<void>

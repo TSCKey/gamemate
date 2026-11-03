@@ -39,6 +39,10 @@ describe('supported languages', () => {
     }
   })
 
+  it('all have the natural voice except Chinese', () => {
+    expect(LANGUAGES.filter((l) => !l.naturalVoice).map((l) => l.code)).toEqual(['zh'])
+  })
+
   it('match Windows language tags, regional variants included', () => {
     expect(matchLanguage(['zh-Hant-TW'])).toBe('zh')
     expect(matchLanguage(['pt-BR'])).toBe('pt')

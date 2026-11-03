@@ -2,7 +2,7 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { isListenModelId, KOKORO_VOICES } from '../voice/voiceModels'
+import { isListenModelId } from '../voice/voiceModels'
 import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
@@ -12,6 +12,7 @@ import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
   SPEAK_ANSWERS,
+  SUPERTONIC_VOICES,
   VOICE_ENGINES,
   ENGINES,
   LOCAL_BACKENDS,
@@ -22,6 +23,7 @@ import type {
   CompanionMode,
   CommentaryFrequency,
   SpeakAnswers,
+  SupertonicVoice,
   VoiceEngine,
   Engine,
   LocalBackend,
@@ -64,7 +66,7 @@ const DEFAULTS: Settings = {
   speakComments: false,
   voiceEngine: 'windows',
   voiceName: '',
-  kokoroVoice: 'af_heart',
+  naturalVoice: 'F1',
   voiceVolume: 1,
   voiceRate: 1,
   // Everything stays local until the player chooses otherwise.
@@ -148,8 +150,8 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.voiceName === 'string') next.voiceName = p.voiceName.slice(0, 200)
   if (VOICE_ENGINES.includes(p.voiceEngine as VoiceEngine))
     next.voiceEngine = p.voiceEngine as VoiceEngine
-  if (typeof p.kokoroVoice === 'string' && KOKORO_VOICES.includes(p.kokoroVoice)) {
-    next.kokoroVoice = p.kokoroVoice
+  if (SUPERTONIC_VOICES.includes(p.naturalVoice as SupertonicVoice)) {
+    next.naturalVoice = p.naturalVoice as SupertonicVoice
   }
   const num = (v: unknown, min: number, max: number): number | null =>
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : null

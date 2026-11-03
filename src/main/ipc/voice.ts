@@ -1,4 +1,5 @@
 // Speech recognition models and GameMate's voice.
+import { shell } from 'electron'
 import { handle } from '../system/security'
 import { getSettings } from '../system/settings'
 import { hushToast, sayInToast } from '../windows/toast'
@@ -10,30 +11,50 @@ import {
   removeSpeechModel,
   speechModelStatuses
 } from '../voice/voiceModels'
+import { pickVoice, type VoiceChoice } from '../../shared/voices'
+import type { VoiceEngine, WindowsVoice } from '../../shared/types'
+
+// Windows' voices, asked for once; asked again when Settings lists them (a voice may have been
+// added under Settings → Speech in the meantime).
+let windowsVoices: Promise<WindowsVoice[]> | null = null
+function voices(refresh = false): Promise<WindowsVoice[]> {
+  if (refresh || !windowsVoices) windowsVoices = listVoices()
+  return windowsVoices
+}
 
 export function registerVoiceHandlers(): void {
   handle('voice:models', () => speechModelStatuses())
-  handle('voice:voices', () => listVoices())
-  handle('voice:speak', (_event, text: unknown) => {
+  handle('voice:voices', () => voices(true))
+  handle('voice:speak', async (_event, text: unknown) => {
     if (typeof text !== 'string') return
-    const { voiceEngine, voiceName, voiceVolume, voiceRate, language } = getSettings()
-    // The natural voice runs in the pop-up window; Windows' voices run here.
-    const natural =
-      voiceEngine === 'kokoro' &&
-      isSpeechModelInstalled('supertonic') &&
-      sayInToast({
-        text,
-        voice: 'F1',
-        speed: voiceRate,
-        volume: voiceVolume,
-        language: language || 'en'
+    const settings = getSettings()
+    const language = settings.language || 'en'
+    const windows = await voices()
+    const pick = (engine: VoiceEngine): VoiceChoice =>
+      pickVoice({
+        language,
+        engine,
+        naturalInstalled: isSpeechModelInstalled('supertonic'),
+        naturalVoice: settings.naturalVoice,
+        voiceName: settings.voiceName,
+        windowsVoices: windows
       })
-    if (!natural) speak(text, { voice: voiceName, volume: voiceVolume, rate: voiceRate })
+    const { voiceVolume: volume, voiceRate: speed } = settings
+    let choice = pick(settings.voiceEngine)
+    // The natural voice runs in the pop-up window; Windows' voices run here. Without the
+    // pop-up window, a Windows voice for the language speaks instead.
+    if (choice.kind === 'natural') {
+      if (sayInToast({ text, voice: choice.voice, speed, volume, language })) return
+      choice = pick('windows')
+    }
+    if (choice.kind === 'windows') speak(text, { voice: choice.name, volume, rate: speed })
   })
   handle('voice:stop', () => {
     stopSpeaking()
     hushToast()
   })
+  // Windows' page for adding voices in more languages.
+  handle('voice:open-windows-voices', () => shell.openExternal('ms-settings:speech'))
   handle('voice:download', (_event, id: unknown) => {
     if (isSpeechModelId(id)) downloadSpeechModel(id)
   })
