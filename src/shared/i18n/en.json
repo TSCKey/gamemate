@@ -311,11 +311,8 @@
     "inAGamePressAnd": "In a game, press {{voiceShortcut}} and ask out loud. GameMate stops listening when you pause.",
     "downloadTheSelectedModelOnce": "Download the selected model once to start. After that it works offline.",
     "gamemateSVoice": "GameMate's voice",
-    "kokoroANaturalSoundingVoice": "Kokoro, a natural-sounding voice that runs on this PC and works offline.",
     "usesTheVoicesBuiltInto": "Uses the voices built into Windows.",
     "voiceType": "Voice type",
-    "naturalIsKokoroApache2": "Natural is Kokoro (Apache 2.0, trained only on permissive, non-copyrighted audio): a one-time download, then it works offline.",
-    "naturalKokoro": "Natural (Kokoro)",
     "windowsVoices": "Windows voices",
     "downloaded": "Downloaded.",
     "downloadItOnceToUse": "Download it once to use it. Until then, GameMate uses a Windows voice.",
@@ -343,12 +340,6 @@
       }
     },
     "mb": "{{size}} MB",
-    "kokoroVoice": {
-      "af": "{{name}} (American, female)",
-      "am": "{{name}} (American, male)",
-      "bf": "{{name}} (British, female)",
-      "bm": "{{name}} (British, male)"
-    },
     "downloading": "Downloading… {{percent}}%",
     "speakAnswers": {
       "off": "Never",
@@ -357,7 +348,18 @@
     },
     "naturalVoice": "Natural voice",
     "englishOnlyModel": "You have the English-only version. Download the multilingual version to talk in {{language}}.",
-    "englishOnlyWorks": "You have the English-only version. It works for English; download the multilingual version to talk in other languages too."
+    "englishOnlyWorks": "You have the English-only version. It works for English; download the multilingual version to talk in other languages too.",
+    "naturalVoices": {
+      "female": "Female {{number}}",
+      "male": "Male {{number}}"
+    },
+    "noWindowsVoice": "No Windows voice speaks {{language}} yet.",
+    "addWindowsVoices": "Add Windows voices",
+    "addWindowsVoicesHelp": "Opens Windows' speech settings, where you can add voices in more languages. Come back here afterwards.",
+    "naturalNotForLanguage": "The natural voice doesn't speak {{language}}, so GameMate uses a Windows voice for it.",
+    "naturalDescription": "Supertonic, a natural-sounding voice that runs on this PC and works offline.",
+    "naturalHelp": "Natural is Supertonic 3 (OpenRAIL-M license): a one-time download, then it works offline. It speaks every GameMate language except Chinese.",
+    "naturalSupertonic": "Natural (Supertonic)"
   },
   "useLocalModels": {
     "builtInAi": "Built-in AI",

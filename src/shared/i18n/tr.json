@@ -311,11 +311,8 @@
     "inAGamePressAnd": "Oyunda {{voiceShortcut}} tuşuna bas ve sesli sor. Durduğunda GameMate dinlemeyi bırakır.",
     "downloadTheSelectedModelOnce": "Başlamak için seçilen modeli bir kez indir. Sonrasında çevrim dışı çalışır.",
     "gamemateSVoice": "GameMate'in sesi",
-    "kokoroANaturalSoundingVoice": "Kokoro, bu bilgisayarda ve çevrim dışı çalışan doğal bir ses.",
     "usesTheVoicesBuiltInto": "Windows'a yerleşik sesleri kullanır.",
     "voiceType": "Ses türü",
-    "naturalIsKokoroApache2": "Doğal ses Kokoro'dur (Apache 2.0, yalnızca serbest lisanslı ve telif hakkı olmayan seslerle eğitildi): bir kez indirilir, sonra çevrim dışı çalışır.",
-    "naturalKokoro": "Doğal (Kokoro)",
     "windowsVoices": "Windows sesleri",
     "downloaded": "İndirildi.",
     "downloadItOnceToUse": "Kullanmak için bir kez indir. O zamana kadar GameMate bir Windows sesi kullanır.",
@@ -343,12 +340,6 @@
       }
     },
     "mb": "{{size}} MB",
-    "kokoroVoice": {
-      "af": "{{name}} (Amerikan, kadın)",
-      "am": "{{name}} (Amerikan, erkek)",
-      "bf": "{{name}} (İngiliz, kadın)",
-      "bm": "{{name}} (İngiliz, erkek)"
-    },
     "downloading": "İndiriliyor… %{{percent}}",
     "speakAnswers": {
       "off": "Asla",
@@ -357,7 +348,18 @@
     },
     "naturalVoice": "Doğal ses",
     "englishOnlyModel": "Yalnızca İngilizce sürüm yüklü. {{language}} konuşmak için çok dilli sürümü indirin.",
-    "englishOnlyWorks": "Yalnızca İngilizce sürüm yüklü. İngilizce için çalışır; başka dillerde de konuşmak için çok dilli sürümü indirin."
+    "englishOnlyWorks": "Yalnızca İngilizce sürüm yüklü. İngilizce için çalışır; başka dillerde de konuşmak için çok dilli sürümü indirin.",
+    "naturalVoices": {
+      "female": "Kadın {{number}}",
+      "male": "Erkek {{number}}"
+    },
+    "noWindowsVoice": "Henüz {{language}} konuşan bir Windows sesi yok.",
+    "addWindowsVoices": "Windows sesi ekle",
+    "addWindowsVoicesHelp": "Windows'un konuşma ayarlarını açar; orada başka dillerde ses ekleyebilirsiniz. Sonra buraya dönün.",
+    "naturalNotForLanguage": "Doğal ses {{language}} konuşmuyor; bu yüzden GameMate bir Windows sesi kullanır.",
+    "naturalDescription": "Supertonic: bu bilgisayarda çalışan, çevrimdışı da kullanılabilen doğal bir ses.",
+    "naturalHelp": "Doğal ses Supertonic 3'tür (OpenRAIL-M lisansı): bir kez indirilir, sonra çevrimdışı çalışır. Çince dışındaki tüm GameMate dillerini konuşur.",
+    "naturalSupertonic": "Doğal (Supertonic)"
   },
   "useLocalModels": {
     "builtInAi": "Yerleşik yapay zekâ",

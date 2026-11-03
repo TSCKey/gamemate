@@ -173,3 +173,22 @@ describe('the legal documents', () => {
     expect(html).toMatch(/<article class="legal-doc" lang="en" dir="ltr">/)
   })
 })
+
+describe('the voice settings', () => {
+  const en = createTranslator('en')
+  it('name every natural voice', async () => {
+    const { SUPERTONIC_VOICES } = await import('../src/shared/types')
+    const { naturalVoiceLabel } = await import('../src/renderer/src/voice/labels')
+    const labels = SUPERTONIC_VOICES.map((v) => naturalVoiceLabel(v, en))
+    expect(labels.slice(0, 2)).toEqual(['Female 1', 'Female 2'])
+    expect(labels.at(-1)).toBe('Male 5')
+  })
+
+  it('explain where the natural voice and Windows voices don’t cover a language', () => {
+    expect(en('voicePanel.noWindowsVoice', { language: '中文' })).toBe(
+      'No Windows voice speaks 中文 yet.'
+    )
+    expect(en('voicePanel.naturalNotForLanguage', { language: '中文' })).toContain('中文')
+    expect(en('voicePanel.addWindowsVoices')).toBe('Add Windows voices')
+  })
+})

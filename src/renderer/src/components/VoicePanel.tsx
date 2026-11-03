@@ -14,6 +14,8 @@ import { Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
 import { languageInfo } from '../../../shared/languages'
 import { canListen } from '../../../shared/speech'
+import { windowsVoicesFor } from '../../../shared/voices'
+import { naturalVoiceLabel } from '../voice/labels'
 
 // Download, progress and remove for one model.
 function ModelButton({ model }: { model: SpeechModelStatus }): React.JSX.Element {
@@ -56,10 +58,14 @@ function VoicePanel({
   }, [])
 
   const listen = models.filter((m) => m.kind === 'listen')
-  const kokoro = models.find((m) => m.id === 'supertonic')
+  const supertonic = models.find((m) => m.id === 'supertonic')
   const selected = models.find((m) => m.id === settings.speechModel)
   const natural = settings.voiceEngine === 'natural'
   const language = settings.language || 'en'
+  const { nativeName, naturalVoice: naturalSpeaksIt } = languageInfo(language)
+  const windowsVoices = windowsVoicesFor(language, voices)
+  // Supertonic speaks unless the language is one it doesn't (Chinese); then a Windows voice does.
+  const speaksNaturally = natural && naturalSpeaksIt
 
   return (
     <>
@@ -127,40 +133,42 @@ function VoicePanel({
       <Section
         title={t('voicePanel.gamemateSVoice')}
         description={
-          natural
-            ? t('voicePanel.kokoroANaturalSoundingVoice')
-            : t('voicePanel.usesTheVoicesBuiltInto')
+          natural ? t('voicePanel.naturalDescription') : t('voicePanel.usesTheVoicesBuiltInto')
         }
       >
-        <Field label={t('voicePanel.voiceType')} help={t('voicePanel.naturalIsKokoroApache2')}>
+        <Field label={t('voicePanel.voiceType')} help={t('voicePanel.naturalHelp')}>
           <select
             value={settings.voiceEngine}
             onChange={(e) => update({ voiceEngine: e.target.value as Settings['voiceEngine'] })}
             aria-label={t('voicePanel.voiceType')}
           >
-            <option value="natural">{t('voicePanel.naturalKokoro')}</option>
+            <option value="natural">{t('voicePanel.naturalSupertonic')}</option>
             <option value="windows">{t('voicePanel.windowsVoices')}</option>
           </select>
         </Field>
-        {natural && kokoro && (
+        {natural && supertonic && (
           <Field
             label={
               <>
                 {t('voicePanel.naturalVoice')}{' '}
-                <span className="field-help">{t('voicePanel.mb', { size: kokoro.sizeMb })}</span>
+                <span className="field-help">
+                  {t('voicePanel.mb', { size: supertonic.sizeMb })}
+                </span>
               </>
             }
             help={
-              kokoro.error ? (
-                <span className="error-text">{kokoro.error}</span>
-              ) : kokoro.installed ? (
+              supertonic.error ? (
+                <span className="error-text">{supertonic.error}</span>
+              ) : !naturalSpeaksIt ? (
+                t('voicePanel.naturalNotForLanguage', { language: nativeName })
+              ) : supertonic.installed ? (
                 t('voicePanel.downloaded')
               ) : (
                 t('voicePanel.downloadItOnceToUse')
               )
             }
           >
-            <ModelButton model={kokoro} />
+            <ModelButton model={supertonic} />
           </Field>
         )}
         <Field label={t('voicePanel.readAnswersAloud')}>
@@ -182,8 +190,16 @@ function VoicePanel({
             onChange={(speakComments) => update({ speakComments })}
           />
         </Field>
-        <Field label={t('voicePanel.voice')}>
-          {natural ? (
+        <Field
+          label={t('voicePanel.voice')}
+          help={
+            !speaksNaturally &&
+            (windowsVoices.length
+              ? t('voicePanel.addWindowsVoicesHelp')
+              : t('voicePanel.noWindowsVoice', { language: nativeName }))
+          }
+        >
+          {speaksNaturally ? (
             <select
               value={settings.naturalVoice}
               onChange={(e) => update({ naturalVoice: e.target.value as SupertonicVoice })}
@@ -191,23 +207,30 @@ function VoicePanel({
             >
               {SUPERTONIC_VOICES.map((v) => (
                 <option key={v} value={v}>
-                  {v}
+                  {naturalVoiceLabel(v)}
                 </option>
               ))}
             </select>
           ) : (
-            <select
-              value={settings.voiceName}
-              onChange={(e) => update({ voiceName: e.target.value })}
-              aria-label={t('voicePanel.voice')}
-            >
-              <option value="">{t('voicePanel.windowsDefault')}</option>
-              {voices.map((v) => (
-                <option key={v.name} value={v.name}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
+            <div className="button-row">
+              {windowsVoices.length > 0 && (
+                <select
+                  value={settings.voiceName}
+                  onChange={(e) => update({ voiceName: e.target.value })}
+                  aria-label={t('voicePanel.voice')}
+                >
+                  <option value="">{t('voicePanel.windowsDefault')}</option>
+                  {windowsVoices.map((v) => (
+                    <option key={v.name} value={v.name}>
+                      {v.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button type="button" onClick={() => window.api.voice.openWindowsVoices()}>
+                {t('voicePanel.addWindowsVoices')}
+              </button>
+            </div>
           )}
         </Field>
         <Field label={t('voicePanel.volume')}>

@@ -308,11 +308,8 @@
     "inAGamePressAnd": "게임에서 {{voiceShortcut}}을(를) 누르고 소리 내어 질문하세요. 말을 멈추면 GameMate가 듣기를 멈춥니다.",
     "downloadTheSelectedModelOnce": "시작하려면 선택한 모델을 한 번 내려받으세요. 그 뒤로는 오프라인으로 작동합니다.",
     "gamemateSVoice": "GameMate의 목소리",
-    "kokoroANaturalSoundingVoice": "Kokoro는 이 PC에서 오프라인으로 작동하는 자연스러운 목소리입니다.",
     "usesTheVoicesBuiltInto": "Windows에 내장된 음성을 사용합니다.",
     "voiceType": "목소리 종류",
-    "naturalIsKokoroApache2": "자연스러운 목소리는 Kokoro입니다(Apache 2.0, 자유 라이선스이며 저작권이 없는 음성으로만 학습). 한 번 내려받으면 오프라인으로 작동합니다.",
-    "naturalKokoro": "자연스러운 목소리(Kokoro)",
     "windowsVoices": "Windows 음성",
     "downloaded": "다운로드됨.",
     "downloadItOnceToUse": "쓰려면 한 번 내려받으세요. 그때까지 GameMate는 Windows 음성을 사용합니다.",
@@ -340,12 +337,6 @@
       }
     },
     "mb": "{{size}} MB",
-    "kokoroVoice": {
-      "af": "{{name}}(미국 영어, 여성)",
-      "am": "{{name}}(미국 영어, 남성)",
-      "bf": "{{name}}(영국 영어, 여성)",
-      "bm": "{{name}}(영국 영어, 남성)"
-    },
     "downloading": "다운로드 중… {{percent}}%",
     "speakAnswers": {
       "off": "안 함",
@@ -354,7 +345,18 @@
     },
     "naturalVoice": "자연스러운 목소리",
     "englishOnlyModel": "영어 전용 버전이 설치되어 있습니다. {{language}}로 말하려면 다국어 버전을 다운로드하세요.",
-    "englishOnlyWorks": "영어 전용 버전이 설치되어 있습니다. 영어로는 사용할 수 있으며, 다른 언어로도 말하려면 다국어 버전을 다운로드하세요."
+    "englishOnlyWorks": "영어 전용 버전이 설치되어 있습니다. 영어로는 사용할 수 있으며, 다른 언어로도 말하려면 다국어 버전을 다운로드하세요.",
+    "naturalVoices": {
+      "female": "여성 {{number}}",
+      "male": "남성 {{number}}"
+    },
+    "noWindowsVoice": "아직 {{language}}를 말하는 Windows 음성이 없습니다.",
+    "addWindowsVoices": "Windows 음성 추가",
+    "addWindowsVoicesHelp": "Windows 음성 설정을 엽니다. 여기에서 다른 언어의 음성을 추가할 수 있습니다. 추가한 뒤 이곳으로 돌아오세요.",
+    "naturalNotForLanguage": "자연스러운 음성은 {{language}}를 말하지 못해 GameMate가 Windows 음성을 사용합니다.",
+    "naturalDescription": "Supertonic: 이 PC에서 실행되고 오프라인에서도 작동하는 자연스러운 음성입니다.",
+    "naturalHelp": "자연스러운 음성은 Supertonic 3(OpenRAIL-M 라이선스)입니다. 한 번 다운로드하면 오프라인에서 작동하며, 중국어를 제외한 GameMate의 모든 언어를 말합니다.",
+    "naturalSupertonic": "자연스러운 음성(Supertonic)"
   },
   "useLocalModels": {
     "builtInAi": "내장 AI",

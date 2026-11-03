@@ -323,11 +323,8 @@
     "inAGamePressAnd": "داخل اللعبة، اضغط {{voiceShortcut}} واسأل بصوت عالٍ. يتوقف GameMate عن الاستماع عندما تصمت.",
     "downloadTheSelectedModelOnce": "نزّل النموذج المحدد مرة واحدة للبدء. بعدها يعمل دون اتصال.",
     "gamemateSVoice": "صوت GameMate",
-    "kokoroANaturalSoundingVoice": "Kokoro، صوت طبيعي يعمل على هذا الحاسوب ودون اتصال.",
     "usesTheVoicesBuiltInto": "يستخدم الأصوات المدمجة في Windows.",
     "voiceType": "نوع الصوت",
-    "naturalIsKokoroApache2": "الصوت الطبيعي هو Kokoro (‏Apache 2.0، مدرَّب فقط على صوتيات ذات تراخيص مفتوحة وغير محمية بحقوق النشر): تنزيل لمرة واحدة، ثم يعمل دون اتصال.",
-    "naturalKokoro": "طبيعي (Kokoro)",
     "windowsVoices": "أصوات Windows",
     "downloaded": "تم التنزيل.",
     "downloadItOnceToUse": "نزّله مرة واحدة لاستخدامه. حتى ذلك الحين يستخدم GameMate صوتًا من Windows.",
@@ -355,12 +352,6 @@
       }
     },
     "mb": "{{size}} ميغابايت",
-    "kokoroVoice": {
-      "af": "{{name}} (أمريكية، أنثى)",
-      "am": "{{name}} (أمريكي، ذكر)",
-      "bf": "{{name}} (بريطانية، أنثى)",
-      "bm": "{{name}} (بريطاني، ذكر)"
-    },
     "downloading": "جارٍ التنزيل… {{percent}}%",
     "speakAnswers": {
       "off": "أبدًا",
@@ -369,7 +360,18 @@
     },
     "naturalVoice": "صوت طبيعي",
     "englishOnlyModel": "لديك النسخة الإنجليزية فقط. نزّل النسخة متعددة اللغات للتحدث بـ{{language}}.",
-    "englishOnlyWorks": "لديك النسخة الإنجليزية فقط. تعمل مع الإنجليزية؛ نزّل النسخة متعددة اللغات للتحدث بلغات أخرى أيضًا."
+    "englishOnlyWorks": "لديك النسخة الإنجليزية فقط. تعمل مع الإنجليزية؛ نزّل النسخة متعددة اللغات للتحدث بلغات أخرى أيضًا.",
+    "naturalVoices": {
+      "female": "صوت نسائي {{number}}",
+      "male": "صوت رجالي {{number}}"
+    },
+    "noWindowsVoice": "لا يوجد بعد صوت من Windows يتحدث {{language}}.",
+    "addWindowsVoices": "إضافة أصوات Windows",
+    "addWindowsVoicesHelp": "يفتح إعدادات الكلام في Windows، حيث يمكنك إضافة أصوات بلغات أخرى. ثم عُد إلى هنا.",
+    "naturalNotForLanguage": "الصوت الطبيعي لا يتحدث {{language}}، لذلك يستخدم GameMate صوتًا من Windows.",
+    "naturalDescription": "Supertonic، صوت طبيعي يعمل على هذا الكمبيوتر ودون اتصال بالإنترنت.",
+    "naturalHelp": "الصوت الطبيعي هو Supertonic 3 (رخصة OpenRAIL-M): يُنزَّل مرة واحدة ثم يعمل دون اتصال. يتحدث كل لغات GameMate ما عدا الصينية.",
+    "naturalSupertonic": "طبيعي (Supertonic)"
   },
   "useLocalModels": {
     "builtInAi": "الذكاء الاصطناعي المدمج",

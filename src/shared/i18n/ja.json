@@ -308,11 +308,8 @@
     "inAGamePressAnd": "ゲーム中に {{voiceShortcut}} を押して、声に出して質問してください。話すのをやめると GameMate は聞き取りを止めます。",
     "downloadTheSelectedModelOnce": "始めるには、選んだモデルを一度ダウンロードしてください。その後はオフラインで動作します。",
     "gamemateSVoice": "GameMate の声",
-    "kokoroANaturalSoundingVoice": "Kokoro は、この PC 上でオフラインで動作する自然な声です。",
     "usesTheVoicesBuiltInto": "Windows に内蔵の音声を使います。",
     "voiceType": "声の種類",
-    "naturalIsKokoroApache2": "自然な声は Kokoro です(Apache 2.0、自由なライセンスで著作権のない音声のみで学習)。一度ダウンロードすれば、オフラインで動作します。",
-    "naturalKokoro": "自然な声(Kokoro)",
     "windowsVoices": "Windows の音声",
     "downloaded": "ダウンロード済み。",
     "downloadItOnceToUse": "使うには一度ダウンロードしてください。それまでは GameMate は Windows の音声を使います。",
@@ -340,12 +337,6 @@
       }
     },
     "mb": "{{size}} MB",
-    "kokoroVoice": {
-      "af": "{{name}}(アメリカ英語、女性)",
-      "am": "{{name}}(アメリカ英語、男性)",
-      "bf": "{{name}}(イギリス英語、女性)",
-      "bm": "{{name}}(イギリス英語、男性)"
-    },
     "downloading": "ダウンロード中… {{percent}}%",
     "speakAnswers": {
       "off": "読み上げない",
@@ -354,7 +345,18 @@
     },
     "naturalVoice": "自然な声",
     "englishOnlyModel": "英語専用版が入っています。{{language}}で話すには多言語版をダウンロードしてください。",
-    "englishOnlyWorks": "英語専用版が入っています。英語では使えます。ほかの言語でも話すには多言語版をダウンロードしてください。"
+    "englishOnlyWorks": "英語専用版が入っています。英語では使えます。ほかの言語でも話すには多言語版をダウンロードしてください。",
+    "naturalVoices": {
+      "female": "女性 {{number}}",
+      "male": "男性 {{number}}"
+    },
+    "noWindowsVoice": "{{language}}を話せる Windows の音声はまだありません。",
+    "addWindowsVoices": "Windows の音声を追加",
+    "addWindowsVoicesHelp": "Windows の音声認識の設定を開きます。ほかの言語の音声を追加できます。追加したらここに戻ってください。",
+    "naturalNotForLanguage": "ナチュラル音声は{{language}}を話せないため、GameMate は Windows の音声を使います。",
+    "naturalDescription": "Supertonic：この PC 上で動き、オフラインでも使える自然な音声です。",
+    "naturalHelp": "ナチュラル音声は Supertonic 3（OpenRAIL-M ライセンス）です。一度ダウンロードすればオフラインで使えます。中国語以外の GameMate のすべての言語を話せます。",
+    "naturalSupertonic": "ナチュラル（Supertonic）"
   },
   "useLocalModels": {
     "builtInAi": "内蔵 AI",

@@ -311,11 +311,8 @@
     "inAGamePressAnd": "Drück im Spiel {{voiceShortcut}} und frag laut. GameMate hört auf zuzuhören, wenn du eine Pause machst.",
     "downloadTheSelectedModelOnce": "Lade das gewählte Modell einmal herunter, um loszulegen. Danach funktioniert es offline.",
     "gamemateSVoice": "Die Stimme von GameMate",
-    "kokoroANaturalSoundingVoice": "Kokoro, eine natürlich klingende Stimme, die auf diesem PC läuft und offline funktioniert.",
     "usesTheVoicesBuiltInto": "Verwendet die in Windows eingebauten Stimmen.",
     "voiceType": "Stimmtyp",
-    "naturalIsKokoroApache2": "Natürlich ist Kokoro (Apache 2.0, nur mit frei lizenzierten, nicht urheberrechtlich geschützten Aufnahmen trainiert): einmal herunterladen, dann funktioniert es offline.",
-    "naturalKokoro": "Natürlich (Kokoro)",
     "windowsVoices": "Windows-Stimmen",
     "downloaded": "Heruntergeladen.",
     "downloadItOnceToUse": "Lade sie einmal herunter, um sie zu nutzen. Bis dahin verwendet GameMate eine Windows-Stimme.",
@@ -343,12 +340,6 @@
       }
     },
     "mb": "{{size}} MB",
-    "kokoroVoice": {
-      "af": "{{name}} (amerikanisch, weiblich)",
-      "am": "{{name}} (amerikanisch, männlich)",
-      "bf": "{{name}} (britisch, weiblich)",
-      "bm": "{{name}} (britisch, männlich)"
-    },
     "downloading": "Wird heruntergeladen… {{percent}} %",
     "speakAnswers": {
       "off": "Nie",
@@ -357,7 +348,18 @@
     },
     "naturalVoice": "Natürliche Stimme",
     "englishOnlyModel": "Du hast die Version nur für Englisch. Lade die mehrsprachige Version herunter, um auf {{language}} zu sprechen.",
-    "englishOnlyWorks": "Du hast die Version nur für Englisch. Sie funktioniert auf Englisch; lade die mehrsprachige Version herunter, um auch andere Sprachen zu sprechen."
+    "englishOnlyWorks": "Du hast die Version nur für Englisch. Sie funktioniert auf Englisch; lade die mehrsprachige Version herunter, um auch andere Sprachen zu sprechen.",
+    "naturalVoices": {
+      "female": "Weiblich {{number}}",
+      "male": "Männlich {{number}}"
+    },
+    "noWindowsVoice": "Noch keine Windows-Stimme spricht {{language}}.",
+    "addWindowsVoices": "Windows-Stimmen hinzufügen",
+    "addWindowsVoicesHelp": "Öffnet die Spracheinstellungen von Windows, wo du Stimmen in weiteren Sprachen hinzufügen kannst. Komm danach hierher zurück.",
+    "naturalNotForLanguage": "Die natürliche Stimme spricht kein {{language}}, daher nutzt GameMate dafür eine Windows-Stimme.",
+    "naturalDescription": "Supertonic, eine natürlich klingende Stimme, die auf diesem PC läuft und offline funktioniert.",
+    "naturalHelp": "Natürlich ist Supertonic 3 (Lizenz OpenRAIL-M): einmal herunterladen, dann funktioniert sie offline. Sie spricht alle Sprachen von GameMate außer Chinesisch.",
+    "naturalSupertonic": "Natürlich (Supertonic)"
   },
   "useLocalModels": {
     "builtInAi": "Integrierte KI",
