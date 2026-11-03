@@ -138,6 +138,7 @@ Open **⚙ Settings → Voice**.
    - **Best** (253 MB, Whisper Small) understands you best, also with an accent, but takes a few seconds longer. Recommended.
 
    If you downloaded a speech model with GameMate 1.0.3, it only understands English. It keeps working for English; for another language, the Voice page offers the multilingual version.
+
 3. In a game, press **Alt + V** and ask your question. GameMate stops listening when you pause, then sends your question. In the chat window, click **🎤** instead.
 
 Press **Alt + V** or click **🎤** again to stop listening early, or press **Esc** in the in-game window to cancel and hide it. The **Alt + V** shortcut only exists while voice input is turned on, so the key stays free for your games otherwise.
