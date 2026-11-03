@@ -249,7 +249,7 @@
     "onlyInYourWindowsUser": "Yalnızca Windows kullanıcı klasöründe, yalnızca Windows hesabın tarafından okunabilir.",
     "yourSettings": "Ayarların.",
     "yourGeminiApiKeyIf": "Eklediysen Gemini API anahtarın, Windows tarafından şifrelenmiş olarak.",
-    "aiModelsGamemateSAi": "İndirdiğin yapay zekâ modelleri, GameMate'in yapay zekâ motoru ve konuşma modelleri.",
+    "aiModelsGamemateSAi": "İndirdiğin yapay zekâ modelleri, GameMate'in yapay zekâ motoru, konuşma modelleri ve sesler.",
     "gamesFoundOrAddedTheir": "Bulunan veya eklenen oyunlar: adları, klasörleri veya programları ve wiki adresleri.",
     "openLogFolder": "Günlük klasörünü aç",
     "whenYouUseOnlineFeatures": "Çevrim içi özellikleri kullandığında",
@@ -269,7 +269,7 @@
       "findingYourGames": "<b>Oyunlarını bulma</b> yalnızca Ayarlar → Oyunlar'da izin verdikten sonra yapılır. Ardından GameMate başlatıcılarının oyun listelerini (Steam, Epic Games, Battle.net, Riot), CurseForge mod paketlerini ve öndeki programın adını okur. Bunlar bilgisayarında kalır; wiki'leri bulmak için wiki.gg ve Fandom'a yalnızca oyun adları gönderilir.",
       "yourMicrophone": "<b>Mikrofonun</b> yalnızca sesli giriş açıkken ve sesli kısayola veya 🎤'ya bastığında kullanılır. Konuşma bu bilgisayarda metne dönüştürülür.",
       "chatsAndTheCompanionLog": "<b>Sohbetler ve yoldaş günlüğü</b> yalnızca GameMate açıkken saklanır.",
-      "onlineFeaturesAreOffUntil": "<b>Çevrim içi özellikler sen açana kadar kapalıdır:</b> oyununun wiki'sinde veya Modrinth'te bilgi arama (yalnızca konu gönderilir) ve Google Gemini (soruların ve ekran görüntülerin Google'a gönderilir). İndirmeler, istediğinde bir kez yapılır: yapay zekâ ve konuşma modelleri Hugging Face'ten, GameMate'in yapay zekâ motoru GitHub'dan gelir. Güncelleme denetimi GitHub'a en son GameMate sürümünü sorar (kapatabilirsin)."
+      "onlineFeaturesAreOffUntil": "<b>Çevrim içi özellikler sen açana kadar kapalıdır:</b> oyununun wiki'sinde veya Modrinth'te bilgi arama (yalnızca konu gönderilir) ve Google Gemini (soruların ve ekran görüntülerin Google'a gönderilir). İndirmeler, istediğinde bir kez yapılır: yapay zekâ, konuşma ve ses modelleri Hugging Face'ten, GameMate'in yapay zekâ motoru GitHub'dan gelir. Güncelleme denetimi GitHub'a en son GameMate sürümünü sorar (kapatabilirsin)."
     },
     "aLogOfWhatGamemate": "Sorunları bulmak için GameMate'in yaptıklarının (yapay zekâyı başlatmak veya güncelleme denetlemek gibi) günlüğü. Asla sorularını veya cevapları içermez ve hiçbir yere gönderilmez.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini API koşulları</terms> ve <privacy>Google Gizlilik Politikası</privacy>.",

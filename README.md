@@ -17,7 +17,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **Knows your modpack.** GameMate reads your CurseForge modpacks (and the pack that's running in other launchers), so it knows which mods you have, and can read what a mod does.
 - **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe and shows it as a crafting grid, instead of guessing. It uses the newest Minecraft, or your modpack's version.
 - **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
-- **Talk to it.** Press **Alt + V** and ask your question out loud. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
+- **Talk to it.** Press **Alt + V** and ask your question out loud, in your language. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
 - **Ask about your screen.** Attach a screenshot of your game window or your whole screen and ask "What is this creature?" or "What should I do next?". GameMate picks your Minecraft window automatically when it's open.
 - **Download and play.** No other installs: GameMate downloads its AI with one click the first time you open it. Choose from three models, from fast to best, or use your Ollama models.
 - **Nothing left running.** GameMate's AI starts when you ask something, frees your graphics card after a few idle minutes, and stops completely when GameMate quits.
@@ -132,10 +132,12 @@ Open **⚙ Settings → Voice**.
 **Asking by voice**
 
 1. Turn on **Ask with your microphone**.
-2. Choose a speech model and click **Download**. You only do this once, and after that voice works offline.
+2. Choose a speech model and click **Download**. You only do this once, and after that voice works offline. Every model understands all of GameMate's languages.
    - **Fast** (45 MB) is the quickest but mishears more often.
-   - **Accurate** (80 MB) makes fewer mistakes.
-   - **Best** (250 MB, Whisper Small) understands you best, also with an accent, but takes a few seconds longer. Recommended.
+   - **Accurate** (81 MB) makes fewer mistakes.
+   - **Best** (253 MB, Whisper Small) understands you best, also with an accent, but takes a few seconds longer. Recommended.
+
+   If you downloaded a speech model with GameMate 1.0.3, it only understands English. It keeps working for English; for another language, the Voice page offers the multilingual version.
 3. In a game, press **Alt + V** and ask your question. GameMate stops listening when you pause, then sends your question. In the chat window, click **🎤** instead.
 
 Press **Alt + V** or click **🎤** again to stop listening early, or press **Esc** in the in-game window to cancel and hide it. The **Alt + V** shortcut only exists while voice input is turned on, so the key stays free for your games otherwise.
@@ -144,8 +146,10 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 
 - **Read answers aloud:** Never, When I ask by voice (the default), or Always.
 - **Read companion comments aloud:** speaks Commentary mode's pop-ups.
-- **Voice type:** **Natural (Kokoro)** sounds like a real person. Click **Download** once (340 MB); it then runs on your PC and works offline. Until it's downloaded, or if you pick **Windows voices**, GameMate uses the voices built into Windows.
-- Choose a **Voice** (Kokoro has 28 American and British voices) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
+- **Voice type:** **Natural (Supertonic)** sounds like a real person and speaks every GameMate language except Chinese. Click **Download** once (401 MB); it then runs on your PC and works offline. Until it's downloaded, for Chinese, or if you pick **Windows voices**, GameMate uses a Windows voice for your language.
+- Choose a **Voice** (Supertonic has 5 female and 5 male voices; Windows voices are listed for your language) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
+- **No Windows voice for your language?** Click **Add Windows voices** to open Windows' speech settings, add a voice there, then come back to the Voice page.
+- GameMate 1.0.3's natural voice (Kokoro) has been replaced by Supertonic. Its files are deleted after the update to free 340 MB; download Supertonic to keep a natural voice.
 
 ### Language
 
@@ -153,7 +157,7 @@ The first time you open GameMate it asks for your language, starting on your PC'
 
 - **Answers** come in the language you write in, so you can also ask in another language for a single question.
 - **Game names and wiki pages** stay as they are. Most game wikis are in English, so GameMate looks pages up by their English name and answers you in your language.
-- **Voice input and the Natural voice** understand and speak English for now. To have answers read aloud in another language, choose **Windows voices** and pick a voice for that language under **⚙ Settings → Voice → Voice** (the list shows the voices installed in Windows).
+- **Voice input** understands your language, and answers are read aloud in it: by the Natural voice, or by a Windows voice for Chinese (see [Voice](#voice)).
 
 ### Updates
 
@@ -246,9 +250,9 @@ Screenshots go only to the AI you chose and are never saved to disk. What GameMa
 
 GameMate keeps a small log file on your PC of what it did, such as starting the AI or checking for updates, to help find problems. It never contains your questions or answers and is never sent anywhere. **⚙ Settings → Privacy & legal → Open log folder** shows it.
 
-GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models are downloaded once from Hugging Face when you click **Download**.
+GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models and the natural voice are downloaded once from Hugging Face when you click **Download**.
 
-**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy & legal** (or on the first-start screen) to remove everything GameMate stored on your PC (settings, your Gemini key, the log, and the AI engine, AI models and speech models you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
+**Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy & legal** (or on the first-start screen) to remove everything GameMate stored on your PC (settings, your Gemini key, the log, and the AI engine, AI models, speech models and voices you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
 
 ## What GameMate won't do
 
@@ -259,7 +263,7 @@ GameMate is an assistant, not a bot. It never plays games for you, controls your
 - GameMate's built-in AI engine is [llama.cpp](https://github.com/ggml-org/llama.cpp) (MIT License).
 - The built-in models are [Qwen3.5](https://huggingface.co/Qwen) by the Qwen team (Apache 2.0), in versions prepared by [Unsloth](https://huggingface.co/unsloth).
 - Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
-- The natural voice is [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (Apache 2.0), run with [kokoro-js](https://github.com/hexgrad/kokoro) (Apache 2.0). Its pronunciation step uses [eSpeak NG](https://github.com/espeak-ng/espeak-ng) (GPL-3.0) through [phonemizer.js](https://github.com/xenova/phonemizer.js).
+- The natural voice is [Supertonic 3](https://huggingface.co/Supertone/supertonic-3) by Supertone (OpenRAIL-M license), run with [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) (MIT) following Supertone's [sample code](https://github.com/supertone-oss-archive/supertonic) (MIT).
 - Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Pictures come from the same wikis, are credited with the wiki's name and link to their page there. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 

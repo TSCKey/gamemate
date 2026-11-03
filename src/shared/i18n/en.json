@@ -249,7 +249,7 @@
     "onlyInYourWindowsUser": "Only in your Windows user folder, readable only by your Windows account.",
     "yourSettings": "Your settings.",
     "yourGeminiApiKeyIf": "Your Gemini API key, if you added one, encrypted by Windows.",
-    "aiModelsGamemateSAi": "AI models, GameMate's AI engine and speech models you downloaded.",
+    "aiModelsGamemateSAi": "AI models, GameMate's AI engine and speech models and voices you downloaded.",
     "gamesFoundOrAddedTheir": "Games found or added: their name, folder or program, and wiki address.",
     "openLogFolder": "Open log folder",
     "whenYouUseOnlineFeatures": "When you use online features",
@@ -269,7 +269,7 @@
       "findingYourGames": "<b>Finding your games</b> only happens after you allow it in Settings → Games. Then GameMate reads your launchers' game lists (Steam, Epic Games, Battle.net, Riot), your CurseForge modpacks and the name of the program in front. This stays on your PC; to find wikis, only game names are sent to wiki.gg and Fandom.",
       "yourMicrophone": "<b>Your microphone</b> is only used when voice input is on and you press the voice shortcut or 🎤. Speech is turned into text on this PC.",
       "chatsAndTheCompanionLog": "<b>Chats and the companion log</b> are kept only while GameMate is open.",
-      "onlineFeaturesAreOffUntil": "<b>Online features are off until you turn them on:</b> looking things up on your game's wiki or Modrinth (only the topic is sent) and Google Gemini (your questions and screenshots are sent to Google). Downloads happen once, when you ask for them: AI and speech models come from Hugging Face, and GameMate's AI engine from GitHub. Update checks ask GitHub for the latest GameMate version (you can turn them off)."
+      "onlineFeaturesAreOffUntil": "<b>Online features are off until you turn them on:</b> looking things up on your game's wiki or Modrinth (only the topic is sent) and Google Gemini (your questions and screenshots are sent to Google). Downloads happen once, when you ask for them: AI, speech and voice models come from Hugging Face, and GameMate's AI engine from GitHub. Update checks ask GitHub for the latest GameMate version (you can turn them off)."
     },
     "aLogOfWhatGamemate": "A log of what GameMate did (like starting the AI or checking for updates), for finding problems. It never contains your questions or answers and is never sent anywhere.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini API terms</terms> and <privacy>Google Privacy Policy</privacy>.",

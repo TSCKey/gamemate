@@ -249,7 +249,7 @@
     "onlyInYourWindowsUser": "Nur in deinem Windows-Benutzerordner, nur für dein Windows-Konto lesbar.",
     "yourSettings": "Deine Einstellungen.",
     "yourGeminiApiKeyIf": "Dein Gemini-API-Schlüssel, falls du einen eingegeben hast, von Windows verschlüsselt.",
-    "aiModelsGamemateSAi": "KI-Modelle, die KI-Engine von GameMate und Sprachmodelle, die du heruntergeladen hast.",
+    "aiModelsGamemateSAi": "KI-Modelle, die KI-Engine von GameMate Sprachmodelle und Stimmen, die du heruntergeladen hast.",
     "gamesFoundOrAddedTheir": "Gefundene oder hinzugefügte Spiele: Name, Ordner oder Programm und Wiki-Adresse.",
     "openLogFolder": "Protokollordner öffnen",
     "whenYouUseOnlineFeatures": "Wenn du Online-Funktionen nutzt",
@@ -269,7 +269,7 @@
       "findingYourGames": "<b>Das Finden deiner Spiele</b> passiert erst, nachdem du es unter Einstellungen → Spiele erlaubt hast. Dann liest GameMate die Spielelisten deiner Launcher (Steam, Epic Games, Battle.net, Riot), deine CurseForge-Modpacks und den Namen des Programms im Vordergrund. Das bleibt auf deinem PC; um Wikis zu finden, werden nur Spielnamen an wiki.gg und Fandom gesendet.",
       "yourMicrophone": "<b>Dein Mikrofon</b> wird nur genutzt, wenn die Spracheingabe an ist und du das Sprach-Tastenkürzel oder 🎤 drückst. Sprache wird auf diesem PC in Text umgewandelt.",
       "chatsAndTheCompanionLog": "<b>Chats und das Begleiterprotokoll</b> werden nur gespeichert, solange GameMate geöffnet ist.",
-      "onlineFeaturesAreOffUntil": "<b>Online-Funktionen sind aus, bis du sie einschaltest:</b> Nachschlagen im Wiki deines Spiels oder auf Modrinth (nur das Thema wird gesendet) und Google Gemini (deine Fragen und Screenshots werden an Google gesendet). Downloads passieren einmal, wenn du sie anforderst: KI- und Sprachmodelle kommen von Hugging Face, die KI-Engine von GameMate von GitHub. Die Update-Suche fragt GitHub nach der neuesten GameMate-Version (du kannst sie ausschalten)."
+      "onlineFeaturesAreOffUntil": "<b>Online-Funktionen sind aus, bis du sie einschaltest:</b> Nachschlagen im Wiki deines Spiels oder auf Modrinth (nur das Thema wird gesendet) und Google Gemini (deine Fragen und Screenshots werden an Google gesendet). Downloads passieren einmal, wenn du sie anforderst: KI-, Sprach- und Stimmmodelle kommen von Hugging Face, die KI-Engine von GameMate von GitHub. Die Update-Suche fragt GitHub nach der neuesten GameMate-Version (du kannst sie ausschalten)."
     },
     "aLogOfWhatGamemate": "Ein Protokoll dessen, was GameMate getan hat (etwa die KI gestartet oder nach Updates gesucht), um Probleme zu finden. Es enthält nie deine Fragen oder Antworten und wird nirgendwohin gesendet.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini-API-Bedingungen</terms> und <privacy>Datenschutzerklärung von Google</privacy>.",
