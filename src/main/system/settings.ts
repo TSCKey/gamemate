@@ -7,6 +7,7 @@ import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT, isValidShortcut } from '../../shared/shortcuts'
+import { isLanguageCode } from '../../shared/languages'
 import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
@@ -73,6 +74,7 @@ const DEFAULTS: Settings = {
   webLookup: false,
   webSearch: false,
   detailedAnswers: false,
+  language: '',
   termsVersion: 0,
   termsAcceptedAt: '',
   consents: {},
@@ -162,6 +164,7 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.geminiModel === 'string' && /^[\w.-]{0,100}$/.test(p.geminiModel)) {
     next.geminiModel = p.geminiModel
   }
+  if (isLanguageCode(p.language)) next.language = p.language
   if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
   if (typeof p.webSearch === 'boolean') next.webSearch = p.webSearch
   if (typeof p.detailedAnswers === 'boolean') next.detailedAnswers = p.detailedAnswers

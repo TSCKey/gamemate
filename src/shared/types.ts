@@ -2,6 +2,8 @@
 // windows both use. Written once here so the two sides can't drift apart. Keep this file free of
 // Electron and Node.js: it is compiled into the windows too.
 
+import type { LanguageCode } from './languages'
+
 // ── Settings ────────────────────────────────────────────────────────────────────────────────
 
 // How much GameMate watches and talks on its own (see README "Always-on companion").
@@ -49,6 +51,8 @@ export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro'
 export type ListenModelId = 'fast' | 'accurate' | 'best'
 
 export interface Settings {
+  // GameMate's language ('' until the player picks one at first launch).
+  language: LanguageCode | ''
   localBackend: LocalBackend
   // Built-in model from the catalog in localModels.ts.
   builtinModel: string
