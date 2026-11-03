@@ -9,6 +9,7 @@ import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
 import { useGames } from '../hooks/useGames'
 import { speak, stopSpeaking } from '../voice/speak'
 import { useVoiceInput } from '../voice/useVoiceInput'
+import { t, useAppLanguage } from '../i18n'
 
 // Reopening after this long starts a new conversation instead of continuing the old one.
 const FRESH_CONVERSATION_MS = 10 * 60 * 1000
@@ -17,6 +18,7 @@ const WINDOW_PADDING = 24
 
 function Overlay(): React.JSX.Element {
   const { settings, models, update } = useSettings()
+  useAppLanguage(settings)
   const voiceShortcut = settings?.voiceShortcut ?? ''
   const games = useGames(settings)
   const gameName = games?.games.find((g) => g.id === settings?.currentGame)?.name
@@ -133,7 +135,7 @@ function Overlay(): React.JSX.Element {
     <div className="overlay" style={{ padding: WINDOW_PADDING }}>
       <div className="overlay-panel" ref={panelRef}>
         <div className="overlay-bar">
-          <span className="overlay-handle" title="Drag to move">
+          <span className="overlay-handle" title={t('overlay.dragToMove')}>
             🎮
           </span>
           <input
@@ -143,12 +145,12 @@ function Overlay(): React.JSX.Element {
             onKeyDown={onKeyDown}
             placeholder={
               !model
-                ? 'Open GameMate and set up an AI model first'
+                ? t('overlay.openGamemateAndSetUp')
                 : voice.status === 'listening'
-                  ? 'Listening…'
+                  ? t('overlay.listening')
                   : voice.status === 'transcribing'
-                    ? 'Working out what you said…'
-                    : 'Ask GameMate…'
+                    ? t('overlay.workingOutWhatYouSaid')
+                    : t('overlay.askGamemate')
             }
             disabled={!model || voice.status !== 'idle'}
             autoFocus
@@ -172,8 +174,8 @@ function Overlay(): React.JSX.Element {
               disabled={!model || voice.status === 'transcribing' || thinking}
               title={
                 voice.status === 'listening'
-                  ? 'Listening, click to stop'
-                  : `Ask by voice (${voiceShortcut})`
+                  ? t('overlay.listeningClickToStop')
+                  : t('overlay.askByVoice', { voiceShortcut })
               }
             >
               🎤
@@ -186,10 +188,10 @@ function Overlay(): React.JSX.Element {
             disabled={!vision}
             title={
               !vision
-                ? "This model can't see images"
+                ? t('overlay.thisModelCanTSee')
                 : useScreenshot
-                  ? 'Screenshot on: GameMate sees your screen'
-                  : 'Screenshot off'
+                  ? t('overlay.screenshotOnGamemateSeesYour')
+                  : t('overlay.screenshotOff')
             }
           >
             📷
@@ -200,7 +202,7 @@ function Overlay(): React.JSX.Element {
               className="overlay-toggle"
               onClick={() => setHistory([])}
               disabled={thinking}
-              title="New conversation"
+              title={t('overlay.newConversation')}
             >
               ✕
             </button>
@@ -210,15 +212,19 @@ function Overlay(): React.JSX.Element {
         {(lastQuestion || thinking || error || voice.error) && (
           <div className="overlay-body">
             {lastQuestion && (
-              <div className="overlay-question">
+              <div className="overlay-question" dir="auto">
                 {lastQuestion.images?.length ? '📷 ' : ''}
                 {lastQuestion.content}
               </div>
             )}
-            {thinking && written && <div className="overlay-answer">{written}</div>}
-            {thinking && !written && <div className="overlay-pending">Thinking…</div>}
+            {thinking && written && (
+              <div className="overlay-answer" dir="auto">
+                {written}
+              </div>
+            )}
+            {thinking && !written && <div className="overlay-pending">{t('overlay.thinking')}</div>}
             {!thinking && lastAnswer && (
-              <div className="overlay-answer">
+              <div className="overlay-answer" dir="auto">
                 {lastAnswer.content}
                 {lastAnswer.recipes?.map((r, i) => (
                   <RecipeCard key={i} recipe={r} />
@@ -233,23 +239,22 @@ function Overlay(): React.JSX.Element {
         )}
         <div className="overlay-footer">
           {engine === 'gemini' && (
-            <span className="overlay-cloud" title="Answers come from Gemini (Google)">
+            <span className="overlay-cloud" title={t('overlay.answersComeFromGeminiGoogle')}>
               ☁ Gemini ·{' '}
             </span>
           )}
           {engine === 'auto' && (
-            <span
-              className="overlay-cloud"
-              title="GameMate picks the local AI or Gemini for each question"
-            >
+            <span className="overlay-cloud" title={t('overlay.gamematePicksTheLocalAi')}>
               {lastAnswer?.answeredBy
-                ? `✦ Auto: ${lastAnswer.answeredBy.provider === 'gemini' ? '☁ Gemini' : 'this PC'}`
-                : '✦ Auto'}{' '}
+                ? lastAnswer.answeredBy.provider === 'gemini'
+                  ? t('overlay.autoGemini')
+                  : t('overlay.autoThisPc')
+                : t('overlay.auto')}{' '}
               ·{' '}
             </span>
           )}
-          {gameName && <span title="The game GameMate helps with">{gameName} · </span>}
-          Enter to ask{voice.ready ? ` · ${voiceShortcut} to talk` : ''} · Esc to hide
+          {gameName && <span title={t('overlay.theGameGamemateHelpsWith')}>{gameName} · </span>}
+          {voice.ready ? t('overlay.hintWithVoice', { voiceShortcut }) : t('overlay.hint')}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import type { WikiPicture } from '../../../preload/index.d'
+import { t } from '../i18n'
 
 // A picture from a game's wiki (GameMate already downloaded it). Clicking it opens the picture's
 // page on the wiki, which credits its source.
@@ -13,7 +14,7 @@ export function Picture({
     <figure className={`picture is-${picture.kind} ${className}`}>
       <a
         href={picture.url}
-        title={`Open on the ${picture.wiki}`}
+        title={t('pictures.openOnThe', { wiki: picture.wiki })}
         onClick={(e) => {
           e.preventDefault()
           window.api.openSource(picture.url)

@@ -7,17 +7,18 @@ import ModelsPanel from '../components/ModelsPanel'
 import PrivacyPanel from '../components/PrivacyPanel'
 import VoicePanel from '../components/VoicePanel'
 import { localModelInfo } from '../hooks/useLocalModels'
+import { t } from '../i18n'
 
 export type SettingsTab = 'general' | 'games' | 'models' | 'companion' | 'voice' | 'ai' | 'privacy'
 
-const TABS: { id: SettingsTab; icon: string; label: string }[] = [
-  { id: 'general', icon: '⚙️', label: 'General' },
-  { id: 'games', icon: '🕹️', label: 'Games' },
-  { id: 'models', icon: '🧠', label: 'Models' },
-  { id: 'companion', icon: '🎮', label: 'Companion' },
-  { id: 'voice', icon: '🎙️', label: 'Voice' },
-  { id: 'ai', icon: '☁️', label: 'AI & online' },
-  { id: 'privacy', icon: '🔒', label: 'Privacy & legal' }
+const TABS: { id: SettingsTab; icon: string }[] = [
+  { id: 'general', icon: '⚙️' },
+  { id: 'games', icon: '🕹️' },
+  { id: 'models', icon: '🧠' },
+  { id: 'companion', icon: '🎮' },
+  { id: 'voice', icon: '🎙️' },
+  { id: 'ai', icon: '☁️' },
+  { id: 'privacy', icon: '🔒' }
 ]
 
 function SettingsScreen({
@@ -43,28 +44,28 @@ function SettingsScreen({
   localModels: LocalModelStatus[]
   appInfo: AppInfo | null
 }): React.JSX.Element {
-  const current = TABS.find((t) => t.id === tab) ?? TABS[0]
+  const current = TABS.find((item) => item.id === tab) ?? TABS[0]
   return (
     <div className="settings">
-      <nav className="settings-nav" aria-label="Settings">
+      <nav className="settings-nav" aria-label={t('settingsScreen.settings')}>
         <button type="button" className="back-button" onClick={onClose}>
-          ← Back to chat
+          {t('settingsScreen.backToChat')}
         </button>
-        {TABS.map((t) => (
+        {TABS.map((item) => (
           <button
-            key={t.id}
+            key={item.id}
             type="button"
-            className={`nav-item${t.id === tab ? ' is-active' : ''}`}
-            aria-current={t.id === tab ? 'page' : undefined}
-            onClick={() => onTab(t.id)}
+            className={`nav-item${item.id === tab ? ' is-active' : ''}`}
+            aria-current={item.id === tab ? 'page' : undefined}
+            onClick={() => onTab(item.id)}
           >
-            <span className="nav-icon">{t.icon}</span>
-            {t.label}
+            <span className="nav-icon">{item.icon}</span>
+            {t(`settingsScreen.tabs.${item.id}`)}
           </button>
         ))}
       </nav>
       <main className="settings-content">
-        <h1>{current.label}</h1>
+        <h1>{t(`settingsScreen.tabs.${current.id}`)}</h1>
         {tab === 'general' && (
           <GeneralPanel settings={settings} update={update} appInfo={appInfo} />
         )}

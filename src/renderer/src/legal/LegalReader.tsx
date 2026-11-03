@@ -1,6 +1,7 @@
 import termsText from '../../../../docs/TERMS.md?raw'
 import privacyText from '../../../../docs/PRIVACY.md?raw'
 import { parseMarkdown, type Block, type Inline } from './markdown'
+import { t } from '../i18n'
 
 // The same documents as in the repository, built into the app so they can be read offline.
 export type LegalDoc = 'terms' | 'privacy'
@@ -125,7 +126,7 @@ export function LegalReader({
         className="modal legal-reader"
         role="dialog"
         aria-modal="true"
-        aria-label={doc === 'terms' ? 'Terms of Use' : 'Privacy Policy'}
+        aria-label={doc === 'terms' ? t('legalReader.termsOfUse') : t('legalReader.privacyPolicy')}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="legal-tabs">
@@ -134,16 +135,21 @@ export function LegalReader({
             className={doc === 'terms' ? 'is-active' : ''}
             onClick={() => onDoc('terms')}
           >
-            Terms of Use
+            {t('legalReader.termsOfUse')}
           </button>
           <button
             type="button"
             className={doc === 'privacy' ? 'is-active' : ''}
             onClick={() => onDoc('privacy')}
           >
-            Privacy Policy
+            {t('legalReader.privacyPolicy')}
           </button>
-          <button type="button" className="legal-close" onClick={onClose} aria-label="Close">
+          <button
+            type="button"
+            className="legal-close"
+            onClick={onClose}
+            aria-label={t('legalReader.close')}
+          >
             ✕
           </button>
         </div>

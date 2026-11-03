@@ -9,41 +9,40 @@ import type {
 } from '../../../preload/index.d'
 import { errorMessage } from '../hooks/useSettings'
 import { Field, Section, Toggle } from './ui'
+import { Trans } from 'react-i18next'
+import { t } from '../i18n'
 
-const LAUNCHERS: Record<GameInfo['launcher'], string> = {
-  builtin: 'Built in',
-  steam: 'Steam',
-  epic: 'Epic Games',
-  battlenet: 'Battle.net',
-  riot: 'Riot',
-  manual: 'Added by you'
-}
+const launcherName = (launcher: GameInfo['launcher']): string =>
+  ({
+    builtin: t('gamesPanel.builtIn'),
+    steam: 'Steam',
+    epic: 'Epic Games',
+    battlenet: 'Battle.net',
+    riot: 'Riot',
+    manual: t('gamesPanel.addedByYou')
+  })[launcher]
 
 // What the player agrees to before GameMate looks at anything on their PC.
 function DetectionConsent({ onAgree }: { onAgree: () => void }): React.JSX.Element {
   const [checked, setChecked] = useState(false)
   return (
     <div className="consent">
-      <p>GameMate can find your games and follow the one you&apos;re playing. To do that it:</p>
+      <p>{t('gamesPanel.gamemateCanFindYourGames')}</p>
       <ul className="privacy-list">
         <li>
-          Reads the game lists of Steam, Epic Games, Battle.net and Riot on this PC, and your
-          CurseForge Minecraft modpacks, when you click <strong>Scan for games</strong>.
+          <Trans i18nKey="gamesPanel.readsTheGameLists" components={{ b: <strong /> }} />
         </li>
-        <li>
-          Looks up a wiki for each game it finds, sending only the game&apos;s name to wiki.gg and
-          Fandom.
-        </li>
-        <li>Reads the name of the program in front while you play, to know which game it is.</li>
-        <li>Keeps everything on this PC. Turning this off forgets all the games it found.</li>
+        <li>{t('gamesPanel.looksUpAWikiFor')}</li>
+        <li>{t('gamesPanel.readsTheNameOfThe')}</li>
+        <li>{t('gamesPanel.keepsEverythingOnThisPc')}</li>
       </ul>
       <label className="check">
         <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
-        Allow GameMate to look for games on this PC.
+        {t('gamesPanel.allowGamemateToLook')}
       </label>
       <div className="button-row">
         <button type="button" className="primary" disabled={!checked} onClick={onAgree}>
-          Allow and scan for games
+          {t('gamesPanel.allowAndScanForGames')}
         </button>
       </div>
     </div>
@@ -96,13 +95,10 @@ function GameRow({
     <div className="model-row">
       <div className="model-info">
         <div className="field-label">
-          {game.name} <span className="badge">{LAUNCHERS[game.launcher]}</span>
+          {game.name} <span className="badge">{launcherName(game.launcher)}</span>
           {game.competitive && (
-            <span
-              className="badge is-warning"
-              title="Ranked online game: AI help during matches may break its rules"
-            >
-              Competitive
+            <span className="badge is-warning" title={t('gamesPanel.rankedOnlineGameAiHelp')}>
+              {t('gamesPanel.competitive')}
             </span>
           )}
         </div>
@@ -119,43 +115,43 @@ function GameRow({
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder={
-                game.wiki
-                  ? 'New wiki address'
-                  : 'No wiki found. Paste its address, e.g. https://…fandom.com'
+                game.wiki ? t('gamesPanel.newWikiAddress') : t('gamesPanel.noWikiFoundPasteIts')
               }
-              aria-label={`Wiki address for ${game.name}`}
+              aria-label={t('gamesPanel.wikiAddressFor', { name: game.name })}
               spellCheck={false}
             />
             <button type="submit" disabled={busy || !address.trim()}>
-              {busy ? 'Checking…' : 'Use wiki'}
+              {busy ? t('gamesPanel.checking') : t('gamesPanel.useWiki')}
             </button>
           </form>
         ) : (
           <div className="field-help">
-            Wiki: {game.wiki}{' '}
+            {t('gamesPanel.wiki', { wiki: game.wiki })}{' '}
             <button type="button" className="link" onClick={() => setEditing(true)}>
-              Change
+              {t('gamesPanel.change')}
             </button>
             {' · '}
             <button type="button" className="link" disabled={busy} onClick={showChoices}>
-              {busy && !choices ? 'Looking…' : 'Other wikis'}
+              {busy && !choices ? t('gamesPanel.looking') : t('gamesPanel.otherWikis')}
             </button>
           </div>
         )}
         {choices && (
           <ul className="wiki-choices">
-            {choices.length === 0 && <li>No other wikis found for {game.name}.</li>}
+            {choices.length === 0 && (
+              <li>{t('gamesPanel.noOtherWikisFound', { name: game.name })}</li>
+            )}
             {choices.map((c) => (
               <li key={c.address}>
                 <span>
-                  <strong>{c.name}</strong> ({new URL(c.address).host}): {c.articles} pages,{' '}
-                  {c.activeUsers} active editors
+                  <strong>{c.name}</strong> ({new URL(c.address).host}):{' '}
+                  {t('gamesPanel.wikiSize', { pages: c.articles, editors: c.activeUsers })}
                 </span>
                 {c.current ? (
-                  <span className="badge">In use</span>
+                  <span className="badge">{t('gamesPanel.inUse')}</span>
                 ) : (
                   <button type="button" disabled={busy} onClick={() => saveWiki(c.address)}>
-                    Use
+                    {t('gamesPanel.use')}
                   </button>
                 )}
               </li>
@@ -169,7 +165,7 @@ function GameRow({
           type="button"
           onClick={async () => onChange(await window.api.games.remove(game.id))}
         >
-          Remove
+          {t('gamesPanel.remove')}
         </button>
       </div>
     </div>
@@ -194,7 +190,7 @@ function AddGame({ onAdded }: { onAdded: (state: GamesState) => void }): React.J
   if (!apps) {
     return (
       <button type="button" onClick={load}>
-        Add a game that&apos;s running…
+        {t('gamesPanel.addAGameThatS')}
       </button>
     )
   }
@@ -212,14 +208,12 @@ function AddGame({ onAdded }: { onAdded: (state: GamesState) => void }): React.J
       }}
     >
       {apps.length === 0 ? (
-        <p className="field-help">
-          No programs with a window found. Start your game, then try again.
-        </p>
+        <p className="field-help">{t('gamesPanel.noProgramsWithAWindow')}</p>
       ) : (
         <>
           <select
             value={exe}
-            aria-label="Running program"
+            aria-label={t('gamesPanel.runningProgram')}
             onChange={(e) => {
               setExe(e.target.value)
               setName(apps.find((a) => a.exe === e.target.value)?.title ?? '')
@@ -235,16 +229,16 @@ function AddGame({ onAdded }: { onAdded: (state: GamesState) => void }): React.J
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Game name"
-            aria-label="Game name"
+            placeholder={t('gamesPanel.gameName')}
+            aria-label={t('gamesPanel.gameName')}
           />
           <button type="submit" className="primary" disabled={!exe || !name.trim()}>
-            Add
+            {t('gamesPanel.add')}
           </button>
         </>
       )}
       <button type="button" onClick={() => setApps(null)}>
-        Cancel
+        {t('gamesPanel.cancel')}
       </button>
       {error && <p className="error-text">{error}</p>}
     </form>
@@ -294,8 +288,8 @@ function GamesPanel({
   return (
     <>
       <Section
-        title="Find your games"
-        description="GameMate knows Minecraft out of the box. Your other games come from a scan of this PC."
+        title={t('gamesPanel.findYourGames')}
+        description={t('gamesPanel.gamemateKnowsMinecraftOutOf')}
       >
         {!consent ? (
           <DetectionConsent
@@ -309,35 +303,35 @@ function GamesPanel({
             <Field
               label={
                 scanning
-                  ? 'Scanning…'
-                  : `${found.length} ${found.length === 1 ? 'game' : 'games'} found`
+                  ? t('gamesPanel.scanning')
+                  : t('gamesPanel.gamesFound', { count: found.length })
               }
-              help="Looks through Steam, Epic Games, Battle.net and Riot, and finds each game's wiki. Run it again after installing a game."
+              help={t('gamesPanel.looksThroughSteamEpicGames')}
             >
               <button type="button" className="primary" onClick={scan} disabled={scanning}>
-                {scanning ? 'Scanning…' : 'Scan for games'}
+                {scanning ? t('gamesPanel.scanning') : t('gamesPanel.scanForGames')}
               </button>
             </Field>
             <Field
-              label="Follow the game I'm playing"
-              help="When you press the shortcut or the companion is watching, GameMate switches to the game in front."
+              label={t('gamesPanel.followTheGameIM')}
+              help={t('gamesPanel.whenYouPressTheShortcut')}
             >
               <Toggle
-                label="Follow the game I'm playing"
+                label={t('gamesPanel.followTheGameIM')}
                 checked={settings.autoDetectGame}
                 onChange={(autoDetectGame) => update({ autoDetectGame })}
               />
             </Field>
             <Field
-              label="Stop looking for games"
-              help="Turns detection off and forgets every game GameMate found."
+              label={t('gamesPanel.stopLookingForGames')}
+              help={t('gamesPanel.turnsDetectionOffAndForgets')}
             >
               <button
                 type="button"
                 className="danger"
                 onClick={() => update({ deviceConsent: false })}
               >
-                Turn off
+                {t('gamesPanel.turnOff')}
               </button>
             </Field>
           </>
@@ -346,10 +340,7 @@ function GamesPanel({
       </Section>
 
       {consent && (
-        <Section
-          title="Your games"
-          description="Each game's wiki was found by its name: the liveliest one when there are several. Pick another with Other wikis, or paste any wiki's address with Change."
-        >
+        <Section title={t('gamesPanel.yourGames')} description={t('gamesPanel.eachGameSWikiWas')}>
           {found.map((g) => (
             <GameRow key={g.id} game={g} onChange={setGames} />
           ))}
@@ -357,39 +348,45 @@ function GamesPanel({
             <AddGame onAdded={setGames} />
           </div>
           {found.some((g) => g.competitive) && (
-            <p className="field-help">
-              Competitive games: check the game&apos;s rules before using the companion during
-              ranked matches.
-            </p>
+            <p className="field-help">{t('gamesPanel.competitiveGamesCheckTheGame')}</p>
           )}
         </Section>
       )}
 
       {consent && (
         <Section
-          title="Minecraft modpacks"
-          description="Your CurseForge modpacks on this PC, so answers know which mods you have. With another launcher, GameMate reads the mods of the pack that's running."
+          title={t('gamesPanel.minecraftModpacks')}
+          description={t('gamesPanel.yourCurseforgeModpacksOnThis')}
         >
           <Field
-            label="Modpack"
+            label={t('gamesPanel.modpack')}
             help={
               current
-                ? `Using ${current.name}${current.minecraftVersion ? `, Minecraft ${current.minecraftVersion}` : ''}${current.loader ? `, ${current.loader}` : ''}, ${current.modCount} mods.`
+                ? t('gamesPanel.usingModpack', {
+                    pack: [
+                      current.name,
+                      current.minecraftVersion && `Minecraft ${current.minecraftVersion}`,
+                      current.loader
+                    ]
+                      .filter(Boolean)
+                      .join(', '),
+                    count: current.modCount
+                  })
                 : choice === 'auto'
-                  ? 'No modpack running right now. Start one, or pick it here.'
-                  : 'Plain Minecraft, without mods.'
+                  ? t('gamesPanel.noModpackRunningRightNow')
+                  : t('gamesPanel.plainMinecraftWithoutMods')
             }
           >
             <select
               value={choice}
               onChange={(e) => update({ minecraftModpack: e.target.value })}
-              aria-label="Modpack"
+              aria-label={t('gamesPanel.modpack')}
             >
-              <option value="auto">Detect the one I&apos;m playing</option>
-              <option value="">None (plain Minecraft)</option>
+              <option value="auto">{t('gamesPanel.detectTheOneIM')}</option>
+              <option value="">{t('gamesPanel.nonePlainMinecraft')}</option>
               {(packs ?? []).map((p) => (
                 <option key={p.path} value={p.path}>
-                  {p.name} · {p.minecraftVersion} · {p.modCount} mods
+                  {p.name} · {p.minecraftVersion} · {t('gamesPanel.mods', { count: p.modCount })}
                 </option>
               ))}
               {choice && choice !== 'auto' && !packs?.some((p) => p.path === choice) && (

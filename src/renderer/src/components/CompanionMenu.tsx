@@ -1,6 +1,7 @@
 import type { CompanionState, Settings } from '../../../preload/index.d'
-import { COMMENTARY_FREQUENCIES, COMPANION_MODES, STATUS_TEXT } from '../constants'
+import { COMMENTARY_FREQUENCIES, COMPANION_MODES, statusText } from '../constants'
 import { Dropdown, MenuItem, MenuLabel, MenuNote, MenuSeparator } from './Menu'
+import { t } from '../i18n'
 
 // Top-bar chip showing the companion mode and whether it's watching; opens a menu to change it.
 function CompanionMenu({
@@ -20,8 +21,8 @@ function CompanionMenu({
 
   return (
     <Dropdown
-      menuLabel="Companion mode"
-      title={`Companion: ${mode.label}${watching ? ` · ${STATUS_TEXT[status]}` : ''}`}
+      menuLabel={t('companionMenu.companionMode')}
+      title={`${t('companionMenu.companion', { mode: mode.label })}${watching ? ` · ${statusText(status)}` : ''}`}
       triggerClassName="chip"
       label={
         <span className={`companion-status is-${status}`}>
@@ -30,11 +31,11 @@ function CompanionMenu({
       }
     >
       <>
-        <MenuLabel>Companion mode</MenuLabel>
+        <MenuLabel>{t('companionMenu.companionMode')}</MenuLabel>
         {watching && (
           <MenuNote>
             <span className={`companion-status is-${status}`}>
-              <span className="companion-dot" /> {STATUS_TEXT[status]}
+              <span className="companion-dot" /> {statusText(status)}
               {state?.game && status !== 'waiting-for-game' ? ` · ${state.game}` : ''}
             </span>
           </MenuNote>
@@ -51,7 +52,7 @@ function CompanionMenu({
         {settings.companionMode === 'commentary' && (
           <>
             <MenuSeparator />
-            <MenuLabel>How often to comment</MenuLabel>
+            <MenuLabel>{t('companionMenu.howOftenToComment')}</MenuLabel>
             {COMMENTARY_FREQUENCIES.map((f) => (
               <MenuItem
                 key={f.value}
@@ -65,11 +66,13 @@ function CompanionMenu({
         <MenuSeparator />
         {watching && state && (
           <MenuItem
-            title={state.paused ? '▶ Resume watching' : '⏸ Pause watching'}
+            title={
+              state.paused ? t('companionMenu.resumeWatching') : t('companionMenu.pauseWatching')
+            }
             onSelect={() => window.api.companion.setPaused(!state.paused)}
           />
         )}
-        <MenuItem title="Companion settings…" onSelect={onOpenSettings} />
+        <MenuItem title={t('companionMenu.companionSettings')} onSelect={onOpenSettings} />
       </>
     </Dropdown>
   )

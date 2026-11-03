@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { ModelInfo, Settings } from '../../../preload/index.d'
+import { t } from '../i18n'
 
 export function errorMessage(error: unknown): string {
   const text = error instanceof Error ? error.message : String(error)
@@ -27,7 +28,7 @@ export function useSettings(): {
     try {
       const [list, current] = await Promise.all([window.api.listModels(), window.api.getSettings()])
       setModels(list)
-      setModelError(list.length === 0 ? 'No models installed. Run: ollama pull qwen3.5:2b' : null)
+      setModelError(list.length === 0 ? t('useSettings.noModelsInstalledRunOllama') : null)
       // Pick a model automatically the first time, preferring one that can see screenshots.
       if (list.length > 0 && !list.some((m) => m.name === current.model)) {
         update({ model: (list.find((m) => m.vision) ?? list[0]).name })

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
+import { t } from '../i18n'
 
 // Built-in engine models and their download progress, kept in sync with the main process.
 export function useLocalModels(): LocalModelStatus[] {
@@ -20,7 +21,11 @@ export function localModelInfo(
   if (settings.localBackend === 'builtin') {
     const model = localModels.find((m) => m.id === settings.builtinModel)
     // Every built-in model can see screenshots.
-    return { ready: !!model?.installed, name: model?.name ?? 'Built-in AI', vision: true }
+    return {
+      ready: !!model?.installed,
+      name: model?.name ?? t('useLocalModels.builtInAi'),
+      vision: true
+    }
   }
   return {
     ready: Boolean(settings.model),
@@ -30,5 +35,7 @@ export function localModelInfo(
 }
 
 export function formatSize(sizeMb: number): string {
-  return sizeMb >= 1000 ? `${(sizeMb / 1000).toFixed(1)} GB` : `${sizeMb} MB`
+  return sizeMb >= 1000
+    ? t('useLocalModels.gb', { value: (sizeMb / 1000).toFixed(1) })
+    : t('useLocalModels.mb', { sizeMb })
 }

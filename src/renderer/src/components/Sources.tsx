@@ -1,4 +1,5 @@
 import type { WikiSource } from '../../../preload/index.d'
+import { t } from '../i18n'
 
 // Links to the wiki and mod pages an answer used, with each site's license (wiki texts are
 // shared under licenses that ask for attribution).
@@ -6,7 +7,7 @@ function Sources({ sources }: { sources?: WikiSource[] }): React.JSX.Element | n
   if (!sources?.length) return null
   return (
     <div className="sources">
-      Source:{' '}
+      {t('sources.source')}{' '}
       {sources.map((s, i) => (
         <span key={s.url}>
           {i > 0 && ' · '}
@@ -20,7 +21,7 @@ function Sources({ sources }: { sources?: WikiSource[] }): React.JSX.Element | n
             {s.title}
           </a>{' '}
           ({s.wiki}
-          {s.license && s.license !== 'see the mod page' ? `, ${s.license}` : ''})
+          {s.license ? `, ${s.license}` : ''})
         </span>
       ))}
     </div>

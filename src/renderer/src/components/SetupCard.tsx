@@ -1,6 +1,7 @@
 import type { LocalModelStatus, Settings } from '../../../preload/index.d'
 import { formatSize } from '../hooks/useLocalModels'
 import { Progress } from './ModelsPanel'
+import { t } from '../i18n'
 
 // First start: GameMate's own AI isn't downloaded yet. One click gets it.
 function SetupCard({
@@ -21,21 +22,21 @@ function SetupCard({
 
   return (
     <div className="setup-card">
-      <h2>Download GameMate&apos;s AI</h2>
-      <p>
-        One download and GameMate runs on this PC, even offline. Nothing you ask leaves your
-        computer.
-      </p>
+      <h2>{t('setupCard.downloadGamemateSAi')}</h2>
+      <p>{t('setupCard.oneDownloadAndGamemateRuns')}</p>
       {downloading ? (
         <div className="setup-progress">
           <Progress value={downloading.progress ?? 0} />
           <div className="setup-progress-row">
             <span className="field-help">
-              Downloading {downloading.name}: {Math.round((downloading.progress ?? 0) * 100)}% of{' '}
-              {formatSize(downloading.sizeMb)}
+              {t('setupCard.downloading', {
+                name: downloading.name,
+                percent: Math.round((downloading.progress ?? 0) * 100),
+                size: formatSize(downloading.sizeMb)
+              })}
             </span>
             <button type="button" onClick={() => window.api.localModels.cancel(downloading.id)}>
-              Cancel
+              {t('setupCard.cancel')}
             </button>
           </div>
         </div>
@@ -45,19 +46,19 @@ function SetupCard({
           className="primary setup-download"
           onClick={() => window.api.localModels.download(first.id)}
         >
-          Download {first.name} ({formatSize(first.sizeMb)})
+          {t('setupCard.download', { name: first.name, size: formatSize(first.sizeMb) })}
         </button>
       )}
       {failed && !downloading && <p className="error-text">{failed.error}</p>}
       <div className="setup-links">
         <button type="button" className="link" onClick={onOpenModels}>
-          Other models
+          {t('setupCard.otherModels')}
         </button>
         <button type="button" className="link" onClick={() => update({ localBackend: 'ollama' })}>
-          I use Ollama
+          {t('setupCard.iUseOllama')}
         </button>
         <button type="button" className="link" onClick={onOpenAi}>
-          Use Gemini (cloud)
+          {t('setupCard.useGeminiCloud')}
         </button>
       </div>
     </div>

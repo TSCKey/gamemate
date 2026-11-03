@@ -3,6 +3,8 @@ import type { AnswerEngine, Engine, Settings } from '../../../preload/index.d'
 import { errorMessage } from '../hooks/useSettings'
 import { LINKS } from '../constants'
 import { ExternalLink, Field, Section, Toggle } from './ui'
+import { Trans } from 'react-i18next'
+import { t } from '../i18n'
 
 // A sensible default from the player's model list: a regular Flash model if there is one.
 function pickDefaultModel(models: string[]): string {
@@ -15,33 +17,28 @@ function GeminiConsent({ onAgree }: { onAgree: () => void }): React.JSX.Element 
   const [checked, setChecked] = useState(false)
   return (
     <div className="consent">
-      <p>Gemini is an optional cloud AI from Google. If you turn it on:</p>
+      <p>{t('aiPanel.geminiIsAnOptionalCloud')}</p>
       <ul className="privacy-list">
+        <li>{t('aiPanel.forTheJobsYouSet')}</li>
         <li>
-          For the jobs you set to Gemini, your questions, the chat so far and any screenshots are
-          sent to Google and processed on Google&apos;s servers, which may be outside your country.
+          <Trans
+            i18nKey="aiPanel.googleHandlesThatData"
+            components={{
+              terms: <ExternalLink href={LINKS.geminiTerms} />,
+              privacy: <ExternalLink href={LINKS.googlePrivacy} />
+            }}
+          />
         </li>
-        <li>
-          Google handles that data under the{' '}
-          <ExternalLink href={LINKS.geminiTerms}>Gemini API terms</ExternalLink> and{' '}
-          <ExternalLink href={LINKS.googlePrivacy}>Google Privacy Policy</ExternalLink>, not
-          GameMate&apos;s. With a free key, Google may use what you send to improve its products and
-          people may review it, except in the EU/EEA, Switzerland and the UK. Don&apos;t share
-          personal information.
-        </li>
-        <li>
-          Google requires you to be 18 or older. In the EU/EEA, Switzerland and the UK,
-          Google&apos;s terms ask for a paid (billing-enabled) API key in apps like this.
-        </li>
-        <li>You can turn Gemini off any time. GameMate then deletes your key.</li>
+        <li>{t('aiPanel.googleRequiresYouToBe')}</li>
+        <li>{t('aiPanel.youCanTurnGeminiOff')}</li>
       </ul>
       <label className="check">
         <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
-        I&apos;m 18 or older and agree to send this data to Google.
+        {t('aiPanel.iM18OrOlder')}
       </label>
       <div className="button-row">
         <button type="button" className="primary" disabled={!checked} onClick={onAgree}>
-          Turn on Gemini
+          {t('aiPanel.turnOnGemini')}
         </button>
       </div>
     </div>
@@ -58,33 +55,27 @@ function SearchConsent({
 }): React.JSX.Element {
   return (
     <div className="consent">
-      <p>If you turn on web search:</p>
+      <p>{t('aiPanel.ifYouTurnOnWeb')}</p>
       <ul className="privacy-list">
+        <li>{t('aiPanel.forQuestionsAboutWhatS')}</li>
         <li>
-          For questions about what&apos;s current (the meta, patches, seasons) or what players
-          recommend, and when the wiki doesn&apos;t have the answer, GameMate or the AI makes a
-          short search query from the key words of your question and the game&apos;s name (for
-          example &quot;Overwatch characters currently meta&quot;). Only that query goes to Google,
-          through Gemini with your API key. Your conversation and screenshots are not sent with it.
+          <Trans
+            i18nKey="aiPanel.googleSearchesTheWeb"
+            components={{
+              terms: <ExternalLink href={LINKS.geminiTerms} />,
+              privacy: <ExternalLink href={LINKS.googlePrivacy} />
+            }}
+          />
         </li>
-        <li>
-          Google searches the web, including forums like Reddit, under the{' '}
-          <ExternalLink href={LINKS.geminiTerms}>Gemini API terms</ExternalLink> and{' '}
-          <ExternalLink href={LINKS.googlePrivacy}>Google Privacy Policy</ExternalLink>. Answers
-          show the pages it used and Google&apos;s search suggestions.
-        </li>
-        <li>
-          Searches count toward your key&apos;s free Google Search allowance; with billing turned on
-          for your key, Google may charge for searches beyond it.
-        </li>
-        <li>You can turn web search off any time here or in Settings → Privacy &amp; legal.</li>
+        <li>{t('aiPanel.searchesCountTowardYourKey')}</li>
+        <li>{t('aiPanel.youCanTurnWebSearch')}</li>
       </ul>
       <div className="button-row">
         <button type="button" className="primary" onClick={onAgree}>
-          Turn on web search
+          {t('aiPanel.turnOnWebSearch')}
         </button>
         <button type="button" onClick={onCancel}>
-          Cancel
+          {t('aiPanel.cancel')}
         </button>
       </div>
     </div>
@@ -101,25 +92,18 @@ function LookupsConsent({
 }): React.JSX.Element {
   return (
     <div className="consent">
-      <p>If you turn on online lookups:</p>
+      <p>{t('aiPanel.ifYouTurnOnOnline')}</p>
       <ul className="privacy-list">
-        <li>
-          When a question is about something in a game, GameMate sends the topic (for example
-          &quot;Ender Dragon&quot;) to that game&apos;s wiki, and for Minecraft mods the mod&apos;s
-          name to Modrinth. Your question itself is not sent.
-        </li>
-        <li>
-          GameMate downloads the page and its pictures to show them to you. The wikis see your IP
-          address, like any website you visit, and handle it under their own privacy policies.
-        </li>
-        <li>You can turn lookups off any time here or in Settings → Privacy &amp; legal.</li>
+        <li>{t('aiPanel.whenAQuestionIsAbout')}</li>
+        <li>{t('aiPanel.gamemateDownloadsThePageAnd')}</li>
+        <li>{t('aiPanel.youCanTurnLookupsOff')}</li>
       </ul>
       <div className="button-row">
         <button type="button" className="primary" onClick={onAgree}>
-          Turn on lookups
+          {t('aiPanel.turnOnLookups')}
         </button>
         <button type="button" onClick={onCancel}>
-          Cancel
+          {t('aiPanel.cancel')}
         </button>
       </div>
     </div>
@@ -196,12 +180,12 @@ function AiPanel({
     <select value={value} aria-label={label} onChange={(e) => onChange(e.target.value as T)}>
       {withAuto && (
         <option value="auto" disabled={!hasKey}>
-          Auto (decide per question){hasKey ? '' : ' (add a key first)'}
+          {hasKey ? t('aiPanel.autoDecidePerQuestion') : t('aiPanel.autoAddAKeyFirst')}
         </option>
       )}
-      <option value="local">On this PC ({localName})</option>
+      <option value="local">{t('aiPanel.onThisPc', { name: localName })}</option>
       <option value="gemini" disabled={!hasKey}>
-        Gemini{hasKey ? '' : ' (add a key first)'}
+        {hasKey ? 'Gemini' : t('aiPanel.geminiAddAKeyFirst')}
       </option>
     </select>
   )
@@ -209,54 +193,48 @@ function AiPanel({
   return (
     <>
       <Section
-        title="Which AI answers"
-        description="Everything runs on this PC unless you choose Gemini for a job."
+        title={t('aiPanel.whichAiAnswers')}
+        description={t('aiPanel.everythingRunsOnThisPc')}
       >
         <Field
-          label="Your questions"
+          label={t('aiPanel.yourQuestions')}
           help={
             settings.answersEngine === 'auto'
               ? 'Auto: quick questions and recipes stay on this PC; screenshots and questions that need more thinking (strategy, builds, farms, bosses) go to Gemini. If one AI can’t be reached, the other answers.'
-              : 'Chat and the in-game window.'
+              : t('aiPanel.chatAndTheInGame')
           }
         >
           {engineSelect(
             settings.answersEngine,
             (answersEngine) => update({ answersEngine }),
-            'AI for questions',
+            t('aiPanel.aiForQuestions'),
             true
           )}
         </Field>
-        <Field
-          label="Companion"
-          help="Watching your game. On Gemini this sends screenshots every few seconds, which can use up a free key's limits."
-        >
+        <Field label={t('aiPanel.companion')} help={t('aiPanel.watchingYourGameOnGemini')}>
           {engineSelect<Engine>(
             settings.commentaryEngine,
             (commentaryEngine) => update({ commentaryEngine }),
-            'AI for the companion'
+            t('aiPanel.aiForTheCompanion')
           )}
         </Field>
       </Section>
 
-      <Section
-        title="Google Gemini"
-        description="Smarter answers and better screen understanding, using your own Google API key."
-      >
+      <Section title="Google Gemini" description={t('aiPanel.smarterAnswersAndBetterScreen')}>
         {!consent ? (
           <GeminiConsent onAgree={() => update({ geminiConsent: true })} />
         ) : (
           <>
             {hasKey ? (
               <>
-                <Field label="Model" help="Flash models are fast and have the most free use.">
+                <Field label={t('aiPanel.model')} help={t('aiPanel.flashModelsAreFastAnd')}>
                   <select
                     value={settings.geminiModel}
                     onChange={(e) => update({ geminiModel: e.target.value })}
                   >
                     {!models.includes(settings.geminiModel) && (
                       <option value={settings.geminiModel}>
-                        {settings.geminiModel || 'Choose…'}
+                        {settings.geminiModel || t('aiPanel.choose')}
                       </option>
                     )}
                     {models.map((m) => (
@@ -266,21 +244,20 @@ function AiPanel({
                     ))}
                   </select>
                 </Field>
-                <Field label="API key" help="Saved on this PC, encrypted by Windows.">
+                <Field label={t('aiPanel.apiKey')} help={t('aiPanel.savedOnThisPcEncrypted')}>
                   <button type="button" onClick={removeKey}>
-                    Remove key
+                    {t('aiPanel.removeKey')}
                   </button>
                 </Field>
               </>
             ) : (
               <Field
-                label="API key"
+                label={t('aiPanel.apiKey')}
                 help={
-                  <>
-                    Get one at{' '}
-                    <ExternalLink href={LINKS.geminiKey}>aistudio.google.com</ExternalLink>.
-                    GameMate checks it with Google before saving it.
-                  </>
+                  <Trans
+                    i18nKey="aiPanel.getOneAt"
+                    components={{ link: <ExternalLink href={LINKS.geminiKey} /> }}
+                  />
                 }
               >
                 <form
@@ -294,51 +271,48 @@ function AiPanel({
                     type="password"
                     value={keyInput}
                     onChange={(e) => setKeyInput(e.target.value)}
-                    placeholder="Paste your key"
-                    aria-label="Gemini API key"
+                    placeholder={t('aiPanel.pasteYourKey')}
+                    aria-label={t('aiPanel.geminiApiKey')}
                     autoComplete="off"
                     spellCheck={false}
                   />
                   <button type="submit" className="primary" disabled={busy || !keyInput.trim()}>
-                    {busy ? 'Checking…' : 'Save'}
+                    {busy ? t('aiPanel.checking') : t('aiPanel.save')}
                   </button>
                 </form>
               </Field>
             )}
             {error && <p className="error-text">{error}</p>}
-            <Field label="Turn off Gemini" help="Deletes your key and goes back to the local AI.">
+            <Field label={t('aiPanel.turnOffGemini')} help={t('aiPanel.deletesYourKeyAndGoes')}>
               <button type="button" className="danger" onClick={turnOff}>
-                Turn off
+                {t('aiPanel.turnOff')}
               </button>
             </Field>
           </>
         )}
       </Section>
 
-      <Section title="Answers">
+      <Section title={t('aiPanel.answers')}>
         <Field
-          label="Detailed answers"
+          label={t('aiPanel.detailedAnswers')}
           help={
             settings.detailedAnswers
-              ? 'Answers explain the details, steps and useful tips.'
-              : 'Answers get straight to the point in a sentence or three. Turn this on for longer explanations.'
+              ? t('aiPanel.answersExplainTheDetailsSteps')
+              : t('aiPanel.answersGetStraightToThe')
           }
         >
           <Toggle
-            label="Detailed answers"
+            label={t('aiPanel.detailedAnswers')}
             checked={settings.detailedAnswers}
             onChange={(detailedAnswers) => update({ detailedAnswers })}
           />
         </Field>
       </Section>
 
-      <Section title="Look things up">
-        <Field
-          label="Look things up online"
-          help="Lets the AI read your game's wiki (and Modrinth for Minecraft mods) when it isn't sure, for things like bosses, items or building a Nether portal. Only the topic is sent, and answers link to the page and can show its pictures, like maps."
-        >
+      <Section title={t('aiPanel.lookThingsUp')}>
+        <Field label={t('aiPanel.lookThingsUpOnline')} help={t('aiPanel.letsTheAiReadYour')}>
           <Toggle
-            label="Look things up online"
+            label={t('aiPanel.lookThingsUpOnline')}
             checked={settings.webLookup}
             // Turning lookups on is a consent: explain it first. Turning them off is immediate.
             onChange={(webLookup) => (webLookup ? setAskLookups(true) : update({ webLookup }))}
@@ -354,15 +328,13 @@ function AiPanel({
           />
         )}
         <Field
-          label="Search the web"
+          label={t('aiPanel.searchTheWeb')}
           help={
-            searchPossible
-              ? 'Lets the AI search the web with Google (through Gemini) for patches, strategies and tips the wiki doesn’t cover. Only the search query is sent.'
-              : 'Searches the web with Google for what the wiki doesn’t cover. Needs Gemini: turn it on and add your key above first.'
+            searchPossible ? t('aiPanel.letsTheAiSearchThe') : t('aiPanel.searchesTheWebWithGoogle')
           }
         >
           <Toggle
-            label="Search the web"
+            label={t('aiPanel.searchTheWeb')}
             checked={settings.webSearch}
             disabled={!searchPossible}
             onChange={(webSearch) => (webSearch ? setAskSearch(true) : update({ webSearch }))}

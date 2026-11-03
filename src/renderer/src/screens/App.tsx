@@ -5,12 +5,8 @@ import GameMenu from '../components/GameMenu'
 import ModelMenu from '../components/ModelMenu'
 import TermsGate from '../legal/TermsGate'
 import SetupCard from '../components/SetupCard'
+import ChatBubble from '../components/ChatBubble'
 import { TERMS_VERSION } from '../constants'
-import RecipeCard from '../components/RecipeCard'
-import Pictures from '../components/Pictures'
-import SearchSuggestions from '../components/SearchSuggestions'
-import Sources from '../components/Sources'
-import AnsweredByLabel from '../components/AnsweredByLabel'
 import SettingsScreen, { type SettingsTab } from './SettingsScreen'
 import { speak } from '../voice/speak'
 import { useVoiceInput } from '../voice/useVoiceInput'
@@ -18,8 +14,8 @@ import { errorMessage, useSettings } from '../hooks/useSettings'
 import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
 import { useGames, useModpack } from '../hooks/useGames'
 import logo from '../assets/logo.png'
-
-const DEFAULT_SCREEN_QUESTION = 'What is happening on my screen?'
+import { Trans } from 'react-i18next'
+import { t, useAppLanguage } from '../i18n'
 
 // Prefer a game window, then the main screen.
 function pickDefaultSource(sources: CaptureSource[]): string {
@@ -29,11 +25,12 @@ function pickDefaultSource(sources: CaptureSource[]): string {
 
 function sourceLabel(source: CaptureSource, screenCount: number): string {
   if (source.type === 'window') return source.name
-  return screenCount > 1 ? source.name : 'Entire screen'
+  return screenCount > 1 ? source.name : t('app.entireScreen')
 }
 
 function App(): React.JSX.Element {
   const { settings, models, modelError, update, reloadModels } = useSettings()
+  useAppLanguage(settings)
   const localModels = useLocalModels()
   const games = useGames(settings)
   const modpack = useModpack(settings)
@@ -136,7 +133,7 @@ function App(): React.JSX.Element {
       }
     }
 
-    const content = typed || DEFAULT_SCREEN_QUESTION
+    const content = typed || t('app.whatIsHappeningOnMy')
     const history: ChatMessage[] = [...messages, { role: 'user', content, images }]
     setMessages(history)
     setInput('')
@@ -224,14 +221,14 @@ function App(): React.JSX.Element {
             onClick={() => setMessages([])}
             disabled={loading || messages.length === 0}
           >
-            New chat
+            {t('app.newChat')}
           </button>
           <button
             type="button"
             className="icon-button"
             onClick={() => setSettingsTab('general')}
-            title="Settings"
-            aria-label="Settings"
+            title={t('app.settings')}
+            aria-label={t('app.settings')}
           >
             ⚙
           </button>
@@ -252,7 +249,7 @@ function App(): React.JSX.Element {
         {messages.length === 0 && !loading && !needsSetup && (
           <div className="chat-empty">
             <img className="brand-mark is-large" src={logo} alt="GameMate" />
-            <h2>What can I help with?</h2>
+            <h2>{t('app.whatCanIHelpWith')}</h2>
             <div className="suggestions">
               {suggestions.map((q) => (
                 <button key={q} type="button" disabled={!ready} onClick={() => send(q, false)}>
@@ -265,50 +262,44 @@ function App(): React.JSX.Element {
                   disabled={!ready}
                   onClick={() => {
                     setAttachScreenshot(true)
-                    send(DEFAULT_SCREEN_QUESTION, true)
+                    send(t('app.whatIsHappeningOnMy'), true)
                   }}
                 >
-                  📷 What&apos;s on my screen?
+                  {t('app.whatSOnMyScreen')}
                 </button>
               )}
             </div>
             {appInfo &&
               (appInfo.shortcutRegistered ? (
                 <p className="chat-hint">
-                  Press <kbd>{appInfo.shortcut}</kbd> in any game to ask without leaving it.
+                  <Trans
+                    i18nKey="app.pressShortcutInAnyGame"
+                    values={{ shortcut: appInfo.shortcut }}
+                    components={{ kbd: <kbd /> }}
+                  />
                 </p>
               ) : (
                 <p className="chat-hint">
-                  <kbd>{appInfo.shortcut}</kbd> is used by another app, so the in-game shortcut is
-                  off. Close that app and restart GameMate.
+                  <Trans
+                    i18nKey="app.shortcutIsUsedByAnother"
+                    values={{ shortcut: appInfo.shortcut }}
+                    components={{ kbd: <kbd /> }}
+                  />
                 </p>
               ))}
           </div>
         )}
         {messages.map((m, i) => (
-          <div key={i} className={`bubble bubble-${m.role}`}>
-            {m.images?.map((img, j) => (
-              <img
-                key={j}
-                className="bubble-screenshot"
-                src={`data:image/jpeg;base64,${img}`}
-                alt="Screenshot sent with this question"
-              />
-            ))}
-            {m.content}
-            {m.recipes?.map((r, j) => (
-              <RecipeCard key={j} recipe={r} />
-            ))}
-            <Pictures pictures={m.pictures} />
-            <Sources sources={m.sources} />
-            <SearchSuggestions html={m.searchSuggestions} />
-            {onAuto && m.answeredBy && <AnsweredByLabel by={m.answeredBy} />}
-          </div>
+          <ChatBubble key={i} message={m} onAuto={onAuto} />
         ))}
-        {loading && written && <div className="bubble bubble-assistant">{written}</div>}
+        {loading && written && (
+          <div className="bubble bubble-assistant" dir="auto">
+            {written}
+          </div>
+        )}
         {loading && !written && (
           <div className="bubble bubble-assistant bubble-pending">
-            {status === 'capturing' ? 'Capturing screen…' : 'Thinking…'}
+            {status === 'capturing' ? t('app.capturingScreen') : t('app.thinking')}
           </div>
         )}
         <div ref={bottomRef} />
@@ -330,15 +321,15 @@ function App(): React.JSX.Element {
           placeholder={
             !ready
               ? needsSetup
-                ? 'Download GameMate’s AI to start'
-                : 'Pick an AI model in Settings first'
+                ? t('app.downloadGamemateSAiTo')
+                : t('app.pickAnAiModelIn')
               : voice.status === 'listening'
-                ? 'Listening…'
+                ? t('app.listening')
                 : voice.status === 'transcribing'
-                  ? 'Working out what you said…'
+                  ? t('app.workingOutWhatYouSaid')
                   : willAttach
-                    ? 'Ask about your screen… (or just press Enter)'
-                    : `Ask about ${game?.name ?? 'your game'}…`
+                    ? t('app.askAboutYourScreenOr')
+                    : t('app.askAbout', { value: game?.name ?? 'your game' })
           }
           rows={2}
           disabled={!ready || voice.status !== 'idle'}
@@ -352,18 +343,18 @@ function App(): React.JSX.Element {
                 onClick={() => setAttachScreenshot((on) => !on)}
                 disabled={sources.length === 0}
                 aria-pressed={willAttach}
-                title="Send a screenshot with your question"
+                title={t('app.sendAScreenshotWithYour')}
               >
-                📷 Screenshot
+                {t('app.screenshot')}
               </button>
               {attachScreenshot && (
                 <select
                   value={sourceId}
                   onChange={(e) => setSourceId(e.target.value)}
                   onFocus={loadSources}
-                  aria-label="Screenshot source"
+                  aria-label={t('app.screenshotSource')}
                 >
-                  {sources.length === 0 && <option value="">Nothing to capture</option>}
+                  {sources.length === 0 && <option value="">{t('app.nothingToCapture')}</option>}
                   {sources.map((s) => (
                     <option key={s.id} value={s.id}>
                       {sourceLabel(s, screenCount)}
@@ -375,9 +366,9 @@ function App(): React.JSX.Element {
           ) : (
             <span className="composer-hint">
               {!screenAllowed
-                ? 'Screen access is off (Companion: Disabled).'
+                ? t('app.screenAccessIsOffCompanion')
                 : ready
-                  ? 'This model can’t see screenshots.'
+                  ? t('app.thisModelCanTSee')
                   : ''}
             </span>
           )}
@@ -397,8 +388,10 @@ function App(): React.JSX.Element {
                 className={`icon-button${voice.status === 'listening' ? ' is-listening' : ''}`}
                 onClick={voice.toggle}
                 disabled={!ready || loading || voice.status === 'transcribing'}
-                title={voice.status === 'listening' ? 'Listening, click to stop' : 'Ask by voice'}
-                aria-label="Ask by voice"
+                title={
+                  voice.status === 'listening' ? t('app.listeningClickToStop') : t('app.askByVoice')
+                }
+                aria-label={t('app.askByVoice')}
               >
                 🎤
               </button>
@@ -408,7 +401,7 @@ function App(): React.JSX.Element {
               className="primary"
               disabled={!ready || loading || (!input.trim() && !willAttach)}
             >
-              Send
+              {t('app.send')}
             </button>
           </div>
         </div>

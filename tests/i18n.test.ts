@@ -51,3 +51,31 @@ describe('translation files', () => {
     }
   })
 })
+
+describe('the windows', () => {
+  it('switch the page language and writing direction', async () => {
+    const page = { documentElement: {} as { lang?: string; dir?: string } }
+    Object.assign(globalThis, { document: page })
+    const { applyLanguage } = await import('../src/renderer/src/i18n')
+    applyLanguage('ar')
+    expect(page.documentElement).toEqual({ lang: 'ar', dir: 'rtl' })
+    applyLanguage('de')
+    expect(page.documentElement).toEqual({ lang: 'de', dir: 'ltr' })
+    applyLanguage('en')
+  })
+
+  it('show chat text in its own direction', async () => {
+    const { createElement } = await import('react')
+    const { renderToString } = await import('react-dom/server')
+    const { setupI18n } = await import('../src/renderer/src/i18n')
+    const { default: ChatBubble } = await import('../src/renderer/src/components/ChatBubble')
+    setupI18n()
+    const html = renderToString(
+      createElement(ChatBubble, {
+        message: { role: 'assistant', content: 'مرحبا' },
+        onAuto: false
+      })
+    )
+    expect(html).toMatch(/<div[^>]*dir="auto"[^>]*>مرحبا<\/div>/)
+  })
+})

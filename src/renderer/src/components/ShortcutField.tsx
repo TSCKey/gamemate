@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { shortcutFromKey } from '../../../shared/shortcuts'
+import { t } from '../i18n'
 
 // Shows a shortcut and lets the player pick a new one by pressing it. While picking, GameMate's
 // shortcuts are paused, so pressing the current one doesn't open the in-game window.
@@ -34,7 +35,7 @@ function ShortcutField({
       if ('error' in result) {
         setError(result.error)
       } else if (result.shortcut === other) {
-        setError('That is already GameMate’s other shortcut.')
+        setError(t('shortcutField.thatIsAlreadyGamemateS'))
       } else {
         setError(null)
         onChange(result.shortcut)
@@ -52,7 +53,7 @@ function ShortcutField({
     <div className="shortcut-field">
       <div className="button-row">
         {picking ? (
-          <kbd className="is-picking">Press the new shortcut… (Esc to cancel)</kbd>
+          <kbd className="is-picking">{t('shortcutField.pressTheNewShortcutEsc')}</kbd>
         ) : (
           <kbd>{value}</kbd>
         )}
@@ -64,12 +65,12 @@ function ShortcutField({
               setPicking(true)
             }}
           >
-            Change
+            {t('shortcutField.change')}
           </button>
         )}
         {!picking && value !== fallback && fallback !== other && (
           <button type="button" onClick={() => onChange(fallback)}>
-            Default
+            {t('shortcutField.default')}
           </button>
         )}
       </div>

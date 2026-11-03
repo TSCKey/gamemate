@@ -3,23 +3,27 @@ import type { AppInfo, Settings, UpdateState } from '../../../preload/index.d'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT } from '../../../shared/shortcuts'
 import ShortcutField from './ShortcutField'
 import { Field, Section, Toggle } from './ui'
+import { t } from '../i18n'
 
 function updateText(u: UpdateState): string {
   switch (u.status) {
     case 'dev':
-      return 'Running from source code: updates come from git.'
+      return t('generalPanel.runningFromSourceCodeUpdates')
     case 'checking':
-      return 'Checking for updates…'
+      return t('generalPanel.checkingForUpdates')
     case 'downloading':
-      return `Downloading version ${u.available}… ${Math.round((u.progress ?? 0) * 100)}%`
+      return t('generalPanel.downloadingVersion', {
+        available: u.available,
+        value: Math.round((u.progress ?? 0) * 100)
+      })
     case 'ready':
-      return `Version ${u.available} is ready. It installs when GameMate restarts.`
+      return t('generalPanel.versionIsReadyItInstalls', { available: u.available })
     case 'none':
-      return 'GameMate is up to date.'
+      return t('generalPanel.gamemateIsUpToDate')
     case 'error':
-      return u.error ?? 'Couldn’t check for updates.'
+      return u.error ?? t('generalPanel.couldnTCheckForUpdates')
     default:
-      return 'Updates come from GameMate’s releases on GitHub.'
+      return t('generalPanel.updatesComeFromGamemateS')
   }
 }
 
@@ -39,11 +43,11 @@ function Updates({
   if (!state) return <></>
   const busy = state.status === 'checking' || state.status === 'downloading'
   return (
-    <Section title="Updates" description={`GameMate ${state.version}`}>
-      <Field label="Status" help={updateText(state)}>
+    <Section title={t('generalPanel.updates')} description={`GameMate ${state.version}`}>
+      <Field label={t('generalPanel.status')} help={updateText(state)}>
         {state.status === 'ready' ? (
           <button type="button" className="primary" onClick={() => window.api.updates.install()}>
-            Restart and update
+            {t('generalPanel.restartAndUpdate')}
           </button>
         ) : (
           <button
@@ -51,16 +55,16 @@ function Updates({
             disabled={busy || state.status === 'dev'}
             onClick={() => window.api.updates.check().then(setState)}
           >
-            Check now
+            {t('generalPanel.checkNow')}
           </button>
         )}
       </Field>
       <Field
-        label="Check for updates automatically"
-        help="Looks for a new version when GameMate starts and every few hours, and downloads it in the background."
+        label={t('generalPanel.checkForUpdatesAutomatically')}
+        help={t('generalPanel.looksForANewVersion')}
       >
         <Toggle
-          label="Check for updates automatically"
+          label={t('generalPanel.checkForUpdatesAutomatically')}
           checked={settings.autoUpdate}
           onChange={(autoUpdate) => update({ autoUpdate })}
         />
@@ -80,13 +84,13 @@ function GeneralPanel({
 }): React.JSX.Element {
   return (
     <>
-      <Section title="In-game window">
+      <Section title={t('generalPanel.inGameWindow')}>
         <Field
-          label="Shortcut"
+          label={t('generalPanel.shortcut')}
           help={
             appInfo?.shortcutRegistered === false
-              ? 'Another app is using this shortcut, so it is off. Pick a different one, or close that app and restart GameMate.'
-              : 'Opens a small window over your game to ask a question.'
+              ? t('generalPanel.anotherAppIsUsingThis')
+              : t('generalPanel.opensASmallWindowOver')
           }
         >
           <ShortcutField
@@ -97,11 +101,11 @@ function GeneralPanel({
           />
         </Field>
         <Field
-          label="Voice shortcut"
+          label={t('generalPanel.voiceShortcut')}
           help={
             appInfo?.voiceShortcutRegistered === false
-              ? 'Another app is using this shortcut, so it is off. Pick a different one.'
-              : 'Opens the in-game window listening for a spoken question. Works while voice input is on (Settings → Voice).'
+              ? t('generalPanel.anotherAppIsUsingThis2')
+              : t('generalPanel.opensTheInGameWindow')
           }
         >
           <ShortcutField
@@ -112,11 +116,11 @@ function GeneralPanel({
           />
         </Field>
         <Field
-          label="Send a screenshot with questions"
-          help="Lets GameMate see what you're looking at when you ask from the game."
+          label={t('generalPanel.sendAScreenshotWithQuestions')}
+          help={t('generalPanel.letsGamemateSeeWhatYou')}
         >
           <Toggle
-            label="Send a screenshot with questions"
+            label={t('generalPanel.sendAScreenshotWithQuestions')}
             checked={settings.overlayScreenshot}
             onChange={(overlayScreenshot) => update({ overlayScreenshot })}
           />
@@ -124,19 +128,19 @@ function GeneralPanel({
       </Section>
 
       <Section
-        title="When you close the window"
-        description="When GameMate quits, it frees the AI model right away so nothing keeps running in the background."
+        title={t('generalPanel.whenYouCloseTheWindow')}
+        description={t('generalPanel.whenGamemateQuitsItFrees')}
       >
         <Field
-          label="Keep running in the tray"
+          label={t('generalPanel.keepRunningInTheTray')}
           help={
             settings.closeToTray
-              ? 'Keeps the in-game shortcuts and the companion working. Quit from the tray icon. The AI model is freed after a few idle minutes.'
-              : 'Closing the window quits GameMate. The in-game shortcuts and the companion stop until you start it again.'
+              ? t('generalPanel.keepsTheInGameShortcuts')
+              : t('generalPanel.closingTheWindowQuitsGamemate')
           }
         >
           <Toggle
-            label="Keep running in the tray"
+            label={t('generalPanel.keepRunningInTheTray')}
             checked={settings.closeToTray}
             onChange={(closeToTray) => update({ closeToTray })}
           />

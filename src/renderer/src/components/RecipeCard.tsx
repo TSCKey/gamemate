@@ -1,5 +1,6 @@
 import type { RecipeView } from '../../../preload/index.d'
 import { Picture } from './Pictures'
+import { t } from '../i18n'
 
 const GRID_SIZE = 3
 
@@ -13,7 +14,10 @@ function padGrid(grid: (string | null)[][]): (string | null)[][] {
 function RecipeCard({ recipe }: { recipe: RecipeView }): React.JSX.Element {
   return (
     <div className="recipe">
-      <div className="recipe-grid" aria-label={`Crafting grid for ${recipe.item}`}>
+      <div
+        className="recipe-grid"
+        aria-label={t('recipeCard.craftingGridFor', { item: recipe.item })}
+      >
         {padGrid(recipe.grid)
           .flat()
           .map((cell, i) => (
@@ -51,7 +55,9 @@ function RecipeCard({ recipe }: { recipe: RecipeView }): React.JSX.Element {
             </li>
           ))}
         </ul>
-        {recipe.shapeless && <div className="recipe-note">Any arrangement works</div>}
+        {recipe.shapeless && (
+          <div className="recipe-note">{t('recipeCard.anyArrangementWorks')}</div>
+        )}
       </div>
     </div>
   )

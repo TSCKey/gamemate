@@ -1,6 +1,8 @@
 // Values shared by several screens.
 import type { CommentaryFrequency, CompanionMode, CompanionState } from '../../preload/index.d'
 
+import { t } from './i18n'
+
 export { TERMS_VERSION } from '../../shared/types'
 
 export const LINKS = {
@@ -10,42 +12,27 @@ export const LINKS = {
   wikiDisclaimer: 'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer'
 }
 
-export const COMPANION_MODES: { value: CompanionMode; label: string; help: string }[] = [
-  {
-    value: 'disabled',
-    label: 'Disabled',
-    help: 'Never looks at your screen, not even when you press the shortcut.'
+// Labels are read when shown, so they follow the language setting.
+export const COMPANION_MODES: { value: CompanionMode; label: string; help: string }[] = (
+  ['disabled', 'on-demand', 'observation', 'commentary', 'quiet'] as const
+).map((value) => ({
+  value,
+  get label(): string {
+    return t(`companion.modes.${value}.label`)
   },
-  { value: 'on-demand', label: 'On-demand', help: 'Only looks and answers when you ask.' },
-  {
-    value: 'observation',
-    label: 'Observation',
-    help: 'Watches your game and keeps a log of what happens, without pop-ups.'
-  },
-  {
-    value: 'commentary',
-    label: 'Commentary',
-    help: 'Watches your game and pops up a short comment when something important happens.'
-  },
-  {
-    value: 'quiet',
-    label: 'Quiet',
-    help: 'Watches silently and uses what it saw only to answer your questions.'
+  get help(): string {
+    return t(`companion.modes.${value}.help`)
   }
-]
+}))
 
-export const COMMENTARY_FREQUENCIES: { value: CommentaryFrequency; label: string }[] = [
-  { value: 'rare', label: 'Rarely (big moments only)' },
-  { value: 'normal', label: 'Sometimes' },
-  { value: 'frequent', label: 'Often' }
-]
+export const COMMENTARY_FREQUENCIES: { value: CommentaryFrequency; label: string }[] = (
+  ['rare', 'normal', 'frequent'] as const
+).map((value) => ({
+  value,
+  get label(): string {
+    return t(`companion.frequencies.${value}`)
+  }
+}))
 
-export const STATUS_TEXT: Record<CompanionState['status'], string> = {
-  off: 'Not watching',
-  paused: 'Paused',
-  'no-model': 'Pick a model to start watching',
-  'needs-consent': 'Allow game detection in Settings → Games to start watching',
-  'waiting-for-game': 'Waiting for a game to be the active window',
-  watching: 'Watching',
-  analyzing: 'Looking at your screen…'
-}
+export const statusText = (status: CompanionState['status']): string =>
+  t(`companion.status.${status}`)

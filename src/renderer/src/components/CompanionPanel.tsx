@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { CommentaryFrequency, CompanionState, Settings } from '../../../preload/index.d'
-import { COMMENTARY_FREQUENCIES, COMPANION_MODES, STATUS_TEXT } from '../constants'
+import { COMMENTARY_FREQUENCIES, COMPANION_MODES, statusText } from '../constants'
 import { Field, Section } from './ui'
+import { t } from '../i18n'
 
 const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   hostile_mob: '⚔️',
@@ -14,9 +15,11 @@ const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
 
 function timeAgo(time: number): string {
   const seconds = Math.round((Date.now() - time) / 1000)
-  if (seconds < 60) return 'just now'
+  if (seconds < 60) return t('companionPanel.justNow')
   const minutes = Math.round(seconds / 60)
-  return minutes < 60 ? `${minutes} min ago` : `${Math.round(minutes / 60)} h ago`
+  return minutes < 60
+    ? t('companionPanel.minAgo', { minutes })
+    : t('companionPanel.hAgo', { value: Math.round(minutes / 60) })
 }
 
 function CompanionPanel({
@@ -40,10 +43,10 @@ function CompanionPanel({
   return (
     <>
       <Section
-        title="Companion mode"
-        description="How much GameMate watches your game and talks on its own."
+        title={t('companionPanel.companionMode')}
+        description={t('companionPanel.howMuchGamemateWatchesYour')}
       >
-        <div className="mode-grid" role="radiogroup" aria-label="Companion mode">
+        <div className="mode-grid" role="radiogroup" aria-label={t('companionPanel.companionMode')}>
           {COMPANION_MODES.map((m) => (
             <button
               key={m.value}
@@ -59,7 +62,7 @@ function CompanionPanel({
           ))}
         </div>
         {settings.companionMode === 'commentary' && (
-          <Field label="How often to comment">
+          <Field label={t('companionPanel.howOftenToComment')}>
             <select
               value={settings.commentaryFrequency}
               onChange={(e) =>
@@ -78,26 +81,29 @@ function CompanionPanel({
           <Field
             label={
               <span className={`companion-status is-${state.status}`}>
-                <span className="companion-dot" /> {STATUS_TEXT[state.status]}
+                <span className="companion-dot" /> {statusText(state.status)}
                 {state.game && state.status !== 'waiting-for-game' ? ` · ${state.game}` : ''}
               </span>
             }
           >
             <button type="button" onClick={() => window.api.companion.setPaused(!state.paused)}>
-              {state.paused ? '▶ Resume' : '⏸ Pause'}
+              {state.paused ? t('companionPanel.resume') : t('companionPanel.pause')}
             </button>
           </Field>
         )}
       </Section>
 
       {showLog && (
-        <Section title="What GameMate saw" description="Kept only while GameMate is open.">
+        <Section
+          title={t('companionPanel.whatGamemateSaw')}
+          description={t('companionPanel.keptOnlyWhileGamemateIs')}
+        >
           {state && state.events.length > 0 ? (
             <ul className="companion-log">
               {[...state.events].reverse().map((e) => (
                 <li key={e.time}>
                   <span>{EVENT_ICONS[e.type]}</span>
-                  <span className="companion-log-text">
+                  <span className="companion-log-text" dir="auto">
                     {e.spoken && e.comment ? `“${e.comment}”` : e.description}
                   </span>
                   <span className="companion-log-time">{timeAgo(e.time)}</span>
@@ -105,9 +111,7 @@ function CompanionPanel({
               ))}
             </ul>
           ) : (
-            <p className="field-help">
-              Nothing yet. Start playing and GameMate will log what happens.
-            </p>
+            <p className="field-help">{t('companionPanel.nothingYetStartPlayingAnd')}</p>
           )}
         </Section>
       )}

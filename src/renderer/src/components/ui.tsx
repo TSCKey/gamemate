@@ -72,7 +72,7 @@ export function ExternalLink({
   children
 }: {
   href: string
-  children: React.ReactNode
+  children?: React.ReactNode
 }): React.JSX.Element {
   return (
     <a

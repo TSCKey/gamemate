@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
 import { Dropdown, MenuItem, MenuLabel, MenuSeparator } from './Menu'
+import { t } from '../i18n'
 
 // Gemini variants that can't chat (image, speech, embeddings…) aren't worth listing here.
 const CHAT_GEMINI = (name: string): boolean =>
@@ -45,22 +46,23 @@ function ModelMenu({
     .filter(Boolean)
     .slice(0, MAX_GEMINI_CHOICES)
   const installed = localModels.filter((m) => m.installed)
-  const builtinName = localModels.find((m) => m.id === settings.builtinModel)?.name ?? 'Built-in AI'
+  const builtinName =
+    localModels.find((m) => m.id === settings.builtinModel)?.name ?? t('modelMenu.builtInAi')
 
   const label =
     engine === 'auto'
-      ? '✦ Auto'
+      ? t('modelMenu.auto')
       : engine === 'gemini'
         ? `☁ ${settings.geminiModel || 'Gemini'}`
         : settings.localBackend === 'builtin'
           ? builtinName
-          : settings.model || 'Choose a model'
+          : settings.model || t('modelMenu.chooseAModel')
 
   return (
     <Dropdown
       label={<span className="model-trigger-text">{label}</span>}
-      menuLabel="Which AI answers"
-      title="Which AI answers your questions"
+      menuLabel={t('modelMenu.whichAiAnswers')}
+      title={t('modelMenu.whichAiAnswersYourQuestions')}
       triggerClassName="model-trigger"
       align="end"
       direction="up"
@@ -68,23 +70,21 @@ function ModelMenu({
     >
       <>
         <MenuItem
-          title="✦ Auto"
+          title={t('modelMenu.auto')}
           description={
-            geminiReady
-              ? 'Picks this PC or Gemini for each question'
-              : 'Picks this PC or Gemini for each question. Set up Gemini first.'
+            geminiReady ? t('modelMenu.picksThisPcOrGemini') : t('modelMenu.picksThisPcOrGemini2')
           }
           checked={engine === 'auto'}
           disabled={!geminiReady}
           onSelect={() => update({ answersEngine: 'auto' })}
         />
         <MenuSeparator />
-        <MenuLabel>On this PC</MenuLabel>
+        <MenuLabel>{t('modelMenu.onThisPc')}</MenuLabel>
         {installed.map((m) => (
           <MenuItem
             key={m.id}
             title={m.name}
-            description={`${m.label} · Can see screenshots`}
+            description={t('modelMenu.canSeeScreenshots', { label: m.label })}
             checked={
               engine === 'local' &&
               settings.localBackend === 'builtin' &&
@@ -97,8 +97,8 @@ function ModelMenu({
         ))}
         {installed.length === 0 && (
           <MenuItem
-            title="Download a model…"
-            description="Runs on your graphics card, works offline"
+            title={t('modelMenu.downloadAModel')}
+            description={t('modelMenu.runsOnYourGraphicsCard')}
             onSelect={() => onOpenSettings('models')}
           />
         )}
@@ -109,7 +109,7 @@ function ModelMenu({
               <MenuItem
                 key={m.name}
                 title={m.name}
-                description={m.vision ? 'Can see screenshots' : 'Text only'}
+                description={m.vision ? t('modelMenu.canSeeScreenshots2') : t('modelMenu.textOnly')}
                 checked={
                   engine === 'local' &&
                   settings.localBackend === 'ollama' &&
@@ -123,7 +123,7 @@ function ModelMenu({
           </>
         )}
         <MenuSeparator />
-        <MenuLabel>Gemini (cloud)</MenuLabel>
+        <MenuLabel>{t('modelMenu.geminiCloud')}</MenuLabel>
         {geminiReady ? (
           geminiChoices.map((m) => (
             <MenuItem
@@ -135,13 +135,13 @@ function ModelMenu({
           ))
         ) : (
           <MenuItem
-            title="Set up Gemini…"
-            description="Smarter answers with your own Google API key"
+            title={t('modelMenu.setUpGemini')}
+            description={t('modelMenu.smarterAnswersWithYourOwn')}
             onSelect={() => onOpenSettings('ai')}
           />
         )}
         <MenuSeparator />
-        <MenuItem title="Manage models…" onSelect={() => onOpenSettings('models')} />
+        <MenuItem title={t('modelMenu.manageModels')} onSelect={() => onOpenSettings('models')} />
       </>
     </Dropdown>
   )

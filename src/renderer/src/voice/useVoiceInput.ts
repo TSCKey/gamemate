@@ -3,6 +3,7 @@ import type { Settings, SpeechModelStatus } from '../../../preload/index.d'
 import { recordQuestion, type Recording } from './recorder'
 import { preloadSpeechModel, transcribe } from './speech'
 import { stopSpeaking } from './speak'
+import { t } from '../i18n'
 
 const REPOS: Record<Settings['speechModel'], string> = {
   fast: 'onnx-community/whisper-tiny.en',
@@ -68,14 +69,14 @@ export function useVoiceInput(
       // Whisper writes "[BLANK_AUDIO]" or similar when it hears nothing useful.
       const clean = text.replace(/\[[^\]]*\]|\([^)]*\)/g, '').trim()
       if (clean) onTextRef.current(clean)
-      else setError("Sorry, I didn't catch that.")
+      else setError(t('useVoiceInput.sorryIDidnTCatch'))
     } catch (e) {
       recording.current = null
       setStatus('idle')
       setLevel(0)
       setError(
         e instanceof DOMException && e.name === 'NotAllowedError'
-          ? 'GameMate is not allowed to use the microphone. Check Windows microphone privacy settings.'
+          ? t('useVoiceInput.gamemateIsNotAllowedTo')
           : e instanceof Error
             ? e.message
             : String(e)

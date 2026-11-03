@@ -222,7 +222,8 @@ export async function modInfo(name: string): Promise<WikiLookup> {
       title: project.title,
       url: `https://modrinth.com/mod/${project.slug}`,
       wiki: 'Modrinth',
-      license: 'see the mod page'
+      // Each mod has its own license, shown on its page.
+      license: ''
     }
   }
 }

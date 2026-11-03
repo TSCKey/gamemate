@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
 import { formatSize } from '../hooks/useLocalModels'
 import { Field, Section, Toggle } from './ui'
+import { t } from '../i18n'
 
 export function Progress({ value }: { value: number }): React.JSX.Element {
   return (
@@ -50,18 +51,21 @@ function ModelsPanel({
   return (
     <>
       <Section
-        title="AI models on this PC"
-        description="They run on your graphics card and work offline: nothing you ask leaves this PC. The first download also installs GameMate's AI engine (37 MB)."
+        title={t('modelsPanel.aiModelsOnThisPc')}
+        description={t('modelsPanel.theyRunOnYourGraphics')}
       >
         {localModels.map((m, i) => (
           <div key={m.id} className="model-row">
             <div className="model-info">
               <div className="field-label">
                 {m.name} <span className="badge">{m.label}</span>
-                {i === 0 && <span className="badge is-accent">Recommended</span>}
+                {i === 0 && <span className="badge is-accent">{t('modelsPanel.recommended')}</span>}
               </div>
               <div className="field-help">
-                {m.description} {formatSize(m.sizeMb)}. Can see screenshots.
+                {t('modelsPanel.modelDetails', {
+                  description: m.description,
+                  size: formatSize(m.sizeMb)
+                })}
               </div>
               {m.progress !== null && <Progress value={m.progress} />}
               {m.error && <div className="error-text">{m.error}</div>}
@@ -71,7 +75,7 @@ function ModelsPanel({
                 <>
                   <span className="field-help">{Math.round(m.progress * 100)}%</span>
                   <button type="button" onClick={() => window.api.localModels.cancel(m.id)}>
-                    Cancel
+                    {t('modelsPanel.cancel')}
                   </button>
                 </>
               ) : confirmDelete === m.id ? (
@@ -84,23 +88,23 @@ function ModelsPanel({
                       window.api.localModels.remove(m.id)
                     }}
                   >
-                    Delete {formatSize(m.sizeMb)}
+                    {t('modelsPanel.delete', { size: formatSize(m.sizeMb) })}
                   </button>
                   <button type="button" onClick={() => setConfirmDelete(null)}>
-                    Keep
+                    {t('modelsPanel.keep')}
                   </button>
                 </>
               ) : m.installed ? (
                 <>
                   {inUse(m.id) ? (
-                    <span className="in-use">✓ In use</span>
+                    <span className="in-use">{t('modelsPanel.inUse')}</span>
                   ) : (
                     <button type="button" className="primary" onClick={() => use(m.id)}>
-                      Use
+                      {t('modelsPanel.use')}
                     </button>
                   )}
                   <button type="button" onClick={() => setConfirmDelete(m.id)}>
-                    Delete
+                    {t('modelsPanel.delete')}
                   </button>
                 </>
               ) : (
@@ -109,7 +113,7 @@ function ModelsPanel({
                   className={i === 0 ? 'primary' : ''}
                   onClick={() => window.api.localModels.download(m.id)}
                 >
-                  {m.error ? 'Try again' : 'Download'}
+                  {m.error ? t('modelsPanel.tryAgain') : t('modelsPanel.download')}
                 </button>
               )}
             </div>
@@ -117,28 +121,25 @@ function ModelsPanel({
         ))}
       </Section>
 
-      <Section
-        title="Ollama"
-        description="Already use Ollama? GameMate can use its models instead of the built-in ones."
-      >
+      <Section title="Ollama" description={t('modelsPanel.alreadyUseOllamaGamemateCan')}>
         <Field
-          label="Use my Ollama models"
-          help="Ollama must be running. GameMate frees its model when GameMate quits."
+          label={t('modelsPanel.useMyOllamaModels')}
+          help={t('modelsPanel.ollamaMustBeRunningGamemate')}
         >
           <Toggle
-            label="Use my Ollama models"
+            label={t('modelsPanel.useMyOllamaModels')}
             checked={settings.localBackend === 'ollama'}
             onChange={(on) => update({ localBackend: on ? 'ollama' : 'builtin' })}
           />
         </Field>
         {settings.localBackend === 'ollama' && (
           <Field
-            label="Model"
+            label={t('modelsPanel.model')}
             help={
               ollamaError ? (
                 <span className="error-text">{ollamaError}</span>
               ) : (
-                'Models marked 👁 can see screenshots.'
+                t('modelsPanel.modelsMarkedCanSeeScreenshots')
               )
             }
           >
@@ -147,9 +148,9 @@ function ModelsPanel({
                 value={settings.model}
                 onChange={(e) => update({ model: e.target.value })}
                 disabled={ollamaModels.length === 0}
-                aria-label="Ollama model"
+                aria-label={t('modelsPanel.ollamaModel')}
               >
-                {ollamaModels.length === 0 && <option value="">No models</option>}
+                {ollamaModels.length === 0 && <option value="">{t('modelsPanel.noModels')}</option>}
                 {ollamaModels.map((m) => (
                   <option key={m.name} value={m.name}>
                     {m.name}
@@ -157,7 +158,12 @@ function ModelsPanel({
                   </option>
                 ))}
               </select>
-              <button type="button" onClick={reloadOllama} title="Reload" aria-label="Reload">
+              <button
+                type="button"
+                onClick={reloadOllama}
+                title={t('modelsPanel.reload')}
+                aria-label={t('modelsPanel.reload')}
+              >
                 ↻
               </button>
             </div>
@@ -166,15 +172,12 @@ function ModelsPanel({
       </Section>
 
       <Section
-        title="Cloud models"
-        description="Run on another company's servers. Each one asks for your agreement before anything is sent."
+        title={t('modelsPanel.cloudModels')}
+        description={t('modelsPanel.runOnAnotherCompanyS')}
       >
-        <Field
-          label="Google Gemini"
-          help="Smarter answers and better screen understanding, with your own Google API key."
-        >
+        <Field label="Google Gemini" help={t('modelsPanel.smarterAnswersAndBetterScreen')}>
           <button type="button" onClick={onOpenAi}>
-            Set up
+            {t('modelsPanel.setUp')}
           </button>
         </Field>
       </Section>

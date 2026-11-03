@@ -1,4 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { Settings } from '../../../preload/index.d'
+import { useAppLanguage } from '../i18n'
 import { speak } from '../voice/speak'
 import { hush, say } from '../voice/natural'
 
@@ -8,6 +10,13 @@ const WINDOW_PADDING = 12
 // A companion comment shown over the game. It never takes focus; clicking it dismisses it.
 function Toast(): React.JSX.Element {
   const [text, setText] = useState('')
+  const [language, setLanguage] = useState<Settings['language']>('')
+  useAppLanguage({ language })
+
+  useEffect(() => {
+    window.api.getSettings().then((s) => setLanguage(s.language))
+    return window.api.onSettingsChanged((s) => setLanguage(s.language))
+  }, [])
   const bubbleRef = useRef<HTMLDivElement>(null)
 
   useEffect(
@@ -44,7 +53,7 @@ function Toast(): React.JSX.Element {
     <div className="toast" style={{ padding: WINDOW_PADDING }}>
       <div className="toast-bubble" ref={bubbleRef} onClick={() => window.api.toast.hide()}>
         <span className="toast-icon">🎮</span>
-        <span>{text}</span>
+        <span dir="auto">{text}</span>
       </div>
     </div>
   )

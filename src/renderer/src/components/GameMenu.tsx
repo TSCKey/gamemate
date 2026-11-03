@@ -1,5 +1,6 @@
 import type { GamesState, ModpackSummary, Settings } from '../../../preload/index.d'
 import { Dropdown, MenuItem, MenuLabel, MenuSeparator } from './Menu'
+import { t } from '../i18n'
 
 // Top-bar chip with the game GameMate helps with; opens a menu to switch games.
 function GameMenu({
@@ -21,29 +22,29 @@ function GameMenu({
       ? modpack
         ? `Minecraft · ${modpack.name}`
         : 'Minecraft'
-      : (current?.name ?? 'Game')
+      : (current?.name ?? t('gameMenu.game'))
 
   return (
     <Dropdown
       label={<span className="model-trigger-text">{label}</span>}
       menuLabel="Game"
-      title="The game GameMate helps with"
+      title={t('gameMenu.theGameGamemateHelpsWith')}
       triggerClassName="chip"
     >
       <>
         <MenuItem
-          title="Follow the game I'm playing"
+          title={t('gameMenu.followTheGameIM')}
           description={
             settings.deviceConsent
-              ? 'Switches by itself when you’re in a game'
-              : 'Allow game detection in Settings → Games first'
+              ? t('gameMenu.switchesByItselfWhenYou')
+              : t('gameMenu.allowGameDetectionInSettings')
           }
           checked={settings.deviceConsent && settings.autoDetectGame}
           disabled={!settings.deviceConsent}
           onSelect={() => update({ autoDetectGame: !settings.autoDetectGame })}
         />
         <MenuSeparator />
-        <MenuLabel>Game</MenuLabel>
+        <MenuLabel>{t('gameMenu.game')}</MenuLabel>
         {(games?.games ?? []).map((g) => (
           <MenuItem
             key={g.id}
@@ -54,7 +55,7 @@ function GameMenu({
         ))}
         <MenuSeparator />
         <MenuItem
-          title={settings.deviceConsent ? 'Scan for games…' : 'Find my games…'}
+          title={settings.deviceConsent ? t('gameMenu.scanForGames') : t('gameMenu.findMyGames')}
           onSelect={onOpenSettings}
         />
       </>
