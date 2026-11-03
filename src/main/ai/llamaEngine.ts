@@ -9,6 +9,8 @@ import { promisify } from 'util'
 import { tieToGameMate } from '../system/jobObject'
 import type { EngineServer } from './llamaClient'
 import { engineDir, engineExe, localModelFiles } from './localModels'
+import { t } from '../system/i18n'
+import { UnreachableError } from './errors'
 
 const IDLE_MS = Number(process.env.GAMEMATE_ENGINE_IDLE_MS) || 5 * 60_000
 const START_TIMEOUT_MS = 180_000
@@ -74,13 +76,13 @@ function friendlyError(log: string[]): string {
       text
     )
   ) {
-    return 'The built-in AI couldn’t start: there isn’t enough graphics memory for this model. Try a smaller model or close other programs.'
+    return t('errors.builtin.noGraphicsMemory')
   }
   if (/failed to load model|error loading model|invalid magic|failed to read/i.test(text)) {
-    return 'The built-in AI couldn’t start: the model file couldn’t be loaded. Delete it in Settings → Models and download it again.'
+    return t('errors.builtin.badModelFile')
   }
   const last = log.filter((l) => /error|fail/i.test(l)).at(-1) ?? log.at(-1) ?? 'no details'
-  return `The built-in AI couldn’t start (${last.trim().slice(0, 160)}).`
+  return t('errors.builtin.couldNotStart', { detail: last.trim().slice(0, 160) })
 }
 
 async function waitUntilReady(run: Running): Promise<void> {
@@ -88,7 +90,7 @@ async function waitUntilReady(run: Running): Promise<void> {
   const exited = once(run.proc, 'exit')
     .catch(() => undefined)
     .then(() => {
-      throw new Error(friendlyError(run.log))
+      throw new UnreachableError(friendlyError(run.log))
     })
   const deadline = Date.now() + START_TIMEOUT_MS
   const poll = (async () => {
@@ -102,7 +104,7 @@ async function waitUntilReady(run: Running): Promise<void> {
       if (ok) return
       await new Promise((r) => setTimeout(r, 300))
     }
-    throw new Error('The built-in AI couldn’t start: it took too long to load the model.')
+    throw new UnreachableError(t('errors.builtin.slowStart'))
   })()
   await Promise.race([poll, exited])
 }

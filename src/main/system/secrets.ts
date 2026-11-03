@@ -3,6 +3,7 @@
 import { app, safeStorage } from 'electron'
 import { readFileSync, rmSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import { t } from './i18n'
 
 const file = (): string => join(app.getPath('userData'), 'gemini-key.bin')
 let cached: string | null | undefined
@@ -23,7 +24,7 @@ export function hasGeminiKey(): boolean {
 
 export function setGeminiKey(key: string): void {
   if (!safeStorage.isEncryptionAvailable()) {
-    throw new Error('Windows can’t encrypt the key on this PC, so GameMate won’t store it.')
+    throw new Error(t('errors.gemini.cantEncrypt'))
   }
   writeFileSync(file(), safeStorage.encryptString(key))
   cached = key

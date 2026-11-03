@@ -37,6 +37,7 @@ import {
   stopObserver,
   type ObserverState
 } from './companion/observer'
+import { t } from './system/i18n'
 
 const preloadPath = join(__dirname, '../preload/index.js')
 let mainWindow: BrowserWindow | null = null
@@ -136,23 +137,19 @@ function createWindow(): void {
   loadRenderer(mainWindow)
 }
 
-const STATUS_LABELS: Record<ObserverState['status'], string> = {
-  off: 'Not watching',
-  paused: 'Watching paused',
-  'no-model': 'Pick a model to start watching',
-  'needs-consent': 'Allow game detection in Settings',
-  'waiting-for-game': 'Waiting for a game',
-  watching: 'Watching your game',
-  analyzing: 'Watching your game'
+// The companion's state in the tray, with the game's name once there is one.
+function trayStatus(observer: ObserverState): string {
+  const status = observer.status === 'analyzing' ? 'watching' : observer.status
+  if (status === 'watching' && observer.game) {
+    return t('tray.status.watchingGame', { game: observer.game })
+  }
+  return t(`tray.status.${status}`)
 }
 
 function updateTray(observer: ObserverState): void {
   if (!tray) return
   const watching = observer.status !== 'off'
-  const label =
-    observer.game && observer.status !== 'waiting-for-game'
-      ? STATUS_LABELS[observer.status].replace('your game', observer.game)
-      : STATUS_LABELS[observer.status]
+  const label = trayStatus(observer)
   tray.setToolTip(`GameMate · ${label}`)
   tray.setContextMenu(
     Menu.buildFromTemplate([
@@ -160,17 +157,17 @@ function updateTray(observer: ObserverState): void {
       ...(watching
         ? [
             {
-              label: observer.paused ? 'Resume watching' : 'Pause watching',
+              label: observer.paused ? t('tray.resume') : t('tray.pause'),
               click: () => setPaused(!observer.paused)
             }
           ]
         : []),
       { type: 'separator' },
-      { label: `Ask GameMate (${getSettings().shortcut})`, click: () => openOverlay() },
-      { label: 'Open GameMate', click: showMainWindow },
+      { label: t('tray.ask', { shortcut: getSettings().shortcut }), click: () => openOverlay() },
+      { label: t('tray.open'), click: showMainWindow },
       { type: 'separator' },
       {
-        label: 'Quit GameMate',
+        label: t('tray.quit'),
         click: () => {
           quitting = true
           app.quit()

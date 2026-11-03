@@ -5,6 +5,7 @@ import { app, BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { getSettings, onSettingsChanged, termsAccepted, type Settings } from './settings'
 import type { UpdateState } from '../../shared/types'
+import { t } from './i18n'
 export type { UpdateState }
 
 const FIRST_CHECK_MS = 15_000
@@ -40,7 +41,7 @@ export async function checkForUpdates(): Promise<UpdateState> {
     if (/no published versions|404|latest\.yml/i.test(message)) {
       setState({ status: 'none', checkedAt: Date.now() })
     } else {
-      setState({ status: 'error', error: 'Couldn’t check for updates. Are you online?' })
+      setState({ status: 'error', error: t('errors.updates.check') })
     }
   }
   return state
@@ -79,7 +80,7 @@ export function startUpdater(): void {
     if (state.status === 'downloading') {
       setState({
         status: 'error',
-        error: 'The update couldn’t be downloaded. It will try again later.'
+        error: t('errors.updates.download')
       })
     }
   })

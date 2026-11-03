@@ -19,25 +19,25 @@ export interface QuestionInfo {
 
 export interface Decision {
   cloud: boolean
-  // Short, player-facing reason.
-  reason: string
+  // Why, shown to the player as answers.reason.<name> in their language.
+  reason: 'screenshot' | 'recipe' | 'complex' | 'longQuestion' | 'longConversation' | 'quick'
 }
 
 // The local model handles quick facts and recipes (fast, free, private); Gemini takes
 // screenshots and questions that need more thinking.
 export function decide(info: QuestionInfo): Decision {
   const { question } = info
-  if (info.hasImages) return { cloud: true, reason: 'reading a screenshot' }
+  if (info.hasImages) return { cloud: true, reason: 'screenshot' }
   const complex = COMPLEX.test(question)
   if (RECIPE_INTENT.test(question) && !complex && info.mentionsItem) {
-    return { cloud: false, reason: 'recipe from GameMate’s data' }
+    return { cloud: false, reason: 'recipe' }
   }
-  if (complex) return { cloud: true, reason: 'needs more thinking' }
+  if (complex) return { cloud: true, reason: 'complex' }
   if (question.trim().split(/\s+/).length > LONG_QUESTION_WORDS) {
-    return { cloud: true, reason: 'long question' }
+    return { cloud: true, reason: 'longQuestion' }
   }
   if (info.messages > LONG_CONVERSATION_MESSAGES) {
-    return { cloud: true, reason: 'long conversation' }
+    return { cloud: true, reason: 'longConversation' }
   }
-  return { cloud: false, reason: 'quick question' }
+  return { cloud: false, reason: 'quick' }
 }

@@ -2,6 +2,8 @@
 // chat API. Kept free of Electron so it can be tested against a running server directly.
 import type { LlmMessage, LlmOptions, LlmReply, LlmToolCall } from './llm'
 import { forEachLine } from './lines'
+import { t } from '../system/i18n'
+import { UnreachableError } from './errors'
 
 const TIMEOUT_MS = 180_000
 // Room for thinking plus the answer; quick background checks get much less.
@@ -158,7 +160,9 @@ async function readStream(
     const data = line.slice(5).trim()
     if (data === '[DONE]') return
     const chunk = JSON.parse(data) as StreamChunk
-    if (chunk.error) throw new Error(`The built-in AI failed: ${chunk.error.message ?? ''}`)
+    if (chunk.error) {
+      throw new Error(t('errors.builtin.failed', { detail: chunk.error.message ?? '' }))
+    }
     const delta = chunk.choices?.[0]?.delta
     if (!delta) return
     if (delta.content) {
@@ -198,9 +202,9 @@ async function send(
     })
   } catch (error) {
     if (error instanceof Error && error.name === 'TimeoutError') {
-      throw new Error('The built-in AI took too long to respond.', { cause: error })
+      throw new UnreachableError(t('errors.builtin.timeout'), { cause: error })
     }
-    throw new Error('The built-in AI stopped unexpectedly. Try again.', { cause: error })
+    throw new UnreachableError(t('errors.builtin.stopped'), { cause: error })
   }
 
   if (onText && res.ok && res.body) return readStream(res.body, onText)
@@ -208,9 +212,9 @@ async function send(
   if (!res.ok) {
     const detail = data.error?.message ?? res.statusText
     if (/context|too long|exceed/i.test(detail)) {
-      throw new Error('This conversation is too long for the built-in AI. Start a new chat.')
+      throw new Error(t('errors.builtin.tooLong'))
     }
-    throw new Error(`The built-in AI failed: ${detail}`)
+    throw new Error(t('errors.builtin.failed', { detail }))
   }
   const message = data.choices?.[0]?.message
   const toolCalls: LlmToolCall[] = (message?.tool_calls ?? []).map((c) => ({

@@ -9,6 +9,7 @@ import { join } from 'path'
 import { promisify } from 'util'
 import { downloadVerified, partialPath, type DownloadSpec } from '../system/download'
 import type { LocalModelStatus } from '../../shared/types'
+import { t } from '../system/i18n'
 export type { LocalModelStatus }
 
 // llama.cpp (MIT), Vulkan build for Windows: runs on NVIDIA, AMD and Intel graphics cards and
@@ -66,8 +67,12 @@ export const LOCAL_MODELS: CatalogModel[] = [
   {
     id: 'qwen3.5-2b',
     name: 'Qwen3.5 2B',
-    label: 'Fast',
-    description: 'Quick answers on most graphics cards. A good start.',
+    get label(): string {
+      return t('models.local.fast')
+    },
+    get description(): string {
+      return t('models.local.2b')
+    },
     ...qwen(
       '2B',
       'f6d5376be1edb4d416d56da11e5397a961aca8ae',
@@ -78,8 +83,12 @@ export const LOCAL_MODELS: CatalogModel[] = [
   {
     id: 'qwen3.5-4b',
     name: 'Qwen3.5 4B',
-    label: 'Smart',
-    description: 'Better answers. Best with 6 GB or more of graphics memory.',
+    get label(): string {
+      return t('models.local.smart')
+    },
+    get description(): string {
+      return t('models.local.4b')
+    },
     ...qwen(
       '4B',
       'e87f176479d0855a907a41277aca2f8ee7a09523',
@@ -90,8 +99,12 @@ export const LOCAL_MODELS: CatalogModel[] = [
   {
     id: 'qwen3.5-9b',
     name: 'Qwen3.5 9B',
-    label: 'Best',
-    description: 'The best answers on this PC. Best with 10 GB or more of graphics memory.',
+    get label(): string {
+      return t('models.local.best')
+    },
+    get description(): string {
+      return t('models.local.9b')
+    },
     ...qwen(
       '9B',
       '3885219b6810b007914f3a7950a8d1b469d598a5',
@@ -136,7 +149,7 @@ export function isLocalModelInstalled(id: string): boolean {
 export function localModelFiles(id: string): { model: string; mmproj: string } {
   const model = find(id)
   if (!model || !isLocalModelInstalled(id)) {
-    throw new Error('Download an AI model in GameMate first (Settings → Models).')
+    throw new Error(t('errors.ai.noLocalModel'))
   }
   return {
     model: join(modelDir(id), model.model.name),
@@ -191,7 +204,8 @@ async function installEngine(onBytes: (delta: number) => void, signal: AbortSign
   await rm(tmp, { recursive: true, force: true })
   await mkdir(tmp, { recursive: true })
   await unzip(zip, tmp)
-  if (!existsSync(join(tmp, 'llama-server.exe'))) throw new Error('the AI engine is incomplete')
+  if (!existsSync(join(tmp, 'llama-server.exe')))
+    throw new Error(t('errors.download.engineIncomplete'))
   await rm(engineDir(), { recursive: true, force: true })
   await rename(tmp, engineDir())
   await rm(zip, { force: true })
@@ -203,7 +217,7 @@ async function ensureDiskSpace(bytes: number): Promise<void> {
   // Leave some room for the engine files and the rest of Windows.
   const needed = bytes + 500_000_000
   if (bavail * bsize < needed) {
-    throw new Error(`there isn't enough free disk space (needs ${(needed / 1e9).toFixed(1)} GB)`)
+    throw new Error(t('errors.download.diskSpace', { size: (needed / 1e9).toFixed(1) }))
   }
 }
 
@@ -247,9 +261,10 @@ export async function downloadLocalModel(id: string): Promise<boolean> {
       downloads.delete(id)
     } else {
       // Partial files stay, so trying again continues where this stopped.
-      state.error = `Could not download ${model.name}: ${
-        error instanceof Error ? error.message : String(error)
-      }`
+      state.error = t('errors.download.failed', {
+        name: model.name,
+        reason: error instanceof Error ? error.message : String(error)
+      })
     }
     broadcast()
     return false

@@ -488,5 +488,115 @@
       "watching": "Watching",
       "analyzing": "Looking at your screen…"
     }
+  },
+  "errors": {
+    "ai": {
+      "noLocalModel": "Download an AI model in GameMate first (Settings → Models).",
+      "pickModel": "Pick a model in GameMate first."
+    },
+    "gemini": {
+      "turnOn": "Turn on Gemini in GameMate’s settings (AI & online) first.",
+      "addKey": "Add your Gemini API key in GameMate’s AI settings first.",
+      "pickModel": "Pick a Gemini model in GameMate’s AI settings.",
+      "timeout": "Gemini took too long to respond.",
+      "unreachable": "Could not reach Gemini. Check your internet connection.",
+      "badKey": "Gemini rejected the API key. Check it in GameMate’s AI settings.",
+      "keyNotAllowed": "This API key is not allowed to use Gemini.",
+      "usageLimit": "Gemini’s usage limit was reached. Try again later or switch to the local model.",
+      "error": "Gemini error {{status}}{{detail}}",
+      "noAnswer": "Gemini didn’t answer{{reason}}.",
+      "needConsent": "Agree to the Gemini terms first.",
+      "notAKey": "That doesn’t look like a Gemini API key.",
+      "cantEncrypt": "Windows can’t encrypt the key on this PC, so GameMate won’t store it."
+    },
+    "builtin": {
+      "failed": "The built-in AI failed: {{detail}}",
+      "timeout": "The built-in AI took too long to respond.",
+      "stopped": "The built-in AI stopped unexpectedly. Try again.",
+      "tooLong": "This conversation is too long for the built-in AI. Start a new chat.",
+      "noGraphicsMemory": "The built-in AI couldn’t start: there isn’t enough graphics memory for this model. Try a smaller model or close other programs.",
+      "badModelFile": "The built-in AI couldn’t start: the model file couldn’t be loaded. Delete it in Settings → Models and download it again.",
+      "couldNotStart": "The built-in AI couldn’t start ({{detail}}).",
+      "slowStart": "The built-in AI couldn’t start: it took too long to load the model."
+    },
+    "ollama": {
+      "timeout": "Ollama took too long to respond.",
+      "unreachable": "Could not reach Ollama at {{url}}. Is it running?",
+      "error": "Ollama error {{detail}}",
+      "noAnswer": "Ollama sent no answer."
+    },
+    "download": {
+      "engineIncomplete": "the AI engine is incomplete",
+      "diskSpace": "there isn’t enough free disk space (needs {{size}} GB)",
+      "failed": "Could not download {{name}}: {{reason}}",
+      "serverAnswered": "the server answered {{status}}",
+      "incomplete": "the download is incomplete",
+      "damaged": "the downloaded file is damaged (checksum mismatch)",
+      "voiceFailed": "Could not download the voice: {{reason}}",
+      "speechModelFailed": "Could not download the speech model: {{reason}}"
+    },
+    "games": {
+      "needConsent": "Allow GameMate to look for games first (Settings → Games).",
+      "noName": "Give the game a name.",
+      "tooMany": "That’s too many games.",
+      "cantAdd": "That program can’t be added."
+    },
+    "terms": {
+      "notAccepted": "Accept GameMate’s Terms of Use first.",
+      "age": "Confirm your age first."
+    },
+    "updates": {
+      "check": "Couldn’t check for updates. Are you online?",
+      "download": "The update couldn’t be downloaded. It will try again later."
+    },
+    "capture": {
+      "failed": "Could not capture the screen.",
+      "windowGone": "That window is no longer available. Pick another one to capture."
+    },
+    "wiki": {
+      "address": "Enter the wiki’s address, starting with https://",
+      "notFound": "No wiki found at that address. GameMate works with MediaWiki sites such as Fandom and wiki.gg."
+    }
+  },
+  "answers": {
+    "reason": {
+      "geminiNotSetUp": "Gemini isn’t set up",
+      "noLocalModel": "no local model",
+      "screenshot": "reading a screenshot",
+      "recipe": "recipe from GameMate’s data",
+      "complex": "needs more thinking",
+      "longQuestion": "long question",
+      "longConversation": "long conversation",
+      "quick": "quick question",
+      "geminiUnreachable": "Gemini couldn’t be reached",
+      "localUnreachable": "the local model couldn’t be reached"
+    },
+    "noAnswer": "I couldn’t find a reliable answer to that."
+  },
+  "models": {
+    "local": {
+      "fast": "Fast",
+      "2b": "Quick answers on most graphics cards. A good start.",
+      "smart": "Smart",
+      "4b": "Better answers. Best with 6 GB or more of graphics memory.",
+      "best": "Best",
+      "9b": "The best answers on this PC. Best with 10 GB or more of graphics memory."
+    }
+  },
+  "tray": {
+    "status": {
+      "off": "Not watching",
+      "paused": "Watching paused",
+      "no-model": "Pick a model to start watching",
+      "needs-consent": "Allow game detection in Settings",
+      "waiting-for-game": "Waiting for a game",
+      "watching": "Watching your game",
+      "watchingGame": "Watching {{game}}"
+    },
+    "resume": "Resume watching",
+    "pause": "Pause watching",
+    "ask": "Ask GameMate ({{shortcut}})",
+    "open": "Open GameMate",
+    "quit": "Quit GameMate"
   }
 }

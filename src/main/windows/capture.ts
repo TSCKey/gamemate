@@ -1,6 +1,7 @@
 // Capture module: lists capturable screens/windows and grabs a screenshot of one.
 import { BrowserWindow, desktopCapturer, screen, type NativeImage } from 'electron'
 import type { CaptureSource, Screenshot } from '../../shared/types'
+import { t } from '../system/i18n'
 export type { CaptureSource, Screenshot }
 
 // Large enough for the vision model to read the scene, small enough to keep inference fast.
@@ -58,7 +59,7 @@ export function toScreenshot(image: NativeImage): Screenshot {
 // protection on, so it never appears in this capture.
 export async function captureDisplay(displayId: number): Promise<Screenshot> {
   const image = await captureDisplayImage(displayId)
-  if (!image) throw new Error('Could not capture the screen.')
+  if (!image) throw new Error(t('errors.capture.failed'))
   return toScreenshot(image)
 }
 
@@ -81,7 +82,7 @@ export async function captureSource(
     })
     const source = sources.find((s) => s.id === sourceId)
     if (!source || source.thumbnail.isEmpty()) {
-      throw new Error('That window is no longer available. Pick another one to capture.')
+      throw new Error(t('errors.capture.windowGone'))
     }
     const { width, height } = source.thumbnail.getSize()
     return { base64: source.thumbnail.toJPEG(JPEG_QUALITY).toString('base64'), width, height }

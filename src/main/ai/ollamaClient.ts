@@ -3,6 +3,8 @@
 
 import { forEachLine } from './lines'
 import type { ModelInfo } from '../../shared/types'
+import { t } from '../system/i18n'
+import { UnreachableError } from './errors'
 export type { ModelInfo }
 
 const OLLAMA_URL = 'http://127.0.0.1:11434'
@@ -74,9 +76,11 @@ async function send(path: string, init?: RequestInit): Promise<Response> {
     })
   } catch (error) {
     if (error instanceof Error && error.name === 'TimeoutError') {
-      throw new Error('Ollama took too long to respond.', { cause: error })
+      throw new UnreachableError(t('errors.ollama.timeout'), { cause: error })
     }
-    throw new Error(`Could not reach Ollama at ${OLLAMA_URL}. Is it running?`, { cause: error })
+    throw new UnreachableError(t('errors.ollama.unreachable', { url: OLLAMA_URL }), {
+      cause: error
+    })
   }
 
   if (!res.ok) {
@@ -87,7 +91,9 @@ async function send(path: string, init?: RequestInit): Promise<Response> {
     } catch {
       // body was not JSON; use it as-is
     }
-    throw new Error(`Ollama error ${res.status}: ${detail || res.statusText}`)
+    throw new Error(
+      t('errors.ollama.error', { detail: `${res.status}: ${detail || res.statusText}` })
+    )
   }
   return res
 }
@@ -138,12 +144,12 @@ export async function chatOnce(
     method: 'POST',
     body: JSON.stringify({ model, messages, stream: true, ...rest })
   })
-  if (!res.body) throw new Error('Ollama sent no answer.')
+  if (!res.body) throw new Error(t('errors.ollama.noAnswer'))
   // Ollama streams one JSON object per line.
   const message: OllamaMessage = { role: 'assistant', content: '' }
   await forEachLine(res.body, (line) => {
     const chunk = JSON.parse(line) as { message?: OllamaMessage; error?: string }
-    if (chunk.error) throw new Error(`Ollama error: ${chunk.error}`)
+    if (chunk.error) throw new Error(t('errors.ollama.error', { detail: chunk.error }))
     const part = chunk.message
     if (!part) return
     if (part.content) {

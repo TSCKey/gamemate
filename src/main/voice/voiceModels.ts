@@ -8,6 +8,7 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { pathToFileURL } from 'url'
 import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../../shared/types'
+import { t } from '../system/i18n'
 export type { SpeechModelId, ListenModelId, SpeechModelStatus }
 
 export const MODEL_SCHEME = 'gm-model'
@@ -149,7 +150,8 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     const listing = await net.fetch(
       `https://huggingface.co/api/models/${repo}/tree/${revision}?recursive=true`
     )
-    if (!listing.ok) throw new Error(`file list returned ${listing.status}`)
+    if (!listing.ok)
+      throw new Error(t('errors.download.serverAnswered', { status: listing.status }))
     const sizes = new Map(
       ((await listing.json()) as { path: string; size: number }[]).map((f) => [f.path, f.size])
     )
@@ -160,7 +162,9 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
 
     for (const name of files) {
       const res = await net.fetch(`https://huggingface.co/${repo}/resolve/${revision}/${name}`)
-      if (!res.ok || !res.body) throw new Error(`${name} returned ${res.status}`)
+      if (!res.ok || !res.body) {
+        throw new Error(t('errors.download.serverAnswered', { status: res.status }))
+      }
       const file = join(tmp, name)
       await mkdir(dirname(file), { recursive: true })
       const body = Readable.fromWeb(res.body as import('stream/web').ReadableStream)
@@ -175,7 +179,7 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
       await pipeline(body, createWriteStream(file))
       const expected = sizes.get(name)
       if (expected !== undefined && (await stat(file)).size !== expected) {
-        throw new Error(`${name} is incomplete`)
+        throw new Error(t('errors.download.incomplete'))
       }
     }
 
@@ -184,9 +188,12 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     await rename(tmp, dir)
     downloads.delete(id)
   } catch (error) {
-    state.error = `Could not download the ${SPEECH_MODELS[id].kind === 'speak' ? 'voice' : 'speech model'}: ${
-      error instanceof Error ? error.message : String(error)
-    }`
+    state.error = t(
+      SPEECH_MODELS[id].kind === 'speak'
+        ? 'errors.download.voiceFailed'
+        : 'errors.download.speechModelFailed',
+      { reason: error instanceof Error ? error.message : String(error) }
+    )
     await rm(tmp, { recursive: true, force: true }).catch(() => {})
   }
   broadcast()

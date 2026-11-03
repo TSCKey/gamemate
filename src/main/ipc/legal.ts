@@ -5,6 +5,7 @@ import { stopEngine } from '../ai/llamaEngine'
 import { gateChannels, handle } from '../system/security'
 import { acceptTerms, termsAccepted, withdrawTerms } from '../system/settings'
 import { hideOverlay } from '../windows/overlay'
+import { t } from '../system/i18n'
 
 // Requests that go online, read the PC or capture the screen.
 export const AFTER_TERMS = new Set([
@@ -30,11 +31,11 @@ export const AFTER_TERMS = new Set([
 export function registerLegalHandlers(): void {
   gateChannels((channel) => {
     if (AFTER_TERMS.has(channel) && !termsAccepted()) {
-      throw new Error('Accept GameMate’s Terms of Use first.')
+      throw new Error(t('errors.terms.notAccepted'))
     }
   })
   handle('legal:accept', (_event, ageConfirmed: unknown) => {
-    if (ageConfirmed !== true) throw new Error('Confirm your age first.')
+    if (ageConfirmed !== true) throw new Error(t('errors.terms.age'))
     return acceptTerms()
   })
   handle('legal:withdraw', async () => {

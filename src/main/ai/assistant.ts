@@ -17,6 +17,7 @@ import { minecraftIcons, pagePicture } from '../games/pictures'
 import { searchWeb, type WebSearchResult } from './gemini'
 import { allowWiki } from '../system/links'
 import type { AnsweredBy, WikiPicture } from '../../shared/types'
+import { t } from '../system/i18n'
 export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.
@@ -129,7 +130,8 @@ const NO_ANSWER_RULE =
   'If what you know and what you looked up do not answer the question, say in one sentence that you could not find a reliable answer. Never reply with a search query, a tool call or a list of things to look up.'
 
 // Shown instead of a reply that isn't an answer (see isNonAnswer).
-export const NO_ANSWER = 'I couldn’t find a reliable answer to that.'
+// What the player sees when the AI found nothing it can stand behind.
+export const noAnswer = (): string => t('answers.noAnswer')
 
 function systemPrompt(ctx: AssistantContext): string {
   const { game } = ctx
@@ -643,21 +645,21 @@ async function finish(
   out: Collected,
   content: string
 ): Promise<AssistantReply> {
-  const noAnswer = isNonAnswer(content, out.asked)
-  if (noAnswer) ctx.onText?.(NO_ANSWER)
+  const empty = isNonAnswer(content, out.asked)
+  if (empty) ctx.onText?.(noAnswer())
   // An answer about another game doesn't need pages from the current game's wiki.
   const sources = out.otherGame
     ? out.sources.filter((src) => src.wiki !== ctx.game.wiki?.name)
     : out.sources
-  const pictures = noAnswer ? [] : await finishPictures(ctx, out)
+  const pictures = empty ? [] : await finishPictures(ctx, out)
   return {
     role: 'assistant',
-    content: noAnswer ? NO_ANSWER : content,
+    content: empty ? noAnswer() : content,
     answeredBy: {
       provider: ctx.engine.provider === 'gemini' ? 'gemini' : 'local',
       model: ctx.engine.model
     },
-    ...(out.recipes.length && !noAnswer ? { recipes: out.recipes } : {}),
+    ...(out.recipes.length && !empty ? { recipes: out.recipes } : {}),
     ...(sources.length ? { sources } : {}),
     ...(pictures.length ? { pictures } : {}),
     ...(out.searchSuggestions ? { searchSuggestions: out.searchSuggestions } : {})

@@ -1,5 +1,6 @@
 // Looks things up on a game's wiki (any MediaWiki site: minecraft.wiki, wiki.gg, Fandom, …) for
 import type { WikiSite, WikiSource } from '../../shared/types'
+import { t } from '../system/i18n'
 export type { WikiSite, WikiSource }
 // questions GameMate's own data can't answer. Only the search words are sent. Wiki text is under
 // the wiki's license (usually Creative Commons), so every answer that uses it links to the page.
@@ -465,7 +466,7 @@ async function siteInfo(api: string): Promise<WikiCandidate | null> {
       // The wiki's own address (Fandom answers for several names, e.g. silksong.fandom.com).
       api: `${server}${general.scriptpath ?? ''}/api.php`,
       articlePath: `${server}${general.articlepath}`,
-      license: info?.query?.rightsinfo?.text || 'see the wiki for its license'
+      license: info?.query?.rightsinfo?.text ?? ''
     },
     articles: stats?.articles ?? 0,
     activeUsers: stats?.activeusers ?? 0
@@ -547,7 +548,7 @@ export async function discoverWiki(address: string): Promise<WikiSite> {
     if (url.protocol !== 'https:') throw new Error('not https')
     origin = url.origin
   } catch {
-    throw new Error('Enter the wiki’s address, starting with https://')
+    throw new Error(t('errors.wiki.address'))
   }
   for (const path of ['/api.php', '/w/api.php', '/mediawiki/api.php']) {
     const info = await queryWiki<{
@@ -567,11 +568,9 @@ export async function discoverWiki(address: string): Promise<WikiSite> {
         name: general.sitename,
         api: `${origin}${path}`,
         articlePath: `${server}${general.articlepath}`,
-        license: info?.query?.rightsinfo?.text || 'see the wiki for its license'
+        license: info?.query?.rightsinfo?.text ?? ''
       }
     }
   }
-  throw new Error(
-    'No wiki found at that address. GameMate works with MediaWiki sites such as Fandom and wiki.gg.'
-  )
+  throw new Error(t('errors.wiki.notFound'))
 }

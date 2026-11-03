@@ -8,6 +8,7 @@ import { recentObservations } from '../companion/observer'
 import { handle } from '../system/security'
 import { getGeminiKey } from '../system/secrets'
 import { getSettings } from '../system/settings'
+import { t } from '../system/i18n'
 
 const VALID_ROLES = new Set(['user', 'assistant'])
 const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024
@@ -87,9 +88,13 @@ export function registerAssistantHandlers(): void {
     } catch (error) {
       // Auto mode: if the chosen AI is offline or out of quota, the other one answers.
       if (!route.fallback || !isUnreachable(error)) throw error
-      const what = route.engine.provider === 'gemini' ? 'Gemini' : 'the local model'
       onText?.('')
-      return askWith(route.fallback, `${what} couldn’t be reached`)
+      return askWith(
+        route.fallback,
+        route.engine.provider === 'gemini'
+          ? t('answers.reason.geminiUnreachable')
+          : t('answers.reason.localUnreachable')
+      )
     }
   })
 }

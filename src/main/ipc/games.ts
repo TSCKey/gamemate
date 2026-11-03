@@ -7,6 +7,7 @@ import { listCurseForgeModpacks, type ModpackSummary } from '../games/modpacks'
 import { handle } from '../system/security'
 import { getSettings, setGames, updateSettings } from '../system/settings'
 import { discoverWiki, findWikiCandidates, findWikiForGame } from '../games/wiki'
+import { t } from '../system/i18n'
 
 // What the game menus and settings need to know about each game.
 function gamesState(): GamesState {
@@ -30,7 +31,7 @@ function gamesState(): GamesState {
 
 function requireConsent(): void {
   if (!getSettings().deviceConsent) {
-    throw new Error('Allow GameMate to look for games first (Settings → Games).')
+    throw new Error(t('errors.games.needConsent'))
   }
 }
 
@@ -82,12 +83,12 @@ export function registerGameHandlers(): void {
   handle('games:add', (_event, exe: unknown, name: unknown) => {
     requireConsent()
     if (typeof exe !== 'string' || !/^[\w .()&+'-]{1,80}\.exe$/i.test(exe)) {
-      throw new Error('That program can’t be added.')
+      throw new Error(t('errors.games.cantAdd'))
     }
     const title = typeof name === 'string' ? name.trim().slice(0, 60) : ''
-    if (!title) throw new Error('Give the game a name.')
+    if (!title) throw new Error(t('errors.games.noName'))
     const { games } = getSettings()
-    if (games.length >= 300) throw new Error('That’s too many games.')
+    if (games.length >= 300) throw new Error(t('errors.games.tooMany'))
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')

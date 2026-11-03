@@ -13,6 +13,7 @@ import {
 import { clearGeminiKey, getGeminiKey, hasGeminiKey, setGeminiKey } from '../system/secrets'
 import { handle } from '../system/security'
 import { getSettings, updateSettings } from '../system/settings'
+import { t } from '../system/i18n'
 
 export function registerModelHandlers(): void {
   handle('local-models:list', () => localModelStatuses())
@@ -36,14 +37,14 @@ export function registerModelHandlers(): void {
   })
   handle('gemini:status', () => ({ hasKey: hasGeminiKey() }))
   handle('gemini:set-key', async (_event, key: unknown) => {
-    if (!getSettings().geminiConsent) throw new Error('Agree to the Gemini terms first.')
+    if (!getSettings().geminiConsent) throw new Error(t('errors.gemini.needConsent'))
     // Key formats change (newer ones contain dots), so only drop stray whitespace and quotes
     // from copy-pasting and require characters that are safe in a header; Google does the
     // real check below.
     const trimmed =
       typeof key === 'string' ? key.replace(/\s+/g, '').replace(/^["']|["']$/g, '') : ''
     if (!/^[\x21-\x7e]{20,300}$/.test(trimmed)) {
-      throw new Error('That doesn’t look like a Gemini API key.')
+      throw new Error(t('errors.gemini.notAKey'))
     }
     // Check the key works before saving it.
     const models = await listGeminiModels(trimmed)

@@ -7,6 +7,7 @@ import { mkdir, rename, rm, stat } from 'fs/promises'
 import { dirname } from 'path'
 import { Readable, Transform } from 'stream'
 import { pipeline } from 'stream/promises'
+import { t } from './i18n'
 
 export interface DownloadSpec {
   url: string
@@ -48,7 +49,8 @@ export async function downloadVerified(
       headers: have > 0 ? { Range: `bytes=${have}-` } : {},
       signal
     })
-    if (!res.ok || !res.body) throw new Error(`the server answered ${res.status}`)
+    if (!res.ok || !res.body)
+      throw new Error(t('errors.download.serverAnswered', { status: res.status }))
     if (have > 0 && res.status !== 206) {
       // The server sent the whole file instead of the rest: start over.
       onBytes(-have)
@@ -70,10 +72,10 @@ export async function downloadVerified(
     )
   }
 
-  if ((await stat(part)).size !== spec.size) throw new Error('the download is incomplete')
+  if ((await stat(part)).size !== spec.size) throw new Error(t('errors.download.incomplete'))
   if (hash.digest('hex') !== spec.sha256) {
     await rm(part, { force: true })
-    throw new Error('the downloaded file is damaged (checksum mismatch)')
+    throw new Error(t('errors.download.damaged'))
   }
   await rename(part, dest)
 }

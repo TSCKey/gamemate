@@ -10,6 +10,8 @@ import { preloadModel } from './ollamaClient'
 import { decide } from './router'
 import { getGeminiKey } from '../system/secrets'
 import { getSettings } from '../system/settings'
+import { t } from '../system/i18n'
+import { UnreachableError } from './errors'
 
 export type Job = 'answers' | 'commentary'
 
@@ -18,22 +20,22 @@ function localEngine(): LlmEngine {
   const settings = getSettings()
   if (settings.localBackend === 'builtin') {
     if (!isLocalModelInstalled(settings.builtinModel)) {
-      throw new Error('Download an AI model in GameMate first (Settings → Models).')
+      throw new Error(t('errors.ai.noLocalModel'))
     }
     return { provider: 'builtin', model: settings.builtinModel }
   }
-  if (!settings.model) throw new Error('Pick a model in GameMate first.')
+  if (!settings.model) throw new Error(t('errors.ai.pickModel'))
   return { provider: 'ollama', model: settings.model }
 }
 
 function geminiEngine(): LlmEngine {
   const settings = getSettings()
   if (!settings.geminiConsent) {
-    throw new Error('Turn on Gemini in GameMate’s settings (AI & online) first.')
+    throw new Error(t('errors.gemini.turnOn'))
   }
   const apiKey = getGeminiKey()
-  if (!apiKey) throw new Error('Add your Gemini API key in GameMate’s AI settings first.')
-  if (!settings.geminiModel) throw new Error('Pick a Gemini model in GameMate’s AI settings.')
+  if (!apiKey) throw new Error(t('errors.gemini.addKey'))
+  if (!settings.geminiModel) throw new Error(t('errors.gemini.pickModel'))
   return { provider: 'gemini', model: settings.geminiModel, apiKey }
 }
 
@@ -102,15 +104,17 @@ export interface Route {
 function autoRoute(question: string, hasImages: boolean, messages: number): Route {
   const local = available(localEngine)
   const gemini = available(geminiEngine)
-  if (!gemini) return { engine: localEngine(), fallback: null, reason: 'Gemini isn’t set up' }
-  if (!local) return { engine: gemini, fallback: null, reason: 'no local model' }
-  const { cloud, reason } = decide({
+  if (!gemini)
+    return { engine: localEngine(), fallback: null, reason: t('answers.reason.geminiNotSetUp') }
+  if (!local) return { engine: gemini, fallback: null, reason: t('answers.reason.noLocalModel') }
+  const decision = decide({
     question,
     hasImages,
     messages,
     mentionsItem: findMentionedItems(latestRecipeVersion(), question).length > 0
   })
-  return cloud
+  const reason = t(`answers.reason.${decision.reason}`)
+  return decision.cloud
     ? { engine: gemini, fallback: local, reason }
     : { engine: local, fallback: gemini, reason }
 }
@@ -123,8 +127,8 @@ export function routeQuestion(question: string, hasImages: boolean, messages: nu
 // Errors where trying the other engine makes sense (offline, limits, timeouts),
 // as opposed to e.g. a rejected key the player has to fix.
 export function isUnreachable(error: unknown): boolean {
+  if (error instanceof UnreachableError) return true
+  // Network failures that reach here without a GameMate message.
   const message = error instanceof Error ? error.message : String(error)
-  return /could not reach|usage limit|took too long|not running|ECONNREFUSED|fetch failed|couldn.t start|stopped unexpectedly/i.test(
-    message
-  )
+  return /ECONNREFUSED|fetch failed/i.test(message)
 }

@@ -42,7 +42,7 @@ vi.mock('../src/main/ai/gemini', () => ({
   }
 }))
 
-const { ask, isNonAnswer, NO_ANSWER, webSearchQuery } = await import('../src/main/ai/assistant')
+const { ask, isNonAnswer, noAnswer, webSearchQuery } = await import('../src/main/ai/assistant')
 
 const ctx = {
   engine: { provider: 'builtin' as const, model: 'test' },
@@ -76,7 +76,7 @@ describe('when the AI has no answer', () => {
   it('says so instead of showing its search query', async () => {
     replies.push({ content: 'web_search("Silksong Last Judge tips")', toolCalls: [] })
     const reply = await ask(ctx, question)
-    expect(reply.content).toBe(NO_ANSWER)
+    expect(reply.content).toBe(noAnswer())
   })
 
   it('says so when it keeps looking things up', async () => {
@@ -89,7 +89,7 @@ describe('when the AI has no answer', () => {
     // The last round has no tools; the model writes the topic it wanted.
     replies.push({ content: 'Last Judge', toolCalls: [] })
     const reply = await ask(ctx, question)
-    expect(reply.content).toBe(NO_ANSWER)
+    expect(reply.content).toBe(noAnswer())
   })
 
   it('passes real answers through', async () => {

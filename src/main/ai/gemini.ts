@@ -1,3 +1,5 @@
+import { t } from '../system/i18n'
+import { UnreachableError } from './errors'
 // Minimal client for Google's Gemini API (generateContent), used only when the player opts in.
 // The API key is sent in a header, never in the URL.
 // See https://ai.google.dev/api/generate-content
@@ -57,9 +59,9 @@ async function call<T>(apiKey: string, path: string, body?: object): Promise<T> 
     })
   } catch (error) {
     if (error instanceof Error && error.name === 'TimeoutError') {
-      throw new Error('Gemini took too long to respond.', { cause: error })
+      throw new UnreachableError(t('errors.gemini.timeout'), { cause: error })
     }
-    throw new Error('Could not reach Gemini. Check your internet connection.', { cause: error })
+    throw new UnreachableError(t('errors.gemini.unreachable'), { cause: error })
   }
   if (!res.ok) {
     let detail = ''
@@ -69,15 +71,15 @@ async function call<T>(apiKey: string, path: string, body?: object): Promise<T> 
       // not JSON
     }
     if (res.status === 400 && /api key/i.test(detail)) {
-      throw new Error('Gemini rejected the API key. Check it in GameMate’s AI settings.')
+      throw new Error(t('errors.gemini.badKey'))
     }
-    if (res.status === 403) throw new Error('This API key is not allowed to use Gemini.')
+    if (res.status === 403) throw new Error(t('errors.gemini.keyNotAllowed'))
     if (res.status === 429) {
-      throw new Error(
-        'Gemini’s usage limit was reached. Try again later or switch to the local model.'
-      )
+      throw new UnreachableError(t('errors.gemini.usageLimit'))
     }
-    throw new Error(`Gemini error ${res.status}${detail ? `: ${detail}` : ''}`)
+    throw new Error(
+      t('errors.gemini.error', { status: res.status, detail: detail ? `: ${detail}` : '' })
+    )
   }
   return (await res.json()) as T
 }
@@ -117,7 +119,7 @@ export async function generate(
   const content = data.candidates?.[0]?.content
   if (!content) {
     const reason = data.promptFeedback?.blockReason ?? data.candidates?.[0]?.finishReason
-    throw new Error(`Gemini didn't answer${reason ? ` (${reason})` : ''}.`)
+    throw new Error(t('errors.gemini.noAnswer', { reason: reason ? ` (${reason})` : '' }))
   }
   return { role: 'model', parts: content.parts ?? [] }
 }
