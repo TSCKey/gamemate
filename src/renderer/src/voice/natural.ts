@@ -1,7 +1,8 @@
-// GameMate's natural voice (Kokoro), played in the pop-up window: text is spoken sentence by
-// sentence, so the first words start quickly even for long answers.
+// GameMate's natural voice (Supertonic), played in the pop-up window: text is spoken sentence
+// by sentence, so the first words start quickly even for long answers.
 import type { SayRequest } from '../../../preload/index.d'
 import type { VoiceRequest, VoiceResponse } from './tts.worker'
+import { splitForSpeech } from './supertonicText'
 
 let worker: Worker | null = null
 let nextId = 1
@@ -21,22 +22,20 @@ function getWorker(): Worker {
   return worker
 }
 
-function synthesize(text: string, voice: string, speed: number): Promise<VoiceResponse> {
+function synthesize(text: string, request: SayRequest): Promise<VoiceResponse> {
   const id = nextId++
+  const { voice, speed, language } = request
   return new Promise((resolve) => {
     pending.set(id, resolve)
-    getWorker().postMessage({ type: 'say', id, text, voice, speed } satisfies VoiceRequest)
+    getWorker().postMessage({
+      type: 'say',
+      id,
+      text,
+      voice,
+      speed,
+      language
+    } satisfies VoiceRequest)
   })
-}
-
-// Sentences of a sensible length (very long ones are split at commas).
-function sentences(text: string): string[] {
-  const parts = text
-    .replace(/\s+/g, ' ')
-    .match(/[^.!?]+[.!?]*["')\]]*\s*/g)
-    ?.map((s) => s.trim())
-    .filter(Boolean) ?? [text]
-  return parts.flatMap((s) => (s.length > 300 ? s.split(/(?<=,)\s+/) : [s]))
 }
 
 function play(samples: Float32Array, rate: number, volume: number): Promise<void> {
@@ -58,13 +57,14 @@ function play(samples: Float32Array, rate: number, volume: number): Promise<void
 export async function say(request: SayRequest): Promise<void> {
   hush()
   const mine = ++generation
-  const parts = sentences(request.text)
+  const parts = splitForSpeech(request.text, request.language)
+  if (!parts.length) return
   // Start making the next sentence while the current one plays.
-  let next = synthesize(parts[0], request.voice, request.speed)
+  let next = synthesize(parts[0], request)
   for (let i = 0; i < parts.length; i++) {
     const result = await next
     if (mine !== generation) return
-    if (i + 1 < parts.length) next = synthesize(parts[i + 1], request.voice, request.speed)
+    if (i + 1 < parts.length) next = synthesize(parts[i + 1], request)
     if (result.type === 'error') {
       console.error('Natural voice failed', result.message)
       return

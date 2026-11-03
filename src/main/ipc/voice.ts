@@ -16,12 +16,18 @@ export function registerVoiceHandlers(): void {
   handle('voice:voices', () => listVoices())
   handle('voice:speak', (_event, text: unknown) => {
     if (typeof text !== 'string') return
-    const { voiceEngine, kokoroVoice, voiceName, voiceVolume, voiceRate } = getSettings()
+    const { voiceEngine, voiceName, voiceVolume, voiceRate, language } = getSettings()
     // The natural voice runs in the pop-up window; Windows' voices run here.
     const natural =
       voiceEngine === 'kokoro' &&
-      isSpeechModelInstalled('kokoro') &&
-      sayInToast({ text, voice: kokoroVoice, speed: voiceRate, volume: voiceVolume })
+      isSpeechModelInstalled('supertonic') &&
+      sayInToast({
+        text,
+        voice: 'F1',
+        speed: voiceRate,
+        volume: voiceVolume,
+        language: language || 'en'
+      })
     if (!natural) speak(text, { voice: voiceName, volume: voiceVolume, rate: voiceRate })
   })
   handle('voice:stop', () => {

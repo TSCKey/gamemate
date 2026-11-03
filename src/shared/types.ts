@@ -47,7 +47,7 @@ export interface ConsentDates {
 }
 
 // Speech recognition models ('listen') and GameMate's natural voice ('speak').
-export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro'
+export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro' | 'supertonic'
 export type ListenModelId = 'fast' | 'accurate' | 'best'
 
 export interface Settings {
@@ -298,12 +298,28 @@ export interface SpeechModelStatus {
   error: string | null
 }
 
+// Supertonic's voices: five female, five male.
+export const SUPERTONIC_VOICES = [
+  'F1',
+  'F2',
+  'F3',
+  'F4',
+  'F5',
+  'M1',
+  'M2',
+  'M3',
+  'M4',
+  'M5'
+] as const
+export type SupertonicVoice = (typeof SUPERTONIC_VOICES)[number]
+
 // A request to speak with the natural voice (handled by the pop-up window).
 export interface SayRequest {
   text: string
-  voice: string
+  voice: SupertonicVoice
   speed: number
   volume: number
+  language: LanguageCode
 }
 
 export interface UpdateState {

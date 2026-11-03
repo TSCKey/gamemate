@@ -8,6 +8,7 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { pathToFileURL } from 'url'
 import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../../shared/types'
+import { SUPERTONIC_VOICES } from '../../shared/types'
 import { checkFile } from './checksum'
 import { t } from '../system/i18n'
 export type { SpeechModelId, ListenModelId, SpeechModelStatus }
@@ -99,6 +100,23 @@ export const SPEECH_MODELS = {
       'tokenizer_config.json',
       'onnx/model.onnx',
       ...KOKORO_VOICES.map((v) => `voices/${v}.bin`)
+    ]
+  },
+  // Supertonic 3 (OpenRAIL-M), GameMate's natural voice in 11 of its languages.
+  supertonic: {
+    kind: 'speak',
+    repo: 'Supertone/supertonic-3',
+    revision: '3cadd1ee6394adea1bd021217a0e650ede09a323',
+    sizeMb: 401,
+    files: [
+      'LICENSE',
+      'onnx/tts.json',
+      'onnx/unicode_indexer.json',
+      'onnx/duration_predictor.onnx',
+      'onnx/text_encoder.onnx',
+      'onnx/vector_estimator.onnx',
+      'onnx/vocoder.onnx',
+      ...SUPERTONIC_VOICES.map((v) => `voice_styles/${v}.json`)
     ]
   }
 } as const satisfies Record<SpeechModelId, unknown>

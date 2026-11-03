@@ -1,6 +1,7 @@
 // Small pop-up that shows the companion's comments over the game without taking focus,
 // so the player's keyboard and mouse stay in the game.
 import { app, BrowserWindow, screen } from 'electron'
+import type { SayRequest } from '../../shared/types'
 
 const WIDTH = 400
 const MIN_HEIGHT = 60
@@ -74,12 +75,7 @@ export function setToastHeight(height: unknown): void {
 }
 
 // Speak with GameMate's natural voice (Kokoro), which runs in this window.
-export function sayInToast(request: {
-  text: string
-  voice: string
-  speed: number
-  volume: number
-}): boolean {
+export function sayInToast(request: SayRequest): boolean {
   if (!toast || toast.isDestroyed()) return false
   toast.webContents.send('voice:say', request)
   return true
