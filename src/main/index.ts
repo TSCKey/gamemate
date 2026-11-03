@@ -38,6 +38,7 @@ import {
   type ObserverState
 } from './companion/observer'
 import { t } from './system/i18n'
+import { followLanguage } from './ai/localModels'
 
 const preloadPath = join(__dirname, '../preload/index.js')
 let mainWindow: BrowserWindow | null = null
@@ -286,6 +287,7 @@ if (!app.requestSingleInstanceLock()) {
     onSettingsChanged(updateShortcuts)
     // The tray menu names the shortcut.
     onSettingsChanged(() => updateTray(getObserverState()))
+    followLanguage()
     // Free the built-in engine's memory as soon as its model is no longer the one in use.
     onSettingsChanged((settings) => {
       const running = runningModel()

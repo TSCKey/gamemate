@@ -52,7 +52,8 @@ export function LegalDocument({
   onDoc: (doc: LegalDoc) => void
 }): React.JSX.Element {
   return (
-    <article className="legal-doc">
+    // The documents are in English for now: left to right also in an Arabic window.
+    <article className="legal-doc" lang="en" dir="ltr">
       {DOCS[doc].map((block, i) => {
         switch (block.type) {
           case 'heading': {

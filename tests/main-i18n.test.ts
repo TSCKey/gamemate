@@ -6,9 +6,15 @@ import { describe, expect, it, vi } from 'vitest'
 // The main process's messages in the player's language, without Electron: a temporary data
 // folder, a stand-in AI and a small German translation.
 const userData = mkdtempSync(join(tmpdir(), 'gamemate-main-i18n-'))
+// What the main process sends to the windows.
+const sent = vi.hoisted(() => [] as { channel: string; data: unknown }[])
 vi.mock('electron', () => ({
   app: { getPath: () => userData, getAppPath: () => join(__dirname, '..') },
-  BrowserWindow: { getAllWindows: () => [] },
+  BrowserWindow: {
+    getAllWindows: () => [
+      { webContents: { send: (channel: string, data: unknown) => sent.push({ channel, data }) } }
+    ]
+  },
   protocol: { registerSchemesAsPrivileged: () => {}, handle: () => {} },
   net: {},
   screen: {},
@@ -21,7 +27,8 @@ vi.mock('../src/main/ai/llm', () => ({
 vi.mock('../src/shared/i18n/de.json', () => ({
   default: {
     answers: { noAnswer: 'Dazu habe ich keine passende Antwort gefunden.' },
-    errors: { gemini: { unreachable: 'Gemini ist nicht erreichbar.' } }
+    errors: { gemini: { unreachable: 'Gemini ist nicht erreichbar.' } },
+    models: { local: { fast: 'Schnell' } }
   }
 }))
 
@@ -71,5 +78,30 @@ describe('main process messages', () => {
     vi.unstubAllGlobals()
     expect((error as Error).message).toBe('Gemini ist nicht erreichbar.')
     expect(isUnreachable(error)).toBe(true)
+  })
+})
+
+describe('errors from the main process', () => {
+  it('reach the player without the error class name', async () => {
+    const { UnreachableError } = await import('../src/main/ai/errors')
+    const thrown = new UnreachableError('Gemini took too long to respond.')
+    // Electron sends a rejected request's error as its toString().
+    expect(errorMessage(new Error(`Error invoking remote method 'assistant:ask': ${thrown}`))).toBe(
+      'Gemini took too long to respond.'
+    )
+    expect(isUnreachable(thrown)).toBe(true)
+  })
+})
+
+describe('the built-in models', () => {
+  it('are shown again in the new language when it changes', async () => {
+    const { followLanguage } = await import('../src/main/ai/localModels')
+    updateSettings({ language: 'en' })
+    followLanguage()
+    sent.length = 0
+    updateSettings({ language: 'de' })
+    const update = sent.filter((m) => m.channel === 'local-models:changed').at(-1)
+    const models = update?.data as { id: string; label: string }[] | undefined
+    expect(models?.find((m) => m.id === 'qwen3.5-2b')?.label).toBe('Schnell')
   })
 })

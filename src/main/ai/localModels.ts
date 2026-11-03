@@ -10,6 +10,7 @@ import { promisify } from 'util'
 import { downloadVerified, partialPath, type DownloadSpec } from '../system/download'
 import type { LocalModelStatus } from '../../shared/types'
 import { t } from '../system/i18n'
+import { getSettings, onSettingsChanged } from '../system/settings'
 export type { LocalModelStatus }
 
 // llama.cpp (MIT), Vulkan build for Windows: runs on NVIDIA, AMD and Intel graphics cards and
@@ -180,6 +181,17 @@ function broadcast(): void {
   for (const win of BrowserWindow.getAllWindows()) {
     win.webContents.send('local-models:changed', statuses)
   }
+}
+
+// The models' labels are in the player's language: send them again when it changes. Called at
+// startup (settings.ts imports this file, so it can't register itself while loading).
+export function followLanguage(): void {
+  let shown = getSettings().language
+  onSettingsChanged((settings) => {
+    if (settings.language === shown) return
+    shown = settings.language
+    broadcast()
+  })
 }
 
 // Windows 10 and 11 include bsdtar, which can unpack zip files.

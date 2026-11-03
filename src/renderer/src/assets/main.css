@@ -894,6 +894,8 @@ kbd {
   grid-auto-rows: 52px;
   gap: 3px;
   flex-shrink: 0;
+  /* Laid out as in the game, also in right-to-left languages. */
+  direction: ltr;
 }
 
 .recipe-slot {
@@ -1640,8 +1642,14 @@ button.link:hover:not(:disabled) {
   transform: translateX(-18px);
 }
 
-[dir='rtl'] .recipe-arrow {
+.recipe-arrow:dir(rtl) {
   transform: scaleX(-1);
+}
+
+/* Chat text, answers and comments: each line takes the direction of its own words, so an Arabic
+   answer that starts with a game's English name still reads right to left. */
+[dir='auto'] {
+  unicode-bidi: plaintext;
 }
 
 /* Japanese, Chinese and Korean in Windows' own fonts for them. */

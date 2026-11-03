@@ -163,3 +163,13 @@ describe('example questions', () => {
     }
   })
 })
+
+describe('the legal documents', () => {
+  it('read left to right in English inside a right-to-left window', async () => {
+    const { createElement } = await import('react')
+    const { renderToString } = await import('react-dom/server')
+    const { LegalDocument } = await import('../src/renderer/src/legal/LegalReader')
+    const html = renderToString(createElement(LegalDocument, { doc: 'terms', onDoc: () => {} }))
+    expect(html).toMatch(/<article class="legal-doc" lang="en" dir="ltr">/)
+  })
+})
