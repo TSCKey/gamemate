@@ -440,8 +440,11 @@ function App(): React.JSX.Element {
                 🎤
               </button>
             )}
+            {/* Separate keys: reusing one element would turn ■ into Send while it is being
+                clicked, and the click would then send the question again. */}
             {status === 'thinking' ? (
               <button
+                key="stop"
                 type="button"
                 className="primary stop-button"
                 onClick={stop}
@@ -452,6 +455,7 @@ function App(): React.JSX.Element {
               </button>
             ) : (
               <button
+                key="send"
                 type="submit"
                 className="primary"
                 disabled={!ready || loading || (!input.trim() && !willAttach)}
