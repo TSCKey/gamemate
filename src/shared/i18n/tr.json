@@ -455,7 +455,9 @@
   },
   "useVoiceInput": {
     "sorryIDidnTCatch": "Üzgünüm, anlayamadım.",
-    "gamemateIsNotAllowedTo": "GameMate'in mikrofonu kullanma izni yok. Windows mikrofon gizlilik ayarlarını kontrol et."
+    "gamemateIsNotAllowedTo": "GameMate'in mikrofonu kullanma izni yok. Windows mikrofon gizlilik ayarlarını kontrol et.",
+    "englishOnly": "Konuşma modelin yalnızca İngilizce anlıyor. {{language}} konuşmak için Ayarlar → Ses bölümünden çok dilli sürümü indir.",
+    "notDownloaded": "GameMate ile konuşmak için Ayarlar → Ses bölümünden bir konuşma modeli indir."
   },
   "companion": {
     "modes": {

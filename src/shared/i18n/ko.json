@@ -452,7 +452,9 @@
   },
   "useVoiceInput": {
     "sorryIDidnTCatch": "죄송해요, 잘 못 들었어요.",
-    "gamemateIsNotAllowedTo": "GameMate에 마이크 사용 권한이 없습니다. Windows 마이크 개인 정보 설정을 확인하세요."
+    "gamemateIsNotAllowedTo": "GameMate에 마이크 사용 권한이 없습니다. Windows 마이크 개인 정보 설정을 확인하세요.",
+    "englishOnly": "음성 모델이 영어만 알아듣습니다. {{language}}로 말하려면 설정 → 음성에서 다국어 버전을 다운로드하세요.",
+    "notDownloaded": "GameMate와 말하려면 설정 → 음성에서 음성 모델을 다운로드하세요."
   },
   "companion": {
     "modes": {

@@ -455,7 +455,9 @@
   },
   "useVoiceInput": {
     "sorryIDidnTCatch": "Entschuldigung, das habe ich nicht verstanden.",
-    "gamemateIsNotAllowedTo": "GameMate darf das Mikrofon nicht verwenden. Prüfe die Mikrofon-Datenschutzeinstellungen von Windows."
+    "gamemateIsNotAllowedTo": "GameMate darf das Mikrofon nicht verwenden. Prüfe die Mikrofon-Datenschutzeinstellungen von Windows.",
+    "englishOnly": "Dein Sprachmodell versteht nur Englisch. Lade unter Einstellungen → Stimme die mehrsprachige Version herunter, um auf {{language}} zu sprechen.",
+    "notDownloaded": "Lade unter Einstellungen → Stimme ein Sprachmodell herunter, um mit GameMate zu sprechen."
   },
   "companion": {
     "modes": {

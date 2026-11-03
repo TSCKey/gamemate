@@ -14,11 +14,11 @@ import {
 import { pickVoice, type VoiceChoice } from '../../shared/voices'
 import type { VoiceEngine, WindowsVoice } from '../../shared/types'
 
-// Windows' voices, asked for once; asked again when Settings lists them (a voice may have been
-// added under Settings → Speech in the meantime).
+// Windows' voices, asked for once; asked again whenever Settings → Voice shows them (a voice may
+// have been added under Windows' Settings → Speech in the meantime).
 let windowsVoices: Promise<WindowsVoice[]> | null = null
 function voices(refresh = false): Promise<WindowsVoice[]> {
-  if (refresh || !windowsVoices) windowsVoices = listVoices()
+  if (refresh || !windowsVoices) windowsVoices = listVoices({ refresh })
   return windowsVoices
 }
 

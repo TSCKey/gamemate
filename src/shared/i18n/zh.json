@@ -452,7 +452,9 @@
   },
   "useVoiceInput": {
     "sorryIDidnTCatch": "抱歉,我没听清。",
-    "gamemateIsNotAllowedTo": "GameMate 没有使用麦克风的权限。请检查 Windows 的麦克风隐私设置。"
+    "gamemateIsNotAllowedTo": "GameMate 没有使用麦克风的权限。请检查 Windows 的麦克风隐私设置。",
+    "englishOnly": "你的语音模型只能听懂英语。请在“设置 → 语音”中下载多语言版本，即可用{{language}}交谈。",
+    "notDownloaded": "请在“设置 → 语音”中下载语音模型，即可与 GameMate 交谈。"
   },
   "companion": {
     "modes": {

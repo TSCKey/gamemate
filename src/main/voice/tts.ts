@@ -8,6 +8,8 @@ import { createInterface } from 'readline'
 import type { WindowsVoice } from '../../shared/types'
 
 const SCRIPT = `
+# Replies (voice names, error messages) go back as UTF-8.
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding $false
 $winrt = $null
 try {
   Add-Type -AssemblyName System.Runtime.WindowsRuntime
@@ -64,15 +66,17 @@ while ($null -ne ($line = [Console]::In.ReadLine())) {
 `
 
 let proc: ChildProcessWithoutNullStreams | null = null
+// Callers waiting for the current process's voice list.
 let voicesWaiters: ((voices: WindowsVoice[]) => void)[] = []
 
 function engine(): ChildProcessWithoutNullStreams | null {
   if (process.platform !== 'win32') return null
   if (proc && proc.exitCode === null) return proc
-  proc = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', SCRIPT], {
+  const child = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', SCRIPT], {
     windowsHide: true
   })
-  createInterface({ input: proc.stdout }).on('line', (line) => {
+  proc = child
+  createInterface({ input: child.stdout }).on('line', (line) => {
     try {
       const message = JSON.parse(line) as { type: string; voices?: unknown; message?: string }
       if (message.type === 'voices') {
@@ -88,21 +92,35 @@ function engine(): ChildProcessWithoutNullStreams | null {
       // Ignore anything that isn't one of our JSON lines.
     }
   })
-  proc.on('exit', () => {
+  child.on('exit', () => {
+    // A process that was replaced has no one waiting any more.
+    if (proc !== child) return
     voicesWaiters.forEach((resolve) => resolve([]))
     voicesWaiters = []
   })
-  return proc
+  return child
+}
+
+// One JSON line in plain ASCII: Windows PowerShell reads stdin in the console's code page,
+// which would garble accented letters, Arabic, Chinese and every other non-ASCII text.
+export function encodeCommand(command: object): string {
+  return JSON.stringify(command).replace(
+    /[\u007f-￿]/g,
+    (c) => `\\u${c.charCodeAt(0).toString(16).padStart(4, '0')}`
+  )
 }
 
 function send(command: object): boolean {
   const p = engine()
   if (!p) return false
-  p.stdin.write(JSON.stringify(command) + '\n')
+  p.stdin.write(encodeCommand(command) + '\n')
   return true
 }
 
-export function listVoices(): Promise<WindowsVoice[]> {
+// `refresh` starts a new voice process, which also sees voices added in Windows' Settings
+// since GameMate started.
+export function listVoices(options: { refresh?: boolean } = {}): Promise<WindowsVoice[]> {
+  if (options.refresh) shutdownSpeech()
   return new Promise((resolve) => {
     voicesWaiters.push(resolve)
     if (!send({ type: 'voices' })) resolve([])
@@ -137,4 +155,6 @@ export function stopSpeaking(): void {
 export function shutdownSpeech(): void {
   proc?.kill()
   proc = null
+  voicesWaiters.forEach((resolve) => resolve([]))
+  voicesWaiters = []
 }

@@ -16,3 +16,12 @@ export function canListen(model: SpeechModelStatus | undefined, language: Langua
   if (!model?.repo) return false
   return model.installed || (model.englishOnly && language === 'en')
 }
+
+// Why voice input can't listen, so the windows can say so instead of staying silent.
+export function listenProblem(
+  model: SpeechModelStatus | undefined,
+  language: LanguageCode
+): 'englishOnly' | 'notDownloaded' | null {
+  if (canListen(model, language)) return null
+  return model?.englishOnly ? 'englishOnly' : 'notDownloaded'
+}

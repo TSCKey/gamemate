@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { canListen, whisperOptions } from '../src/shared/speech'
+import { canListen, listenProblem, whisperOptions } from '../src/shared/speech'
 import type { SpeechModelStatus } from '../src/shared/types'
 
 const model = (patch: Partial<SpeechModelStatus>): SpeechModelStatus => ({
@@ -32,5 +32,16 @@ describe('speech recognition in the player’s language', () => {
     expect(canListen(multilingual, 'de')).toBe(true)
     expect(canListen(model({}), 'en')).toBe(false)
     expect(canListen(undefined, 'en')).toBe(false)
+  })
+
+  it('says why voice input can’t listen', () => {
+    const old = model({ englishOnly: true, repo: 'onnx-community/whisper-base.en' })
+    expect(listenProblem(old, 'de')).toBe('englishOnly')
+    expect(listenProblem(old, 'en')).toBeNull()
+    expect(listenProblem(model({}), 'de')).toBe('notDownloaded')
+    expect(listenProblem(undefined, 'en')).toBe('notDownloaded')
+    expect(
+      listenProblem(model({ installed: true, repo: 'onnx-community/whisper-base' }), 'de')
+    ).toBeNull()
   })
 })

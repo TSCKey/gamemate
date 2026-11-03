@@ -467,7 +467,9 @@
   },
   "useVoiceInput": {
     "sorryIDidnTCatch": "عذرًا، لم أفهم ذلك.",
-    "gamemateIsNotAllowedTo": "لا يُسمح لـ GameMate باستخدام الميكروفون. راجع إعدادات خصوصية الميكروفون في Windows."
+    "gamemateIsNotAllowedTo": "لا يُسمح لـ GameMate باستخدام الميكروفون. راجع إعدادات خصوصية الميكروفون في Windows.",
+    "englishOnly": "نموذج الكلام لديك يفهم الإنجليزية فقط. نزّل النسخة متعددة اللغات من الإعدادات ← الصوت للتحدث بـ{{language}}.",
+    "notDownloaded": "نزّل نموذج كلام من الإعدادات ← الصوت للتحدث إلى GameMate."
   },
   "companion": {
     "modes": {

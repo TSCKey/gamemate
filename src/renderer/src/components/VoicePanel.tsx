@@ -53,8 +53,15 @@ function VoicePanel({
 
   useEffect(() => {
     window.api.voice.models().then(setModels)
-    window.api.voice.voices().then(setVoices)
     return window.api.voice.onModels(setModels)
+  }, [])
+
+  // Asked again when the player comes back from adding a voice in Windows' Settings.
+  useEffect(() => {
+    const refresh = (): void => void window.api.voice.voices().then(setVoices)
+    refresh()
+    window.addEventListener('focus', refresh)
+    return () => window.removeEventListener('focus', refresh)
   }, [])
 
   const listen = models.filter((m) => m.kind === 'listen')

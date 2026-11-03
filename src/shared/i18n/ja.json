@@ -452,7 +452,9 @@
   },
   "useVoiceInput": {
     "sorryIDidnTCatch": "すみません、聞き取れませんでした。",
-    "gamemateIsNotAllowedTo": "GameMate にマイクの使用が許可されていません。Windows のマイクのプライバシー設定を確認してください。"
+    "gamemateIsNotAllowedTo": "GameMate にマイクの使用が許可されていません。Windows のマイクのプライバシー設定を確認してください。",
+    "englishOnly": "音声認識モデルは英語しか理解できません。{{language}}で話すには、設定 → 音声 で多言語版をダウンロードしてください。",
+    "notDownloaded": "GameMate と話すには、設定 → 音声 で音声認識モデルをダウンロードしてください。"
   },
   "companion": {
     "modes": {

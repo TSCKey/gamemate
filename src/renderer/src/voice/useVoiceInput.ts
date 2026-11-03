@@ -4,7 +4,8 @@ import { recordQuestion, type Recording } from './recorder'
 import { preloadSpeechModel, transcribe } from './speech'
 import { stopSpeaking } from './speak'
 import { t } from '../i18n'
-import { canListen } from '../../../shared/speech'
+import { canListen, listenProblem } from '../../../shared/speech'
+import { languageInfo } from '../../../shared/languages'
 
 export type VoiceStatus = 'idle' | 'listening' | 'transcribing'
 
@@ -39,6 +40,16 @@ export function useVoiceInput(
   const model = models.find((m) => m.id === settings?.speechModel)
   const repo = model?.repo ?? ''
   const ready = !!settings?.voiceInput && canListen(model, language)
+
+  // With voice input on but nothing that can listen (no model yet, or 1.0.3's English-only one
+  // in another language), say why instead of ignoring the shortcut.
+  const problem = settings?.voiceInput ? listenProblem(model, language) : null
+  const why =
+    problem === 'englishOnly'
+      ? t('useVoiceInput.englishOnly', { language: languageInfo(language).nativeName })
+      : problem === 'notDownloaded'
+        ? t('useVoiceInput.notDownloaded')
+        : null
 
   // Load the model in the background as soon as voice input is usable.
   useEffect(() => {
@@ -81,10 +92,13 @@ export function useVoiceInput(
   }, [repo, language])
 
   const toggle = useCallback(() => {
-    if (!ready) return
+    if (!ready) {
+      if (why) setError(why)
+      return
+    }
     if (recording.current) recording.current.stop()
     else if (status === 'idle') start()
-  }, [ready, start, status])
+  }, [ready, start, status, why])
 
   const cancel = useCallback(() => {
     recording.current?.cancel()
