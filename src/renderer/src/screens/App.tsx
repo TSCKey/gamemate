@@ -4,6 +4,8 @@ import CompanionMenu from '../components/CompanionMenu'
 import GameMenu from '../components/GameMenu'
 import ModelMenu from '../components/ModelMenu'
 import TermsGate from '../legal/TermsGate'
+import LanguagePicker from '../legal/LanguagePicker'
+import { initialLanguage, type LanguageCode } from '../../../shared/languages'
 import SetupCard from '../components/SetupCard'
 import ChatBubble from '../components/ChatBubble'
 import { TERMS_VERSION } from '../constants'
@@ -31,6 +33,11 @@ function sourceLabel(source: CaptureSource, screenCount: number): string {
 function App(): React.JSX.Element {
   const { settings, models, modelError, update, reloadModels } = useSettings()
   useAppLanguage(settings)
+  const [systemLanguage, setSystemLanguage] = useState<LanguageCode | null>(null)
+  const unchosen = settings?.language === ''
+  useEffect(() => {
+    if (unchosen) window.api.systemLanguage().then(setSystemLanguage)
+  }, [unchosen])
   const localModels = useLocalModels()
   const games = useGames(settings)
   const modpack = useModpack(settings)
@@ -164,9 +171,17 @@ function App(): React.JSX.Element {
     }
   }
 
-  // GameMate can't be used until the current Terms of Use are accepted.
-  const notice =
-    settings && settings.termsVersion < TERMS_VERSION ? <TermsGate settings={settings} /> : null
+  // First the language (once), then the current Terms of Use: GameMate can't be used until then.
+  const notice = !settings ? null : settings.language === '' ? (
+    systemLanguage && (
+      <LanguagePicker
+        initial={initialLanguage(settings.language, systemLanguage)}
+        onChoose={(language) => update({ language })}
+      />
+    )
+  ) : settings.termsVersion < TERMS_VERSION ? (
+    <TermsGate settings={settings} />
+  ) : null
 
   if (settingsTab && settings) {
     return (

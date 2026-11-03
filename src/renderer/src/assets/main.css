@@ -269,7 +269,7 @@ kbd {
   content: '';
   position: absolute;
   top: 2px;
-  left: 2px;
+  inset-inline-start: 2px;
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -438,7 +438,7 @@ kbd {
   align-self: flex-end;
   color: #f2fff5;
   background-color: #2f6b42;
-  border-bottom-right-radius: 4px;
+  border-end-end-radius: 4px;
 }
 
 .bubble-assistant,
@@ -447,7 +447,7 @@ kbd {
   color: var(--text);
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-bottom-left-radius: 4px;
+  border-end-start-radius: 4px;
 }
 
 .bubble-pending {
@@ -476,7 +476,8 @@ kbd {
 
 .composer {
   margin: 0 max(20px, calc((100% - 820px) / 2)) 18px;
-  padding: 10px 10px 8px 14px;
+  padding-block: 10px 8px;
+  padding-inline: 14px 10px;
   background-color: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
@@ -549,7 +550,7 @@ kbd {
   flex-shrink: 0;
   padding: 14px 10px;
   background-color: var(--surface);
-  border-right: 1px solid var(--border);
+  border-inline-end: 1px solid var(--border);
 }
 
 .back-button {
@@ -659,7 +660,7 @@ kbd {
 }
 
 .field-label .field-help {
-  margin-left: 4px;
+  margin-inline-start: 4px;
   font-weight: 400;
 }
 
@@ -697,7 +698,7 @@ kbd {
   justify-content: flex-start;
   gap: 2px;
   padding: 10px 12px;
-  text-align: left;
+  text-align: start;
   white-space: normal;
   background-color: var(--surface-2);
   border-color: var(--border);
@@ -776,7 +777,8 @@ kbd {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 6px 0 4px 18px;
+  padding-block: 6px 4px;
+  padding-inline: 18px 0;
   list-style: disc;
   line-height: 1.5;
   color: var(--text-2);
@@ -851,12 +853,13 @@ kbd {
     overflow-x: auto;
     scrollbar-width: none;
     padding: 8px;
-    border-right: none;
+    border-inline-end: none;
     border-bottom: 1px solid var(--border);
   }
 
   .back-button {
-    margin: 0 8px 0 0;
+    margin-block: 0;
+    margin-inline: 0 8px;
   }
 
   .nav-item {
@@ -1164,7 +1167,7 @@ html.is-overlay body {
 }
 
 .dropdown-caret {
-  margin-left: 2px;
+  margin-inline-start: 2px;
   font-size: 9px;
   opacity: 0.7;
 }
@@ -1198,11 +1201,11 @@ html.is-overlay body {
 }
 
 .menu-start {
-  left: 0;
+  inset-inline-start: 0;
 }
 
 .menu-end {
-  right: 0;
+  inset-inline-end: 0;
 }
 
 .menu-item {
@@ -1211,8 +1214,9 @@ html.is-overlay body {
   justify-content: flex-start;
   gap: 8px;
   width: 100%;
-  padding: 7px 10px 7px 8px;
-  text-align: left;
+  padding-block: 7px;
+  padding-inline: 8px 10px;
+  text-align: start;
   white-space: normal;
   font-weight: 500;
   background: transparent;
@@ -1253,7 +1257,8 @@ html.is-overlay body {
 }
 
 .menu-label {
-  padding: 8px 10px 3px 30px;
+  padding-block: 8px 3px;
+  padding-inline: 30px 10px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -1262,7 +1267,8 @@ html.is-overlay body {
 }
 
 .menu-note {
-  padding: 4px 10px 6px 30px;
+  padding-block: 4px 6px;
+  padding-inline: 30px 10px;
   font-size: 12px;
   color: var(--text-2);
 }
@@ -1302,7 +1308,7 @@ html.is-overlay body {
 
 .composer-actions {
   align-items: center;
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 /* Models page and first-run download */
@@ -1334,7 +1340,7 @@ html.is-overlay body {
 
 .badge {
   display: inline-block;
-  margin-left: 6px;
+  margin-inline-start: 6px;
   padding: 1px 8px;
   font-size: 11px;
   font-weight: 600;
@@ -1373,7 +1379,7 @@ html.is-overlay body {
 .setup-card {
   width: min(480px, 100%);
   padding: 24px;
-  text-align: left;
+  text-align: start;
   background-color: var(--surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
@@ -1536,7 +1542,7 @@ button.link:hover:not(:disabled) {
 }
 
 .legal-tabs .legal-close {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .legal-doc {
@@ -1564,7 +1570,7 @@ button.link:hover:not(:disabled) {
 }
 
 .legal-doc ul {
-  padding-left: 20px;
+  padding-inline-start: 20px;
 }
 
 .legal-doc table {
@@ -1577,7 +1583,7 @@ button.link:hover:not(:disabled) {
 .legal-doc th,
 .legal-doc td {
   padding: 6px 8px;
-  text-align: left;
+  text-align: start;
   vertical-align: top;
   border: 1px solid var(--border);
 }
@@ -1627,4 +1633,50 @@ button.link:hover:not(:disabled) {
   border: none;
   border-radius: 8px;
   background: transparent;
+}
+
+/* Right-to-left languages (Arabic): what logical properties can't flip. */
+[dir='rtl'] .toggle input:checked + .toggle-track::after {
+  transform: translateX(-18px);
+}
+
+[dir='rtl'] .recipe-arrow {
+  transform: scaleX(-1);
+}
+
+/* Japanese, Chinese and Korean in Windows' own fonts for them. */
+body:lang(ja),
+[lang='ja'] {
+  font-family: 'Yu Gothic UI', 'Meiryo UI', 'Segoe UI', sans-serif;
+}
+
+body:lang(zh),
+[lang='zh'] {
+  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+body:lang(ko),
+[lang='ko'] {
+  font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
+}
+
+.language-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+  margin-block: 14px 18px;
+}
+
+.language-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.language-option:has(input:checked) {
+  border-color: var(--accent);
 }

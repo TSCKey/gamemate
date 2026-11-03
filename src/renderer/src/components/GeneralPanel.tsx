@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { AppInfo, Settings, UpdateState } from '../../../preload/index.d'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT } from '../../../shared/shortcuts'
+import { LANGUAGES, type LanguageCode } from '../../../shared/languages'
 import ShortcutField from './ShortcutField'
 import { Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
@@ -84,6 +85,21 @@ function GeneralPanel({
 }): React.JSX.Element {
   return (
     <>
+      <Section title={t('generalPanel.language')}>
+        <Field label={t('generalPanel.language')} help={t('generalPanel.languageHelp')}>
+          <select
+            value={settings.language || 'en'}
+            aria-label={t('generalPanel.language')}
+            onChange={(e) => update({ language: e.target.value as LanguageCode })}
+          >
+            {LANGUAGES.map((l) => (
+              <option key={l.code} value={l.code} lang={l.code}>
+                {l.nativeName}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </Section>
       <Section title={t('generalPanel.inGameWindow')}>
         <Field
           label={t('generalPanel.shortcut')}

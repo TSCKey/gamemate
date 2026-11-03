@@ -39,6 +39,7 @@ const api: Api = {
   updateSettings: (patch) => ipcRenderer.invoke('settings:update', patch),
   onSettingsChanged: (callback) => listen<[Settings]>('settings:changed', callback),
   getAppInfo: () => ipcRenderer.invoke('app:info'),
+  systemLanguage: () => ipcRenderer.invoke('app:system-language'),
   companion: {
     getState: () => ipcRenderer.invoke('companion:get-state'),
     setPaused: (paused) => ipcRenderer.invoke('companion:set-paused', paused),

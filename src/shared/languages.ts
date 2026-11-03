@@ -44,3 +44,8 @@ export function matchLanguage(tags: string[]): LanguageCode {
 export function languageInfo(code: LanguageCode): Language {
   return LANGUAGES.find((l) => l.code === code) ?? LANGUAGES[0]
 }
+
+// The language the first-launch picker starts on: the one already chosen, else the PC's.
+export function initialLanguage(language: LanguageCode | '', system: LanguageCode): LanguageCode {
+  return language || system
+}

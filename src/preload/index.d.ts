@@ -18,6 +18,7 @@ import type {
   UpdateState,
   WikiChoice
 } from '../shared/types'
+import type { LanguageCode } from '../shared/languages'
 
 export type * from '../shared/types'
 
@@ -32,6 +33,8 @@ export interface Api {
   // Returns a function that stops listening.
   onSettingsChanged: (callback: (settings: Settings) => void) => () => void
   getAppInfo: () => Promise<AppInfo>
+  // The first of Windows' display languages that GameMate has, else English.
+  systemLanguage: () => Promise<LanguageCode>
   companion: {
     getState: () => Promise<CompanionState>
     setPaused: (paused: boolean) => Promise<void>

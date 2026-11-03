@@ -176,7 +176,9 @@
     "whenGamemateQuitsItFrees": "When GameMate quits, it frees the AI model right away so nothing keeps running in the background.",
     "keepRunningInTheTray": "Keep running in the tray",
     "keepsTheInGameShortcuts": "Keeps the in-game shortcuts and the companion working. Quit from the tray icon. The AI model is freed after a few idle minutes.",
-    "closingTheWindowQuitsGamemate": "Closing the window quits GameMate. The in-game shortcuts and the companion stop until you start it again."
+    "closingTheWindowQuitsGamemate": "Closing the window quits GameMate. The in-game shortcuts and the companion stop until you start it again.",
+    "language": "Language",
+    "languageHelp": "For GameMate’s windows and the AI’s answers. Game names and wiki pages stay as they are."
   },
   "modelMenu": {
     "builtInAi": "Built-in AI",
@@ -598,5 +600,10 @@
     "ask": "Ask GameMate ({{shortcut}})",
     "open": "Open GameMate",
     "quit": "Quit GameMate"
+  },
+  "languagePicker": {
+    "title": "Choose your language",
+    "lead": "GameMate’s windows and answers will use it. You can change it any time in Settings → General.",
+    "continue": "Continue"
   }
 }

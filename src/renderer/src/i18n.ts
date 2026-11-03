@@ -23,9 +23,12 @@ export function applyLanguage(code: LanguageCode): void {
   root.dir = languageInfo(code).dir
 }
 
-// Used by each window's root component.
+// Used by each window's root component. Until a language is chosen the windows stay English,
+// except while the first-launch picker shows the language being picked.
 export function useAppLanguage(settings: Pick<Settings, 'language'> | null | undefined): void {
   useTranslation()
-  const language = settings?.language || 'en'
-  useLayoutEffect(() => applyLanguage(language), [language])
+  const language = settings?.language
+  useLayoutEffect(() => {
+    if (language) applyLanguage(language)
+  }, [language])
 }

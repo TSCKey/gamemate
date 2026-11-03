@@ -2,7 +2,7 @@ import { mkdtempSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { describe, expect, it, vi } from 'vitest'
-import { LANGUAGES, matchLanguage } from '../src/shared/languages'
+import { initialLanguage, LANGUAGES, matchLanguage } from '../src/shared/languages'
 
 const userData = mkdtempSync(join(tmpdir(), 'gamemate-languages-'))
 vi.mock('electron', () => ({
@@ -73,5 +73,12 @@ describe('the language setting', () => {
     expect(loaded.language).toBe('')
     expect(loaded.webLookup).toBe(true)
     expect(loaded.shortcut).toBe('Ctrl+Shift+G')
+  })
+})
+
+describe('the first-launch language picker', () => {
+  it('starts on the language already chosen, else on the PC’s language', () => {
+    expect(initialLanguage('', 'de')).toBe('de')
+    expect(initialLanguage('fr', 'de')).toBe('fr')
   })
 })

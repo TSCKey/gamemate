@@ -14,6 +14,7 @@ import { getSettings, resetSettings, updateSettings } from '../system/settings'
 import { hideToast, setToastHeight } from '../windows/toast'
 import { checkForUpdates, installUpdate, updateState } from '../system/updater'
 import { removeSpeechModel, speechModelStatuses } from '../voice/voiceModels'
+import { systemLanguage } from '../system/language'
 
 function senderWindow(event: IpcMainInvokeEvent): BrowserWindow {
   const win = BrowserWindow.fromWebContents(event.sender)
@@ -62,6 +63,8 @@ export function registerAppHandlers(
   handle('settings:get', () => getSettings())
   handle('settings:update', (_event, patch: unknown) => updateSettings(patch))
   handle('app:info', () => appInfo())
+  // Only reads Windows' language list, so it works before the Terms are accepted.
+  handle('app:system-language', () => systemLanguage())
 
   handle('overlay:hide', () => hideOverlay())
   handle('overlay:set-height', (_event, height: unknown) => setOverlayHeight(height))
