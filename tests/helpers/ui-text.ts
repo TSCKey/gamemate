@@ -43,7 +43,7 @@ const sameEverywhere = (text: string): boolean =>
 
 // Product and game names: not translated.
 const NAMES =
-  /^(GameMate|Minecraft|Gemini|Google|Ollama|Steam|Epic Games|Battle\.net|Riot|Modrinth|Kokoro|Whisper|Windows|GitHub|Qwen[\w.]*|CurseForge|Fandom|wiki\.gg|Hugging Face|AI)$/
+  /^(GameMate|Minecraft|Gemini|Google|Ollama|Steam|Epic Games|Battle\.net|Riot|Modrinth|Supertonic|Whisper|Windows|GitHub|Qwen[\w.]*|CurseForge|Fandom|wiki\.gg|Hugging Face|AI)$/
 
 // Letters other than in product names.
 const hasLetter = (text: string): boolean =>

@@ -2,7 +2,8 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { isListenModelId } from '../voice/voiceModels'
+import { isListenModelId, isSpeechModelInstalled } from '../voice/voiceModels'
+import { migrateVoiceEngine } from '../voice/migrate'
 import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
@@ -117,6 +118,12 @@ export function getSettings(): Settings {
       }
       // Players who set GameMate up with Ollama before the built-in engine existed keep it.
       if (saved.localBackend === undefined && saved.model) current.localBackend = 'ollama'
+      // GameMate 1.0.3's Kokoro voice is gone: Supertonic if it's installed, else Windows voices.
+      current.voiceEngine = migrateVoiceEngine(
+        saved.voiceEngine ?? DEFAULTS.voiceEngine,
+        isSpeechModelInstalled('supertonic')
+      )
+      delete (current as Settings & { kokoroVoice?: string }).kokoroVoice
     } catch {
       current = { ...DEFAULTS }
     }

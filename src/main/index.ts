@@ -28,6 +28,7 @@ import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
 import { createToast, showToast } from './windows/toast'
 import { shutdownSpeech } from './voice/tts'
+import { removeOldVoice } from './voice/migrate'
 import { registerModelScheme, serveModels } from './voice/voiceModels'
 import {
   getObserverState,
@@ -288,6 +289,10 @@ if (!app.requestSingleInstanceLock()) {
     // The tray menu names the shortcut.
     onSettingsChanged(() => updateTray(getObserverState()))
     followLanguage()
+    // Kokoro's files from GameMate 1.0.3 (340 MB) aren't used any more.
+    removeOldVoice(join(app.getPath('userData'), 'models')).catch((error) =>
+      console.error('Could not remove the old voice:', error)
+    )
     // Free the built-in engine's memory as soon as its model is no longer the one in use.
     onSettingsChanged((settings) => {
       const running = runningModel()

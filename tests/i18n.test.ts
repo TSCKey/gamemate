@@ -94,8 +94,8 @@ describe('the eleven translations', () => {
   const SAME_WORDS: Partial<Record<LanguageCode, string[]>> = {
     fr: ['⏸ Pause', 'Modpack', '✦ Auto', 'Gemini (cloud)', 'Volume', 'Observation'],
     de: ['Modpack', 'Wiki: {{wiki}}', 'Updates', '📷 Screenshot'],
-    es: ['Wiki: {{wiki}}', 'Natural (Kokoro)', 'General'],
-    pt: ['Wiki: {{wiki}}', 'Natural (Kokoro)', 'Volume'],
+    es: ['Wiki: {{wiki}}', 'General'],
+    pt: ['Wiki: {{wiki}}', 'Volume'],
     it: ['Wiki: {{wiki}}', 'Gemini (cloud)', 'Volume', '📷 Screenshot'],
     tr: ['Model', 'Wiki: {{wiki}}'],
     ja: ['Wiki: {{wiki}}']

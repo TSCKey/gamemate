@@ -74,7 +74,7 @@ export function setToastHeight(height: unknown): void {
   toast.setSize(WIDTH, Math.round(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, height))))
 }
 
-// Speak with GameMate's natural voice (Kokoro), which runs in this window.
+// Speak with GameMate's natural voice (Supertonic), which runs in this window.
 export function sayInToast(request: SayRequest): boolean {
   if (!toast || toast.isDestroyed()) return false
   toast.webContents.send('voice:say', request)

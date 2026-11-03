@@ -29,41 +29,9 @@ const WHISPER_FILES = [
   'onnx/decoder_model_merged_quantized.onnx'
 ]
 
-// Kokoro's American and British English voices.
-export const KOKORO_VOICES = [
-  'af_heart',
-  'af_alloy',
-  'af_aoede',
-  'af_bella',
-  'af_jessica',
-  'af_kore',
-  'af_nicole',
-  'af_nova',
-  'af_river',
-  'af_sarah',
-  'af_sky',
-  'am_adam',
-  'am_echo',
-  'am_eric',
-  'am_fenrir',
-  'am_liam',
-  'am_michael',
-  'am_onyx',
-  'am_puck',
-  'am_santa',
-  'bf_alice',
-  'bf_emma',
-  'bf_isabella',
-  'bf_lily',
-  'bm_daniel',
-  'bm_fable',
-  'bm_george',
-  'bm_lewis'
-]
-
 // Speech recognition: multilingual Whisper (MIT), converted to ONNX by onnx-community, 8-bit
 // quantized. `legacyRepo` is the English-only version GameMate 1.0.3 downloaded, still used for
-// English. Voice: Kokoro-82M (Apache 2.0). Pinned revisions so every install gets the same files.
+// English. Pinned revisions so every install gets the same files.
 export const SPEECH_MODELS = {
   fast: {
     kind: 'listen',
@@ -88,19 +56,6 @@ export const SPEECH_MODELS = {
     legacyRepo: 'onnx-community/whisper-small.en',
     sizeMb: 253,
     files: WHISPER_FILES
-  },
-  kokoro: {
-    kind: 'speak',
-    repo: 'onnx-community/Kokoro-82M-v1.0-ONNX',
-    revision: '1939ad2a8e416c0acfeecc08a694d14ef25f2231',
-    sizeMb: 340,
-    files: [
-      'config.json',
-      'tokenizer.json',
-      'tokenizer_config.json',
-      'onnx/model.onnx',
-      ...KOKORO_VOICES.map((v) => `voices/${v}.bin`)
-    ]
   },
   // Supertonic 3 (OpenRAIL-M), GameMate's natural voice in 11 of its languages.
   supertonic: {

@@ -47,7 +47,7 @@ export interface ConsentDates {
 }
 
 // Speech recognition models ('listen') and GameMate's natural voice ('speak').
-export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro' | 'supertonic'
+export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'supertonic'
 export type ListenModelId = 'fast' | 'accurate' | 'best'
 
 export interface Settings {
