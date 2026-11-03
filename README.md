@@ -26,6 +26,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **Looks things up.** Turn on lookups and GameMate reads your game's wiki (for example [minecraft.wiki](https://minecraft.wiki), the Terraria Wiki or Eldenpedia) for bosses, items, places and mechanics, and links to the page it used.
 - **Shows pictures.** With lookups on, answers come with pictures from the wiki: ask for a map ("map of the Forgotten Crossroads") and you get the area map, ask about a boss or item and you see it, and Minecraft recipe cards show the real game icons and the crafted item.
 - **Local or cloud, your choice.** Use the local model for everything, or Gemini for questions, the companion, or both.
+- **Speaks your language.** GameMate comes in English, Arabic, French, German, Spanish, Portuguese, Italian, Turkish, Russian, Japanese, Chinese and Korean, and the AI answers in the language you ask in. Arabic is shown right to left.
 - **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or online lookups.
 
 ## Requirements
@@ -37,7 +38,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 ## Getting started
 
 1. **Install GameMate.** Download the latest installer from the [Releases](https://github.com/TSCKey/gamemate/releases) page and run it.
-2. **Open GameMate** and click **Download Qwen3.5 2B (1.9 GB)**. You only do this once. After that, GameMate's AI works offline.
+2. **Open GameMate**, choose your language, and click **Download Qwen3.5 2B (1.9 GB)**. You only do this once. After that, GameMate's AI works offline.
 3. **Start asking questions.**
 
 Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ Settings → Models**.
@@ -145,6 +146,14 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 - **Read companion comments aloud:** speaks Commentary mode's pop-ups.
 - **Voice type:** **Natural (Kokoro)** sounds like a real person. Click **Download** once (340 MB); it then runs on your PC and works offline. Until it's downloaded, or if you pick **Windows voices**, GameMate uses the voices built into Windows.
 - Choose a **Voice** (Kokoro has 28 American and British voices) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
+
+### Language
+
+The first time you open GameMate it asks for your language, starting on your PC's. Change it any time in **⚙ Settings → General → Language**; GameMate's windows switch right away.
+
+- **Answers** come in the language you write in, so you can also ask in another language for a single question.
+- **Game names and wiki pages** stay as they are. Most game wikis are in English, so GameMate looks pages up by their English name and answers you in your language.
+- **Voice input and the Natural voice** understand and speak English for now. To have answers read aloud in another language, choose **Windows voices** and pick a voice for that language under **⚙ Settings → Voice → Voice** (the list shows the voices installed in Windows).
 
 ### Updates
 
