@@ -605,5 +605,55 @@
     "title": "Choose your language",
     "lead": "GameMate’s windows and answers will use it. You can change it any time in Settings → General.",
     "continue": "Continue"
+  },
+  "gameExamples": {
+    "minecraft": {
+      "piston": "How do I craft a piston?",
+      "netherPortal": "How do I build a Nether portal?"
+    },
+    "generic": {
+      "next": "What should I do next?",
+      "tips": "Any tips for where I am?"
+    },
+    "valorant": {
+      "beginner": "Which agent is good for beginners?",
+      "jettDash": "How does Jett’s dash work?"
+    },
+    "overwatch": {
+      "widowmaker": "How do I counter Widowmaker?",
+      "tank": "Which tank is easiest to learn?"
+    },
+    "marvelRivals": {
+      "beginner": "Which hero is good for beginners?",
+      "teamUps": "How do team-up abilities work?"
+    },
+    "counterStrike": {
+      "spray": "How do I spray control the AK-47?",
+      "save": "When should I save money?"
+    },
+    "league": {
+      "beginner": "Which champion is good for beginners?",
+      "farm": "How do I farm better?"
+    },
+    "apex": {
+      "beginner": "Which legend is good for beginners?",
+      "land": "Where should I land?"
+    },
+    "fortnite": {
+      "build": "How do I build faster?",
+      "land": "Where should I land?"
+    },
+    "rainbowSix": {
+      "beginner": "Which operator is good for beginners?",
+      "drones": "How do I use drones well?"
+    },
+    "rocketLeague": {
+      "aerial": "How do I aerial?",
+      "rotate": "How do I rotate properly?"
+    },
+    "fighting": {
+      "beginner": "Who is good for beginners?",
+      "better": "How do I get better at this?"
+    }
   }
 }

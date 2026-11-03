@@ -21,7 +21,7 @@ export interface GameProfile {
   competitive?: boolean
   // What matters on screen in this game, for the companion.
   watchFor: string
-  // Example questions for an empty chat.
+  // Example questions for an empty chat, as translation keys (gameExamples.*).
   examples: [string, string]
 }
 
@@ -41,63 +41,66 @@ export const MINECRAFT: GameProfile = {
   },
   watchFor:
     'the "You Died!" screen, the health bar dropping to 3 hearts or fewer, creepers, zombies, skeletons or spiders close by, dark caves where mobs can spawn, villages, structures and diamonds',
-  examples: ['How do I craft a piston?', 'How do I build a Nether portal?']
+  examples: ['gameExamples.minecraft.piston', 'gameExamples.minecraft.netherPortal']
 }
 
 const GENERIC_WATCH = 'danger, enemies or bosses close by, low health, death and notable finds'
-const GENERIC_EXAMPLES: [string, string] = ['What should I do next?', 'Any tips for where I am?']
+const GENERIC_EXAMPLES: [string, string] = [
+  'gameExamples.generic.next',
+  'gameExamples.generic.tips'
+]
 
 // What to watch for in well-known competitive games, matched by name.
 const HINTS: { name: RegExp; watchFor: string; examples: [string, string] }[] = [
   {
     name: /^valorant$/i,
     watchFor: 'the spike being planted or defused, low health, the round being won or lost',
-    examples: ['Which agent is good for beginners?', 'How does Jett’s dash work?']
+    examples: ['gameExamples.valorant.beginner', 'gameExamples.valorant.jettDash']
   },
   {
     name: /^overwatch/i,
     watchFor: 'low health, the ultimate being ready, the objective being contested, team fights',
-    examples: ['How do I counter Widowmaker?', 'Which tank is easiest to learn?']
+    examples: ['gameExamples.overwatch.widowmaker', 'gameExamples.overwatch.tank']
   },
   {
     name: /^marvel rivals$/i,
     watchFor: 'low health, the ultimate being ready, the payload or objective status',
-    examples: ['Which hero is good for beginners?', 'How do team-up abilities work?']
+    examples: ['gameExamples.marvelRivals.beginner', 'gameExamples.marvelRivals.teamUps']
   },
   {
     name: /^counter-strike/i,
     watchFor: 'the bomb being planted, low health, the round being won or lost',
-    examples: ['How do I spray control the AK-47?', 'When should I save money?']
+    examples: ['gameExamples.counterStrike.spray', 'gameExamples.counterStrike.save']
   },
   {
     name: /^league of legends$/i,
     watchFor: 'low health, dragon or Baron being taken, towers falling',
-    examples: ['Which champion is good for beginners?', 'How do I farm better?']
+    examples: ['gameExamples.league.beginner', 'gameExamples.league.farm']
   },
   {
     name: /^apex legends$/i,
     watchFor: 'the ring closing, low health or shields, enemies close by',
-    examples: ['Which legend is good for beginners?', 'Where should I land?']
+    examples: ['gameExamples.apex.beginner', 'gameExamples.apex.land']
   },
   {
     name: /^fortnite$/i,
     watchFor: 'the storm closing, low health or shields, enemies close by',
-    examples: ['How do I build faster?', 'Where should I land?']
+    examples: ['gameExamples.fortnite.build', 'gameExamples.fortnite.land']
   },
   {
     name: /^(rainbow six|tom clancy's rainbow six)/i,
     watchFor: 'low health, the defuser or objective, the round being won or lost',
-    examples: ['Which operator is good for beginners?', 'How do I use drones well?']
+    examples: ['gameExamples.rainbowSix.beginner', 'gameExamples.rainbowSix.drones']
   },
   {
     name: /^rocket league$/i,
     watchFor: 'goals scored or conceded, low boost, overtime',
-    examples: ['How do I aerial?', 'How do I rotate properly?']
+    examples: ['gameExamples.rocketLeague.aerial', 'gameExamples.rocketLeague.rotate']
   },
   {
     name: /^(dota 2|2xko|brawlhalla)$/i,
     watchFor: 'low health, the round or match being won or lost',
-    examples: ['Who is good for beginners?', 'How do I get better at this?']
+    examples: ['gameExamples.fighting.beginner', 'gameExamples.fighting.better']
   }
 ]
 

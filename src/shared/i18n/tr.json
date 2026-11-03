@@ -1,1 +1,659 @@
-{}
+{
+  "aiPanel": {
+    "geminiIsAnOptionalCloud": "Gemini, Google'ın isteğe bağlı bulut yapay zekâsıdır. Açarsan:",
+    "forTheJobsYouSet": "Gemini'ye verdiğin işlerde soruların, o ana kadarki sohbet ve ekran görüntüleri Google'a gönderilir ve Google'ın sunucularında işlenir; bu sunucular ülkenin dışında olabilir.",
+    "googleRequiresYouToBe": "Google, 18 yaşında veya daha büyük olmanı şart koşar. AB/AEA, İsviçre ve Birleşik Krallık'ta Google'ın koşulları, bunun gibi uygulamalarda ücretli (faturalandırması açık) bir API anahtarı ister.",
+    "youCanTurnGeminiOff": "Gemini'yi istediğin zaman kapatabilirsin. GameMate o zaman anahtarını siler.",
+    "turnOnGemini": "Gemini'yi aç",
+    "ifYouTurnOnWeb": "Web aramasını açarsan:",
+    "forQuestionsAboutWhatS": "Güncel durumla (meta, yamalar, sezonlar) veya oyuncuların önerileriyle ilgili sorularda ve wiki'de cevap olmadığında, GameMate ya da yapay zekâ sorunun anahtar kelimelerinden ve oyunun adından kısa bir arama sorgusu oluşturur (örneğin “Overwatch characters currently meta”). Google'a yalnızca bu sorgu, Gemini üzerinden senin API anahtarınla gider. Sohbetin ve ekran görüntülerin gönderilmez.",
+    "searchesCountTowardYourKey": "Aramalar, anahtarının ücretsiz Google Search kotasından düşer; anahtarında faturalandırma açıksa Google kotayı aşan aramalar için ücret alabilir.",
+    "youCanTurnWebSearch": "Web aramasını istediğin zaman buradan veya Ayarlar → Gizlilik ve yasal bölümünden kapatabilirsin.",
+    "turnOnWebSearch": "Web aramasını aç",
+    "cancel": "İptal",
+    "ifYouTurnOnOnline": "Çevrim içi aramaları açarsan:",
+    "whenAQuestionIsAbout": "Bir soru oyundaki bir şeyle ilgiliyse GameMate konuyu (örneğin “Ender Dragon”) o oyunun wiki'sine, Minecraft modlarında ise modun adını Modrinth'e gönderir. Sorunun kendisi gönderilmez.",
+    "gamemateDownloadsThePageAnd": "GameMate, sana göstermek için sayfayı ve görsellerini indirir. Wiki'ler, ziyaret ettiğin her site gibi IP adresini görür ve kendi gizlilik politikalarına göre işler.",
+    "youCanTurnLookupsOff": "Aramaları istediğin zaman buradan veya Ayarlar → Gizlilik ve yasal bölümünden kapatabilirsin.",
+    "turnOnLookups": "Aramaları aç",
+    "whichAiAnswers": "Hangi yapay zekâ cevaplar",
+    "everythingRunsOnThisPc": "Bir iş için Gemini'yi seçmediğin sürece her şey bu bilgisayarda çalışır.",
+    "yourQuestions": "Soruların",
+    "chatAndTheInGame": "Sohbet ve oyun içi pencere.",
+    "aiForQuestions": "Sorular için yapay zekâ",
+    "companion": "Yoldaş",
+    "watchingYourGameOnGemini": "Oyununu izler. Gemini'de birkaç saniyede bir ekran görüntüsü gönderilir; bu, ücretsiz bir anahtarın sınırlarını tüketebilir.",
+    "aiForTheCompanion": "Yoldaş için yapay zekâ",
+    "smarterAnswersAndBetterScreen": "Kendi Google API anahtarınla daha akıllı cevaplar ve ekranı daha iyi anlama.",
+    "model": "Model",
+    "flashModelsAreFastAnd": "Flash modelleri hızlıdır ve en çok ücretsiz kullanımı sunar.",
+    "choose": "Seç…",
+    "apiKey": "API anahtarı",
+    "savedOnThisPcEncrypted": "Bu bilgisayarda kayıtlı, Windows tarafından şifrelenmiş.",
+    "removeKey": "Anahtarı kaldır",
+    "pasteYourKey": "Anahtarını yapıştır",
+    "geminiApiKey": "Gemini API anahtarı",
+    "checking": "Kontrol ediliyor…",
+    "turnOffGemini": "Gemini'yi kapat",
+    "deletesYourKeyAndGoes": "Anahtarını siler ve yerel yapay zekâya geri döner.",
+    "turnOff": "Kapat",
+    "answers": "Cevaplar",
+    "detailedAnswers": "Ayrıntılı cevaplar",
+    "answersExplainTheDetailsSteps": "Cevaplar ayrıntıları, adımları ve faydalı ipuçlarını açıklar.",
+    "answersGetStraightToThe": "Cevaplar bir ila üç cümlede doğrudan konuya girer. Daha uzun açıklamalar için bunu aç.",
+    "lookThingsUp": "Bilgi ara",
+    "lookThingsUpOnline": "Bilgiyi çevrim içi ara",
+    "letsTheAiReadYour": "Yapay zekâ emin olmadığında oyununun wiki'sini (Minecraft modları için Modrinth'i) okumasına izin verir; örneğin bosslar, eşyalar ya da Nether geçidi yapımı gibi konularda. Yalnızca konu gönderilir; cevaplar sayfaya bağlantı verir ve haritalar gibi görsellerini gösterebilir.",
+    "searchTheWeb": "Web'de ara",
+    "letsTheAiSearchThe": "Yapay zekânın wiki'nin kapsamadığı yamaları, stratejileri ve ipuçlarını Google ile (Gemini üzerinden) web'de aramasına izin verir. Yalnızca arama sorgusu gönderilir.",
+    "searchesTheWebWithGoogle": "Wiki'nin kapsamadıklarını Google ile web'de arar. Gemini gerekir: önce onu aç ve yukarıya anahtarını ekle.",
+    "googleHandlesThatData": "Google bu verileri GameMate'in değil, <terms>Gemini API koşullarının</terms> ve <privacy>Google Gizlilik Politikası'nın</privacy> kapsamında işler. Ücretsiz bir anahtarla Google, gönderdiklerini ürünlerini geliştirmek için kullanabilir ve bunları insanlar inceleyebilir; AB/AEA, İsviçre ve Birleşik Krallık hariç. Kişisel bilgi paylaşma.",
+    "iM18OrOlder": "18 yaşında veya daha büyüğüm ve bu verileri Google'a göndermeyi kabul ediyorum.",
+    "googleSearchesTheWeb": "Google, <terms>Gemini API koşulları</terms> ve <privacy>Google Gizlilik Politikası</privacy> kapsamında, Reddit gibi forumlar dahil web'de arama yapar. Cevaplar kullanılan sayfaları ve Google'ın arama önerilerini gösterir.",
+    "autoDecidePerQuestion": "Otomatik (her soru için karar verir)",
+    "autoAddAKeyFirst": "Otomatik (her soru için karar verir) (önce bir anahtar ekle)",
+    "onThisPc": "Bu bilgisayarda ({{name}})",
+    "geminiAddAKeyFirst": "Gemini (önce bir anahtar ekle)",
+    "getOneAt": "<link>aistudio.google.com</link> adresinden bir anahtar al. GameMate kaydetmeden önce anahtarı Google ile kontrol eder.",
+    "save": "Kaydet"
+  },
+  "answeredByLabel": {
+    "onThisPc": "💻 Bu bilgisayarda"
+  },
+  "companionMenu": {
+    "companionMode": "Yoldaş modu",
+    "howOftenToComment": "Ne sıklıkla yorum yapsın",
+    "resumeWatching": "▶ İzlemeye devam et",
+    "pauseWatching": "⏸ İzlemeyi duraklat",
+    "companionSettings": "Yoldaş ayarları…",
+    "companion": "Yoldaş: {{mode}}"
+  },
+  "companionPanel": {
+    "justNow": "az önce",
+    "minAgo": "{{minutes}} dk önce",
+    "hAgo": "{{value}} sa önce",
+    "companionMode": "Yoldaş modu",
+    "howMuchGamemateWatchesYour": "GameMate'in oyununu ne kadar izlediği ve kendiliğinden ne kadar konuştuğu.",
+    "howOftenToComment": "Ne sıklıkla yorum yapsın",
+    "resume": "▶ Devam et",
+    "pause": "⏸ Duraklat",
+    "whatGamemateSaw": "GameMate'in gördükleri",
+    "keptOnlyWhileGamemateIs": "Yalnızca GameMate açıkken saklanır.",
+    "nothingYetStartPlayingAnd": "Henüz bir şey yok. Oynamaya başla, GameMate olanları kaydetsin."
+  },
+  "gameMenu": {
+    "theGameGamemateHelpsWith": "GameMate'in yardım ettiği oyun",
+    "followTheGameIM": "Oynadığım oyunu takip et",
+    "switchesByItselfWhenYou": "Bir oyundayken kendiliğinden geçiş yapar",
+    "allowGameDetectionInSettings": "Önce Ayarlar → Oyunlar'da oyun algılamaya izin ver",
+    "game": "Oyun",
+    "scanForGames": "Oyunları tara…",
+    "findMyGames": "Oyunlarımı bul…"
+  },
+  "gamesPanel": {
+    "gamemateCanFindYourGames": "GameMate oyunlarını bulabilir ve oynadığını takip edebilir. Bunun için:",
+    "scanForGames": "Oyunları tara",
+    "looksUpAWikiFor": "Bulduğu her oyun için bir wiki arar; wiki.gg ve Fandom'a yalnızca oyunun adını gönderir.",
+    "readsTheNameOfThe": "Oynarken öndeki programın adını okur, böylece hangi oyun olduğunu bilir.",
+    "keepsEverythingOnThisPc": "Her şeyi bu bilgisayarda tutar. Bunu kapatmak, bulunan tüm oyunları unutturur.",
+    "allowAndScanForGames": "İzin ver ve oyunları tara",
+    "rankedOnlineGameAiHelp": "Dereceli çevrim içi oyun: maçlar sırasında yapay zekâ yardımı kurallarına aykırı olabilir",
+    "competitive": "Rekabetçi",
+    "newWikiAddress": "Yeni wiki adresi",
+    "noWikiFoundPasteIts": "Wiki bulunamadı. Adresini yapıştır, örn. https://…fandom.com",
+    "wikiAddressFor": "{{name}} için wiki adresi",
+    "checking": "Kontrol ediliyor…",
+    "useWiki": "Wiki'yi kullan",
+    "change": "Değiştir",
+    "looking": "Aranıyor…",
+    "otherWikis": "Diğer wiki'ler",
+    "inUse": "Kullanımda",
+    "use": "Kullan",
+    "remove": "Kaldır",
+    "addAGameThatS": "Çalışan bir oyun ekle…",
+    "noProgramsWithAWindow": "Penceresi olan program bulunamadı. Oyununu başlat ve tekrar dene.",
+    "runningProgram": "Çalışan program",
+    "gameName": "Oyunun adı",
+    "add": "Ekle",
+    "cancel": "İptal",
+    "findYourGames": "Oyunlarını bul",
+    "gamemateKnowsMinecraftOutOf": "GameMate, Minecraft'ı baştan tanır. Diğer oyunların bu bilgisayarın taranmasıyla bulunur.",
+    "scanning": "Taranıyor…",
+    "looksThroughSteamEpicGames": "Steam, Epic Games, Battle.net ve Riot'a bakar ve her oyunun wiki'sini bulur. Bir oyun yükledikten sonra tekrar çalıştır.",
+    "followTheGameIM": "Oynadığım oyunu takip et",
+    "whenYouPressTheShortcut": "Kısayola bastığında veya yoldaş izlerken GameMate öndeki oyuna geçer.",
+    "stopLookingForGames": "Oyun aramayı bırak",
+    "turnsDetectionOffAndForgets": "Algılamayı kapatır ve GameMate'in bulduğu tüm oyunları unutur.",
+    "turnOff": "Kapat",
+    "yourGames": "Oyunların",
+    "eachGameSWikiWas": "Her oyunun wiki'si adından bulundu: birden fazlaysa en canlısı. Diğer wiki'ler ile başka birini seç veya Değiştir ile herhangi bir wiki'nin adresini yapıştır.",
+    "competitiveGamesCheckTheGame": "Rekabetçi oyunlar: dereceli maçlarda yoldaşı kullanmadan önce oyunun kurallarına bak.",
+    "minecraftModpacks": "Minecraft mod paketleri",
+    "yourCurseforgeModpacksOnThis": "Bu bilgisayardaki CurseForge mod paketlerin; böylece cevaplar hangi modlara sahip olduğunu bilir. Başka bir başlatıcıyla GameMate çalışan paketin modlarını okur.",
+    "modpack": "Mod paketi",
+    "noModpackRunningRightNow": "Şu anda çalışan mod paketi yok. Birini başlat veya buradan seç.",
+    "plainMinecraftWithoutMods": "Modsuz, sade Minecraft.",
+    "detectTheOneIM": "Oynadığımı algıla",
+    "nonePlainMinecraft": "Hiçbiri (sade Minecraft)",
+    "builtIn": "Yerleşik",
+    "addedByYou": "Senin eklediğin",
+    "readsTheGameLists": "<b>Oyunları tara</b>'ya tıkladığında bu bilgisayardaki Steam, Epic Games, Battle.net ve Riot oyun listelerini ve CurseForge Minecraft mod paketlerini okur.",
+    "allowGamemateToLook": "GameMate'in bu bilgisayarda oyun aramasına izin ver.",
+    "wiki": "Wiki: {{wiki}}",
+    "noOtherWikisFound": "{{name}} için başka wiki bulunamadı.",
+    "wikiSize": "{{pages}} sayfa, {{editors}} etkin editör",
+    "gamesFound_one": "{{count}} oyun bulundu",
+    "gamesFound_other": "{{count}} oyun bulundu",
+    "usingModpack_one": "{{pack}} kullanılıyor, {{count}} mod.",
+    "usingModpack_other": "{{pack}} kullanılıyor, {{count}} mod.",
+    "mods_one": "{{count}} mod",
+    "mods_other": "{{count}} mod"
+  },
+  "generalPanel": {
+    "runningFromSourceCodeUpdates": "Kaynak koddan çalışıyor: güncellemeler git'ten gelir.",
+    "checkingForUpdates": "Güncellemeler denetleniyor…",
+    "downloadingVersion": "{{available}} sürümü indiriliyor… %{{value}}",
+    "versionIsReadyItInstalls": "{{available}} sürümü hazır. GameMate yeniden başladığında yüklenir.",
+    "gamemateIsUpToDate": "GameMate güncel.",
+    "couldnTCheckForUpdates": "Güncellemeler denetlenemedi.",
+    "updatesComeFromGamemateS": "Güncellemeler GameMate'in GitHub'daki sürümlerinden gelir.",
+    "updates": "Güncellemeler",
+    "status": "Durum",
+    "restartAndUpdate": "Yeniden başlat ve güncelle",
+    "checkNow": "Şimdi denetle",
+    "checkForUpdatesAutomatically": "Güncellemeleri otomatik denetle",
+    "looksForANewVersion": "GameMate başladığında ve birkaç saatte bir yeni sürüm arar ve arka planda indirir.",
+    "inGameWindow": "Oyun içi pencere",
+    "shortcut": "Kısayol",
+    "anotherAppIsUsingThis": "Bu kısayolu başka bir uygulama kullanıyor, bu yüzden kapalı. Başka bir kısayol seç ya da o uygulamayı kapatıp GameMate'i yeniden başlat.",
+    "opensASmallWindowOver": "Soru sormak için oyununun üzerinde küçük bir pencere açar.",
+    "voiceShortcut": "Sesli kısayol",
+    "anotherAppIsUsingThis2": "Bu kısayolu başka bir uygulama kullanıyor, bu yüzden kapalı. Başka bir kısayol seç.",
+    "opensTheInGameWindow": "Oyun içi pencereyi sesli bir soruyu dinleyerek açar. Sesli giriş açıkken çalışır (Ayarlar → Ses).",
+    "sendAScreenshotWithQuestions": "Sorularla birlikte ekran görüntüsü gönder",
+    "letsGamemateSeeWhatYou": "Oyundan soru sorduğunda GameMate'in neye baktığını görmesini sağlar.",
+    "whenYouCloseTheWindow": "Pencereyi kapattığında",
+    "whenGamemateQuitsItFrees": "GameMate kapandığında yapay zekâ modelini hemen serbest bırakır, böylece arka planda hiçbir şey çalışmaz.",
+    "keepRunningInTheTray": "Sistem tepsisinde çalışmaya devam et",
+    "keepsTheInGameShortcuts": "Oyun içi kısayollar ve yoldaş çalışmaya devam eder. Tepsi simgesinden çık. Yapay zekâ modeli birkaç dakika boşta kaldıktan sonra serbest bırakılır.",
+    "closingTheWindowQuitsGamemate": "Pencereyi kapatmak GameMate'ten çıkar. Oyun içi kısayollar ve yoldaş, uygulamayı tekrar başlatana kadar durur.",
+    "language": "Dil",
+    "languageHelp": "GameMate'in pencereleri ve yapay zekânın cevapları için. Oyun adları ve wiki sayfaları olduğu gibi kalır."
+  },
+  "modelMenu": {
+    "builtInAi": "Yerleşik yapay zekâ",
+    "auto": "✦ Otomatik",
+    "chooseAModel": "Bir model seç",
+    "whichAiAnswers": "Hangi yapay zekâ cevaplar",
+    "whichAiAnswersYourQuestions": "Sorularını hangi yapay zekâ cevaplar",
+    "picksThisPcOrGemini": "Her soru için bu bilgisayarı veya Gemini'yi seçer",
+    "picksThisPcOrGemini2": "Her soru için bu bilgisayarı veya Gemini'yi seçer. Önce Gemini'yi kur.",
+    "onThisPc": "Bu bilgisayarda",
+    "canSeeScreenshots": "{{label}} · Ekran görüntülerini görür",
+    "downloadAModel": "Model indir…",
+    "runsOnYourGraphicsCard": "Ekran kartında çalışır, çevrim dışı çalışır",
+    "canSeeScreenshots2": "Ekran görüntülerini görür",
+    "textOnly": "Yalnızca metin",
+    "geminiCloud": "Gemini (bulut)",
+    "setUpGemini": "Gemini'yi kur…",
+    "smarterAnswersWithYourOwn": "Kendi Google API anahtarınla daha akıllı cevaplar",
+    "manageModels": "Modelleri yönet…"
+  },
+  "modelsPanel": {
+    "aiModelsOnThisPc": "Bu bilgisayardaki yapay zekâ modelleri",
+    "theyRunOnYourGraphics": "Ekran kartında ve çevrim dışı çalışırlar: sorduğun hiçbir şey bu bilgisayardan çıkmaz. İlk indirme GameMate'in yapay zekâ motorunu da (37 MB) yükler.",
+    "recommended": "Önerilen",
+    "cancel": "İptal",
+    "keep": "Sakla",
+    "inUse": "✓ Kullanımda",
+    "use": "Kullan",
+    "delete": "{{size}} sil",
+    "tryAgain": "Tekrar dene",
+    "alreadyUseOllamaGamemateCan": "Zaten Ollama mı kullanıyorsun? GameMate yerleşik modeller yerine onun modellerini kullanabilir.",
+    "useMyOllamaModels": "Ollama modellerimi kullan",
+    "ollamaMustBeRunningGamemate": "Ollama çalışıyor olmalı. GameMate kapandığında onun modelini serbest bırakır.",
+    "model": "Model",
+    "modelsMarkedCanSeeScreenshots": "👁 işaretli modeller ekran görüntülerini görür.",
+    "ollamaModel": "Ollama modeli",
+    "noModels": "Model yok",
+    "reload": "Yeniden yükle",
+    "cloudModels": "Bulut modelleri",
+    "runOnAnotherCompanyS": "Başka bir şirketin sunucularında çalışır. Her biri bir şey göndermeden önce onayını ister.",
+    "smarterAnswersAndBetterScreen": "Kendi Google API anahtarınla daha akıllı cevaplar ve ekranı daha iyi anlama.",
+    "setUp": "Kur",
+    "modelDetails": "{{description}} {{size}}. Ekran görüntülerini görür.",
+    "download": "İndir"
+  },
+  "pictures": {
+    "openOnThe": "{{wiki}} üzerinde aç"
+  },
+  "privacyPanel": {
+    "findingYourGames": "Oyunlarını bulma",
+    "givenOnYouCanAlso": "{{value}} tarihinde verildi. Bunu {{where}} bölümünden de değiştirebilirsin.",
+    "givenYouCanAlsoChange": "Verildi. Bunu {{where}} bölümünden de değiştirebilirsin.",
+    "notGivenYouCanTurn": "Verilmedi. Bunu {{where}} bölümünden açabilirsin.",
+    "withdraw": "Geri çek",
+    "off": "Kapalı",
+    "termsOfUseAndPrivacy": "Kullanım Koşulları ve Gizlilik Politikası",
+    "youAcceptedTheTermsOf": "Kullanım Koşulları'nı {{value}} tarihinde kabul ettin.",
+    "readTheTermsOfUse": "Kullanım Koşulları'nı oku",
+    "readThePrivacyPolicy": "Gizlilik Politikası'nı oku",
+    "yourConsents": "Onayların",
+    "optionalFeaturesThatSendData": "Başka hizmetlere veri gönderen isteğe bağlı özellikler. Birini geri çekmek yalnızca o özelliği kapatır; GameMate'in geri kalanı çalışmaya devam eder.",
+    "settingsGames": "Ayarlar → Oyunlar",
+    "onlineLookups": "Çevrim içi aramalar",
+    "settingsAiOnline": "Ayarlar → Yapay zekâ ve çevrim içi",
+    "webSearchGoogle": "Web araması (Google)",
+    "howGamemateHandlesYourData": "GameMate verilerini nasıl işler",
+    "storedOnThisPc": "Bu bilgisayarda saklananlar",
+    "onlyInYourWindowsUser": "Yalnızca Windows kullanıcı klasöründe, yalnızca Windows hesabın tarafından okunabilir.",
+    "yourSettings": "Ayarların.",
+    "yourGeminiApiKeyIf": "Eklediysen Gemini API anahtarın, Windows tarafından şifrelenmiş olarak.",
+    "aiModelsGamemateSAi": "İndirdiğin yapay zekâ modelleri, GameMate'in yapay zekâ motoru ve konuşma modelleri.",
+    "gamesFoundOrAddedTheir": "Bulunan veya eklenen oyunlar: adları, klasörleri veya programları ve wiki adresleri.",
+    "openLogFolder": "Günlük klasörünü aç",
+    "whenYouUseOnlineFeatures": "Çevrim içi özellikleri kullandığında",
+    "theseServicesHandleYourData": "Bu hizmetler verilerini GameMate'in değil, kendi koşullarına göre işler.",
+    "withdrawMyAcceptanceOfThe": "Koşulları kabulümü geri çek",
+    "gamemateStopsWorkingUntilYou": "Kullanım Koşulları'nı tekrar kabul edene kadar GameMate çalışmaz: çevrim dışı olur, yoldaş durur ve yapay zekâ kapanır. Verilerini de silmediğin sürece ayarların ve indirdiklerin kalır.",
+    "yesWithdraw": "Evet, geri çek",
+    "cancel": "İptal",
+    "withdrawAcceptance": "Kabulü geri çek",
+    "deleteMyData": "Verilerimi sil",
+    "removesEverythingAboveFromThis": "Yukarıdaki her şeyi bu bilgisayardan kaldırır ve GameMate'i yeni kurulmuş gibi sıfırlar. Google'a önceden gönderilmiş veriler Google'ın politikalarına tabidir.",
+    "doneEverythingGamemateStoredHas": "Tamam. GameMate'in sakladığı her şey silindi.",
+    "yesDeleteEverything": "Evet, her şeyi sil",
+    "summary": {
+      "runsOnYourPc": "<b>Bilgisayarında çalışır.</b> Hesap yok, reklam yok, analiz yok. GameMate geliştiricileri senden hiçbir şey almaz.",
+      "yourScreen": "<b>Ekranın</b> yalnızca sen istediğinde veya yoldaş oyununu izlemeye ayarlıyken yakalanır. Ekran görüntüleri bellekte kalır ve asla diske kaydedilmez.",
+      "findingYourGames": "<b>Oyunlarını bulma</b> yalnızca Ayarlar → Oyunlar'da izin verdikten sonra yapılır. Ardından GameMate başlatıcılarının oyun listelerini (Steam, Epic Games, Battle.net, Riot), CurseForge mod paketlerini ve öndeki programın adını okur. Bunlar bilgisayarında kalır; wiki'leri bulmak için wiki.gg ve Fandom'a yalnızca oyun adları gönderilir.",
+      "yourMicrophone": "<b>Mikrofonun</b> yalnızca sesli giriş açıkken ve sesli kısayola veya 🎤'ya bastığında kullanılır. Konuşma bu bilgisayarda metne dönüştürülür.",
+      "chatsAndTheCompanionLog": "<b>Sohbetler ve yoldaş günlüğü</b> yalnızca GameMate açıkken saklanır.",
+      "onlineFeaturesAreOffUntil": "<b>Çevrim içi özellikler sen açana kadar kapalıdır:</b> oyununun wiki'sinde veya Modrinth'te bilgi arama (yalnızca konu gönderilir) ve Google Gemini (soruların ve ekran görüntülerin Google'a gönderilir). İndirmeler, istediğinde bir kez yapılır: yapay zekâ ve konuşma modelleri Hugging Face'ten, GameMate'in yapay zekâ motoru GitHub'dan gelir. Güncelleme denetimi GitHub'a en son GameMate sürümünü sorar (kapatabilirsin)."
+    },
+    "aLogOfWhatGamemate": "Sorunları bulmak için GameMate'in yaptıklarının (yapay zekâyı başlatmak veya güncelleme denetlemek gibi) günlüğü. Asla sorularını veya cevapları içermez ve hiçbir yere gönderilmez.",
+    "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini API koşulları</terms> ve <privacy>Google Gizlilik Politikası</privacy>.",
+    "wikiLicenses": "<b>Oyun wiki'leri ve Modrinth:</b> her wiki'nin metni kendi lisansına tabidir (onu kullanan her cevapta gösterilir, örneğin <link>minecraft.wiki</link>), bu yüzden cevaplar sayfaya bağlantı verir. Cevaplardaki görseller aynı wiki'lerden indirilir ve oradaki sayfalarına bağlantı verir."
+  },
+  "recipeCard": {
+    "craftingGridFor": "{{item}} için üretim ızgarası",
+    "anyArrangementWorks": "Her diziliş olur"
+  },
+  "searchSuggestions": {
+    "googleSearchSuggestions": "Google arama önerileri"
+  },
+  "setupCard": {
+    "downloadGamemateSAi": "GameMate'in yapay zekâsını indir",
+    "oneDownloadAndGamemateRuns": "Tek bir indirme ve GameMate bu bilgisayarda, çevrim dışıyken bile çalışır. Sorduğun hiçbir şey bilgisayarından çıkmaz.",
+    "cancel": "İptal",
+    "otherModels": "Diğer modeller",
+    "iUseOllama": "Ollama kullanıyorum",
+    "useGeminiCloud": "Gemini'yi kullan (bulut)",
+    "downloading": "{{name}} indiriliyor: %{{percent}} / {{size}}",
+    "download": "{{name}} indir ({{size}})"
+  },
+  "shortcutField": {
+    "thatIsAlreadyGamemateS": "Bu zaten GameMate'in diğer kısayolu.",
+    "pressTheNewShortcutEsc": "Yeni kısayola bas… (iptal için Esc)",
+    "change": "Değiştir",
+    "default": "Varsayılan"
+  },
+  "sources": {
+    "source": "Kaynak:"
+  },
+  "voicePanel": {
+    "remove": "Kaldır",
+    "download": "İndir",
+    "talkToGamemate": "GameMate ile konuş",
+    "speechIsTurnedIntoText": "Konuşma bu bilgisayarda metne dönüştürülür. Sesin asla dışarı çıkmaz.",
+    "askWithYourMicrophone": "Mikrofonla sor",
+    "isUsedByAnotherApp": "{{voiceShortcut}} başka bir uygulama tarafından kullanılıyor. Bunun yerine 🎤 düğmesini kullan.",
+    "inAGamePressAnd": "Oyunda {{voiceShortcut}} tuşuna bas ve sesli sor. Durduğunda GameMate dinlemeyi bırakır.",
+    "downloadTheSelectedModelOnce": "Başlamak için seçilen modeli bir kez indir. Sonrasında çevrim dışı çalışır.",
+    "gamemateSVoice": "GameMate'in sesi",
+    "kokoroANaturalSoundingVoice": "Kokoro, bu bilgisayarda ve çevrim dışı çalışan doğal bir ses.",
+    "usesTheVoicesBuiltInto": "Windows'a yerleşik sesleri kullanır.",
+    "voiceType": "Ses türü",
+    "naturalIsKokoroApache2": "Doğal ses Kokoro'dur (Apache 2.0, yalnızca serbest lisanslı ve telif hakkı olmayan seslerle eğitildi): bir kez indirilir, sonra çevrim dışı çalışır.",
+    "naturalKokoro": "Doğal (Kokoro)",
+    "windowsVoices": "Windows sesleri",
+    "downloaded": "İndirildi.",
+    "downloadItOnceToUse": "Kullanmak için bir kez indir. O zamana kadar GameMate bir Windows sesi kullanır.",
+    "readAnswersAloud": "Cevapları sesli oku",
+    "readCompanionCommentsAloud": "Yoldaş yorumlarını sesli oku",
+    "voice": "Ses",
+    "windowsDefault": "Windows varsayılanı",
+    "volume": "Ses düzeyi",
+    "speed": "Hız",
+    "tryIt": "Dene",
+    "hiIMGamemateWatch": "Merhaba, ben GameMate. Creeper'lara dikkat et!",
+    "testVoice": "🔊 Sesi dene",
+    "speechModels": {
+      "fast": {
+        "label": "Hızlı konuşma modeli",
+        "help": "En hızlısı ama daha sık yanlış duyar."
+      },
+      "accurate": {
+        "label": "Doğru konuşma modeli",
+        "help": "Hızlı modelden daha az yanlış duyar."
+      },
+      "best": {
+        "label": "En iyi konuşma modeli",
+        "help": "Whisper Small: seni en iyi anlar, aksanla bile, ama birkaç saniye daha uzun sürer. Önerilir."
+      }
+    },
+    "mb": "{{size}} MB",
+    "kokoroVoice": {
+      "af": "{{name}} (Amerikan, kadın)",
+      "am": "{{name}} (Amerikan, erkek)",
+      "bf": "{{name}} (İngiliz, kadın)",
+      "bm": "{{name}} (İngiliz, erkek)"
+    },
+    "downloading": "İndiriliyor… %{{percent}}",
+    "speakAnswers": {
+      "off": "Asla",
+      "voice": "Sesle sorduğumda",
+      "always": "Her zaman"
+    },
+    "naturalVoice": "Doğal ses"
+  },
+  "useLocalModels": {
+    "builtInAi": "Yerleşik yapay zekâ",
+    "gb": "{{value}} GB",
+    "mb": "{{sizeMb}} MB"
+  },
+  "useSettings": {
+    "noModelsInstalledRunOllama": "Yüklü model yok. Şunu çalıştır: ollama pull qwen3.5:2b"
+  },
+  "legalReader": {
+    "termsOfUse": "Kullanım Koşulları",
+    "privacyPolicy": "Gizlilik Politikası",
+    "close": "Kapat"
+  },
+  "termsGate": {
+    "ourTermsHaveChanged": "Koşullarımız değişti",
+    "welcomeToGamemate": "GameMate'e hoş geldin",
+    "pleaseReadAndAcceptThe": "GameMate'i kullanmaya devam etmek için lütfen güncellenen Kullanım Koşulları'nı oku ve kabul et.",
+    "beforeYouStartHereIs": "Başlamadan önce, GameMate'in verilerini nasıl işlediğini gör.",
+    "featuresThatSendDataTo": "Başka hizmetlere veri gönderen özellikler sen açana kadar kapalı kalır. Kabulünü istediğin zaman Ayarlar → Gizlilik ve yasal bölümünden geri çekebilirsin.",
+    "deleteEverythingGamemateStored": "GameMate'in sakladığı her şey silinsin mi?",
+    "delete": "Sil",
+    "cancel": "İptal",
+    "deleteMyData": "Verilerimi sil",
+    "quitGamemate": "GameMate'ten çık",
+    "acceptAndContinue": "Kabul et ve devam et",
+    "pleaseReadTheFull": "Lütfen <terms>Kullanım Koşulları</terms>'nın ve <privacy>Gizlilik Politikası</privacy>'nın tamamını oku.",
+    "iAm16OrOlder": "16 yaşında veya daha büyüğüm ya da ebeveynim veya vasim GameMate'i kullanmamı kabul ediyor.",
+    "iAcceptTheTerms": "Kullanım Koşulları'nı kabul ediyorum ve Gizlilik Politikası'nı okudum."
+  },
+  "app": {
+    "entireScreen": "Tüm ekran",
+    "newChat": "Yeni sohbet",
+    "settings": "Ayarlar",
+    "whatCanIHelpWith": "Nasıl yardımcı olabilirim?",
+    "whatSOnMyScreen": "📷 Ekranımda ne var?",
+    "screenshotSentWithThisQuestion": "Bu soruyla gönderilen ekran görüntüsü",
+    "capturingScreen": "Ekran yakalanıyor…",
+    "thinking": "Düşünüyor…",
+    "downloadGamemateSAiTo": "Başlamak için GameMate'in yapay zekâsını indir",
+    "pickAnAiModelIn": "Önce Ayarlar'dan bir yapay zekâ modeli seç",
+    "listening": "Dinliyor…",
+    "workingOutWhatYouSaid": "Ne dediğini anlıyor…",
+    "askAboutYourScreenOr": "Ekranın hakkında sor… (ya da sadece Enter'a bas)",
+    "askAbout": "{{value}} hakkında sor…",
+    "sendAScreenshotWithYour": "Sorunla birlikte ekran görüntüsü gönder",
+    "screenshot": "📷 Ekran görüntüsü",
+    "screenshotSource": "Ekran görüntüsü kaynağı",
+    "nothingToCapture": "Yakalanacak bir şey yok",
+    "screenAccessIsOffCompanion": "Ekran erişimi kapalı (Yoldaş: Devre dışı).",
+    "thisModelCanTSee": "Bu model ekran görüntülerini göremez.",
+    "listeningClickToStop": "Dinliyor, durdurmak için tıkla",
+    "askByVoice": "Sesle sor",
+    "send": "Gönder",
+    "whatIsHappeningOnMy": "Ekranımda ne oluyor?",
+    "pressShortcutInAnyGame": "Herhangi bir oyunda, oyundan çıkmadan sormak için <kbd>{{shortcut}}</kbd> tuşuna bas.",
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> başka bir uygulama tarafından kullanılıyor, bu yüzden oyun içi kısayol kapalı. O uygulamayı kapat ve GameMate'i yeniden başlat."
+  },
+  "overlay": {
+    "dragToMove": "Taşımak için sürükle",
+    "openGamemateAndSetUp": "GameMate'i aç ve önce bir yapay zekâ modeli kur",
+    "listening": "Dinliyor…",
+    "workingOutWhatYouSaid": "Ne dediğini anlıyor…",
+    "askGamemate": "GameMate'e sor…",
+    "listeningClickToStop": "Dinliyor, durdurmak için tıkla",
+    "askByVoice": "Sesle sor ({{voiceShortcut}})",
+    "thisModelCanTSee": "Bu model görselleri göremez",
+    "screenshotOnGamemateSeesYour": "Ekran görüntüsü açık: GameMate ekranını görüyor",
+    "screenshotOff": "Ekran görüntüsü kapalı",
+    "newConversation": "Yeni konuşma",
+    "thinking": "Düşünüyor…",
+    "answersComeFromGeminiGoogle": "Cevaplar Gemini'den (Google) gelir",
+    "gamematePicksTheLocalAi": "GameMate her soru için yerel yapay zekâyı veya Gemini'yi seçer",
+    "auto": "✦ Otomatik",
+    "theGameGamemateHelpsWith": "GameMate'in yardım ettiği oyun",
+    "autoGemini": "✦ Otomatik: ☁ Gemini",
+    "autoThisPc": "✦ Otomatik: bu bilgisayar",
+    "hint": "Sormak için Enter · Gizlemek için Esc",
+    "hintWithVoice": "Sormak için Enter · Konuşmak için {{voiceShortcut}} · Gizlemek için Esc"
+  },
+  "settingsScreen": {
+    "settings": "Ayarlar",
+    "backToChat": "← Sohbete dön",
+    "tabs": {
+      "general": "Genel",
+      "games": "Oyunlar",
+      "models": "Modeller",
+      "companion": "Yoldaş",
+      "voice": "Ses",
+      "ai": "Yapay zekâ ve çevrim içi",
+      "privacy": "Gizlilik ve yasal"
+    }
+  },
+  "useVoiceInput": {
+    "sorryIDidnTCatch": "Üzgünüm, anlayamadım.",
+    "gamemateIsNotAllowedTo": "GameMate'in mikrofonu kullanma izni yok. Windows mikrofon gizlilik ayarlarını kontrol et."
+  },
+  "companion": {
+    "modes": {
+      "disabled": {
+        "label": "Devre dışı",
+        "help": "Kısayola bastığında bile ekranına asla bakmaz."
+      },
+      "on-demand": {
+        "label": "İstek üzerine",
+        "help": "Yalnızca sen sorduğunda bakar ve cevap verir."
+      },
+      "observation": {
+        "label": "Gözlem",
+        "help": "Oyununu izler ve açılır pencere olmadan olanların günlüğünü tutar."
+      },
+      "commentary": {
+        "label": "Yorum",
+        "help": "Oyununu izler ve önemli bir şey olduğunda kısa bir yorum gösterir."
+      },
+      "quiet": {
+        "label": "Sessiz",
+        "help": "Sessizce izler ve gördüklerini yalnızca sorularını cevaplamak için kullanır."
+      }
+    },
+    "frequencies": {
+      "rare": "Nadiren (yalnızca büyük anlar)",
+      "normal": "Bazen",
+      "frequent": "Sık sık"
+    },
+    "status": {
+      "off": "İzlemiyor",
+      "paused": "Duraklatıldı",
+      "no-model": "İzlemeye başlamak için bir model seç",
+      "needs-consent": "İzlemeye başlamak için Ayarlar → Oyunlar'da oyun algılamaya izin ver",
+      "waiting-for-game": "Bir oyunun etkin pencere olması bekleniyor",
+      "watching": "İzliyor",
+      "analyzing": "Ekranına bakıyor…"
+    }
+  },
+  "errors": {
+    "ai": {
+      "noLocalModel": "Önce GameMate'te bir yapay zekâ modeli indir (Ayarlar → Modeller).",
+      "pickModel": "Önce GameMate'te bir model seç."
+    },
+    "gemini": {
+      "turnOn": "Önce GameMate ayarlarında Gemini'yi aç (Yapay zekâ ve çevrim içi).",
+      "addKey": "Önce GameMate'in yapay zekâ ayarlarına Gemini API anahtarını ekle.",
+      "pickModel": "GameMate'in yapay zekâ ayarlarında bir Gemini modeli seç.",
+      "timeout": "Gemini'nin cevap vermesi çok uzun sürdü.",
+      "unreachable": "Gemini'ye ulaşılamadı. İnternet bağlantını kontrol et.",
+      "badKey": "Gemini API anahtarını reddetti. GameMate'in yapay zekâ ayarlarından kontrol et.",
+      "keyNotAllowed": "Bu API anahtarının Gemini'yi kullanma izni yok.",
+      "usageLimit": "Gemini kullanım sınırına ulaşıldı. Daha sonra tekrar dene veya yerel modele geç.",
+      "error": "Gemini hatası {{status}}{{detail}}",
+      "noAnswer": "Gemini cevap vermedi{{reason}}.",
+      "needConsent": "Önce Gemini koşullarını kabul et.",
+      "notAKey": "Bu bir Gemini API anahtarına benzemiyor.",
+      "cantEncrypt": "Windows bu bilgisayarda anahtarı şifreleyemiyor, bu yüzden GameMate onu saklamayacak."
+    },
+    "builtin": {
+      "failed": "Yerleşik yapay zekâ başarısız oldu: {{detail}}",
+      "timeout": "Yerleşik yapay zekânın cevap vermesi çok uzun sürdü.",
+      "stopped": "Yerleşik yapay zekâ beklenmedik şekilde durdu. Tekrar dene.",
+      "tooLong": "Bu sohbet yerleşik yapay zekâ için çok uzun. Yeni bir sohbet başlat.",
+      "noGraphicsMemory": "Yerleşik yapay zekâ başlatılamadı: bu model için yeterli ekran kartı belleği yok. Daha küçük bir model dene veya diğer programları kapat.",
+      "badModelFile": "Yerleşik yapay zekâ başlatılamadı: model dosyası yüklenemedi. Ayarlar → Modeller'den sil ve yeniden indir.",
+      "couldNotStart": "Yerleşik yapay zekâ başlatılamadı ({{detail}}).",
+      "slowStart": "Yerleşik yapay zekâ başlatılamadı: modelin yüklenmesi çok uzun sürdü."
+    },
+    "ollama": {
+      "timeout": "Ollama'nın cevap vermesi çok uzun sürdü.",
+      "unreachable": "{{url}} adresindeki Ollama'ya ulaşılamadı. Çalışıyor mu?",
+      "error": "Ollama hatası {{detail}}",
+      "noAnswer": "Ollama cevap göndermedi."
+    },
+    "download": {
+      "engineIncomplete": "yapay zekâ motoru eksik",
+      "diskSpace": "yeterli boş disk alanı yok ({{size}} GB gerekli)",
+      "failed": "{{name}} indirilemedi: {{reason}}",
+      "serverAnswered": "sunucu {{status}} ile cevap verdi",
+      "incomplete": "indirme eksik",
+      "damaged": "indirilen dosya bozuk (sağlama toplamı uyuşmuyor)",
+      "voiceFailed": "Ses indirilemedi: {{reason}}",
+      "speechModelFailed": "Konuşma modeli indirilemedi: {{reason}}"
+    },
+    "games": {
+      "needConsent": "Önce GameMate'in oyun aramasına izin ver (Ayarlar → Oyunlar).",
+      "noName": "Oyuna bir ad ver.",
+      "tooMany": "Bu çok fazla oyun.",
+      "cantAdd": "Bu program eklenemez."
+    },
+    "terms": {
+      "notAccepted": "Önce GameMate'in Kullanım Koşulları'nı kabul et.",
+      "age": "Önce yaşını onayla."
+    },
+    "updates": {
+      "check": "Güncellemeler denetlenemedi. Çevrim içi misin?",
+      "download": "Güncelleme indirilemedi. Daha sonra tekrar denenecek."
+    },
+    "capture": {
+      "failed": "Ekran yakalanamadı.",
+      "windowGone": "O pencere artık yok. Yakalamak için başka birini seç."
+    },
+    "wiki": {
+      "address": "https:// ile başlayan wiki adresini gir",
+      "notFound": "Bu adreste wiki bulunamadı. GameMate, Fandom ve wiki.gg gibi MediaWiki siteleriyle çalışır."
+    }
+  },
+  "answers": {
+    "reason": {
+      "geminiNotSetUp": "Gemini kurulu değil",
+      "noLocalModel": "yerel model yok",
+      "screenshot": "ekran görüntüsü okunuyor",
+      "recipe": "GameMate verilerinden tarif",
+      "complex": "daha çok düşünmek gerekiyor",
+      "longQuestion": "uzun soru",
+      "longConversation": "uzun sohbet",
+      "quick": "kısa soru",
+      "geminiUnreachable": "Gemini'ye ulaşılamadı",
+      "localUnreachable": "yerel modele ulaşılamadı"
+    },
+    "noAnswer": "Buna güvenilir bir cevap bulamadım."
+  },
+  "models": {
+    "local": {
+      "fast": "Hızlı",
+      "2b": "Çoğu ekran kartında hızlı cevaplar. İyi bir başlangıç.",
+      "smart": "Akıllı",
+      "4b": "Daha iyi cevaplar. En iyisi 6 GB veya daha fazla ekran kartı belleğiyle.",
+      "best": "En iyi",
+      "9b": "Bu bilgisayardaki en iyi cevaplar. En iyisi 10 GB veya daha fazla ekran kartı belleğiyle."
+    }
+  },
+  "tray": {
+    "status": {
+      "off": "İzlemiyor",
+      "paused": "İzleme duraklatıldı",
+      "no-model": "İzlemeye başlamak için bir model seç",
+      "needs-consent": "Ayarlar'da oyun algılamaya izin ver",
+      "waiting-for-game": "Bir oyun bekleniyor",
+      "watching": "Oyununu izliyor",
+      "watchingGame": "{{game}} izleniyor"
+    },
+    "resume": "İzlemeye devam et",
+    "pause": "İzlemeyi duraklat",
+    "ask": "GameMate'e sor ({{shortcut}})",
+    "open": "GameMate'i aç",
+    "quit": "GameMate'ten çık"
+  },
+  "languagePicker": {
+    "title": "Dilini seç",
+    "lead": "GameMate'in pencereleri ve cevapları bu dili kullanacak. İstediğin zaman Ayarlar → Genel'den değiştirebilirsin.",
+    "continue": "Devam et"
+  },
+  "gameExamples": {
+    "minecraft": {
+      "piston": "Piston nasıl yapılır?",
+      "netherPortal": "Nether geçidi nasıl inşa edilir?"
+    },
+    "generic": {
+      "next": "Şimdi ne yapmalıyım?",
+      "tips": "Bulunduğum yer için bir ipucun var mı?"
+    },
+    "valorant": {
+      "beginner": "Yeni başlayanlar için hangi ajan iyi?",
+      "jettDash": "Jett’in atılması nasıl çalışır?"
+    },
+    "overwatch": {
+      "widowmaker": "Widowmaker’a nasıl karşılık veririm?",
+      "tank": "Öğrenmesi en kolay tank hangisi?"
+    },
+    "marvelRivals": {
+      "beginner": "Yeni başlayanlar için hangi kahraman iyi?",
+      "teamUps": "Takım yetenekleri nasıl çalışır?"
+    },
+    "counterStrike": {
+      "spray": "AK-47 ile sprey kontrolü nasıl yapılır?",
+      "save": "Ne zaman para biriktirmeliyim?"
+    },
+    "league": {
+      "beginner": "Yeni başlayanlar için hangi şampiyon iyi?",
+      "farm": "Nasıl daha iyi farm yaparım?"
+    },
+    "apex": {
+      "beginner": "Yeni başlayanlar için hangi efsane iyi?",
+      "land": "Nereye inmeliyim?"
+    },
+    "fortnite": {
+      "build": "Nasıl daha hızlı inşa ederim?",
+      "land": "Nereye inmeliyim?"
+    },
+    "rainbowSix": {
+      "beginner": "Yeni başlayanlar için hangi operatör iyi?",
+      "drones": "Dronları nasıl iyi kullanırım?"
+    },
+    "rocketLeague": {
+      "aerial": "Nasıl aerial yaparım?",
+      "rotate": "Doğru rotasyon nasıl yapılır?"
+    },
+    "fighting": {
+      "beginner": "Yeni başlayanlar için kim iyi?",
+      "better": "Bu oyunda nasıl daha iyi olurum?"
+    }
+  }
+}

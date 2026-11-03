@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createTranslator, flattenKeys, resources } from '../src/shared/i18n'
-import { LANGUAGES } from '../src/shared/languages'
+import { LANGUAGES, type LanguageCode } from '../src/shared/languages'
 
 // Small stand-in translations, so these tests don't depend on the real texts.
 const stub = {
@@ -77,5 +77,89 @@ describe('the windows', () => {
       })
     )
     expect(html).toMatch(/<div[^>]*dir="auto"[^>]*>مرحبا<\/div>/)
+  })
+})
+
+describe('the eleven translations', () => {
+  const english = resources.en.translation
+  const englishTexts = new Map(
+    flattenKeys(english).map((k) => [
+      k,
+      k.split('.').reduce<unknown>((o, p) => (o as Record<string, unknown>)[p], english)
+    ])
+  )
+  // Texts that read the same in every language: names, units and values only.
+  const SAME = /^(GameMate|Gemini|Ollama|Steam|Minecraft|Modrinth|\{\{\w+\}\}( \w+)?|[^\p{L}]*)$/u
+  // Words a language writes exactly like English.
+  const SAME_WORDS: Partial<Record<LanguageCode, string[]>> = {
+    fr: ['⏸ Pause', 'Modpack', '✦ Auto', 'Gemini (cloud)', 'Volume', 'Observation'],
+    de: ['Modpack', 'Wiki: {{wiki}}', 'Updates', '📷 Screenshot'],
+    es: ['Wiki: {{wiki}}', 'Natural (Kokoro)', 'General'],
+    pt: ['Wiki: {{wiki}}', 'Natural (Kokoro)', 'Volume'],
+    it: ['Wiki: {{wiki}}', 'Gemini (cloud)', 'Volume', '📷 Screenshot'],
+    tr: ['Model', 'Wiki: {{wiki}}'],
+    ja: ['Wiki: {{wiki}}']
+  }
+
+  for (const { code } of LANGUAGES.filter((l) => l.code !== 'en')) {
+    it(`cover every English text in ${code}`, () => {
+      const translation = resources[code].translation
+      const keys = new Set(flattenKeys(translation))
+      const categories = new Intl.PluralRules(code).resolvedOptions().pluralCategories
+      const missing: string[] = []
+      for (const key of englishTexts.keys()) {
+        if (/_one$/.test(key)) continue
+        if (/_other$/.test(key)) {
+          const base = key.slice(0, -'_other'.length)
+          for (const c of categories) if (!keys.has(`${base}_${c}`)) missing.push(`${base}_${c}`)
+        } else if (!keys.has(key)) missing.push(key)
+      }
+      expect(missing, `${code} is missing`).toEqual([])
+    })
+
+    it(`keeps the links and bold parts in ${code}`, () => {
+      const translation = resources[code].translation
+      const tags = (text: unknown): string[] =>
+        typeof text === 'string' ? [...text.matchAll(/<\/?(\w+)>/g)].map((m) => m[0]).sort() : []
+      const broken = flattenKeys(translation).filter((key) => {
+        const text = key
+          .split('.')
+          .reduce<unknown>((o, p) => (o as Record<string, unknown>)[p], translation)
+        return tags(text).join() !== tags(englishTexts.get(key)).join()
+      })
+      expect(broken, `${code} changed the markup`).toEqual([])
+    })
+
+    it(`translates the texts in ${code}`, () => {
+      const translation = resources[code].translation
+      const untranslated = flattenKeys(translation).filter((key) => {
+        const text = key
+          .split('.')
+          .reduce<unknown>((o, p) => (o as Record<string, unknown>)[p], translation)
+        const source = englishTexts.get(key)
+        return (
+          text === source && !SAME.test(String(text)) && !SAME_WORDS[code]?.includes(String(text))
+        )
+      })
+      expect(untranslated, `${code} still in English`).toEqual([])
+    })
+  }
+})
+
+describe('example questions', () => {
+  it('are translated for every game', async () => {
+    const { MINECRAFT, savedGameProfile } = await import('../src/main/games/catalog')
+    const t = createTranslator('en')
+    const names = ['Valorant', 'Overwatch 2', 'Some Indie Game', 'Rocket League', 'Dota 2']
+    const profiles = [
+      MINECRAFT,
+      ...names.map((name) => savedGameProfile({ id: name, name, launcher: 'manual' }))
+    ]
+    for (const profile of profiles) {
+      for (const key of profile.examples) {
+        expect(key, `${profile.name}: ${key}`).toMatch(/^gameExamples\./)
+        expect(t(key), key).not.toBe(key)
+      }
+    }
   })
 })

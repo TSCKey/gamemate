@@ -1,1 +1,656 @@
-{}
+{
+  "aiPanel": {
+    "geminiIsAnOptionalCloud": "Gemini 是 Google 提供的可选云端 AI。开启后:",
+    "forTheJobsYouSet": "对于交给 Gemini 的任务,你的问题、目前的聊天内容和截图会发送给 Google,并在 Google 的服务器上处理,这些服务器可能位于你所在的国家或地区之外。",
+    "googleRequiresYouToBe": "Google 要求你年满 18 岁。在欧盟/欧洲经济区、瑞士和英国,Google 的条款要求此类应用使用付费(已启用结算)的 API 密钥。",
+    "youCanTurnGeminiOff": "你可以随时关闭 Gemini,届时 GameMate 会删除你的密钥。",
+    "turnOnGemini": "开启 Gemini",
+    "ifYouTurnOnWeb": "开启网页搜索后:",
+    "forQuestionsAboutWhatS": "对于当前热点(版本强势、补丁、赛季)或玩家推荐的问题,以及 Wiki 中找不到答案时,GameMate 或 AI 会用你问题中的关键词和游戏名称生成一个简短的搜索词(例如“Overwatch characters currently meta”)。只有这个搜索词会通过 Gemini 并使用你的 API 密钥发送给 Google。你的对话和截图不会一起发送。",
+    "searchesCountTowardYourKey": "搜索会计入你密钥的 Google Search 免费额度;如果你的密钥已启用结算,超出部分的搜索可能会被 Google 收费。",
+    "youCanTurnWebSearch": "你可以随时在这里或在“设置 → 隐私与法律”中关闭网页搜索。",
+    "turnOnWebSearch": "开启网页搜索",
+    "cancel": "取消",
+    "ifYouTurnOnOnline": "开启在线查询后:",
+    "whenAQuestionIsAbout": "当问题涉及游戏中的某样东西时,GameMate 会把主题(例如“Ender Dragon”)发送到该游戏的 Wiki,对于 Minecraft 模组则把模组名称发送到 Modrinth。你的问题本身不会被发送。",
+    "gamemateDownloadsThePageAnd": "GameMate 会下载页面及其图片来展示给你。和你访问的任何网站一样,Wiki 能看到你的 IP 地址,并按其自身的隐私政策处理。",
+    "youCanTurnLookupsOff": "你可以随时在这里或在“设置 → 隐私与法律”中关闭查询。",
+    "turnOnLookups": "开启查询",
+    "whichAiAnswers": "由哪个 AI 回答",
+    "everythingRunsOnThisPc": "除非你为某项任务选择 Gemini,否则一切都在这台电脑上运行。",
+    "yourQuestions": "你的问题",
+    "chatAndTheInGame": "聊天和游戏内窗口。",
+    "aiForQuestions": "用于提问的 AI",
+    "companion": "伙伴",
+    "watchingYourGameOnGemini": "关注你的游戏。使用 Gemini 时每隔几秒会发送一次截图,可能会用完免费密钥的额度。",
+    "aiForTheCompanion": "用于伙伴的 AI",
+    "smarterAnswersAndBetterScreen": "使用你自己的 Google API 密钥,获得更聪明的回答和更好的画面理解。",
+    "model": "模型",
+    "flashModelsAreFastAnd": "Flash 模型速度快,免费用量最多。",
+    "choose": "选择…",
+    "apiKey": "API 密钥",
+    "savedOnThisPcEncrypted": "已保存在这台电脑上,并由 Windows 加密。",
+    "removeKey": "移除密钥",
+    "pasteYourKey": "粘贴你的密钥",
+    "geminiApiKey": "Gemini API 密钥",
+    "checking": "正在检查…",
+    "turnOffGemini": "关闭 Gemini",
+    "deletesYourKeyAndGoes": "删除你的密钥并改回本地 AI。",
+    "turnOff": "关闭",
+    "answers": "回答",
+    "detailedAnswers": "详细回答",
+    "answersExplainTheDetailsSteps": "回答会解释细节、步骤和实用技巧。",
+    "answersGetStraightToThe": "回答用一到三句话直奔主题。开启后可获得更长的解释。",
+    "lookThingsUp": "查找资料",
+    "lookThingsUpOnline": "在线查找资料",
+    "letsTheAiReadYour": "当 AI 不确定时,允许它阅读你所玩游戏的 Wiki(Minecraft 模组则是 Modrinth),比如关于 Boss、物品或建造下界传送门的内容。只发送主题;回答会附上页面链接,并可显示其中的图片,例如地图。",
+    "searchTheWeb": "搜索网页",
+    "letsTheAiSearchThe": "允许 AI 使用 Google(通过 Gemini)在网上搜索 Wiki 未涵盖的补丁、策略和技巧。只发送搜索词。",
+    "searchesTheWebWithGoogle": "用 Google 在网上搜索 Wiki 未涵盖的内容。需要 Gemini:请先开启它并在上方添加密钥。",
+    "googleHandlesThatData": "Google 依据<terms>Gemini API 条款</terms>和<privacy>Google 隐私权政策</privacy>处理这些数据,而不是依据 GameMate 的条款。使用免费密钥时,Google 可能会用你发送的内容改进其产品,并可能由人工审核,欧盟/欧洲经济区、瑞士和英国除外。请勿分享个人信息。",
+    "iM18OrOlder": "我已年满 18 岁,并同意将这些数据发送给 Google。",
+    "googleSearchesTheWeb": "Google 依据<terms>Gemini API 条款</terms>和<privacy>Google 隐私权政策</privacy>搜索网页,包括 Reddit 等论坛。回答会显示用到的页面和 Google 的搜索建议。",
+    "autoDecidePerQuestion": "自动(每个问题单独决定)",
+    "autoAddAKeyFirst": "自动(每个问题单独决定)(请先添加密钥)",
+    "onThisPc": "在这台电脑上({{name}})",
+    "geminiAddAKeyFirst": "Gemini(请先添加密钥)",
+    "getOneAt": "可在 <link>aistudio.google.com</link> 获取密钥。GameMate 会先向 Google 验证密钥,再保存。",
+    "save": "保存"
+  },
+  "answeredByLabel": {
+    "onThisPc": "💻 在这台电脑上"
+  },
+  "companionMenu": {
+    "companionMode": "伙伴模式",
+    "howOftenToComment": "评论频率",
+    "resumeWatching": "▶ 继续关注",
+    "pauseWatching": "⏸ 暂停关注",
+    "companionSettings": "伙伴设置…",
+    "companion": "伙伴:{{mode}}"
+  },
+  "companionPanel": {
+    "justNow": "刚刚",
+    "minAgo": "{{minutes}} 分钟前",
+    "hAgo": "{{value}} 小时前",
+    "companionMode": "伙伴模式",
+    "howMuchGamemateWatchesYour": "GameMate 关注你游戏的程度,以及主动说话的频率。",
+    "howOftenToComment": "评论频率",
+    "resume": "▶ 继续",
+    "pause": "⏸ 暂停",
+    "whatGamemateSaw": "GameMate 看到的内容",
+    "keptOnlyWhileGamemateIs": "仅在 GameMate 打开期间保留。",
+    "nothingYetStartPlayingAnd": "暂无内容。开始游戏后,GameMate 会记录发生的事情。"
+  },
+  "gameMenu": {
+    "theGameGamemateHelpsWith": "GameMate 正在协助的游戏",
+    "followTheGameIM": "跟随我正在玩的游戏",
+    "switchesByItselfWhenYou": "进入游戏时自动切换",
+    "allowGameDetectionInSettings": "请先在“设置 → 游戏”中允许检测游戏",
+    "game": "游戏",
+    "scanForGames": "扫描游戏…",
+    "findMyGames": "查找我的游戏…"
+  },
+  "gamesPanel": {
+    "gamemateCanFindYourGames": "GameMate 可以找到你的游戏,并跟随你正在玩的那一款。为此它会:",
+    "scanForGames": "扫描游戏",
+    "looksUpAWikiFor": "为找到的每款游戏查找 Wiki,只把游戏名称发送给 wiki.gg 和 Fandom。",
+    "readsTheNameOfThe": "在你游戏时读取前台程序的名称,以判断是哪款游戏。",
+    "keepsEverythingOnThisPc": "所有内容都保存在这台电脑上。关闭此项会忘记找到的所有游戏。",
+    "allowAndScanForGames": "允许并扫描游戏",
+    "rankedOnlineGameAiHelp": "排位制在线游戏:比赛中使用 AI 帮助可能违反其规则",
+    "competitive": "竞技",
+    "newWikiAddress": "新的 Wiki 地址",
+    "noWikiFoundPasteIts": "未找到 Wiki。请粘贴其地址,例如 https://…fandom.com",
+    "wikiAddressFor": "{{name}} 的 Wiki 地址",
+    "checking": "正在检查…",
+    "useWiki": "使用此 Wiki",
+    "change": "更改",
+    "looking": "正在查找…",
+    "otherWikis": "其他 Wiki",
+    "inUse": "使用中",
+    "use": "使用",
+    "remove": "移除",
+    "addAGameThatS": "添加正在运行的游戏…",
+    "noProgramsWithAWindow": "未找到带窗口的程序。请先启动游戏,然后重试。",
+    "runningProgram": "正在运行的程序",
+    "gameName": "游戏名称",
+    "add": "添加",
+    "cancel": "取消",
+    "findYourGames": "查找你的游戏",
+    "gamemateKnowsMinecraftOutOf": "GameMate 内置了 Minecraft 的知识。你的其他游戏来自对这台电脑的扫描。",
+    "scanning": "正在扫描…",
+    "looksThroughSteamEpicGames": "检查 Steam、Epic Games、Battle.net 和 Riot,并找到每款游戏的 Wiki。安装新游戏后请再运行一次。",
+    "followTheGameIM": "跟随我正在玩的游戏",
+    "whenYouPressTheShortcut": "当你按下快捷键或伙伴正在关注时,GameMate 会切换到前台的游戏。",
+    "stopLookingForGames": "停止查找游戏",
+    "turnsDetectionOffAndForgets": "关闭检测,并忘记 GameMate 找到的所有游戏。",
+    "turnOff": "关闭",
+    "yourGames": "你的游戏",
+    "eachGameSWikiWas": "每款游戏的 Wiki 都是按名称找到的:有多个时选最活跃的。可在“其他 Wiki”中换一个,或在“更改”中粘贴任意 Wiki 的地址。",
+    "competitiveGamesCheckTheGame": "竞技游戏:在排位赛中使用伙伴前,请先查看游戏规则。",
+    "minecraftModpacks": "Minecraft 整合包",
+    "yourCurseforgeModpacksOnThis": "这台电脑上的 CurseForge 整合包,让回答知道你装了哪些模组。使用其他启动器时,GameMate 会读取正在运行的整合包的模组。",
+    "modpack": "整合包",
+    "noModpackRunningRightNow": "当前没有运行中的整合包。启动一个,或在这里选择。",
+    "plainMinecraftWithoutMods": "原版 Minecraft,不带模组。",
+    "detectTheOneIM": "检测我正在玩的",
+    "nonePlainMinecraft": "无(原版 Minecraft)",
+    "builtIn": "内置",
+    "addedByYou": "由你添加",
+    "readsTheGameLists": "当你点击<b>扫描游戏</b>时,读取这台电脑上 Steam、Epic Games、Battle.net 和 Riot 的游戏列表,以及你的 CurseForge Minecraft 整合包。",
+    "allowGamemateToLook": "允许 GameMate 在这台电脑上查找游戏。",
+    "wiki": "Wiki:{{wiki}}",
+    "noOtherWikisFound": "未找到 {{name}} 的其他 Wiki。",
+    "wikiSize": "{{pages}} 个页面,{{editors}} 位活跃编辑者",
+    "gamesFound_other": "找到 {{count}} 款游戏",
+    "usingModpack_other": "正在使用 {{pack}},{{count}} 个模组。",
+    "mods_other": "{{count}} 个模组"
+  },
+  "generalPanel": {
+    "runningFromSourceCodeUpdates": "正在从源代码运行:更新来自 git。",
+    "checkingForUpdates": "正在检查更新…",
+    "downloadingVersion": "正在下载版本 {{available}}… {{value}}%",
+    "versionIsReadyItInstalls": "版本 {{available}} 已准备就绪,将在 GameMate 重新启动时安装。",
+    "gamemateIsUpToDate": "GameMate 已是最新版本。",
+    "couldnTCheckForUpdates": "无法检查更新。",
+    "updatesComeFromGamemateS": "更新来自 GameMate 在 GitHub 上的发布版本。",
+    "updates": "更新",
+    "status": "状态",
+    "restartAndUpdate": "重新启动并更新",
+    "checkNow": "立即检查",
+    "checkForUpdatesAutomatically": "自动检查更新",
+    "looksForANewVersion": "在 GameMate 启动时以及每隔几个小时查找新版本,并在后台下载。",
+    "inGameWindow": "游戏内窗口",
+    "shortcut": "快捷键",
+    "anotherAppIsUsingThis": "另一个应用正在使用此快捷键,因此它已关闭。请换一个,或关闭那个应用后重新启动 GameMate。",
+    "opensASmallWindowOver": "在游戏上方打开一个小窗口,方便你提问。",
+    "voiceShortcut": "语音快捷键",
+    "anotherAppIsUsingThis2": "另一个应用正在使用此快捷键,因此它已关闭。请换一个。",
+    "opensTheInGameWindow": "打开游戏内窗口并聆听语音提问。需开启语音输入(设置 → 语音)。",
+    "sendAScreenshotWithQuestions": "提问时附带截图",
+    "letsGamemateSeeWhatYou": "在游戏中提问时,让 GameMate 看到你正在看的画面。",
+    "whenYouCloseTheWindow": "关闭窗口时",
+    "whenGamemateQuitsItFrees": "GameMate 退出时会立即释放 AI 模型,后台不会继续运行任何内容。",
+    "keepRunningInTheTray": "在系统托盘中继续运行",
+    "keepsTheInGameShortcuts": "游戏内快捷键和伙伴会继续工作。可从托盘图标退出。AI 模型会在闲置几分钟后释放。",
+    "closingTheWindowQuitsGamemate": "关闭窗口会退出 GameMate。游戏内快捷键和伙伴会停止,直到你再次启动它。",
+    "language": "语言",
+    "languageHelp": "用于 GameMate 的窗口和 AI 的回答。游戏名称和 Wiki 页面保持原样。"
+  },
+  "modelMenu": {
+    "builtInAi": "内置 AI",
+    "auto": "✦ 自动",
+    "chooseAModel": "选择模型",
+    "whichAiAnswers": "由哪个 AI 回答",
+    "whichAiAnswersYourQuestions": "由哪个 AI 回答你的问题",
+    "picksThisPcOrGemini": "为每个问题选择这台电脑或 Gemini",
+    "picksThisPcOrGemini2": "为每个问题选择这台电脑或 Gemini。请先设置 Gemini。",
+    "onThisPc": "在这台电脑上",
+    "canSeeScreenshots": "{{label}} · 能看截图",
+    "downloadAModel": "下载模型…",
+    "runsOnYourGraphicsCard": "在显卡上运行,可离线使用",
+    "canSeeScreenshots2": "能看截图",
+    "textOnly": "仅文字",
+    "geminiCloud": "Gemini(云端)",
+    "setUpGemini": "设置 Gemini…",
+    "smarterAnswersWithYourOwn": "使用你自己的 Google API 密钥获得更聪明的回答",
+    "manageModels": "管理模型…"
+  },
+  "modelsPanel": {
+    "aiModelsOnThisPc": "这台电脑上的 AI 模型",
+    "theyRunOnYourGraphics": "它们在显卡上运行,可离线使用:你问的任何内容都不会离开这台电脑。首次下载还会安装 GameMate 的 AI 引擎(37 MB)。",
+    "recommended": "推荐",
+    "cancel": "取消",
+    "keep": "保留",
+    "inUse": "✓ 使用中",
+    "use": "使用",
+    "delete": "删除 {{size}}",
+    "tryAgain": "重试",
+    "alreadyUseOllamaGamemateCan": "已经在用 Ollama?GameMate 可以用它的模型代替内置模型。",
+    "useMyOllamaModels": "使用我的 Ollama 模型",
+    "ollamaMustBeRunningGamemate": "Ollama 必须在运行。GameMate 退出时会释放它的模型。",
+    "model": "模型",
+    "modelsMarkedCanSeeScreenshots": "标有 👁 的模型能看截图。",
+    "ollamaModel": "Ollama 模型",
+    "noModels": "没有模型",
+    "reload": "重新加载",
+    "cloudModels": "云端模型",
+    "runOnAnotherCompanyS": "在其他公司的服务器上运行。每一个都会在发送任何内容之前征求你的同意。",
+    "smarterAnswersAndBetterScreen": "使用你自己的 Google API 密钥,获得更聪明的回答和更好的画面理解。",
+    "setUp": "设置",
+    "modelDetails": "{{description}} {{size}}。能看截图。",
+    "download": "下载"
+  },
+  "pictures": {
+    "openOnThe": "在 {{wiki}} 中打开"
+  },
+  "privacyPanel": {
+    "findingYourGames": "查找你的游戏",
+    "givenOnYouCanAlso": "已于 {{value}} 同意。你也可以在“{{where}}”中更改。",
+    "givenYouCanAlsoChange": "已同意。你也可以在“{{where}}”中更改。",
+    "notGivenYouCanTurn": "未同意。你可以在“{{where}}”中开启。",
+    "withdraw": "撤回",
+    "off": "关闭",
+    "termsOfUseAndPrivacy": "使用条款和隐私政策",
+    "youAcceptedTheTermsOf": "你已于 {{value}} 接受使用条款。",
+    "readTheTermsOfUse": "阅读使用条款",
+    "readThePrivacyPolicy": "阅读隐私政策",
+    "yourConsents": "你的同意",
+    "optionalFeaturesThatSendData": "会向其他服务发送数据的可选功能。撤回其中一项只会关闭该功能,GameMate 的其他部分仍可正常使用。",
+    "settingsGames": "设置 → 游戏",
+    "onlineLookups": "在线查询",
+    "settingsAiOnline": "设置 → AI 与在线",
+    "webSearchGoogle": "网页搜索(Google)",
+    "howGamemateHandlesYourData": "GameMate 如何处理你的数据",
+    "storedOnThisPc": "保存在这台电脑上的内容",
+    "onlyInYourWindowsUser": "仅保存在你的 Windows 用户文件夹中,只有你的 Windows 帐户能读取。",
+    "yourSettings": "你的设置。",
+    "yourGeminiApiKeyIf": "你的 Gemini API 密钥(如果添加过),由 Windows 加密。",
+    "aiModelsGamemateSAi": "你下载的 AI 模型、GameMate 的 AI 引擎和语音模型。",
+    "gamesFoundOrAddedTheir": "找到或添加的游戏:名称、文件夹或程序,以及 Wiki 地址。",
+    "openLogFolder": "打开日志文件夹",
+    "whenYouUseOnlineFeatures": "使用在线功能时",
+    "theseServicesHandleYourData": "这些服务按照它们自己的条款处理你的数据,而不是 GameMate 的条款。",
+    "withdrawMyAcceptanceOfThe": "撤回我对条款的接受",
+    "gamemateStopsWorkingUntilYou": "在你再次接受使用条款之前,GameMate 将停止工作:它会断开网络,伙伴会停止,AI 会关闭。除非你同时删除数据,否则你的设置和下载内容会保留。",
+    "yesWithdraw": "是的,撤回",
+    "cancel": "取消",
+    "withdrawAcceptance": "撤回接受",
+    "deleteMyData": "删除我的数据",
+    "removesEverythingAboveFromThis": "从这台电脑上删除上述所有内容,并将 GameMate 重置为刚安装时的状态。已发送给 Google 的数据适用 Google 的政策。",
+    "doneEverythingGamemateStoredHas": "完成。GameMate 保存的所有内容都已删除。",
+    "yesDeleteEverything": "是的,全部删除",
+    "summary": {
+      "runsOnYourPc": "<b>在你的电脑上运行。</b>无需帐户,没有广告,没有数据分析。GameMate 的开发者不会收到你的任何信息。",
+      "yourScreen": "<b>你的屏幕</b>只会在你提出要求时,或伙伴设置为关注游戏时被截取。截图只保存在内存中,绝不会保存到磁盘。",
+      "findingYourGames": "<b>查找你的游戏</b>只会在你于“设置 → 游戏”中允许后进行。之后 GameMate 会读取你的启动器(Steam、Epic Games、Battle.net、Riot)的游戏列表、你的 CurseForge 整合包以及前台程序的名称。这些都保留在你的电脑上;为了查找 Wiki,只会把游戏名称发送给 wiki.gg 和 Fandom。",
+      "yourMicrophone": "<b>你的麦克风</b>只在语音输入开启且你按下语音快捷键或 🎤 时使用。语音会在这台电脑上转换为文字。",
+      "chatsAndTheCompanionLog": "<b>聊天和伙伴日志</b>仅在 GameMate 打开期间保留。",
+      "onlineFeaturesAreOffUntil": "<b>在线功能在你开启之前一直关闭:</b>在你所玩游戏的 Wiki 或 Modrinth 上查找资料(只发送主题),以及 Google Gemini(你的问题和截图会发送给 Google)。下载只在你要求时进行一次:AI 模型和语音模型来自 Hugging Face,GameMate 的 AI 引擎来自 GitHub。检查更新时会向 GitHub 询问 GameMate 的最新版本(可以关闭)。"
+    },
+    "aLogOfWhatGamemate": "记录 GameMate 执行过的操作(如启动 AI 或检查更新),用于排查问题。其中绝不包含你的问题或回答,也绝不会被发送到任何地方。",
+    "geminiTerms": "<b>Google Gemini:</b><terms>Gemini API 条款</terms>和<privacy>Google 隐私权政策</privacy>。",
+    "wikiLicenses": "<b>游戏 Wiki 和 Modrinth:</b>每个 Wiki 的文字都有自己的许可证(会随每条使用它的回答显示,例如 <link>minecraft.wiki</link>),所以回答会附上页面链接。回答中的图片也从同一 Wiki 下载,并链接到其所在页面。"
+  },
+  "recipeCard": {
+    "craftingGridFor": "{{item}} 的合成表",
+    "anyArrangementWorks": "任意摆放均可"
+  },
+  "searchSuggestions": {
+    "googleSearchSuggestions": "Google 搜索建议"
+  },
+  "setupCard": {
+    "downloadGamemateSAi": "下载 GameMate 的 AI",
+    "oneDownloadAndGamemateRuns": "只需下载一次,GameMate 就能在这台电脑上运行,即使离线也可以。你问的任何内容都不会离开你的电脑。",
+    "cancel": "取消",
+    "otherModels": "其他模型",
+    "iUseOllama": "我使用 Ollama",
+    "useGeminiCloud": "使用 Gemini(云端)",
+    "downloading": "正在下载 {{name}}:{{size}} 中的 {{percent}}%",
+    "download": "下载 {{name}}({{size}})"
+  },
+  "shortcutField": {
+    "thatIsAlreadyGamemateS": "这已经是 GameMate 的另一个快捷键了。",
+    "pressTheNewShortcutEsc": "请按下新的快捷键…(按 Esc 取消)",
+    "change": "更改",
+    "default": "默认"
+  },
+  "sources": {
+    "source": "来源:"
+  },
+  "voicePanel": {
+    "remove": "移除",
+    "download": "下载",
+    "talkToGamemate": "和 GameMate 说话",
+    "speechIsTurnedIntoText": "语音在这台电脑上转换为文字,你的声音绝不会离开这台电脑。",
+    "askWithYourMicrophone": "用麦克风提问",
+    "isUsedByAnotherApp": "{{voiceShortcut}} 已被另一个应用使用。请改用 🎤 按钮。",
+    "inAGamePressAnd": "在游戏中按 {{voiceShortcut}} 并大声提问。你停顿时 GameMate 会停止聆听。",
+    "downloadTheSelectedModelOnce": "先下载一次所选模型即可开始使用,之后可离线运行。",
+    "gamemateSVoice": "GameMate 的声音",
+    "kokoroANaturalSoundingVoice": "Kokoro 是一个在这台电脑上离线运行的自然声音。",
+    "usesTheVoicesBuiltInto": "使用 Windows 内置的语音。",
+    "voiceType": "声音类型",
+    "naturalIsKokoroApache2": "自然声音是 Kokoro(Apache 2.0,仅使用开放许可且无版权的音频训练):下载一次即可离线使用。",
+    "naturalKokoro": "自然(Kokoro)",
+    "windowsVoices": "Windows 语音",
+    "downloaded": "已下载。",
+    "downloadItOnceToUse": "下载一次即可使用。在此之前,GameMate 会使用 Windows 语音。",
+    "readAnswersAloud": "朗读回答",
+    "readCompanionCommentsAloud": "朗读伙伴的评论",
+    "voice": "声音",
+    "windowsDefault": "Windows 默认",
+    "volume": "音量",
+    "speed": "语速",
+    "tryIt": "试听",
+    "hiIMGamemateWatch": "你好,我是 GameMate。小心苦力怕!",
+    "testVoice": "🔊 测试声音",
+    "speechModels": {
+      "fast": {
+        "label": "快速语音模型",
+        "help": "速度最快,但更容易听错。"
+      },
+      "accurate": {
+        "label": "精准语音模型",
+        "help": "比快速模型更少听错。"
+      },
+      "best": {
+        "label": "最佳语音模型",
+        "help": "Whisper Small:最能听懂你,带口音也没问题,但会多花几秒钟。推荐。"
+      }
+    },
+    "mb": "{{size}} MB",
+    "kokoroVoice": {
+      "af": "{{name}}(美式英语,女声)",
+      "am": "{{name}}(美式英语,男声)",
+      "bf": "{{name}}(英式英语,女声)",
+      "bm": "{{name}}(英式英语,男声)"
+    },
+    "downloading": "正在下载… {{percent}}%",
+    "speakAnswers": {
+      "off": "从不",
+      "voice": "我用语音提问时",
+      "always": "始终"
+    },
+    "naturalVoice": "自然声音"
+  },
+  "useLocalModels": {
+    "builtInAi": "内置 AI",
+    "gb": "{{value}} GB",
+    "mb": "{{sizeMb}} MB"
+  },
+  "useSettings": {
+    "noModelsInstalledRunOllama": "尚未安装模型。请运行:ollama pull qwen3.5:2b"
+  },
+  "legalReader": {
+    "termsOfUse": "使用条款",
+    "privacyPolicy": "隐私政策",
+    "close": "关闭"
+  },
+  "termsGate": {
+    "ourTermsHaveChanged": "我们的条款已更新",
+    "welcomeToGamemate": "欢迎使用 GameMate",
+    "pleaseReadAndAcceptThe": "请阅读并接受更新后的使用条款,以继续使用 GameMate。",
+    "beforeYouStartHereIs": "开始之前,先了解 GameMate 如何处理你的数据。",
+    "featuresThatSendDataTo": "会向其他服务发送数据的功能在你开启之前保持关闭。你可以随时在“设置 → 隐私与法律”中撤回接受。",
+    "deleteEverythingGamemateStored": "删除 GameMate 保存的所有内容?",
+    "delete": "删除",
+    "cancel": "取消",
+    "deleteMyData": "删除我的数据",
+    "quitGamemate": "退出 GameMate",
+    "acceptAndContinue": "接受并继续",
+    "pleaseReadTheFull": "请完整阅读<terms>使用条款</terms>和<privacy>隐私政策</privacy>。",
+    "iAm16OrOlder": "我已年满 16 岁,或我的父母或监护人同意我使用 GameMate。",
+    "iAcceptTheTerms": "我接受使用条款,并已阅读隐私政策。"
+  },
+  "app": {
+    "entireScreen": "整个屏幕",
+    "newChat": "新聊天",
+    "settings": "设置",
+    "whatCanIHelpWith": "有什么可以帮你的?",
+    "whatSOnMyScreen": "📷 我的屏幕上有什么?",
+    "screenshotSentWithThisQuestion": "随此问题发送的截图",
+    "capturingScreen": "正在截取屏幕…",
+    "thinking": "正在思考…",
+    "downloadGamemateSAiTo": "下载 GameMate 的 AI 即可开始",
+    "pickAnAiModelIn": "请先在设置中选择一个 AI 模型",
+    "listening": "正在聆听…",
+    "workingOutWhatYouSaid": "正在识别你说的话…",
+    "askAboutYourScreenOr": "询问屏幕上的内容…(或直接按 Enter)",
+    "askAbout": "询问关于 {{value}} 的问题…",
+    "sendAScreenshotWithYour": "提问时附带截图",
+    "screenshot": "📷 截图",
+    "screenshotSource": "截图来源",
+    "nothingToCapture": "没有可截取的内容",
+    "screenAccessIsOffCompanion": "屏幕访问已关闭(伙伴:已停用)。",
+    "thisModelCanTSee": "此模型无法查看截图。",
+    "listeningClickToStop": "正在聆听,点击停止",
+    "askByVoice": "语音提问",
+    "send": "发送",
+    "whatIsHappeningOnMy": "我的屏幕上正在发生什么?",
+    "pressShortcutInAnyGame": "在任何游戏中按 <kbd>{{shortcut}}</kbd>,无需离开游戏即可提问。",
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> 已被另一个应用使用,因此游戏内快捷键已关闭。请关闭那个应用并重新启动 GameMate。"
+  },
+  "overlay": {
+    "dragToMove": "拖动以移动",
+    "openGamemateAndSetUp": "请打开 GameMate 并先设置一个 AI 模型",
+    "listening": "正在聆听…",
+    "workingOutWhatYouSaid": "正在识别你说的话…",
+    "askGamemate": "问问 GameMate…",
+    "listeningClickToStop": "正在聆听,点击停止",
+    "askByVoice": "语音提问({{voiceShortcut}})",
+    "thisModelCanTSee": "此模型无法查看图片",
+    "screenshotOnGamemateSeesYour": "截图已开启:GameMate 能看到你的屏幕",
+    "screenshotOff": "截图已关闭",
+    "newConversation": "新对话",
+    "thinking": "正在思考…",
+    "answersComeFromGeminiGoogle": "回答来自 Gemini(Google)",
+    "gamematePicksTheLocalAi": "GameMate 会为每个问题选择本地 AI 或 Gemini",
+    "auto": "✦ 自动",
+    "theGameGamemateHelpsWith": "GameMate 正在协助的游戏",
+    "autoGemini": "✦ 自动:☁ Gemini",
+    "autoThisPc": "✦ 自动:这台电脑",
+    "hint": "Enter 提问 · Esc 隐藏",
+    "hintWithVoice": "Enter 提问 · {{voiceShortcut}} 说话 · Esc 隐藏"
+  },
+  "settingsScreen": {
+    "settings": "设置",
+    "backToChat": "← 返回聊天",
+    "tabs": {
+      "general": "常规",
+      "games": "游戏",
+      "models": "模型",
+      "companion": "伙伴",
+      "voice": "语音",
+      "ai": "AI 与在线",
+      "privacy": "隐私与法律"
+    }
+  },
+  "useVoiceInput": {
+    "sorryIDidnTCatch": "抱歉,我没听清。",
+    "gamemateIsNotAllowedTo": "GameMate 没有使用麦克风的权限。请检查 Windows 的麦克风隐私设置。"
+  },
+  "companion": {
+    "modes": {
+      "disabled": {
+        "label": "已停用",
+        "help": "从不查看你的屏幕,即使按下快捷键也不会。"
+      },
+      "on-demand": {
+        "label": "按需",
+        "help": "只在你提问时查看并回答。"
+      },
+      "observation": {
+        "label": "观察",
+        "help": "关注你的游戏并记录发生的事情,不弹出窗口。"
+      },
+      "commentary": {
+        "label": "解说",
+        "help": "关注你的游戏,在发生重要事情时弹出简短评论。"
+      },
+      "quiet": {
+        "label": "安静",
+        "help": "默默关注,只用看到的内容来回答你的问题。"
+      }
+    },
+    "frequencies": {
+      "rare": "很少(只在关键时刻)",
+      "normal": "有时",
+      "frequent": "经常"
+    },
+    "status": {
+      "off": "未关注",
+      "paused": "已暂停",
+      "no-model": "选择一个模型以开始关注",
+      "needs-consent": "请在“设置 → 游戏”中允许检测游戏以开始关注",
+      "waiting-for-game": "正在等待游戏成为活动窗口",
+      "watching": "正在关注",
+      "analyzing": "正在查看你的屏幕…"
+    }
+  },
+  "errors": {
+    "ai": {
+      "noLocalModel": "请先在 GameMate 中下载一个 AI 模型(设置 → 模型)。",
+      "pickModel": "请先在 GameMate 中选择一个模型。"
+    },
+    "gemini": {
+      "turnOn": "请先在 GameMate 的设置中开启 Gemini(AI 与在线)。",
+      "addKey": "请先在 GameMate 的 AI 设置中添加你的 Gemini API 密钥。",
+      "pickModel": "请在 GameMate 的 AI 设置中选择一个 Gemini 模型。",
+      "timeout": "Gemini 响应时间过长。",
+      "unreachable": "无法连接 Gemini。请检查网络连接。",
+      "badKey": "Gemini 拒绝了该 API 密钥。请在 GameMate 的 AI 设置中检查。",
+      "keyNotAllowed": "此 API 密钥无权使用 Gemini。",
+      "usageLimit": "已达到 Gemini 的使用上限。请稍后再试,或切换到本地模型。",
+      "error": "Gemini 错误 {{status}}{{detail}}",
+      "noAnswer": "Gemini 没有回答{{reason}}。",
+      "needConsent": "请先同意 Gemini 的条款。",
+      "notAKey": "这看起来不像 Gemini API 密钥。",
+      "cantEncrypt": "Windows 无法在这台电脑上加密密钥,因此 GameMate 不会保存它。"
+    },
+    "builtin": {
+      "failed": "内置 AI 出错:{{detail}}",
+      "timeout": "内置 AI 响应时间过长。",
+      "stopped": "内置 AI 意外停止。请重试。",
+      "tooLong": "此对话对内置 AI 来说太长了。请开始新的聊天。",
+      "noGraphicsMemory": "内置 AI 无法启动:显存不足以运行此模型。请尝试更小的模型,或关闭其他程序。",
+      "badModelFile": "内置 AI 无法启动:无法加载模型文件。请在“设置 → 模型”中删除它并重新下载。",
+      "couldNotStart": "内置 AI 无法启动({{detail}})。",
+      "slowStart": "内置 AI 无法启动:加载模型耗时过长。"
+    },
+    "ollama": {
+      "timeout": "Ollama 响应时间过长。",
+      "unreachable": "无法连接位于 {{url}} 的 Ollama。它在运行吗?",
+      "error": "Ollama 错误 {{detail}}",
+      "noAnswer": "Ollama 没有发送回答。"
+    },
+    "download": {
+      "engineIncomplete": "AI 引擎不完整",
+      "diskSpace": "磁盘可用空间不足(需要 {{size}} GB)",
+      "failed": "无法下载 {{name}}:{{reason}}",
+      "serverAnswered": "服务器返回 {{status}}",
+      "incomplete": "下载不完整",
+      "damaged": "下载的文件已损坏(校验和不匹配)",
+      "voiceFailed": "无法下载声音:{{reason}}",
+      "speechModelFailed": "无法下载语音模型:{{reason}}"
+    },
+    "games": {
+      "needConsent": "请先允许 GameMate 查找游戏(设置 → 游戏)。",
+      "noName": "请为游戏取个名字。",
+      "tooMany": "游戏太多了。",
+      "cantAdd": "无法添加该程序。"
+    },
+    "terms": {
+      "notAccepted": "请先接受 GameMate 的使用条款。",
+      "age": "请先确认你的年龄。"
+    },
+    "updates": {
+      "check": "无法检查更新。你连上网络了吗?",
+      "download": "无法下载更新。稍后会再试。"
+    },
+    "capture": {
+      "failed": "无法截取屏幕。",
+      "windowGone": "该窗口已不可用。请选择另一个窗口来截取。"
+    },
+    "wiki": {
+      "address": "请输入以 https:// 开头的 Wiki 地址",
+      "notFound": "在该地址未找到 Wiki。GameMate 支持 Fandom 和 wiki.gg 等 MediaWiki 网站。"
+    }
+  },
+  "answers": {
+    "reason": {
+      "geminiNotSetUp": "Gemini 未设置",
+      "noLocalModel": "没有本地模型",
+      "screenshot": "读取截图",
+      "recipe": "GameMate 数据中的配方",
+      "complex": "需要更多思考",
+      "longQuestion": "长问题",
+      "longConversation": "长对话",
+      "quick": "简单问题",
+      "geminiUnreachable": "无法连接 Gemini",
+      "localUnreachable": "无法连接本地模型"
+    },
+    "noAnswer": "我没有找到关于这个问题的可靠答案。"
+  },
+  "models": {
+    "local": {
+      "fast": "快速",
+      "2b": "在大多数显卡上都能快速回答。适合入门。",
+      "smart": "聪明",
+      "4b": "回答更好。最好有 6 GB 或以上显存。",
+      "best": "最佳",
+      "9b": "这台电脑上最好的回答。最好有 10 GB 或以上显存。"
+    }
+  },
+  "tray": {
+    "status": {
+      "off": "未关注",
+      "paused": "关注已暂停",
+      "no-model": "选择一个模型以开始关注",
+      "needs-consent": "请在设置中允许检测游戏",
+      "waiting-for-game": "正在等待游戏",
+      "watching": "正在关注你的游戏",
+      "watchingGame": "正在关注 {{game}}"
+    },
+    "resume": "继续关注",
+    "pause": "暂停关注",
+    "ask": "询问 GameMate({{shortcut}})",
+    "open": "打开 GameMate",
+    "quit": "退出 GameMate"
+  },
+  "languagePicker": {
+    "title": "选择你的语言",
+    "lead": "GameMate 的窗口和回答都会使用它。你可以随时在“设置 → 常规”中更改。",
+    "continue": "继续"
+  },
+  "gameExamples": {
+    "minecraft": {
+      "piston": "怎么合成活塞?",
+      "netherPortal": "怎么建造下界传送门?"
+    },
+    "generic": {
+      "next": "接下来我该做什么?",
+      "tips": "我现在的位置有什么建议?"
+    },
+    "valorant": {
+      "beginner": "哪个特工适合新手?",
+      "jettDash": "捷风的冲刺怎么用?"
+    },
+    "overwatch": {
+      "widowmaker": "怎么克制黑百合?",
+      "tank": "哪个重装英雄最容易上手?"
+    },
+    "marvelRivals": {
+      "beginner": "哪个英雄适合新手?",
+      "teamUps": "组队技能是怎么运作的?"
+    },
+    "counterStrike": {
+      "spray": "AK-47 怎么压枪?",
+      "save": "什么时候该存钱?"
+    },
+    "league": {
+      "beginner": "哪个英雄适合新手?",
+      "farm": "怎么更好地补刀发育?"
+    },
+    "apex": {
+      "beginner": "哪个传奇适合新手?",
+      "land": "我该在哪里落地?"
+    },
+    "fortnite": {
+      "build": "怎么建得更快?",
+      "land": "我该在哪里落地?"
+    },
+    "rainbowSix": {
+      "beginner": "哪个干员适合新手?",
+      "drones": "怎么用好无人机?"
+    },
+    "rocketLeague": {
+      "aerial": "怎么做空中击球?",
+      "rotate": "怎么正确轮转?"
+    },
+    "fighting": {
+      "beginner": "哪个角色适合新手?",
+      "better": "怎样才能玩得更好?"
+    }
+  }
+}

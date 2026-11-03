@@ -1,1 +1,656 @@
-{}
+{
+  "aiPanel": {
+    "geminiIsAnOptionalCloud": "Gemini は Google が提供する任意のクラウド AI です。オンにすると:",
+    "forTheJobsYouSet": "Gemini に任せた処理では、質問、これまでのチャット、スクリーンショットが Google に送信され、Google のサーバーで処理されます。サーバーは国外にある場合があります。",
+    "googleRequiresYouToBe": "Google の利用には 18 歳以上である必要があります。EU/EEA、スイス、英国では、このようなアプリでは有料(課金を有効にした)API キーが Google の規約で求められます。",
+    "youCanTurnGeminiOff": "Gemini はいつでもオフにできます。その場合、GameMate はキーを削除します。",
+    "turnOnGemini": "Gemini をオンにする",
+    "ifYouTurnOnWeb": "Web 検索をオンにすると:",
+    "forQuestionsAboutWhatS": "最新の状況(メタ、パッチ、シーズン)やプレイヤーのおすすめについての質問、または Wiki に答えがない場合、GameMate または AI が質問のキーワードとゲーム名から短い検索クエリを作ります(例:「Overwatch characters currently meta」)。Google に送られるのはこのクエリだけで、あなたの API キーで Gemini を通して送信されます。会話やスクリーンショットは送信されません。",
+    "searchesCountTowardYourKey": "検索はキーの Google Search 無料枠から差し引かれます。キーで課金を有効にしている場合、無料枠を超えた検索に料金がかかることがあります。",
+    "youCanTurnWebSearch": "Web 検索はここか、設定 → プライバシーと法的情報 からいつでもオフにできます。",
+    "turnOnWebSearch": "Web 検索をオンにする",
+    "cancel": "キャンセル",
+    "ifYouTurnOnOnline": "オンライン検索をオンにすると:",
+    "whenAQuestionIsAbout": "ゲーム内の何かについての質問では、GameMate がトピック(例:「Ender Dragon」)をそのゲームの Wiki に送り、Minecraft の MOD の場合は MOD 名を Modrinth に送ります。質問そのものは送信されません。",
+    "gamemateDownloadsThePageAnd": "GameMate はページとその画像をダウンロードして表示します。Wiki には、ほかの Web サイトと同様に IP アドレスが見え、各 Wiki のプライバシーポリシーに従って扱われます。",
+    "youCanTurnLookupsOff": "検索はここか、設定 → プライバシーと法的情報 からいつでもオフにできます。",
+    "turnOnLookups": "検索をオンにする",
+    "whichAiAnswers": "回答する AI",
+    "everythingRunsOnThisPc": "処理に Gemini を選ばない限り、すべてこの PC 上で動作します。",
+    "yourQuestions": "質問",
+    "chatAndTheInGame": "チャットとゲーム内ウィンドウ。",
+    "aiForQuestions": "質問に使う AI",
+    "companion": "コンパニオン",
+    "watchingYourGameOnGemini": "ゲームを見守ります。Gemini では数秒ごとにスクリーンショットが送信されるため、無料キーの上限に達することがあります。",
+    "aiForTheCompanion": "コンパニオンに使う AI",
+    "smarterAnswersAndBetterScreen": "自分の Google API キーで、より賢い回答と画面のより良い理解を。",
+    "model": "モデル",
+    "flashModelsAreFastAnd": "Flash モデルは高速で、無料で使える量が最も多いモデルです。",
+    "choose": "選択…",
+    "apiKey": "API キー",
+    "savedOnThisPcEncrypted": "この PC に保存され、Windows によって暗号化されています。",
+    "removeKey": "キーを削除",
+    "pasteYourKey": "キーを貼り付け",
+    "geminiApiKey": "Gemini API キー",
+    "checking": "確認中…",
+    "turnOffGemini": "Gemini をオフにする",
+    "deletesYourKeyAndGoes": "キーを削除し、ローカル AI に戻します。",
+    "turnOff": "オフにする",
+    "answers": "回答",
+    "detailedAnswers": "詳しい回答",
+    "answersExplainTheDetailsSteps": "回答で詳細、手順、役立つヒントを説明します。",
+    "answersGetStraightToThe": "回答は 1〜3 文で要点だけを伝えます。もっと長い説明が欲しい場合はオンにしてください。",
+    "lookThingsUp": "調べもの",
+    "lookThingsUpOnline": "オンラインで調べる",
+    "letsTheAiReadYour": "AI に自信がないとき、ボス、アイテム、ネザーポータルの作り方などについてゲームの Wiki(Minecraft の MOD は Modrinth)を読めるようにします。送信されるのはトピックだけで、回答にはページへのリンクが付き、マップなどの画像も表示できます。",
+    "searchTheWeb": "Web を検索",
+    "letsTheAiSearchThe": "Wiki にないパッチ情報、戦略、ヒントを AI が Google で(Gemini を通して)Web 検索できるようにします。送信されるのは検索クエリだけです。",
+    "searchesTheWebWithGoogle": "Wiki にない情報を Google で Web 検索します。Gemini が必要です。先に Gemini をオンにして、上でキーを追加してください。",
+    "googleHandlesThatData": "このデータは GameMate ではなく、<terms>Gemini API 利用規約</terms>と<privacy>Google プライバシー ポリシー</privacy>に基づいて Google が扱います。無料キーでは、送信した内容が Google の製品改善に使われ、人が確認することがあります(EU/EEA、スイス、英国を除く)。個人情報は共有しないでください。",
+    "iM18OrOlder": "18 歳以上であり、このデータを Google に送信することに同意します。",
+    "googleSearchesTheWeb": "Google は <terms>Gemini API 利用規約</terms>と<privacy>Google プライバシー ポリシー</privacy>に基づき、Reddit などのフォーラムを含む Web を検索します。回答には使われたページと Google の検索候補が表示されます。",
+    "autoDecidePerQuestion": "自動(質問ごとに判断)",
+    "autoAddAKeyFirst": "自動(質問ごとに判断)(先にキーを追加)",
+    "onThisPc": "この PC({{name}})",
+    "geminiAddAKeyFirst": "Gemini(先にキーを追加)",
+    "getOneAt": "キーは <link>aistudio.google.com</link> で取得できます。GameMate は保存前に Google でキーを確認します。",
+    "save": "保存"
+  },
+  "answeredByLabel": {
+    "onThisPc": "💻 この PC"
+  },
+  "companionMenu": {
+    "companionMode": "コンパニオンモード",
+    "howOftenToComment": "コメントの頻度",
+    "resumeWatching": "▶ 見守りを再開",
+    "pauseWatching": "⏸ 見守りを一時停止",
+    "companionSettings": "コンパニオンの設定…",
+    "companion": "コンパニオン: {{mode}}"
+  },
+  "companionPanel": {
+    "justNow": "たった今",
+    "minAgo": "{{minutes}} 分前",
+    "hAgo": "{{value}} 時間前",
+    "companionMode": "コンパニオンモード",
+    "howMuchGamemateWatchesYour": "GameMate がどれだけゲームを見守り、自分から話しかけるか。",
+    "howOftenToComment": "コメントの頻度",
+    "resume": "▶ 再開",
+    "pause": "⏸ 一時停止",
+    "whatGamemateSaw": "GameMate が見たこと",
+    "keptOnlyWhileGamemateIs": "GameMate が開いている間だけ保持されます。",
+    "nothingYetStartPlayingAnd": "まだ何もありません。プレイを始めると、GameMate が起きたことを記録します。"
+  },
+  "gameMenu": {
+    "theGameGamemateHelpsWith": "GameMate がサポートするゲーム",
+    "followTheGameIM": "プレイ中のゲームに合わせる",
+    "switchesByItselfWhenYou": "ゲーム中は自動で切り替わります",
+    "allowGameDetectionInSettings": "先に 設定 → ゲーム でゲームの検出を許可してください",
+    "game": "ゲーム",
+    "scanForGames": "ゲームをスキャン…",
+    "findMyGames": "ゲームを探す…"
+  },
+  "gamesPanel": {
+    "gamemateCanFindYourGames": "GameMate はあなたのゲームを見つけ、プレイ中のゲームに合わせることができます。そのために:",
+    "scanForGames": "ゲームをスキャン",
+    "looksUpAWikiFor": "見つけた各ゲームの Wiki を探します。wiki.gg と Fandom に送るのはゲーム名だけです。",
+    "readsTheNameOfThe": "プレイ中に前面にあるプログラム名を読み取り、どのゲームかを判断します。",
+    "keepsEverythingOnThisPc": "すべてこの PC に保存します。オフにすると、見つけたゲームはすべて忘れます。",
+    "allowAndScanForGames": "許可してゲームをスキャン",
+    "rankedOnlineGameAiHelp": "ランク戦のあるオンラインゲーム: 試合中の AI の手助けはルール違反になる場合があります",
+    "competitive": "対戦型",
+    "newWikiAddress": "新しい Wiki のアドレス",
+    "noWikiFoundPasteIts": "Wiki が見つかりません。アドレスを貼り付けてください(例: https://…fandom.com)",
+    "wikiAddressFor": "{{name}} の Wiki のアドレス",
+    "checking": "確認中…",
+    "useWiki": "この Wiki を使う",
+    "change": "変更",
+    "looking": "検索中…",
+    "otherWikis": "ほかの Wiki",
+    "inUse": "使用中",
+    "use": "使う",
+    "remove": "削除",
+    "addAGameThatS": "起動中のゲームを追加…",
+    "noProgramsWithAWindow": "ウィンドウのあるプログラムが見つかりません。ゲームを起動してから、もう一度お試しください。",
+    "runningProgram": "起動中のプログラム",
+    "gameName": "ゲーム名",
+    "add": "追加",
+    "cancel": "キャンセル",
+    "findYourGames": "ゲームを探す",
+    "gamemateKnowsMinecraftOutOf": "GameMate は最初から Minecraft を知っています。ほかのゲームはこの PC のスキャンで見つかります。",
+    "scanning": "スキャン中…",
+    "looksThroughSteamEpicGames": "Steam、Epic Games、Battle.net、Riot を調べ、各ゲームの Wiki を見つけます。ゲームをインストールしたら、もう一度実行してください。",
+    "followTheGameIM": "プレイ中のゲームに合わせる",
+    "whenYouPressTheShortcut": "ショートカットを押したときやコンパニオンが見守っているとき、GameMate は前面のゲームに切り替えます。",
+    "stopLookingForGames": "ゲームの検出をやめる",
+    "turnsDetectionOffAndForgets": "検出をオフにし、GameMate が見つけたゲームをすべて忘れます。",
+    "turnOff": "オフにする",
+    "yourGames": "あなたのゲーム",
+    "eachGameSWikiWas": "各ゲームの Wiki は名前から見つけました。複数ある場合は最も活発なものです。「ほかの Wiki」で別の Wiki を選ぶか、「変更」で任意の Wiki のアドレスを貼り付けてください。",
+    "competitiveGamesCheckTheGame": "対戦型ゲーム: ランク戦でコンパニオンを使う前に、ゲームのルールを確認してください。",
+    "minecraftModpacks": "Minecraft の MOD パック",
+    "yourCurseforgeModpacksOnThis": "この PC にある CurseForge の MOD パックです。これにより回答があなたの MOD を把握できます。ほかのランチャーでは、起動中のパックの MOD を読み取ります。",
+    "modpack": "MOD パック",
+    "noModpackRunningRightNow": "現在起動中の MOD パックはありません。起動するか、ここで選んでください。",
+    "plainMinecraftWithoutMods": "MOD なしの通常の Minecraft。",
+    "detectTheOneIM": "プレイ中のものを検出",
+    "nonePlainMinecraft": "なし(通常の Minecraft)",
+    "builtIn": "内蔵",
+    "addedByYou": "自分で追加",
+    "readsTheGameLists": "<b>ゲームをスキャン</b> をクリックすると、この PC の Steam、Epic Games、Battle.net、Riot のゲーム一覧と、CurseForge の Minecraft MOD パックを読み取ります。",
+    "allowGamemateToLook": "この PC でゲームを探すことを GameMate に許可します。",
+    "wiki": "Wiki: {{wiki}}",
+    "noOtherWikisFound": "{{name}} のほかの Wiki は見つかりませんでした。",
+    "wikiSize": "{{pages}} ページ、アクティブな編集者 {{editors}} 人",
+    "gamesFound_other": "{{count}} 本のゲームが見つかりました",
+    "usingModpack_other": "{{pack}} を使用中、MOD {{count}} 個。",
+    "mods_other": "MOD {{count}} 個"
+  },
+  "generalPanel": {
+    "runningFromSourceCodeUpdates": "ソースコードから実行中: 更新は git から入手します。",
+    "checkingForUpdates": "更新を確認中…",
+    "downloadingVersion": "バージョン {{available}} をダウンロード中… {{value}}%",
+    "versionIsReadyItInstalls": "バージョン {{available}} の準備ができました。GameMate の再起動時にインストールされます。",
+    "gamemateIsUpToDate": "GameMate は最新です。",
+    "couldnTCheckForUpdates": "更新を確認できませんでした。",
+    "updatesComeFromGamemateS": "更新は GitHub の GameMate リリースから配信されます。",
+    "updates": "更新",
+    "status": "状態",
+    "restartAndUpdate": "再起動して更新",
+    "checkNow": "今すぐ確認",
+    "checkForUpdatesAutomatically": "自動で更新を確認",
+    "looksForANewVersion": "GameMate の起動時と数時間ごとに新しいバージョンを探し、バックグラウンドでダウンロードします。",
+    "inGameWindow": "ゲーム内ウィンドウ",
+    "shortcut": "ショートカット",
+    "anotherAppIsUsingThis": "このショートカットはほかのアプリが使っているため、オフになっています。別のショートカットを選ぶか、そのアプリを閉じて GameMate を再起動してください。",
+    "opensASmallWindowOver": "ゲームの上に小さなウィンドウを開き、質問できるようにします。",
+    "voiceShortcut": "音声ショートカット",
+    "anotherAppIsUsingThis2": "このショートカットはほかのアプリが使っているため、オフになっています。別のショートカットを選んでください。",
+    "opensTheInGameWindow": "音声での質問を聞き取る状態でゲーム内ウィンドウを開きます。音声入力がオンのとき(設定 → 音声)に使えます。",
+    "sendAScreenshotWithQuestions": "質問と一緒にスクリーンショットを送る",
+    "letsGamemateSeeWhatYou": "ゲームから質問したときに、見ている画面を GameMate が見られるようにします。",
+    "whenYouCloseTheWindow": "ウィンドウを閉じたとき",
+    "whenGamemateQuitsItFrees": "GameMate を終了すると AI モデルをすぐに解放するので、バックグラウンドで何も動き続けません。",
+    "keepRunningInTheTray": "タスクトレイで実行を続ける",
+    "keepsTheInGameShortcuts": "ゲーム内ショートカットとコンパニオンは動作し続けます。終了はトレイアイコンから行います。AI モデルは数分間使われないと解放されます。",
+    "closingTheWindowQuitsGamemate": "ウィンドウを閉じると GameMate が終了します。ゲーム内ショートカットとコンパニオンは、次に起動するまで停止します。",
+    "language": "言語",
+    "languageHelp": "GameMate のウィンドウと AI の回答に使われます。ゲーム名と Wiki のページはそのままです。"
+  },
+  "modelMenu": {
+    "builtInAi": "内蔵 AI",
+    "auto": "✦ 自動",
+    "chooseAModel": "モデルを選択",
+    "whichAiAnswers": "回答する AI",
+    "whichAiAnswersYourQuestions": "質問に回答する AI",
+    "picksThisPcOrGemini": "質問ごとにこの PC か Gemini を選びます",
+    "picksThisPcOrGemini2": "質問ごとにこの PC か Gemini を選びます。先に Gemini を設定してください。",
+    "onThisPc": "この PC",
+    "canSeeScreenshots": "{{label}} · スクリーンショットを認識",
+    "downloadAModel": "モデルをダウンロード…",
+    "runsOnYourGraphicsCard": "グラフィックカードで動作、オフラインで使えます",
+    "canSeeScreenshots2": "スクリーンショットを認識",
+    "textOnly": "テキストのみ",
+    "geminiCloud": "Gemini(クラウド)",
+    "setUpGemini": "Gemini を設定…",
+    "smarterAnswersWithYourOwn": "自分の Google API キーでより賢い回答を",
+    "manageModels": "モデルを管理…"
+  },
+  "modelsPanel": {
+    "aiModelsOnThisPc": "この PC の AI モデル",
+    "theyRunOnYourGraphics": "グラフィックカードで動作し、オフラインで使えます。質問がこの PC の外に出ることはありません。最初のダウンロードでは GameMate の AI エンジン(37 MB)もインストールされます。",
+    "recommended": "おすすめ",
+    "cancel": "キャンセル",
+    "keep": "残す",
+    "inUse": "✓ 使用中",
+    "use": "使う",
+    "delete": "{{size}} を削除",
+    "tryAgain": "再試行",
+    "alreadyUseOllamaGamemateCan": "Ollama をすでに使っていますか?GameMate は内蔵モデルの代わりに Ollama のモデルを使えます。",
+    "useMyOllamaModels": "自分の Ollama モデルを使う",
+    "ollamaMustBeRunningGamemate": "Ollama が起動している必要があります。GameMate は終了時に Ollama のモデルを解放します。",
+    "model": "モデル",
+    "modelsMarkedCanSeeScreenshots": "👁 の付いたモデルはスクリーンショットを認識できます。",
+    "ollamaModel": "Ollama のモデル",
+    "noModels": "モデルなし",
+    "reload": "再読み込み",
+    "cloudModels": "クラウドモデル",
+    "runOnAnotherCompanyS": "ほかの会社のサーバーで動作します。どれも、何かを送信する前に同意を求めます。",
+    "smarterAnswersAndBetterScreen": "自分の Google API キーで、より賢い回答と画面のより良い理解を。",
+    "setUp": "設定",
+    "modelDetails": "{{description}} {{size}}。スクリーンショットを認識できます。",
+    "download": "ダウンロード"
+  },
+  "pictures": {
+    "openOnThe": "{{wiki}} で開く"
+  },
+  "privacyPanel": {
+    "findingYourGames": "ゲームの検出",
+    "givenOnYouCanAlso": "{{value}} に同意済み。{{where}} でも変更できます。",
+    "givenYouCanAlsoChange": "同意済み。{{where}} でも変更できます。",
+    "notGivenYouCanTurn": "未同意。{{where}} でオンにできます。",
+    "withdraw": "撤回",
+    "off": "オフ",
+    "termsOfUseAndPrivacy": "利用規約とプライバシーポリシー",
+    "youAcceptedTheTermsOf": "{{value}} に利用規約に同意しました。",
+    "readTheTermsOfUse": "利用規約を読む",
+    "readThePrivacyPolicy": "プライバシーポリシーを読む",
+    "yourConsents": "同意の状況",
+    "optionalFeaturesThatSendData": "ほかのサービスにデータを送る任意の機能です。撤回するとその機能だけがオフになり、GameMate のほかの部分は引き続き動作します。",
+    "settingsGames": "設定 → ゲーム",
+    "onlineLookups": "オンライン検索",
+    "settingsAiOnline": "設定 → AI とオンライン",
+    "webSearchGoogle": "Web 検索(Google)",
+    "howGamemateHandlesYourData": "GameMate のデータの扱い",
+    "storedOnThisPc": "この PC に保存されるもの",
+    "onlyInYourWindowsUser": "Windows のユーザーフォルダーにのみ保存され、あなたの Windows アカウントだけが読み取れます。",
+    "yourSettings": "設定。",
+    "yourGeminiApiKeyIf": "追加した場合は Gemini API キー(Windows で暗号化)。",
+    "aiModelsGamemateSAi": "ダウンロードした AI モデル、GameMate の AI エンジン、音声モデル。",
+    "gamesFoundOrAddedTheir": "見つけた、または追加したゲーム: 名前、フォルダーまたはプログラム、Wiki のアドレス。",
+    "openLogFolder": "ログフォルダーを開く",
+    "whenYouUseOnlineFeatures": "オンライン機能を使うとき",
+    "theseServicesHandleYourData": "これらのサービスは、GameMate ではなく各サービスの規約に従ってデータを扱います。",
+    "withdrawMyAcceptanceOfThe": "利用規約への同意を撤回",
+    "gamemateStopsWorkingUntilYou": "利用規約に再度同意するまで GameMate は動作しません。オフラインになり、コンパニオンが停止し、AI が閉じられます。データも削除しない限り、設定とダウンロードしたものは残ります。",
+    "yesWithdraw": "はい、撤回します",
+    "cancel": "キャンセル",
+    "withdrawAcceptance": "同意を撤回",
+    "deleteMyData": "データを削除",
+    "removesEverythingAboveFromThis": "上記のすべてをこの PC から削除し、GameMate をインストール直後の状態に戻します。Google にすでに送信されたデータには Google のポリシーが適用されます。",
+    "doneEverythingGamemateStoredHas": "完了しました。GameMate が保存していたものはすべて削除されました。",
+    "yesDeleteEverything": "はい、すべて削除します",
+    "summary": {
+      "runsOnYourPc": "<b>あなたの PC で動作します。</b>アカウントも広告も分析もありません。GameMate の開発者があなたから何かを受け取ることはありません。",
+      "yourScreen": "<b>画面</b>は、あなたが頼んだときか、コンパニオンがゲームを見守る設定のときだけキャプチャされます。スクリーンショットはメモリ上にのみあり、ディスクに保存されることはありません。",
+      "findingYourGames": "<b>ゲームの検出</b>は、設定 → ゲーム で許可した後にだけ行われます。その後 GameMate は、ランチャー(Steam、Epic Games、Battle.net、Riot)のゲーム一覧、CurseForge の MOD パック、前面にあるプログラム名を読み取ります。これらは PC 内に留まり、Wiki を探すために wiki.gg と Fandom に送られるのはゲーム名だけです。",
+      "yourMicrophone": "<b>マイク</b>は、音声入力がオンで、音声ショートカットか 🎤 を押したときだけ使われます。音声はこの PC 上でテキストに変換されます。",
+      "chatsAndTheCompanionLog": "<b>チャットとコンパニオンのログ</b>は、GameMate が開いている間だけ保持されます。",
+      "onlineFeaturesAreOffUntil": "<b>オンライン機能は、オンにするまでオフです:</b> ゲームの Wiki や Modrinth での調べもの(送信されるのはトピックだけ)と Google Gemini(質問とスクリーンショットが Google に送信されます)。ダウンロードは、頼んだときに一度だけ行われます。AI モデルと音声モデルは Hugging Face から、GameMate の AI エンジンは GitHub から入手します。更新の確認では、GitHub に GameMate の最新バージョンを問い合わせます(オフにできます)。"
+    },
+    "aLogOfWhatGamemate": "問題を見つけるための、GameMate の動作(AI の起動や更新の確認など)の記録です。質問や回答は一切含まれず、どこにも送信されません。",
+    "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini API 利用規約</terms>と<privacy>Google プライバシー ポリシー</privacy>。",
+    "wikiLicenses": "<b>ゲームの Wiki と Modrinth:</b> 各 Wiki の文章にはそれぞれのライセンスがあり(それを使った回答ごとに表示されます。例: <link>minecraft.wiki</link>)、そのため回答にはページへのリンクが付きます。回答内の画像も同じ Wiki からダウンロードされ、そこにあるページにリンクします。"
+  },
+  "recipeCard": {
+    "craftingGridFor": "{{item}} のクラフトグリッド",
+    "anyArrangementWorks": "どの配置でも作れます"
+  },
+  "searchSuggestions": {
+    "googleSearchSuggestions": "Google 検索の候補"
+  },
+  "setupCard": {
+    "downloadGamemateSAi": "GameMate の AI をダウンロード",
+    "oneDownloadAndGamemateRuns": "一度ダウンロードするだけで、GameMate がこの PC で、オフラインでも動作します。質問がコンピューターの外に出ることはありません。",
+    "cancel": "キャンセル",
+    "otherModels": "ほかのモデル",
+    "iUseOllama": "Ollama を使う",
+    "useGeminiCloud": "Gemini(クラウド)を使う",
+    "downloading": "{{name}} をダウンロード中: {{size}} の {{percent}}%",
+    "download": "{{name}} をダウンロード({{size}})"
+  },
+  "shortcutField": {
+    "thatIsAlreadyGamemateS": "それは GameMate のもう一つのショートカットです。",
+    "pressTheNewShortcutEsc": "新しいショートカットを押してください…(Esc でキャンセル)",
+    "change": "変更",
+    "default": "既定"
+  },
+  "sources": {
+    "source": "出典:"
+  },
+  "voicePanel": {
+    "remove": "削除",
+    "download": "ダウンロード",
+    "talkToGamemate": "GameMate と話す",
+    "speechIsTurnedIntoText": "音声はこの PC 上でテキストに変換されます。あなたの声が外に出ることはありません。",
+    "askWithYourMicrophone": "マイクで質問",
+    "isUsedByAnotherApp": "{{voiceShortcut}} はほかのアプリが使っています。代わりに 🎤 ボタンを使ってください。",
+    "inAGamePressAnd": "ゲーム中に {{voiceShortcut}} を押して、声に出して質問してください。話すのをやめると GameMate は聞き取りを止めます。",
+    "downloadTheSelectedModelOnce": "始めるには、選んだモデルを一度ダウンロードしてください。その後はオフラインで動作します。",
+    "gamemateSVoice": "GameMate の声",
+    "kokoroANaturalSoundingVoice": "Kokoro は、この PC 上でオフラインで動作する自然な声です。",
+    "usesTheVoicesBuiltInto": "Windows に内蔵の音声を使います。",
+    "voiceType": "声の種類",
+    "naturalIsKokoroApache2": "自然な声は Kokoro です(Apache 2.0、自由なライセンスで著作権のない音声のみで学習)。一度ダウンロードすれば、オフラインで動作します。",
+    "naturalKokoro": "自然な声(Kokoro)",
+    "windowsVoices": "Windows の音声",
+    "downloaded": "ダウンロード済み。",
+    "downloadItOnceToUse": "使うには一度ダウンロードしてください。それまでは GameMate は Windows の音声を使います。",
+    "readAnswersAloud": "回答を読み上げる",
+    "readCompanionCommentsAloud": "コンパニオンのコメントを読み上げる",
+    "voice": "声",
+    "windowsDefault": "Windows の既定",
+    "volume": "音量",
+    "speed": "速さ",
+    "tryIt": "試す",
+    "hiIMGamemateWatch": "こんにちは、GameMate です。クリーパーに気をつけて!",
+    "testVoice": "🔊 声をテスト",
+    "speechModels": {
+      "fast": {
+        "label": "高速な音声モデル",
+        "help": "最も速いですが、聞き間違いが多めです。"
+      },
+      "accurate": {
+        "label": "正確な音声モデル",
+        "help": "高速モデルより聞き間違いが少なめです。"
+      },
+      "best": {
+        "label": "最高の音声モデル",
+        "help": "Whisper Small: なまりがあっても最もよく聞き取れますが、数秒長くかかります。おすすめ。"
+      }
+    },
+    "mb": "{{size}} MB",
+    "kokoroVoice": {
+      "af": "{{name}}(アメリカ英語、女性)",
+      "am": "{{name}}(アメリカ英語、男性)",
+      "bf": "{{name}}(イギリス英語、女性)",
+      "bm": "{{name}}(イギリス英語、男性)"
+    },
+    "downloading": "ダウンロード中… {{percent}}%",
+    "speakAnswers": {
+      "off": "読み上げない",
+      "voice": "音声で質問したとき",
+      "always": "常に"
+    },
+    "naturalVoice": "自然な声"
+  },
+  "useLocalModels": {
+    "builtInAi": "内蔵 AI",
+    "gb": "{{value}} GB",
+    "mb": "{{sizeMb}} MB"
+  },
+  "useSettings": {
+    "noModelsInstalledRunOllama": "モデルがインストールされていません。次を実行してください: ollama pull qwen3.5:2b"
+  },
+  "legalReader": {
+    "termsOfUse": "利用規約",
+    "privacyPolicy": "プライバシーポリシー",
+    "close": "閉じる"
+  },
+  "termsGate": {
+    "ourTermsHaveChanged": "利用規約が変更されました",
+    "welcomeToGamemate": "GameMate へようこそ",
+    "pleaseReadAndAcceptThe": "GameMate を引き続き使うには、更新された利用規約を読んで同意してください。",
+    "beforeYouStartHereIs": "始める前に、GameMate がデータをどう扱うかをご確認ください。",
+    "featuresThatSendDataTo": "ほかのサービスにデータを送る機能は、オンにするまでオフのままです。同意はいつでも 設定 → プライバシーと法的情報 で撤回できます。",
+    "deleteEverythingGamemateStored": "GameMate が保存したものをすべて削除しますか?",
+    "delete": "削除",
+    "cancel": "キャンセル",
+    "deleteMyData": "データを削除",
+    "quitGamemate": "GameMate を終了",
+    "acceptAndContinue": "同意して続ける",
+    "pleaseReadTheFull": "<terms>利用規約</terms>と<privacy>プライバシーポリシー</privacy>の全文をお読みください。",
+    "iAm16OrOlder": "16 歳以上である、または保護者が GameMate の利用に同意しています。",
+    "iAcceptTheTerms": "利用規約に同意し、プライバシーポリシーを読みました。"
+  },
+  "app": {
+    "entireScreen": "画面全体",
+    "newChat": "新しいチャット",
+    "settings": "設定",
+    "whatCanIHelpWith": "何をお手伝いしましょうか?",
+    "whatSOnMyScreen": "📷 画面に何が映ってる?",
+    "screenshotSentWithThisQuestion": "この質問と一緒に送ったスクリーンショット",
+    "capturingScreen": "画面をキャプチャ中…",
+    "thinking": "考え中…",
+    "downloadGamemateSAiTo": "始めるには GameMate の AI をダウンロードしてください",
+    "pickAnAiModelIn": "先に設定で AI モデルを選んでください",
+    "listening": "聞き取り中…",
+    "workingOutWhatYouSaid": "話した内容を認識中…",
+    "askAboutYourScreenOr": "画面について質問…(Enter を押すだけでも OK)",
+    "askAbout": "{{value}} について質問…",
+    "sendAScreenshotWithYour": "質問と一緒にスクリーンショットを送る",
+    "screenshot": "📷 スクリーンショット",
+    "screenshotSource": "スクリーンショットの対象",
+    "nothingToCapture": "キャプチャできるものがありません",
+    "screenAccessIsOffCompanion": "画面へのアクセスはオフです(コンパニオン: 無効)。",
+    "thisModelCanTSee": "このモデルはスクリーンショットを認識できません。",
+    "listeningClickToStop": "聞き取り中。クリックで停止",
+    "askByVoice": "音声で質問",
+    "send": "送信",
+    "whatIsHappeningOnMy": "画面で何が起きている?",
+    "pressShortcutInAnyGame": "どのゲームでも <kbd>{{shortcut}}</kbd> を押せば、ゲームを離れずに質問できます。",
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> はほかのアプリが使っているため、ゲーム内ショートカットはオフです。そのアプリを閉じて GameMate を再起動してください。"
+  },
+  "overlay": {
+    "dragToMove": "ドラッグして移動",
+    "openGamemateAndSetUp": "GameMate を開いて、先に AI モデルを設定してください",
+    "listening": "聞き取り中…",
+    "workingOutWhatYouSaid": "話した内容を認識中…",
+    "askGamemate": "GameMate に質問…",
+    "listeningClickToStop": "聞き取り中。クリックで停止",
+    "askByVoice": "音声で質問({{voiceShortcut}})",
+    "thisModelCanTSee": "このモデルは画像を認識できません",
+    "screenshotOnGamemateSeesYour": "スクリーンショット オン: GameMate に画面が見えています",
+    "screenshotOff": "スクリーンショット オフ",
+    "newConversation": "新しい会話",
+    "thinking": "考え中…",
+    "answersComeFromGeminiGoogle": "回答は Gemini(Google)から",
+    "gamematePicksTheLocalAi": "GameMate が質問ごとにローカル AI か Gemini を選びます",
+    "auto": "✦ 自動",
+    "theGameGamemateHelpsWith": "GameMate がサポートするゲーム",
+    "autoGemini": "✦ 自動: ☁ Gemini",
+    "autoThisPc": "✦ 自動: この PC",
+    "hint": "Enter で質問 · Esc で隠す",
+    "hintWithVoice": "Enter で質問 · {{voiceShortcut}} で話す · Esc で隠す"
+  },
+  "settingsScreen": {
+    "settings": "設定",
+    "backToChat": "← チャットに戻る",
+    "tabs": {
+      "general": "一般",
+      "games": "ゲーム",
+      "models": "モデル",
+      "companion": "コンパニオン",
+      "voice": "音声",
+      "ai": "AI とオンライン",
+      "privacy": "プライバシーと法的情報"
+    }
+  },
+  "useVoiceInput": {
+    "sorryIDidnTCatch": "すみません、聞き取れませんでした。",
+    "gamemateIsNotAllowedTo": "GameMate にマイクの使用が許可されていません。Windows のマイクのプライバシー設定を確認してください。"
+  },
+  "companion": {
+    "modes": {
+      "disabled": {
+        "label": "無効",
+        "help": "ショートカットを押しても、画面を見ることはありません。"
+      },
+      "on-demand": {
+        "label": "必要なときだけ",
+        "help": "質問したときだけ画面を見て回答します。"
+      },
+      "observation": {
+        "label": "観察",
+        "help": "ゲームを見守り、起きたことを記録します。ポップアップは出しません。"
+      },
+      "commentary": {
+        "label": "実況",
+        "help": "ゲームを見守り、大事なことが起きたときに短いコメントを表示します。"
+      },
+      "quiet": {
+        "label": "静かに",
+        "help": "静かに見守り、見たことは質問への回答にだけ使います。"
+      }
+    },
+    "frequencies": {
+      "rare": "まれに(大きな場面だけ)",
+      "normal": "ときどき",
+      "frequent": "頻繁に"
+    },
+    "status": {
+      "off": "見守っていません",
+      "paused": "一時停止中",
+      "no-model": "見守りを始めるにはモデルを選んでください",
+      "needs-consent": "見守りを始めるには 設定 → ゲーム でゲームの検出を許可してください",
+      "waiting-for-game": "ゲームがアクティブなウィンドウになるのを待っています",
+      "watching": "見守り中",
+      "analyzing": "画面を見ています…"
+    }
+  },
+  "errors": {
+    "ai": {
+      "noLocalModel": "先に GameMate で AI モデルをダウンロードしてください(設定 → モデル)。",
+      "pickModel": "先に GameMate でモデルを選んでください。"
+    },
+    "gemini": {
+      "turnOn": "先に GameMate の設定(AI とオンライン)で Gemini をオンにしてください。",
+      "addKey": "先に GameMate の AI 設定で Gemini API キーを追加してください。",
+      "pickModel": "GameMate の AI 設定で Gemini のモデルを選んでください。",
+      "timeout": "Gemini の応答に時間がかかりすぎました。",
+      "unreachable": "Gemini に接続できません。インターネット接続を確認してください。",
+      "badKey": "Gemini が API キーを拒否しました。GameMate の AI 設定で確認してください。",
+      "keyNotAllowed": "この API キーには Gemini を使う権限がありません。",
+      "usageLimit": "Gemini の利用上限に達しました。後でもう一度試すか、ローカルモデルに切り替えてください。",
+      "error": "Gemini のエラー {{status}}{{detail}}",
+      "noAnswer": "Gemini から回答がありませんでした{{reason}}。",
+      "needConsent": "先に Gemini の規約に同意してください。",
+      "notAKey": "Gemini API キーではないようです。",
+      "cantEncrypt": "この PC では Windows がキーを暗号化できないため、GameMate はキーを保存しません。"
+    },
+    "builtin": {
+      "failed": "内蔵 AI でエラーが発生しました: {{detail}}",
+      "timeout": "内蔵 AI の応答に時間がかかりすぎました。",
+      "stopped": "内蔵 AI が予期せず停止しました。もう一度お試しください。",
+      "tooLong": "この会話は内蔵 AI には長すぎます。新しいチャットを始めてください。",
+      "noGraphicsMemory": "内蔵 AI を起動できません: このモデルにはグラフィックメモリが足りません。小さいモデルを試すか、ほかのプログラムを閉じてください。",
+      "badModelFile": "内蔵 AI を起動できません: モデルファイルを読み込めませんでした。設定 → モデル で削除して、もう一度ダウンロードしてください。",
+      "couldNotStart": "内蔵 AI を起動できません({{detail}})。",
+      "slowStart": "内蔵 AI を起動できません: モデルの読み込みに時間がかかりすぎました。"
+    },
+    "ollama": {
+      "timeout": "Ollama の応答に時間がかかりすぎました。",
+      "unreachable": "{{url}} の Ollama に接続できません。起動していますか?",
+      "error": "Ollama のエラー {{detail}}",
+      "noAnswer": "Ollama から回答がありませんでした。"
+    },
+    "download": {
+      "engineIncomplete": "AI エンジンが不完全です",
+      "diskSpace": "ディスクの空き容量が足りません({{size}} GB 必要)",
+      "failed": "{{name}} をダウンロードできませんでした: {{reason}}",
+      "serverAnswered": "サーバーの応答: {{status}}",
+      "incomplete": "ダウンロードが不完全です",
+      "damaged": "ダウンロードしたファイルが壊れています(チェックサムが一致しません)",
+      "voiceFailed": "音声をダウンロードできませんでした: {{reason}}",
+      "speechModelFailed": "音声モデルをダウンロードできませんでした: {{reason}}"
+    },
+    "games": {
+      "needConsent": "先に GameMate にゲームを探す許可を与えてください(設定 → ゲーム)。",
+      "noName": "ゲームに名前を付けてください。",
+      "tooMany": "ゲームが多すぎます。",
+      "cantAdd": "そのプログラムは追加できません。"
+    },
+    "terms": {
+      "notAccepted": "先に GameMate の利用規約に同意してください。",
+      "age": "先に年齢を確認してください。"
+    },
+    "updates": {
+      "check": "更新を確認できませんでした。オンラインですか?",
+      "download": "更新をダウンロードできませんでした。後でもう一度試します。"
+    },
+    "capture": {
+      "failed": "画面をキャプチャできませんでした。",
+      "windowGone": "そのウィンドウはもうありません。キャプチャする別のウィンドウを選んでください。"
+    },
+    "wiki": {
+      "address": "https:// で始まる Wiki のアドレスを入力してください",
+      "notFound": "そのアドレスに Wiki が見つかりません。GameMate は Fandom や wiki.gg などの MediaWiki サイトに対応しています。"
+    }
+  },
+  "answers": {
+    "reason": {
+      "geminiNotSetUp": "Gemini が未設定",
+      "noLocalModel": "ローカルモデルなし",
+      "screenshot": "スクリーンショットを読み取り",
+      "recipe": "GameMate のデータのレシピ",
+      "complex": "じっくり考える必要あり",
+      "longQuestion": "長い質問",
+      "longConversation": "長い会話",
+      "quick": "簡単な質問",
+      "geminiUnreachable": "Gemini に接続できなかった",
+      "localUnreachable": "ローカルモデルに接続できなかった"
+    },
+    "noAnswer": "その質問には信頼できる答えが見つかりませんでした。"
+  },
+  "models": {
+    "local": {
+      "fast": "高速",
+      "2b": "ほとんどのグラフィックカードで素早く回答。最初の一歩に最適です。",
+      "smart": "賢い",
+      "4b": "より良い回答。グラフィックメモリ 6 GB 以上で最適です。",
+      "best": "最高",
+      "9b": "この PC で最高の回答。グラフィックメモリ 10 GB 以上で最適です。"
+    }
+  },
+  "tray": {
+    "status": {
+      "off": "見守っていません",
+      "paused": "見守りを一時停止中",
+      "no-model": "見守りを始めるにはモデルを選んでください",
+      "needs-consent": "設定でゲームの検出を許可してください",
+      "waiting-for-game": "ゲームを待っています",
+      "watching": "ゲームを見守り中",
+      "watchingGame": "{{game}} を見守り中"
+    },
+    "resume": "見守りを再開",
+    "pause": "見守りを一時停止",
+    "ask": "GameMate に質問({{shortcut}})",
+    "open": "GameMate を開く",
+    "quit": "GameMate を終了"
+  },
+  "languagePicker": {
+    "title": "言語を選んでください",
+    "lead": "GameMate のウィンドウと回答で使われます。設定 → 一般 でいつでも変更できます。",
+    "continue": "続ける"
+  },
+  "gameExamples": {
+    "minecraft": {
+      "piston": "ピストンの作り方は?",
+      "netherPortal": "ネザーポータルの作り方は?"
+    },
+    "generic": {
+      "next": "次は何をすればいい?",
+      "tips": "今いる場所のヒントはある?"
+    },
+    "valorant": {
+      "beginner": "初心者におすすめのエージェントは?",
+      "jettDash": "ジェットのダッシュはどう使う?"
+    },
+    "overwatch": {
+      "widowmaker": "ウィドウメイカーへの対策は?",
+      "tank": "一番覚えやすいタンクは?"
+    },
+    "marvelRivals": {
+      "beginner": "初心者におすすめのヒーローは?",
+      "teamUps": "チームアップアビリティの仕組みは?"
+    },
+    "counterStrike": {
+      "spray": "AK-47 のスプレーコントロールのコツは?",
+      "save": "お金を節約すべきタイミングは?"
+    },
+    "league": {
+      "beginner": "初心者におすすめのチャンピオンは?",
+      "farm": "ファームを上達させるには?"
+    },
+    "apex": {
+      "beginner": "初心者におすすめのレジェンドは?",
+      "land": "どこに降りればいい?"
+    },
+    "fortnite": {
+      "build": "建築を速くするには?",
+      "land": "どこに降りればいい?"
+    },
+    "rainbowSix": {
+      "beginner": "初心者におすすめのオペレーターは?",
+      "drones": "ドローンを上手に使うには?"
+    },
+    "rocketLeague": {
+      "aerial": "エアリアルのやり方は?",
+      "rotate": "正しいローテーションのやり方は?"
+    },
+    "fighting": {
+      "beginner": "初心者におすすめなのは誰?",
+      "better": "このゲームが上手くなるには?"
+    }
+  }
+}

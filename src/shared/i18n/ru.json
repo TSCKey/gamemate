@@ -1,1 +1,665 @@
-{}
+{
+  "aiPanel": {
+    "geminiIsAnOptionalCloud": "Gemini — необязательный облачный ИИ от Google. Если его включить:",
+    "forTheJobsYouSet": "Для задач, которые вы поручаете Gemini, ваши вопросы, текущий чат и скриншоты отправляются в Google и обрабатываются на его серверах, которые могут находиться за пределами вашей страны.",
+    "googleRequiresYouToBe": "Google требует, чтобы вам было не меньше 18 лет. В ЕС/ЕЭЗ, Швейцарии и Великобритании условия Google требуют платный ключ API (с включённой оплатой) в таких приложениях, как это.",
+    "youCanTurnGeminiOff": "Вы можете отключить Gemini в любой момент. Тогда GameMate удалит ваш ключ.",
+    "turnOnGemini": "Включить Gemini",
+    "ifYouTurnOnWeb": "Если включить поиск в интернете:",
+    "forQuestionsAboutWhatS": "Для вопросов об актуальном (мета, патчи, сезоны) или о том, что советуют игроки, а также когда в вики нет ответа, GameMate или ИИ составляет короткий поисковый запрос из ключевых слов вашего вопроса и названия игры (например, «Overwatch characters currently meta»). В Google уходит только этот запрос — через Gemini с вашим ключом API. Ваш разговор и скриншоты не отправляются.",
+    "searchesCountTowardYourKey": "Поиски расходуют бесплатную квоту Google Search вашего ключа; если для ключа включена оплата, Google может взимать плату за поиски сверх неё.",
+    "youCanTurnWebSearch": "Вы можете отключить поиск в интернете в любой момент здесь или в разделе «Настройки → Конфиденциальность и право».",
+    "turnOnWebSearch": "Включить поиск в интернете",
+    "cancel": "Отмена",
+    "ifYouTurnOnOnline": "Если включить поиск по вики:",
+    "whenAQuestionIsAbout": "Если вопрос касается чего-то в игре, GameMate отправляет тему (например, «Ender Dragon») в вики этой игры, а для модов Minecraft — название мода в Modrinth. Сам вопрос не отправляется.",
+    "gamemateDownloadsThePageAnd": "GameMate загружает страницу и её изображения, чтобы показать их вам. Вики видят ваш IP-адрес, как любой сайт, который вы посещаете, и обрабатывают его по своим политикам конфиденциальности.",
+    "youCanTurnLookupsOff": "Вы можете отключить поиск по вики в любой момент здесь или в разделе «Настройки → Конфиденциальность и право».",
+    "turnOnLookups": "Включить поиск по вики",
+    "whichAiAnswers": "Какой ИИ отвечает",
+    "everythingRunsOnThisPc": "Всё работает на этом ПК, если вы не выберете Gemini для какой-либо задачи.",
+    "yourQuestions": "Ваши вопросы",
+    "chatAndTheInGame": "Чат и окно в игре.",
+    "aiForQuestions": "ИИ для вопросов",
+    "companion": "Компаньон",
+    "watchingYourGameOnGemini": "Следит за вашей игрой. С Gemini каждые несколько секунд отправляются скриншоты, что может исчерпать лимиты бесплатного ключа.",
+    "aiForTheCompanion": "ИИ для компаньона",
+    "smarterAnswersAndBetterScreen": "Более умные ответы и лучшее понимание экрана с вашим собственным ключом Google API.",
+    "model": "Модель",
+    "flashModelsAreFastAnd": "Модели Flash быстрые и дают больше всего бесплатного использования.",
+    "choose": "Выбрать…",
+    "apiKey": "Ключ API",
+    "savedOnThisPcEncrypted": "Сохранён на этом ПК и зашифрован Windows.",
+    "removeKey": "Удалить ключ",
+    "pasteYourKey": "Вставьте ключ",
+    "geminiApiKey": "Ключ API Gemini",
+    "checking": "Проверка…",
+    "turnOffGemini": "Отключить Gemini",
+    "deletesYourKeyAndGoes": "Удаляет ваш ключ и возвращается к локальному ИИ.",
+    "turnOff": "Отключить",
+    "answers": "Ответы",
+    "detailedAnswers": "Подробные ответы",
+    "answersExplainTheDetailsSteps": "Ответы объясняют подробности, шаги и дают полезные советы.",
+    "answersGetStraightToThe": "Ответы сразу переходят к сути — в одном-трёх предложениях. Включите, чтобы получать более длинные объяснения.",
+    "lookThingsUp": "Искать сведения",
+    "lookThingsUpOnline": "Искать сведения в интернете",
+    "letsTheAiReadYour": "Позволяет ИИ читать вики вашей игры (и Modrinth для модов Minecraft), когда он не уверен — например, о боссах, предметах или постройке портала в Нижний мир. Отправляется только тема; ответы ссылаются на страницу и могут показывать её изображения, например карты.",
+    "searchTheWeb": "Искать в интернете",
+    "letsTheAiSearchThe": "Позволяет ИИ искать в интернете через Google (с помощью Gemini) патчи, стратегии и советы, которых нет в вики. Отправляется только поисковый запрос.",
+    "searchesTheWebWithGoogle": "Ищет через Google в интернете то, чего нет в вики. Нужен Gemini: сначала включите его и добавьте ключ выше.",
+    "googleHandlesThatData": "Google обрабатывает эти данные по <terms>условиям Gemini API</terms> и <privacy>Политике конфиденциальности Google</privacy>, а не по правилам GameMate. С бесплатным ключом Google может использовать отправленное вами для улучшения своих продуктов, а люди могут это просматривать — кроме ЕС/ЕЭЗ, Швейцарии и Великобритании. Не делитесь личной информацией.",
+    "iM18OrOlder": "Мне 18 лет или больше, и я согласен отправлять эти данные в Google.",
+    "googleSearchesTheWeb": "Google ищет в интернете, в том числе на форумах вроде Reddit, по <terms>условиям Gemini API</terms> и <privacy>Политике конфиденциальности Google</privacy>. Ответы показывают использованные страницы и поисковые подсказки Google.",
+    "autoDecidePerQuestion": "Авто (решает для каждого вопроса)",
+    "autoAddAKeyFirst": "Авто (решает для каждого вопроса) (сначала добавьте ключ)",
+    "onThisPc": "На этом ПК ({{name}})",
+    "geminiAddAKeyFirst": "Gemini (сначала добавьте ключ)",
+    "getOneAt": "Получите ключ на <link>aistudio.google.com</link>. GameMate проверяет его в Google перед сохранением.",
+    "save": "Сохранить"
+  },
+  "answeredByLabel": {
+    "onThisPc": "💻 На этом ПК"
+  },
+  "companionMenu": {
+    "companionMode": "Режим компаньона",
+    "howOftenToComment": "Как часто комментировать",
+    "resumeWatching": "▶ Продолжить наблюдение",
+    "pauseWatching": "⏸ Приостановить наблюдение",
+    "companionSettings": "Настройки компаньона…",
+    "companion": "Компаньон: {{mode}}"
+  },
+  "companionPanel": {
+    "justNow": "только что",
+    "minAgo": "{{minutes}} мин назад",
+    "hAgo": "{{value}} ч назад",
+    "companionMode": "Режим компаньона",
+    "howMuchGamemateWatchesYour": "Насколько GameMate следит за вашей игрой и говорит сам по себе.",
+    "howOftenToComment": "Как часто комментировать",
+    "resume": "▶ Продолжить",
+    "pause": "⏸ Пауза",
+    "whatGamemateSaw": "Что видел GameMate",
+    "keptOnlyWhileGamemateIs": "Хранится, только пока GameMate открыт.",
+    "nothingYetStartPlayingAnd": "Пока ничего. Начните играть, и GameMate будет записывать происходящее."
+  },
+  "gameMenu": {
+    "theGameGamemateHelpsWith": "Игра, с которой помогает GameMate",
+    "followTheGameIM": "Следовать за игрой, в которую я играю",
+    "switchesByItselfWhenYou": "Переключается сам, когда вы в игре",
+    "allowGameDetectionInSettings": "Сначала разрешите поиск игр в разделе «Настройки → Игры»",
+    "game": "Игра",
+    "scanForGames": "Найти игры…",
+    "findMyGames": "Найти мои игры…"
+  },
+  "gamesPanel": {
+    "gamemateCanFindYourGames": "GameMate может найти ваши игры и следовать за той, в которую вы играете. Для этого он:",
+    "scanForGames": "Найти игры",
+    "looksUpAWikiFor": "Ищет вики для каждой найденной игры, отправляя в wiki.gg и Fandom только название игры.",
+    "readsTheNameOfThe": "Во время игры читает название программы на переднем плане, чтобы понять, что это за игра.",
+    "keepsEverythingOnThisPc": "Хранит всё на этом ПК. При отключении все найденные игры забываются.",
+    "allowAndScanForGames": "Разрешить и найти игры",
+    "rankedOnlineGameAiHelp": "Рейтинговая онлайн-игра: помощь ИИ во время матчей может нарушать её правила",
+    "competitive": "Соревновательная",
+    "newWikiAddress": "Новый адрес вики",
+    "noWikiFoundPasteIts": "Вики не найдена. Вставьте её адрес, например https://…fandom.com",
+    "wikiAddressFor": "Адрес вики для {{name}}",
+    "checking": "Проверка…",
+    "useWiki": "Использовать вики",
+    "change": "Изменить",
+    "looking": "Поиск…",
+    "otherWikis": "Другие вики",
+    "inUse": "Используется",
+    "use": "Использовать",
+    "remove": "Удалить",
+    "addAGameThatS": "Добавить запущенную игру…",
+    "noProgramsWithAWindow": "Программы с окнами не найдены. Запустите игру и попробуйте снова.",
+    "runningProgram": "Запущенная программа",
+    "gameName": "Название игры",
+    "add": "Добавить",
+    "cancel": "Отмена",
+    "findYourGames": "Найдите свои игры",
+    "gamemateKnowsMinecraftOutOf": "GameMate изначально знает Minecraft. Другие ваши игры находятся при сканировании этого ПК.",
+    "scanning": "Сканирование…",
+    "looksThroughSteamEpicGames": "Просматривает Steam, Epic Games, Battle.net и Riot и находит вики каждой игры. Запустите снова после установки игры.",
+    "followTheGameIM": "Следовать за игрой, в которую я играю",
+    "whenYouPressTheShortcut": "Когда вы нажимаете сочетание клавиш или компаньон наблюдает, GameMate переключается на игру на переднем плане.",
+    "stopLookingForGames": "Больше не искать игры",
+    "turnsDetectionOffAndForgets": "Отключает поиск и забывает все игры, найденные GameMate.",
+    "turnOff": "Отключить",
+    "yourGames": "Ваши игры",
+    "eachGameSWikiWas": "Вики каждой игры найдена по её названию: самая активная, если их несколько. Выберите другую через «Другие вики» или вставьте адрес любой вики через «Изменить».",
+    "competitiveGamesCheckTheGame": "Соревновательные игры: прежде чем использовать компаньона в рейтинговых матчах, проверьте правила игры.",
+    "minecraftModpacks": "Сборки модов Minecraft",
+    "yourCurseforgeModpacksOnThis": "Ваши сборки CurseForge на этом ПК, чтобы ответы учитывали ваши моды. С другим лаунчером GameMate читает моды запущенной сборки.",
+    "modpack": "Сборка",
+    "noModpackRunningRightNow": "Сейчас ни одна сборка не запущена. Запустите её или выберите здесь.",
+    "plainMinecraftWithoutMods": "Обычный Minecraft без модов.",
+    "detectTheOneIM": "Определить ту, в которую я играю",
+    "nonePlainMinecraft": "Нет (обычный Minecraft)",
+    "builtIn": "Встроенная",
+    "addedByYou": "Добавлена вами",
+    "readsTheGameLists": "Читает списки игр Steam, Epic Games, Battle.net и Riot на этом ПК, а также ваши сборки модов Minecraft из CurseForge, когда вы нажимаете <b>Найти игры</b>.",
+    "allowGamemateToLook": "Разрешить GameMate искать игры на этом ПК.",
+    "wiki": "Вики: {{wiki}}",
+    "noOtherWikisFound": "Другие вики для {{name}} не найдены.",
+    "wikiSize": "Страниц: {{pages}}, активных редакторов: {{editors}}",
+    "gamesFound_one": "Найдена {{count}} игра",
+    "gamesFound_few": "Найдено {{count}} игры",
+    "gamesFound_many": "Найдено {{count}} игр",
+    "gamesFound_other": "Найдено {{count}} игры",
+    "usingModpack_one": "Используется {{pack}}, {{count}} мод.",
+    "usingModpack_few": "Используется {{pack}}, {{count}} мода.",
+    "usingModpack_many": "Используется {{pack}}, {{count}} модов.",
+    "usingModpack_other": "Используется {{pack}}, {{count}} мода.",
+    "mods_one": "{{count}} мод",
+    "mods_few": "{{count}} мода",
+    "mods_many": "{{count}} модов",
+    "mods_other": "{{count}} мода"
+  },
+  "generalPanel": {
+    "runningFromSourceCodeUpdates": "Запущен из исходного кода: обновления приходят через git.",
+    "checkingForUpdates": "Проверка обновлений…",
+    "downloadingVersion": "Загрузка версии {{available}}… {{value}}%",
+    "versionIsReadyItInstalls": "Версия {{available}} готова. Она установится при перезапуске GameMate.",
+    "gamemateIsUpToDate": "У вас последняя версия GameMate.",
+    "couldnTCheckForUpdates": "Не удалось проверить обновления.",
+    "updatesComeFromGamemateS": "Обновления приходят из выпусков GameMate на GitHub.",
+    "updates": "Обновления",
+    "status": "Состояние",
+    "restartAndUpdate": "Перезапустить и обновить",
+    "checkNow": "Проверить сейчас",
+    "checkForUpdatesAutomatically": "Проверять обновления автоматически",
+    "looksForANewVersion": "Ищет новую версию при запуске GameMate и каждые несколько часов и загружает её в фоне.",
+    "inGameWindow": "Окно в игре",
+    "shortcut": "Сочетание клавиш",
+    "anotherAppIsUsingThis": "Это сочетание клавиш занято другим приложением, поэтому оно отключено. Выберите другое или закройте то приложение и перезапустите GameMate.",
+    "opensASmallWindowOver": "Открывает небольшое окно поверх игры, чтобы задать вопрос.",
+    "voiceShortcut": "Голосовое сочетание",
+    "anotherAppIsUsingThis2": "Это сочетание клавиш занято другим приложением, поэтому оно отключено. Выберите другое.",
+    "opensTheInGameWindow": "Открывает окно в игре и слушает устный вопрос. Работает, когда включён голосовой ввод («Настройки → Голос»).",
+    "sendAScreenshotWithQuestions": "Отправлять скриншот вместе с вопросами",
+    "letsGamemateSeeWhatYou": "Позволяет GameMate видеть, на что вы смотрите, когда спрашиваете из игры.",
+    "whenYouCloseTheWindow": "При закрытии окна",
+    "whenGamemateQuitsItFrees": "При выходе GameMate сразу освобождает модель ИИ, чтобы ничего не работало в фоне.",
+    "keepRunningInTheTray": "Продолжать работать в трее",
+    "keepsTheInGameShortcuts": "Сочетания клавиш в игре и компаньон продолжают работать. Выйти можно через значок в трее. Модель ИИ освобождается после нескольких минут простоя.",
+    "closingTheWindowQuitsGamemate": "Закрытие окна завершает GameMate. Сочетания клавиш в игре и компаньон перестают работать, пока вы снова его не запустите.",
+    "language": "Язык",
+    "languageHelp": "Для окон GameMate и ответов ИИ. Названия игр и страницы вики остаются без изменений."
+  },
+  "modelMenu": {
+    "builtInAi": "Встроенный ИИ",
+    "auto": "✦ Авто",
+    "chooseAModel": "Выберите модель",
+    "whichAiAnswers": "Какой ИИ отвечает",
+    "whichAiAnswersYourQuestions": "Какой ИИ отвечает на ваши вопросы",
+    "picksThisPcOrGemini": "Выбирает этот ПК или Gemini для каждого вопроса",
+    "picksThisPcOrGemini2": "Выбирает этот ПК или Gemini для каждого вопроса. Сначала настройте Gemini.",
+    "onThisPc": "На этом ПК",
+    "canSeeScreenshots": "{{label}} · Видит скриншоты",
+    "downloadAModel": "Загрузить модель…",
+    "runsOnYourGraphicsCard": "Работает на видеокарте, без интернета",
+    "canSeeScreenshots2": "Видит скриншоты",
+    "textOnly": "Только текст",
+    "geminiCloud": "Gemini (облако)",
+    "setUpGemini": "Настроить Gemini…",
+    "smarterAnswersWithYourOwn": "Более умные ответы с вашим собственным ключом Google API",
+    "manageModels": "Управление моделями…"
+  },
+  "modelsPanel": {
+    "aiModelsOnThisPc": "Модели ИИ на этом ПК",
+    "theyRunOnYourGraphics": "Они работают на видеокарте и без интернета: ничего из ваших вопросов не покидает этот ПК. Первая загрузка также устанавливает движок ИИ GameMate (37 МБ).",
+    "recommended": "Рекомендуется",
+    "cancel": "Отмена",
+    "keep": "Оставить",
+    "inUse": "✓ Используется",
+    "use": "Использовать",
+    "delete": "Удалить ({{size}})",
+    "tryAgain": "Повторить",
+    "alreadyUseOllamaGamemateCan": "Уже пользуетесь Ollama? GameMate может использовать его модели вместо встроенных.",
+    "useMyOllamaModels": "Использовать мои модели Ollama",
+    "ollamaMustBeRunningGamemate": "Ollama должен быть запущен. GameMate освобождает его модель при выходе.",
+    "model": "Модель",
+    "modelsMarkedCanSeeScreenshots": "Модели с отметкой 👁 видят скриншоты.",
+    "ollamaModel": "Модель Ollama",
+    "noModels": "Нет моделей",
+    "reload": "Обновить",
+    "cloudModels": "Облачные модели",
+    "runOnAnotherCompanyS": "Работают на серверах другой компании. Каждая спрашивает ваше согласие, прежде чем что-либо отправить.",
+    "smarterAnswersAndBetterScreen": "Более умные ответы и лучшее понимание экрана с вашим собственным ключом Google API.",
+    "setUp": "Настроить",
+    "modelDetails": "{{description}} {{size}}. Видит скриншоты.",
+    "download": "Загрузить"
+  },
+  "pictures": {
+    "openOnThe": "Открыть в {{wiki}}"
+  },
+  "privacyPanel": {
+    "findingYourGames": "Поиск ваших игр",
+    "givenOnYouCanAlso": "Дано {{value}}. Изменить это можно также в разделе «{{where}}».",
+    "givenYouCanAlsoChange": "Дано. Изменить это можно также в разделе «{{where}}».",
+    "notGivenYouCanTurn": "Не дано. Включить можно в разделе «{{where}}».",
+    "withdraw": "Отозвать",
+    "off": "Выкл.",
+    "termsOfUseAndPrivacy": "Условия использования и Политика конфиденциальности",
+    "youAcceptedTheTermsOf": "Вы приняли Условия использования {{value}}.",
+    "readTheTermsOfUse": "Прочитать Условия использования",
+    "readThePrivacyPolicy": "Прочитать Политику конфиденциальности",
+    "yourConsents": "Ваши согласия",
+    "optionalFeaturesThatSendData": "Необязательные функции, которые отправляют данные другим сервисам. Отзыв согласия отключает только эту функцию; остальной GameMate продолжает работать.",
+    "settingsGames": "Настройки → Игры",
+    "onlineLookups": "Поиск по вики",
+    "settingsAiOnline": "Настройки → ИИ и интернет",
+    "webSearchGoogle": "Поиск в интернете (Google)",
+    "howGamemateHandlesYourData": "Как GameMate обращается с вашими данными",
+    "storedOnThisPc": "Хранится на этом ПК",
+    "onlyInYourWindowsUser": "Только в вашей папке пользователя Windows, доступной лишь вашей учётной записи Windows.",
+    "yourSettings": "Ваши настройки.",
+    "yourGeminiApiKeyIf": "Ваш ключ API Gemini, если вы его добавили, зашифрованный Windows.",
+    "aiModelsGamemateSAi": "Загруженные вами модели ИИ, движок ИИ GameMate и речевые модели.",
+    "gamesFoundOrAddedTheir": "Найденные или добавленные игры: их название, папка или программа и адрес вики.",
+    "openLogFolder": "Открыть папку журналов",
+    "whenYouUseOnlineFeatures": "Когда вы используете онлайн-функции",
+    "theseServicesHandleYourData": "Эти сервисы обрабатывают ваши данные по своим условиям, а не по условиям GameMate.",
+    "withdrawMyAcceptanceOfThe": "Отозвать моё согласие с Условиями",
+    "gamemateStopsWorkingUntilYou": "GameMate перестаёт работать, пока вы снова не примете Условия использования: он отключается от сети, компаньон останавливается, ИИ закрывается. Ваши настройки и загрузки сохраняются, если только вы не удалите и свои данные.",
+    "yesWithdraw": "Да, отозвать",
+    "cancel": "Отмена",
+    "withdrawAcceptance": "Отозвать согласие",
+    "deleteMyData": "Удалить мои данные",
+    "removesEverythingAboveFromThis": "Удаляет с этого ПК всё перечисленное выше и сбрасывает GameMate, как будто он только что установлен. На данные, уже отправленные в Google, распространяются правила Google.",
+    "doneEverythingGamemateStoredHas": "Готово. Всё, что хранил GameMate, удалено.",
+    "yesDeleteEverything": "Да, удалить всё",
+    "summary": {
+      "runsOnYourPc": "<b>Работает на вашем ПК.</b> Без аккаунта, рекламы и аналитики. Разработчики GameMate ничего от вас не получают.",
+      "yourScreen": "<b>Ваш экран</b> снимается, только когда вы просите или пока компаньон настроен следить за игрой. Скриншоты остаются в памяти и никогда не сохраняются на диск.",
+      "findingYourGames": "<b>Поиск ваших игр</b> происходит, только когда вы разрешите его в разделе «Настройки → Игры». Тогда GameMate читает списки игр ваших лаунчеров (Steam, Epic Games, Battle.net, Riot), ваши сборки CurseForge и название программы на переднем плане. Всё это остаётся на вашем ПК; чтобы найти вики, в wiki.gg и Fandom отправляются только названия игр.",
+      "yourMicrophone": "<b>Ваш микрофон</b> используется, только когда включён голосовой ввод и вы нажимаете голосовое сочетание или 🎤. Речь превращается в текст на этом ПК.",
+      "chatsAndTheCompanionLog": "<b>Чаты и журнал компаньона</b> хранятся, только пока GameMate открыт.",
+      "onlineFeaturesAreOffUntil": "<b>Онлайн-функции выключены, пока вы их не включите:</b> поиск в вики вашей игры или на Modrinth (отправляется только тема) и Google Gemini (ваши вопросы и скриншоты отправляются в Google). Загрузки выполняются один раз, когда вы о них просите: модели ИИ и речевые модели — с Hugging Face, движок ИИ GameMate — с GitHub. Проверка обновлений запрашивает у GitHub последнюю версию GameMate (её можно отключить)."
+    },
+    "aLogOfWhatGamemate": "Журнал действий GameMate (например, запуска ИИ или проверки обновлений) для поиска проблем. В нём никогда нет ваших вопросов или ответов, и он никуда не отправляется.",
+    "geminiTerms": "<b>Google Gemini:</b> <terms>условия Gemini API</terms> и <privacy>Политика конфиденциальности Google</privacy>.",
+    "wikiLicenses": "<b>Игровые вики и Modrinth:</b> текст каждой вики распространяется по своей лицензии (она указывается с каждым ответом, который его использует, например <link>minecraft.wiki</link>), поэтому ответы ссылаются на страницу. Изображения в ответах загружаются с тех же вики и ссылаются на свою страницу там."
+  },
+  "recipeCard": {
+    "craftingGridFor": "Сетка крафта для {{item}}",
+    "anyArrangementWorks": "Подойдёт любое расположение"
+  },
+  "searchSuggestions": {
+    "googleSearchSuggestions": "Поисковые подсказки Google"
+  },
+  "setupCard": {
+    "downloadGamemateSAi": "Загрузите ИИ GameMate",
+    "oneDownloadAndGamemateRuns": "Одна загрузка — и GameMate работает на этом ПК даже без интернета. Ничего из ваших вопросов не покидает компьютер.",
+    "cancel": "Отмена",
+    "otherModels": "Другие модели",
+    "iUseOllama": "Я пользуюсь Ollama",
+    "useGeminiCloud": "Использовать Gemini (облако)",
+    "downloading": "Загрузка {{name}}: {{percent}}% из {{size}}",
+    "download": "Загрузить {{name}} ({{size}})"
+  },
+  "shortcutField": {
+    "thatIsAlreadyGamemateS": "Это уже другое сочетание клавиш GameMate.",
+    "pressTheNewShortcutEsc": "Нажмите новое сочетание… (Esc — отмена)",
+    "change": "Изменить",
+    "default": "По умолчанию"
+  },
+  "sources": {
+    "source": "Источник:"
+  },
+  "voicePanel": {
+    "remove": "Удалить",
+    "download": "Загрузить",
+    "talkToGamemate": "Говорите с GameMate",
+    "speechIsTurnedIntoText": "Речь превращается в текст на этом ПК. Ваш голос никогда его не покидает.",
+    "askWithYourMicrophone": "Спрашивать через микрофон",
+    "isUsedByAnotherApp": "{{voiceShortcut}} занято другим приложением. Используйте кнопку 🎤.",
+    "inAGamePressAnd": "В игре нажмите {{voiceShortcut}} и спросите вслух. GameMate перестаёт слушать, когда вы делаете паузу.",
+    "downloadTheSelectedModelOnce": "Чтобы начать, один раз загрузите выбранную модель. Потом она работает без интернета.",
+    "gamemateSVoice": "Голос GameMate",
+    "kokoroANaturalSoundingVoice": "Kokoro — естественный голос, который работает на этом ПК без интернета.",
+    "usesTheVoicesBuiltInto": "Использует встроенные голоса Windows.",
+    "voiceType": "Тип голоса",
+    "naturalIsKokoroApache2": "Естественный голос — это Kokoro (Apache 2.0, обучен только на свободно лицензированных записях, не защищённых авторским правом): загружается один раз и потом работает без интернета.",
+    "naturalKokoro": "Естественный (Kokoro)",
+    "windowsVoices": "Голоса Windows",
+    "downloaded": "Загружено.",
+    "downloadItOnceToUse": "Загрузите его один раз, чтобы использовать. До тех пор GameMate использует голос Windows.",
+    "readAnswersAloud": "Читать ответы вслух",
+    "readCompanionCommentsAloud": "Читать комментарии компаньона вслух",
+    "voice": "Голос",
+    "windowsDefault": "По умолчанию в Windows",
+    "volume": "Громкость",
+    "speed": "Скорость",
+    "tryIt": "Попробовать",
+    "hiIMGamemateWatch": "Привет, я GameMate. Берегись криперов!",
+    "testVoice": "🔊 Проверить голос",
+    "speechModels": {
+      "fast": {
+        "label": "Быстрая речевая модель",
+        "help": "Самая быстрая, но чаще ошибается."
+      },
+      "accurate": {
+        "label": "Точная речевая модель",
+        "help": "Ошибается реже, чем быстрая."
+      },
+      "best": {
+        "label": "Лучшая речевая модель",
+        "help": "Whisper Small: понимает вас лучше всего, даже с акцентом, но работает на несколько секунд дольше. Рекомендуется."
+      }
+    },
+    "mb": "{{size}} МБ",
+    "kokoroVoice": {
+      "af": "{{name}} (американский, женский)",
+      "am": "{{name}} (американский, мужской)",
+      "bf": "{{name}} (британский, женский)",
+      "bm": "{{name}} (британский, мужской)"
+    },
+    "downloading": "Загрузка… {{percent}}%",
+    "speakAnswers": {
+      "off": "Никогда",
+      "voice": "Когда я спрашиваю голосом",
+      "always": "Всегда"
+    },
+    "naturalVoice": "Естественный голос"
+  },
+  "useLocalModels": {
+    "builtInAi": "Встроенный ИИ",
+    "gb": "{{value}} ГБ",
+    "mb": "{{sizeMb}} МБ"
+  },
+  "useSettings": {
+    "noModelsInstalledRunOllama": "Модели не установлены. Выполните: ollama pull qwen3.5:2b"
+  },
+  "legalReader": {
+    "termsOfUse": "Условия использования",
+    "privacyPolicy": "Политика конфиденциальности",
+    "close": "Закрыть"
+  },
+  "termsGate": {
+    "ourTermsHaveChanged": "Наши условия изменились",
+    "welcomeToGamemate": "Добро пожаловать в GameMate",
+    "pleaseReadAndAcceptThe": "Чтобы продолжить пользоваться GameMate, прочитайте и примите обновлённые Условия использования.",
+    "beforeYouStartHereIs": "Прежде чем начать: вот как GameMate обращается с вашими данными.",
+    "featuresThatSendDataTo": "Функции, которые отправляют данные другим сервисам, выключены, пока вы их не включите. Вы можете отозвать согласие в любой момент в разделе «Настройки → Конфиденциальность и право».",
+    "deleteEverythingGamemateStored": "Удалить всё, что хранил GameMate?",
+    "delete": "Удалить",
+    "cancel": "Отмена",
+    "deleteMyData": "Удалить мои данные",
+    "quitGamemate": "Выйти из GameMate",
+    "acceptAndContinue": "Принять и продолжить",
+    "pleaseReadTheFull": "Прочитайте полностью <terms>Условия использования</terms> и <privacy>Политику конфиденциальности</privacy>.",
+    "iAm16OrOlder": "Мне 16 лет или больше, либо мой родитель или опекун согласен, чтобы я пользовался GameMate.",
+    "iAcceptTheTerms": "Я принимаю Условия использования и прочитал Политику конфиденциальности."
+  },
+  "app": {
+    "entireScreen": "Весь экран",
+    "newChat": "Новый чат",
+    "settings": "Настройки",
+    "whatCanIHelpWith": "Чем могу помочь?",
+    "whatSOnMyScreen": "📷 Что у меня на экране?",
+    "screenshotSentWithThisQuestion": "Скриншот, отправленный с этим вопросом",
+    "capturingScreen": "Снимок экрана…",
+    "thinking": "Думаю…",
+    "downloadGamemateSAiTo": "Загрузите ИИ GameMate, чтобы начать",
+    "pickAnAiModelIn": "Сначала выберите модель ИИ в настройках",
+    "listening": "Слушаю…",
+    "workingOutWhatYouSaid": "Разбираю, что вы сказали…",
+    "askAboutYourScreenOr": "Спросите о том, что на экране… (или просто нажмите Enter)",
+    "askAbout": "Спросите о {{value}}…",
+    "sendAScreenshotWithYour": "Отправить скриншот вместе с вопросом",
+    "screenshot": "📷 Скриншот",
+    "screenshotSource": "Источник скриншота",
+    "nothingToCapture": "Нечего снимать",
+    "screenAccessIsOffCompanion": "Доступ к экрану выключен (Компаньон: Отключён).",
+    "thisModelCanTSee": "Эта модель не видит скриншоты.",
+    "listeningClickToStop": "Слушаю, нажмите, чтобы остановить",
+    "askByVoice": "Спросить голосом",
+    "send": "Отправить",
+    "whatIsHappeningOnMy": "Что происходит у меня на экране?",
+    "pressShortcutInAnyGame": "Нажмите <kbd>{{shortcut}}</kbd> в любой игре, чтобы спросить, не выходя из неё.",
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> занято другим приложением, поэтому сочетание в игре отключено. Закройте то приложение и перезапустите GameMate."
+  },
+  "overlay": {
+    "dragToMove": "Перетащите, чтобы переместить",
+    "openGamemateAndSetUp": "Откройте GameMate и сначала настройте модель ИИ",
+    "listening": "Слушаю…",
+    "workingOutWhatYouSaid": "Разбираю, что вы сказали…",
+    "askGamemate": "Спросите GameMate…",
+    "listeningClickToStop": "Слушаю, нажмите, чтобы остановить",
+    "askByVoice": "Спросить голосом ({{voiceShortcut}})",
+    "thisModelCanTSee": "Эта модель не видит изображения",
+    "screenshotOnGamemateSeesYour": "Скриншот включён: GameMate видит ваш экран",
+    "screenshotOff": "Скриншот выключен",
+    "newConversation": "Новый разговор",
+    "thinking": "Думаю…",
+    "answersComeFromGeminiGoogle": "Ответы дает Gemini (Google)",
+    "gamematePicksTheLocalAi": "GameMate выбирает локальный ИИ или Gemini для каждого вопроса",
+    "auto": "✦ Авто",
+    "theGameGamemateHelpsWith": "Игра, с которой помогает GameMate",
+    "autoGemini": "✦ Авто: ☁ Gemini",
+    "autoThisPc": "✦ Авто: этот ПК",
+    "hint": "Enter — спросить · Esc — скрыть",
+    "hintWithVoice": "Enter — спросить · {{voiceShortcut}} — сказать · Esc — скрыть"
+  },
+  "settingsScreen": {
+    "settings": "Настройки",
+    "backToChat": "← Назад к чату",
+    "tabs": {
+      "general": "Общие",
+      "games": "Игры",
+      "models": "Модели",
+      "companion": "Компаньон",
+      "voice": "Голос",
+      "ai": "ИИ и интернет",
+      "privacy": "Конфиденциальность и право"
+    }
+  },
+  "useVoiceInput": {
+    "sorryIDidnTCatch": "Простите, не расслышал.",
+    "gamemateIsNotAllowedTo": "GameMate не разрешено использовать микрофон. Проверьте параметры конфиденциальности микрофона в Windows."
+  },
+  "companion": {
+    "modes": {
+      "disabled": {
+        "label": "Отключён",
+        "help": "Никогда не смотрит на ваш экран, даже когда вы нажимаете сочетание клавиш."
+      },
+      "on-demand": {
+        "label": "По запросу",
+        "help": "Смотрит и отвечает, только когда вы спрашиваете."
+      },
+      "observation": {
+        "label": "Наблюдение",
+        "help": "Следит за игрой и ведёт журнал происходящего без всплывающих окон."
+      },
+      "commentary": {
+        "label": "Комментарии",
+        "help": "Следит за игрой и показывает короткий комментарий, когда происходит что-то важное."
+      },
+      "quiet": {
+        "label": "Тихий",
+        "help": "Тихо наблюдает и использует увиденное только для ответов на ваши вопросы."
+      }
+    },
+    "frequencies": {
+      "rare": "Редко (только важные моменты)",
+      "normal": "Иногда",
+      "frequent": "Часто"
+    },
+    "status": {
+      "off": "Не наблюдает",
+      "paused": "На паузе",
+      "no-model": "Выберите модель, чтобы начать наблюдение",
+      "needs-consent": "Разрешите поиск игр в разделе «Настройки → Игры», чтобы начать наблюдение",
+      "waiting-for-game": "Ожидание, пока игра станет активным окном",
+      "watching": "Наблюдает",
+      "analyzing": "Смотрит на ваш экран…"
+    }
+  },
+  "errors": {
+    "ai": {
+      "noLocalModel": "Сначала загрузите модель ИИ в GameMate («Настройки → Модели»).",
+      "pickModel": "Сначала выберите модель в GameMate."
+    },
+    "gemini": {
+      "turnOn": "Сначала включите Gemini в настройках GameMate («ИИ и интернет»).",
+      "addKey": "Сначала добавьте ключ API Gemini в настройках ИИ GameMate.",
+      "pickModel": "Выберите модель Gemini в настройках ИИ GameMate.",
+      "timeout": "Gemini слишком долго не отвечал.",
+      "unreachable": "Не удалось связаться с Gemini. Проверьте подключение к интернету.",
+      "badKey": "Gemini отклонил ключ API. Проверьте его в настройках ИИ GameMate.",
+      "keyNotAllowed": "Этому ключу API не разрешено использовать Gemini.",
+      "usageLimit": "Достигнут лимит использования Gemini. Попробуйте позже или переключитесь на локальную модель.",
+      "error": "Ошибка Gemini {{status}}{{detail}}",
+      "noAnswer": "Gemini не ответил{{reason}}.",
+      "needConsent": "Сначала примите условия Gemini.",
+      "notAKey": "Это не похоже на ключ API Gemini.",
+      "cantEncrypt": "Windows не может зашифровать ключ на этом ПК, поэтому GameMate не будет его сохранять."
+    },
+    "builtin": {
+      "failed": "Сбой встроенного ИИ: {{detail}}",
+      "timeout": "Встроенный ИИ слишком долго не отвечал.",
+      "stopped": "Встроенный ИИ неожиданно остановился. Попробуйте снова.",
+      "tooLong": "Этот разговор слишком длинный для встроенного ИИ. Начните новый чат.",
+      "noGraphicsMemory": "Не удалось запустить встроенный ИИ: для этой модели не хватает видеопамяти. Попробуйте модель поменьше или закройте другие программы.",
+      "badModelFile": "Не удалось запустить встроенный ИИ: не удалось загрузить файл модели. Удалите его в разделе «Настройки → Модели» и загрузите снова.",
+      "couldNotStart": "Не удалось запустить встроенный ИИ ({{detail}}).",
+      "slowStart": "Не удалось запустить встроенный ИИ: модель загружалась слишком долго."
+    },
+    "ollama": {
+      "timeout": "Ollama слишком долго не отвечал.",
+      "unreachable": "Не удалось связаться с Ollama по адресу {{url}}. Он запущен?",
+      "error": "Ошибка Ollama {{detail}}",
+      "noAnswer": "Ollama не прислал ответ."
+    },
+    "download": {
+      "engineIncomplete": "движок ИИ неполный",
+      "diskSpace": "недостаточно свободного места на диске (нужно {{size}} ГБ)",
+      "failed": "Не удалось загрузить {{name}}: {{reason}}",
+      "serverAnswered": "сервер ответил {{status}}",
+      "incomplete": "загрузка неполная",
+      "damaged": "загруженный файл повреждён (контрольная сумма не совпадает)",
+      "voiceFailed": "Не удалось загрузить голос: {{reason}}",
+      "speechModelFailed": "Не удалось загрузить речевую модель: {{reason}}"
+    },
+    "games": {
+      "needConsent": "Сначала разрешите GameMate искать игры («Настройки → Игры»).",
+      "noName": "Дайте игре название.",
+      "tooMany": "Слишком много игр.",
+      "cantAdd": "Эту программу нельзя добавить."
+    },
+    "terms": {
+      "notAccepted": "Сначала примите Условия использования GameMate.",
+      "age": "Сначала подтвердите свой возраст."
+    },
+    "updates": {
+      "check": "Не удалось проверить обновления. Вы подключены к интернету?",
+      "download": "Не удалось загрузить обновление. Попытка повторится позже."
+    },
+    "capture": {
+      "failed": "Не удалось сделать снимок экрана.",
+      "windowGone": "Это окно больше недоступно. Выберите другое для снимка."
+    },
+    "wiki": {
+      "address": "Введите адрес вики, начиная с https://",
+      "notFound": "По этому адресу вики не найдена. GameMate работает с сайтами MediaWiki, такими как Fandom и wiki.gg."
+    }
+  },
+  "answers": {
+    "reason": {
+      "geminiNotSetUp": "Gemini не настроен",
+      "noLocalModel": "нет локальной модели",
+      "screenshot": "чтение скриншота",
+      "recipe": "рецепт из данных GameMate",
+      "complex": "нужно больше подумать",
+      "longQuestion": "длинный вопрос",
+      "longConversation": "длинный разговор",
+      "quick": "быстрый вопрос",
+      "geminiUnreachable": "Gemini был недоступен",
+      "localUnreachable": "локальная модель была недоступна"
+    },
+    "noAnswer": "Я не нашёл надёжного ответа на этот вопрос."
+  },
+  "models": {
+    "local": {
+      "fast": "Быстрая",
+      "2b": "Быстрые ответы на большинстве видеокарт. Хорошее начало.",
+      "smart": "Умная",
+      "4b": "Ответы лучше. Лучше всего с 6 ГБ видеопамяти или больше.",
+      "best": "Лучшая",
+      "9b": "Лучшие ответы на этом ПК. Лучше всего с 10 ГБ видеопамяти или больше."
+    }
+  },
+  "tray": {
+    "status": {
+      "off": "Не наблюдает",
+      "paused": "Наблюдение на паузе",
+      "no-model": "Выберите модель, чтобы начать наблюдение",
+      "needs-consent": "Разрешите поиск игр в настройках",
+      "waiting-for-game": "Ожидание игры",
+      "watching": "Следит за вашей игрой",
+      "watchingGame": "Следит за {{game}}"
+    },
+    "resume": "Продолжить наблюдение",
+    "pause": "Приостановить наблюдение",
+    "ask": "Спросить GameMate ({{shortcut}})",
+    "open": "Открыть GameMate",
+    "quit": "Выйти из GameMate"
+  },
+  "languagePicker": {
+    "title": "Выберите язык",
+    "lead": "Его будут использовать окна и ответы GameMate. Изменить язык можно в любой момент в разделе «Настройки → Общие».",
+    "continue": "Продолжить"
+  },
+  "gameExamples": {
+    "minecraft": {
+      "piston": "Как скрафтить поршень?",
+      "netherPortal": "Как построить портал в Нижний мир?"
+    },
+    "generic": {
+      "next": "Что мне делать дальше?",
+      "tips": "Есть советы для места, где я нахожусь?"
+    },
+    "valorant": {
+      "beginner": "Какой агент подойдёт новичку?",
+      "jettDash": "Как работает рывок Jett?"
+    },
+    "overwatch": {
+      "widowmaker": "Как контрить Widowmaker?",
+      "tank": "Какой танк проще всего освоить?"
+    },
+    "marvelRivals": {
+      "beginner": "Какой герой подойдёт новичку?",
+      "teamUps": "Как работают командные способности?"
+    },
+    "counterStrike": {
+      "spray": "Как контролировать отдачу AK-47?",
+      "save": "Когда стоит копить деньги?"
+    },
+    "league": {
+      "beginner": "Какой чемпион подойдёт новичку?",
+      "farm": "Как лучше фармить?"
+    },
+    "apex": {
+      "beginner": "Какая легенда подойдёт новичку?",
+      "land": "Где лучше высадиться?"
+    },
+    "fortnite": {
+      "build": "Как строить быстрее?",
+      "land": "Где лучше высадиться?"
+    },
+    "rainbowSix": {
+      "beginner": "Какой оперативник подойдёт новичку?",
+      "drones": "Как правильно использовать дроны?"
+    },
+    "rocketLeague": {
+      "aerial": "Как делать воздушные удары (aerial)?",
+      "rotate": "Как правильно ротироваться?"
+    },
+    "fighting": {
+      "beginner": "Кто подойдёт новичку?",
+      "better": "Как мне стать лучше в этой игре?"
+    }
+  }
+}

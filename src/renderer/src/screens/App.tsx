@@ -70,7 +70,8 @@ function App(): React.JSX.Element {
   const willAttach = attachScreenshot && visionModel && sourceId !== ''
   const screenCount = sources.filter((s) => s.type === 'screen').length
   const game = games?.games.find((g) => g.id === settings?.currentGame)
-  const suggestions = game?.examples ?? []
+  // The game's example questions, in the player's language.
+  const suggestions = (game?.examples ?? []).map((key) => t(key))
   // Ollama problems only matter to players who use Ollama.
   const usesOllama = settings?.localBackend === 'ollama' && !onGemini
   const shownError = error ?? (usesOllama ? modelError : null)
@@ -267,7 +268,13 @@ function App(): React.JSX.Element {
             <h2>{t('app.whatCanIHelpWith')}</h2>
             <div className="suggestions">
               {suggestions.map((q) => (
-                <button key={q} type="button" disabled={!ready} onClick={() => send(q, false)}>
+                <button
+                  key={q}
+                  type="button"
+                  dir="auto"
+                  disabled={!ready}
+                  onClick={() => send(q, false)}
+                >
                   {q}
                 </button>
               ))}
