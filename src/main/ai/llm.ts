@@ -1,7 +1,13 @@
 // One interface over the two AI engines: the local Ollama model and, if the player opts in,
 // Google Gemini. Callers build a provider-neutral conversation; each adapter translates it.
 import { chatOnce, type OllamaMessage } from './ollamaClient'
-import { generate, type GeminiContent, type GeminiPart, type GeminiRequest } from './gemini'
+import {
+  GeminiRequestError,
+  generate,
+  type GeminiContent,
+  type GeminiPart,
+  type GeminiRequest
+} from './gemini'
 import { chatCompletion } from './llamaClient'
 import { withEngine } from './llamaEngine'
 import { t } from '../system/i18n'
@@ -199,7 +205,26 @@ async function viaGemini(
         ? { generationConfig: { thinkingConfig: { thinkingLevel: 'low' } } }
         : {})
   }
-  const content = await generate(apiKey, model, request, options.signal, options.onText)
+  const content = await generate(apiKey, model, request, options.signal, options.onText).catch(
+    (error: unknown) => {
+      // A model that refuses the low thinking level answers without it.
+      if (
+        request.generationConfig?.thinkingConfig &&
+        error instanceof GeminiRequestError &&
+        error.status === 400 &&
+        /thinking/i.test(error.detail)
+      ) {
+        return generate(
+          apiKey,
+          model,
+          { ...request, generationConfig: undefined },
+          options.signal,
+          options.onText
+        )
+      }
+      throw error
+    }
+  )
   return {
     // Thought summaries are not part of the answer.
     content: content.parts

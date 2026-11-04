@@ -141,7 +141,7 @@ describe('When Google is overloaded', () => {
 })
 
 describe('Web search after its free quota is used up', () => {
-  it('pauses until Google resets the quota, instead of trying on every question', async () => {
+  it('pauses after Google says no, instead of trying on every question', async () => {
     const fetch = vi.fn(async () => Response.json({ error: { message: 'quota' } }, { status: 429 }))
     vi.stubGlobal('fetch', fetch)
     await expect(gemini.searchWeb('key', 'gemini-3.5-flash', 'meta')).rejects.toThrow()
@@ -158,5 +158,105 @@ describe('Web search after its free quota is used up', () => {
     expect(gemini.nextQuotaReset(new Date('2026-07-01T12:00:00Z')).toISOString()).toBe(
       '2026-07-02T07:00:00.000Z'
     )
+  })
+})
+
+describe('Fixes from the review', () => {
+  it('count a connection lost mid-answer as unreachable, so Auto mode can answer instead', async () => {
+    const encoder = new TextEncoder()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        const body = new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify(chunk([{ text: 'Destroy the ' }]))}\r\n\r\n`)
+            )
+            controller.error(new TypeError('terminated'))
+          }
+        })
+        return new Response(body)
+      })
+    )
+    const error = await complete(engine, ask, { onText: () => {} }).catch((e: unknown) => e)
+    expect(isUnreachable(error)).toBe(true)
+    expect((error as Error).message).toBe('Could not reach Gemini. Check your internet connection.')
+  })
+
+  it('answer without the low thinking level when a model refuses it', async () => {
+    const fetch = vi
+      .fn()
+      .mockImplementationOnce(async () =>
+        Response.json(
+          { error: { message: 'Thinking level is not supported for this model.' } },
+          { status: 400 }
+        )
+      )
+      .mockImplementationOnce(async () => sse([chunk([{ text: 'Here you go.' }])]))
+    vi.stubGlobal('fetch', fetch)
+    const reply = await complete(engine, ask, { onText: () => {} })
+    expect(reply.content).toBe('Here you go.')
+    const second = JSON.parse(((fetch.mock.calls[1] as unknown[])[1] as RequestInit).body as string)
+    expect(second.generationConfig).toBeUndefined()
+  })
+})
+
+describe('Web search when Google says "too many requests"', () => {
+  const tooMany = (quotaId: string, retryDelay?: string): Response =>
+    Response.json(
+      {
+        error: {
+          message: 'Quota exceeded',
+          details: [
+            {
+              '@type': 'type.googleapis.com/google.rpc.QuotaFailure',
+              violations: [{ quotaId }]
+            },
+            ...(retryDelay
+              ? [{ '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay }]
+              : [])
+          ]
+        }
+      },
+      { status: 429 }
+    )
+  const found = (): Response =>
+    Response.json({ candidates: [{ content: { parts: [{ text: 'ok' }] } }] })
+
+  afterEach(() => {
+    vi.useRealTimers()
+    gemini.resumeWebSearch()
+  })
+
+  it('waits only as long as Google asks after a per-minute limit', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-11-04T10:00:00Z'))
+    const fetch = vi
+      .fn()
+      .mockImplementationOnce(async () =>
+        tooMany('GenerateRequestsPerMinutePerProjectPerModel-FreeTier', '30s')
+      )
+      .mockImplementation(async () => found())
+    vi.stubGlobal('fetch', fetch)
+    await expect(gemini.searchWeb('key', 'gemini-3.5-flash', 'meta')).rejects.toThrow()
+    await expect(gemini.searchWeb('key', 'gemini-3.5-flash', 'meta')).rejects.toThrow()
+    expect(fetch).toHaveBeenCalledTimes(1)
+    vi.setSystemTime(new Date('2026-11-04T10:00:31Z'))
+    await expect(gemini.searchWeb('key', 'gemini-3.5-flash', 'meta')).resolves.toBeTruthy()
+    expect(fetch).toHaveBeenCalledTimes(2)
+  })
+
+  it('waits for the reset at midnight Pacific after the daily limit', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-11-04T10:00:00Z'))
+    const fetch = vi.fn(async () =>
+      tooMany('GenerateRequestsPerDayPerProjectPerModel-FreeTier', '20s')
+    )
+    vi.stubGlobal('fetch', fetch)
+    await expect(gemini.searchWeb('key', 'gemini-3.5-flash', 'meta')).rejects.toThrow()
+    vi.setSystemTime(new Date('2026-11-04T12:00:00Z'))
+    await expect(gemini.searchWeb('key', 'gemini-3.5-flash', 'meta')).rejects.toThrow()
+    expect(fetch).toHaveBeenCalledTimes(1)
+    expect(gemini.webSearchPaused()).toBe(true)
   })
 })

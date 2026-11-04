@@ -27,6 +27,7 @@ vi.mock('../src/main/ai/llm', () => ({
 // A stand-in Google search.
 const searches: string[] = []
 vi.mock('../src/main/ai/gemini', () => ({
+  webSearchPaused: () => false,
   searchWeb: async (_key: string, _model: string, query: string) => {
     searches.push(query)
     return {

@@ -61,6 +61,41 @@ export function setTimings(next: Partial<typeof timings>): void {
   Object.assign(timings, next)
 }
 
+// A request Gemini refused, with its status and Google's explanation (the message is GameMate's).
+export class GeminiRequestError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly detail: string
+  ) {
+    super(message)
+  }
+}
+
+// "Too many requests", with how long to wait from Google's own details: a daily limit lasts until
+// midnight Pacific time, a per-minute one only as long as Google asks (or a minute).
+export class QuotaError extends UnreachableError {
+  constructor(readonly until: number) {
+    super(t('errors.gemini.usageLimit'))
+  }
+}
+
+interface GoogleErrorDetail {
+  '@type'?: string
+  retryDelay?: string
+  violations?: { quotaId?: string }[]
+}
+
+function quotaWait(details: GoogleErrorDetail[], now = new Date()): number {
+  const daily = details.some((d) =>
+    (d.violations ?? []).some((v) => /per ?day/i.test(v.quotaId ?? ''))
+  )
+  if (daily) return nextQuotaReset(now).getTime()
+  const delay = details.find((d) => d.retryDelay)?.retryDelay
+  const seconds = delay ? Number.parseFloat(delay) : NaN
+  return now.getTime() + (Number.isFinite(seconds) ? seconds * 1000 : 60_000)
+}
+
 // Google's "busy" answers: they usually pass within seconds.
 const BUSY = new Set([500, 502, 503, 504])
 
@@ -105,8 +140,13 @@ async function send(
       continue
     }
     let detail = ''
+    let details: GoogleErrorDetail[] = []
     try {
-      detail = ((await res.json()) as { error?: { message?: string } }).error?.message ?? ''
+      const error = (
+        (await res.json()) as { error?: { message?: string; details?: GoogleErrorDetail[] } }
+      ).error
+      detail = error?.message ?? ''
+      details = Array.isArray(error?.details) ? error.details : []
     } catch {
       // not JSON
     }
@@ -114,13 +154,13 @@ async function send(
       throw new Error(t('errors.gemini.badKey'))
     }
     if (res.status === 403) throw new Error(t('errors.gemini.keyNotAllowed'))
-    if (res.status === 429) {
-      throw new UnreachableError(t('errors.gemini.usageLimit'))
-    }
+    if (res.status === 429) throw new QuotaError(quotaWait(details))
     // Still busy after a second try: in Auto mode the built-in AI answers instead.
     if (BUSY.has(res.status)) throw new UnreachableError(t('errors.gemini.busy'))
-    throw new Error(
-      t('errors.gemini.error', { status: res.status, detail: detail ? `: ${detail}` : '' })
+    throw new GeminiRequestError(
+      t('errors.gemini.error', { status: res.status, detail: detail ? `: ${detail}` : '' }),
+      res.status,
+      detail
     )
   }
 }
@@ -158,22 +198,31 @@ async function callStreaming(
     // Stop reading at once on silence or ■, whatever the network layer does with the signal.
     signal.addEventListener('abort', () => void reader.cancel().catch(() => {}))
     let buffer = ''
-    for (;;) {
-      const { done, value } = await reader.read()
-      if (done) break
-      heard()
-      buffer += value
-      // Events are separated by a blank line; each has one "data: {json}" line.
-      const events = buffer.split(/\r?\n\r?\n/)
-      buffer = events.pop() ?? ''
-      for (const event of events) {
-        const data = event
-          .split(/\r?\n/)
-          .filter((line) => line.startsWith('data:'))
-          .map((line) => line.slice(5).trim())
-          .join('')
-        if (data) onChunk(JSON.parse(data) as GeminiResponse)
+    try {
+      for (;;) {
+        const { done, value } = await reader.read()
+        if (done) break
+        heard()
+        buffer += value
+        // Events are separated by a blank line; each has one "data: {json}" line.
+        const events = buffer.split(/\r?\n\r?\n/)
+        buffer = events.pop() ?? ''
+        for (const event of events) {
+          const data = event
+            .split(/\r?\n/)
+            .filter((line) => line.startsWith('data:'))
+            .map((line) => line.slice(5).trim())
+            .join('')
+          if (data) onChunk(JSON.parse(data) as GeminiResponse)
+        }
       }
+    } catch (error) {
+      // The connection dropped (or a chunk was garbled) halfway through the answer: like not
+      // reaching Gemini at all, so Auto mode can ask the built-in AI instead.
+      throwIfStopped(stop)
+      if (silence.signal.aborted) throw error
+      void reader.cancel().catch(() => {})
+      throw new UnreachableError(t('errors.gemini.unreachable'), { cause: error })
     }
     // A cancelled read ends like a finished one: a cut-off answer is not an answer.
     if (signal.aborted) throw signal.reason
@@ -280,9 +329,18 @@ export function nextQuotaReset(now: Date): Date {
   return new Date(midnightUtc - offsetHours * 3_600_000)
 }
 
-// After Google says the free web search quota is used up, searches wait for its reset instead
-// of costing a request (and time) on every question.
+// After Google says "too many requests", searches wait as long as Google asks instead of
+// costing a request (and time) on every question.
 let searchPausedUntil = 0
+
+export function webSearchPaused(): boolean {
+  return Date.now() < searchPausedUntil
+}
+
+// For tests.
+export function resumeWebSearch(): void {
+  searchPausedUntil = 0
+}
 
 export interface WebSearchResult {
   // What Google's results say, summarized by Gemini.
@@ -300,7 +358,7 @@ export async function searchWeb(
   query: string
 ): Promise<WebSearchResult> {
   if (!/^[\w.-]+$/.test(model)) throw new Error('Invalid Gemini model name.')
-  if (Date.now() < searchPausedUntil) throw new UnreachableError(t('errors.gemini.usageLimit'))
+  if (webSearchPaused()) throw new QuotaError(searchPausedUntil)
   const data = await call<GeminiResponse>(apiKey, `models/${model}:generateContent`, {
     contents: [
       {
@@ -314,9 +372,7 @@ export async function searchWeb(
     ],
     tools: [{ googleSearch: {} }]
   } satisfies GeminiRequest).catch((error: unknown) => {
-    if (error instanceof UnreachableError && error.message === t('errors.gemini.usageLimit')) {
-      searchPausedUntil = nextQuotaReset(new Date()).getTime()
-    }
+    if (error instanceof QuotaError) searchPausedUntil = error.until
     throw error
   })
   const candidate = data.candidates?.[0]

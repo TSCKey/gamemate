@@ -14,7 +14,7 @@ import {
   type WikiSource
 } from '../games/wiki'
 import { minecraftIcons, pagePicture } from '../games/pictures'
-import { searchWeb, type WebSearchResult } from './gemini'
+import { searchWeb, webSearchPaused, type WebSearchResult } from './gemini'
 import { allowWiki } from '../system/links'
 import type { AnsweredBy, WikiPicture } from '../../shared/types'
 import { t } from '../system/i18n'
@@ -271,7 +271,8 @@ function toolsFor(ctx: AssistantContext): LlmTool[] {
     ...(ctx.webLookup ? [OTHER_GAME_TOOL] : []),
     ...(mc?.modpack ? [MODPACK_TOOL] : []),
     ...(mc?.modpack && ctx.webLookup ? [MOD_INFO_TOOL] : []),
-    ...(ctx.search ? [WEB_SEARCH_TOOL] : [])
+    // Not while Google has paused searches (quota used up): it could only fail.
+    ...(ctx.search && !webSearchPaused() ? [WEB_SEARCH_TOOL] : [])
   ]
 }
 
