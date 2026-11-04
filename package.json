@@ -1,6 +1,6 @@
 {
   "name": "gamemate",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Local AI gaming companion powered by lightweight local language and vision models",
   "main": "./out/main/index.js",
   "author": "TSCKey",
