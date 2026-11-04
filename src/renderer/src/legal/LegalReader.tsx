@@ -50,6 +50,11 @@ export function LegalDocument({
   language?: LanguageCode
 }): React.JSX.Element {
   const shown = legalText(doc, language)
+  const rtl = languageInfo(shown.language).dir === 'rtl'
+  // English quoted in a right-to-left translation (the voice's use restrictions) reads left to
+  // right; lines in the document's own script keep its direction.
+  const englishOnly = (parts: Inline[]): 'ltr' | undefined =>
+    rtl && !/[֐-ࣿ]/.test(parts.map((part) => part.text).join('')) ? 'ltr' : undefined
   return (
     <article className="legal-doc" lang={shown.language} dir={languageInfo(shown.language).dir}>
       {parseMarkdown(shown.text).map((block, i) => {
@@ -64,7 +69,7 @@ export function LegalDocument({
           }
           case 'paragraph':
             return (
-              <p key={i}>
+              <p key={i} dir={englishOnly(block.text)}>
                 <Text parts={block.text} onDoc={onDoc} />
               </p>
             )
@@ -72,7 +77,7 @@ export function LegalDocument({
             return (
               <ul key={i}>
                 {block.items.map((item, j) => (
-                  <li key={j}>
+                  <li key={j} dir={englishOnly(item)}>
                     <Text parts={item} onDoc={onDoc} />
                   </li>
                 ))}

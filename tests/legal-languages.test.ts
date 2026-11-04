@@ -77,3 +77,12 @@ describe('the Arabic legal texts', () => {
     expect(render('ar')).toMatch(/<article class="legal-doc" lang="ar" dir="rtl">/)
   })
 })
+
+describe('English quoted in the Arabic Terms', () => {
+  it('reads left to right, while Arabic lines stay right to left', () => {
+    const html = render('ar')
+    expect(html).toContain('<li dir="ltr"><span>(a) In any way that violates')
+    // An Arabic paragraph that starts with a Latin name keeps the document's direction.
+    expect(html).toMatch(/<p><span>GameMate تطبيق سطح مكتب/)
+  })
+})
