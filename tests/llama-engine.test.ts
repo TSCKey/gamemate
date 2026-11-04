@@ -18,10 +18,10 @@ const files = { model: 'model.gguf', mmproj: 'mmproj.gguf' }
 
 describe('starting the built-in AI', () => {
   it('lets the model think only briefly before it answers', () => {
-    // At about 43 words a second on a laptop RTX 4050, 512 tokens of thinking were 12 s of
-    // waiting before the first word; 192 keeps that around 4 s.
+    // At about 43 tokens a second on a laptop RTX 4050, 512 tokens of thinking were 12 s of
+    // waiting before the first word; 256 keeps that around 6 s.
     const args = engineArgs(files, 1234, 'key', 'Vulkan1')
-    expect(args[args.indexOf('--reasoning-budget') + 1]).toBe('192')
+    expect(args[args.indexOf('--reasoning-budget') + 1]).toBe('256')
   })
 
   it('runs on the chosen graphics card, and only for GameMate', () => {

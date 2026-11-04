@@ -19,8 +19,9 @@ const START_TIMEOUT_MS = 180_000
 const CONTEXT_TOKENS = 12288
 // Small models can think for thousands of tokens before answering (over a minute). The cap keeps
 // the first words within seconds: a laptop RTX 4050 writes about 43 tokens a second, so 512 were
-// 12 s of waiting; 192 are about 4 s.
-const THINKING_TOKENS = 192
+// 12 s of waiting; 256 are about 6 s. (192 was no faster with a wiki page to answer from, and
+// once got the Ender Dragon's crystals wrong.)
+const THINKING_TOKENS = 256
 const THINKING_DONE = 'Okay, I have thought enough; time to answer.'
 
 interface Running {
