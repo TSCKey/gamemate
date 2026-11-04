@@ -9,10 +9,12 @@ export type { LegalDoc }
 
 function Text({
   parts,
-  onDoc
+  onDoc,
+  onEnglish
 }: {
   parts: Inline[]
   onDoc: (doc: LegalDoc) => void
+  onEnglish?: () => void
 }): React.JSX.Element {
   return (
     <>
@@ -26,9 +28,12 @@ function Text({
             href={href}
             onClick={(e) => {
               e.preventDefault()
-              const other = docLink(href)
-              if (other) onDoc(other)
-              else window.api.openSource(href)
+              const target = docLink(href)
+              if (!target) window.api.openSource(href)
+              else {
+                if (target.english) onEnglish?.()
+                onDoc(target.doc)
+              }
             }}
           >
             {part.text}
@@ -42,10 +47,13 @@ function Text({
 export function LegalDocument({
   doc,
   onDoc,
+  onEnglish,
   language = 'en'
 }: {
   doc: LegalDoc
   onDoc: (doc: LegalDoc) => void
+  // The note's link to the binding English text.
+  onEnglish?: () => void
   // Where there is no translation, the English text is shown (left to right).
   language?: LanguageCode
 }): React.JSX.Element {
@@ -63,14 +71,14 @@ export function LegalDocument({
             const Tag = block.level === 1 ? 'h2' : block.level === 2 ? 'h3' : 'h4'
             return (
               <Tag key={i}>
-                <Text parts={block.text} onDoc={onDoc} />
+                <Text parts={block.text} onDoc={onDoc} onEnglish={onEnglish} />
               </Tag>
             )
           }
           case 'paragraph':
             return (
               <p key={i} dir={englishOnly(block.text)}>
-                <Text parts={block.text} onDoc={onDoc} />
+                <Text parts={block.text} onDoc={onDoc} onEnglish={onEnglish} />
               </p>
             )
           case 'list':
@@ -78,7 +86,7 @@ export function LegalDocument({
               <ul key={i}>
                 {block.items.map((item, j) => (
                   <li key={j} dir={englishOnly(item)}>
-                    <Text parts={item} onDoc={onDoc} />
+                    <Text parts={item} onDoc={onDoc} onEnglish={onEnglish} />
                   </li>
                 ))}
               </ul>
@@ -90,7 +98,7 @@ export function LegalDocument({
                   <tr>
                     {block.header.map((cell, j) => (
                       <th key={j}>
-                        <Text parts={cell} onDoc={onDoc} />
+                        <Text parts={cell} onDoc={onDoc} onEnglish={onEnglish} />
                       </th>
                     ))}
                   </tr>
@@ -100,7 +108,7 @@ export function LegalDocument({
                     <tr key={j}>
                       {row.map((cell, k) => (
                         <td key={k}>
-                          <Text parts={cell} onDoc={onDoc} />
+                          <Text parts={cell} onDoc={onDoc} onEnglish={onEnglish} />
                         </td>
                       ))}
                     </tr>
@@ -176,7 +184,12 @@ export function LegalReader({
               : t('legalReader.readEnglish')}
           </button>
         )}
-        <LegalDocument doc={doc} onDoc={onDoc} language={english ? 'en' : language} />
+        <LegalDocument
+          doc={doc}
+          onDoc={onDoc}
+          onEnglish={() => setEnglish(true)}
+          language={english ? 'en' : language}
+        />
       </div>
     </div>
   )

@@ -32,10 +32,14 @@ describe('the legal documents in the player’s language', () => {
   })
 
   it('keep links between the two documents inside the reader', () => {
-    expect(docLink('PRIVACY.md')).toBe('privacy')
-    expect(docLink('../TERMS.md')).toBe('terms')
-    expect(docLink('../PRIVACY.md')).toBe('privacy')
+    expect(docLink('PRIVACY.md')).toEqual({ doc: 'privacy', english: false })
+    expect(docLink('TERMS.md')).toEqual({ doc: 'terms', english: false })
     expect(docLink('https://ai.google.dev/gemini-api/terms')).toBeNull()
+  })
+
+  it('open the binding English text from the note at the top of a translation', () => {
+    expect(docLink('../TERMS.md')).toEqual({ doc: 'terms', english: true })
+    expect(docLink('../PRIVACY.md')).toEqual({ doc: 'privacy', english: true })
   })
 })
 

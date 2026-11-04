@@ -27,9 +27,10 @@ export function legalText(
   return translated ? { text: translated, language } : { text: ENGLISH[doc], language: 'en' }
 }
 
-// A link to the other document (also "../TERMS.md" in a translation) stays in the reader.
-export function docLink(href: string): LegalDoc | null {
-  if (/(^|\/)TERMS\.md$/.test(href)) return 'terms'
-  if (/(^|\/)PRIVACY\.md$/.test(href)) return 'privacy'
-  return null
+// Links between the documents stay in the reader. In a translation, "../TERMS.md" (the note at
+// the top) is the binding English text.
+export function docLink(href: string): { doc: LegalDoc; english: boolean } | null {
+  const match = /^(\.\.\/)?(TERMS|PRIVACY)\.md$/.exec(href)
+  if (!match) return null
+  return { doc: match[2] === 'TERMS' ? 'terms' : 'privacy', english: !!match[1] }
 }
