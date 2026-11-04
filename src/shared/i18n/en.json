@@ -519,7 +519,8 @@
       "noAnswer": "Gemini didn’t answer{{reason}}.",
       "needConsent": "Agree to the Gemini terms first.",
       "notAKey": "That doesn’t look like a Gemini API key.",
-      "cantEncrypt": "Windows can’t encrypt the key on this PC, so GameMate won’t store it."
+      "cantEncrypt": "Windows can’t encrypt the key on this PC, so GameMate won’t store it.",
+      "busy": "Gemini is busy right now (Google reports high demand). Try again in a moment, or switch to the built-in AI."
     },
     "builtin": {
       "failed": "The built-in AI failed: {{detail}}",

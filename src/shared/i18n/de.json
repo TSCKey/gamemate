@@ -519,7 +519,8 @@
       "noAnswer": "Gemini hat nicht geantwortet{{reason}}.",
       "needConsent": "Stimme zuerst den Gemini-Bedingungen zu.",
       "notAKey": "Das sieht nicht wie ein Gemini-API-Schlüssel aus.",
-      "cantEncrypt": "Windows kann den Schlüssel auf diesem PC nicht verschlüsseln, daher speichert GameMate ihn nicht."
+      "cantEncrypt": "Windows kann den Schlüssel auf diesem PC nicht verschlüsseln, daher speichert GameMate ihn nicht.",
+      "busy": "Gemini ist gerade ausgelastet (Google meldet hohe Nachfrage). Versuch es gleich noch einmal oder wechsle zur eingebauten KI."
     },
     "builtin": {
       "failed": "Die integrierte KI ist fehlgeschlagen: {{detail}}",

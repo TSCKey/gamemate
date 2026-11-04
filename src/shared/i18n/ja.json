@@ -516,7 +516,8 @@
       "noAnswer": "Gemini から回答がありませんでした{{reason}}。",
       "needConsent": "先に Gemini の規約に同意してください。",
       "notAKey": "Gemini API キーではないようです。",
-      "cantEncrypt": "この PC では Windows がキーを暗号化できないため、GameMate はキーを保存しません。"
+      "cantEncrypt": "この PC では Windows がキーを暗号化できないため、GameMate はキーを保存しません。",
+      "busy": "Gemini は現在混み合っています（Google が高負荷を報告しています）。少し待ってからもう一度試すか、内蔵 AI に切り替えてください。"
     },
     "builtin": {
       "failed": "内蔵 AI でエラーが発生しました: {{detail}}",

@@ -531,7 +531,8 @@
       "noAnswer": "لم يُجب Gemini{{reason}}.",
       "needConsent": "وافق على شروط Gemini أولًا.",
       "notAKey": "لا يبدو هذا مفتاح Gemini API.",
-      "cantEncrypt": "لا يستطيع Windows تشفير المفتاح على هذا الحاسوب، لذا لن يحفظه GameMate."
+      "cantEncrypt": "لا يستطيع Windows تشفير المفتاح على هذا الحاسوب، لذا لن يحفظه GameMate.",
+      "busy": "Gemini مشغول الآن (تُبلغ Google عن ضغط كبير). حاول مرة أخرى بعد قليل، أو انتقل إلى الذكاء الاصطناعي المدمج."
     },
     "builtin": {
       "failed": "فشل الذكاء الاصطناعي المدمج: {{detail}}",

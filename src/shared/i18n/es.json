@@ -522,7 +522,8 @@
       "noAnswer": "Gemini no respondió{{reason}}.",
       "needConsent": "Acepta antes las condiciones de Gemini.",
       "notAKey": "Eso no parece una clave de API de Gemini.",
-      "cantEncrypt": "Windows no puede cifrar la clave en este PC, así que GameMate no la guardará."
+      "cantEncrypt": "Windows no puede cifrar la clave en este PC, así que GameMate no la guardará.",
+      "busy": "Gemini está ocupado ahora mismo (Google indica mucha demanda). Inténtalo de nuevo en un momento o cambia a la IA integrada."
     },
     "builtin": {
       "failed": "La IA integrada falló: {{detail}}",

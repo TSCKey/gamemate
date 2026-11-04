@@ -121,6 +121,14 @@ function toGeminiSchema(schema: unknown): unknown {
   return out
 }
 
+// Gemini 3 and later think at "high" unless told otherwise, which made answers take half a
+// minute or more. Low is Google's setting for quick answers. (Not combined with a JSON schema:
+// the companion's checks ask for one and don't need it.)
+function thinksHigh(model: string): boolean {
+  const version = /^gemini-(\d+)/.exec(model)
+  return !!version && Number(version[1]) >= 3
+}
+
 async function viaGemini(
   apiKey: string,
   model: string,
@@ -187,9 +195,11 @@ async function viaGemini(
             responseSchema: toGeminiSchema(options.jsonSchema) as object
           }
         }
-      : {})
+      : thinksHigh(model)
+        ? { generationConfig: { thinkingConfig: { thinkingLevel: 'low' } } }
+        : {})
   }
-  const content = await generate(apiKey, model, request, options.signal)
+  const content = await generate(apiKey, model, request, options.signal, options.onText)
   return {
     // Thought summaries are not part of the answer.
     content: content.parts

@@ -516,7 +516,8 @@
       "noAnswer": "Gemini가 답하지 않았습니다{{reason}}.",
       "needConsent": "먼저 Gemini 약관에 동의하세요.",
       "notAKey": "Gemini API 키가 아닌 것 같습니다.",
-      "cantEncrypt": "이 PC에서는 Windows가 키를 암호화할 수 없어 GameMate가 키를 저장하지 않습니다."
+      "cantEncrypt": "이 PC에서는 Windows가 키를 암호화할 수 없어 GameMate가 키를 저장하지 않습니다.",
+      "busy": "지금은 Gemini가 혼잡합니다(Google에서 수요가 많다고 알려 왔습니다). 잠시 후 다시 시도하거나 내장 AI로 전환하세요."
     },
     "builtin": {
       "failed": "내장 AI 오류: {{detail}}",

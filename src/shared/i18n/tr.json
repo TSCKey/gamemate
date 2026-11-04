@@ -519,7 +519,8 @@
       "noAnswer": "Gemini cevap vermedi{{reason}}.",
       "needConsent": "Önce Gemini koşullarını kabul et.",
       "notAKey": "Bu bir Gemini API anahtarına benzemiyor.",
-      "cantEncrypt": "Windows bu bilgisayarda anahtarı şifreleyemiyor, bu yüzden GameMate onu saklamayacak."
+      "cantEncrypt": "Windows bu bilgisayarda anahtarı şifreleyemiyor, bu yüzden GameMate onu saklamayacak.",
+      "busy": "Gemini şu anda meşgul (Google yoğun talep bildiriyor). Biraz sonra tekrar dene ya da yerleşik yapay zekâya geç."
     },
     "builtin": {
       "failed": "Yerleşik yapay zekâ başarısız oldu: {{detail}}",

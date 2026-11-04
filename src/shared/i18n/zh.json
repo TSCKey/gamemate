@@ -516,7 +516,8 @@
       "noAnswer": "Gemini 没有回答{{reason}}。",
       "needConsent": "请先同意 Gemini 的条款。",
       "notAKey": "这看起来不像 Gemini API 密钥。",
-      "cantEncrypt": "Windows 无法在这台电脑上加密密钥,因此 GameMate 不会保存它。"
+      "cantEncrypt": "Windows 无法在这台电脑上加密密钥,因此 GameMate 不会保存它。",
+      "busy": "Gemini 当前繁忙（Google 报告需求过高）。请稍后再试，或切换到内置 AI。"
     },
     "builtin": {
       "failed": "内置 AI 出错:{{detail}}",
