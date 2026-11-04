@@ -4,6 +4,7 @@ import { join } from 'path'
 import { pathToFileURL } from 'url'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { parseInline, parseMarkdown } from '../src/renderer/src/legal/markdown'
+import { flat, SUPERTONIC_LICENSE_URL, SUPERTONIC_RESTRICTIONS } from './helpers/supertonic'
 
 // GameMate's settings and request handling, without Electron: a temporary data folder and a
 // stand-in for Electron's request channels.
@@ -103,6 +104,23 @@ describe('accepting the Terms of Use', () => {
   it('needs accepting again when the Terms change', () => {
     const old = { ...settings.acceptTerms(), termsVersion: TERMS_VERSION - 1 }
     expect(settings.termsAccepted(old)).toBe(false)
+    // Players who accepted version 1 accept the Terms with the Supertonic voice once more.
+    expect(settings.termsAccepted({ ...old, termsVersion: 1 })).toBe(false)
+  })
+})
+
+describe('version 2 of the legal documents', () => {
+  it('quote every use restriction of the Supertonic voice word for word', () => {
+    const terms = flat(read('TERMS.md'))
+    for (const restriction of SUPERTONIC_RESTRICTIONS) expect(terms).toContain(restriction)
+    expect(terms).toContain(SUPERTONIC_LICENSE_URL)
+    expect(terms).toContain('paragraph 5')
+  })
+
+  it('give the version the app asks players to accept', () => {
+    expect(TERMS_VERSION).toBe(2)
+    for (const doc of ['TERMS.md', 'PRIVACY.md'])
+      expect(read(doc)).toContain(`Version ${TERMS_VERSION} ·`)
   })
 })
 

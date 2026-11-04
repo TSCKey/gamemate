@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Version 1 · Last updated: 2 November 2026
+Version 2 · Last updated: 4 November 2026
 
 This policy explains what happens to your personal data when you use GameMate. It is written to meet the EU General Data Protection Regulation (GDPR), the German Telecommunications Digital Services Data Protection Act (TDDDG) and the Personal Data Protection Law of the Kingdom of Saudi Arabia (PDPL).
 
@@ -24,7 +24,7 @@ GameMate stores the following in its folder in your Windows user profile, readab
 | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------- |
 | Your settings, including when you accepted these documents and gave each consent                                    | To remember your choices, and as the record of your consents | Until you change them or delete your data                             |
 | Your Gemini API key, if you add one, encrypted by Windows                                                           | To use Gemini                                                | Until you remove it, withdraw your Gemini consent or delete your data |
-| AI models, GameMate's AI engine and speech models you downloaded                                                    | To run the AI on your PC                                     | Until you remove them or delete your data                             |
+| AI models, GameMate's AI engine, speech models and voices you downloaded                                            | To run the AI on your PC                                     | Until you remove them or delete your data                             |
 | Games found or added: name, folder or program, wiki address                                                         | To help with the game you are playing                        | Until you withdraw that consent or delete your data                   |
 | A log of what GameMate did (for example starting the AI or checking for updates), without your questions or answers | To find and fix problems                                     | About 1 MB, older entries are overwritten; deleted with your data     |
 
@@ -58,7 +58,7 @@ If you choose Gemini for answers or for the companion, GameMate sends to Google:
 
 ## 6. Connections that are not optional consents
 
-- **Downloads you start** (AI models and speech models from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR).
+- **Downloads you start** (AI models, speech models and the natural voice from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR).
 - **Update checks** ask GitHub for the latest version of GameMate, shortly after GameMate starts and every few hours, and download a new version if there is one. We do this to deliver security fixes and improvements (our legitimate interest, Art. 6 (1) (f) GDPR). You can turn this off in **Settings → General**. GameMate makes no update check before you have accepted the Terms of Use.
 
 Like any connection on the internet, these requests show the service your IP address and basic technical information (such as the app's name and version). We never receive this information.
@@ -95,3 +95,7 @@ GameMate makes no decisions about you that have legal or similarly significant e
 ## 13. Changes to this policy
 
 If we change this policy, the new version comes with a GameMate update, and GameMate shows it to you before you continue. You can always read the current version in **Settings → Privacy & legal**.
+
+## 14. Translations
+
+This policy is also available in other languages in GameMate. The translations are for your convenience. If a translation differs from the English version, the English version applies.

@@ -12,7 +12,8 @@ const EXTERNAL_LINKS = [
   // In the Terms of Use and Privacy Policy.
   'mailto:TSCKey1@outlook.com',
   'https://www.edpb.europa.eu/about-edpb/about-edpb/members_en',
-  'https://sdaia.gov.sa'
+  'https://sdaia.gov.sa',
+  'https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE'
 ]
 
 // Wikis of other games the player asked about (found by name while answering).
