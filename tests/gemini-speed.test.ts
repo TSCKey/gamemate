@@ -18,6 +18,8 @@ const { isUnreachable } = await import('../src/main/ai/engines')
 afterEach(() => {
   vi.unstubAllGlobals()
   gemini.setTimings({ retryMs: 1500, idleMs: 45_000 })
+  // A pause from one test must not carry into the next (some tests set a fake clock).
+  gemini.resumeWebSearch()
 })
 
 // A server-sent event stream like Gemini's streamGenerateContent?alt=sse, one chunk at a time.
