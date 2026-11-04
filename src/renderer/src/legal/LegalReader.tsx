@@ -1,15 +1,11 @@
-import termsText from '../../../../docs/TERMS.md?raw'
-import privacyText from '../../../../docs/PRIVACY.md?raw'
-import { parseMarkdown, type Block, type Inline } from './markdown'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { parseMarkdown, type Inline } from './markdown'
+import { docLink, legalText, type LegalDoc } from './texts'
 import { t } from '../i18n'
+import { isLanguageCode, languageInfo, type LanguageCode } from '../../../shared/languages'
 
-// The same documents as in the repository, built into the app so they can be read offline.
-export type LegalDoc = 'terms' | 'privacy'
-
-const DOCS: Record<LegalDoc, Block[]> = {
-  terms: parseMarkdown(termsText),
-  privacy: parseMarkdown(privacyText)
-}
+export type { LegalDoc }
 
 function Text({
   parts,
@@ -30,9 +26,8 @@ function Text({
             href={href}
             onClick={(e) => {
               e.preventDefault()
-              // Links between the two documents stay in the reader.
-              if (href.endsWith('TERMS.md')) onDoc('terms')
-              else if (href.endsWith('PRIVACY.md')) onDoc('privacy')
+              const other = docLink(href)
+              if (other) onDoc(other)
               else window.api.openSource(href)
             }}
           >
@@ -46,15 +41,18 @@ function Text({
 
 export function LegalDocument({
   doc,
-  onDoc
+  onDoc,
+  language = 'en'
 }: {
   doc: LegalDoc
   onDoc: (doc: LegalDoc) => void
+  // Where there is no translation, the English text is shown (left to right).
+  language?: LanguageCode
 }): React.JSX.Element {
+  const shown = legalText(doc, language)
   return (
-    // The documents are in English for now: left to right also in an Arabic window.
-    <article className="legal-doc" lang="en" dir="ltr">
-      {DOCS[doc].map((block, i) => {
+    <article className="legal-doc" lang={shown.language} dir={languageInfo(shown.language).dir}>
+      {parseMarkdown(shown.text).map((block, i) => {
         switch (block.type) {
           case 'heading': {
             const Tag = block.level === 1 ? 'h2' : block.level === 2 ? 'h3' : 'h4'
@@ -115,12 +113,20 @@ export function LegalDocument({
 export function LegalReader({
   doc,
   onDoc,
-  onClose
+  onClose,
+  startInEnglish = false
 }: {
   doc: LegalDoc
   onDoc: (doc: LegalDoc) => void
   onClose: () => void
+  // Opened from "the English version is binding".
+  startInEnglish?: boolean
 }): React.JSX.Element {
+  const { i18n } = useTranslation()
+  const language: LanguageCode = isLanguageCode(i18n.language) ? i18n.language : 'en'
+  // The player can read the binding English text instead of the translation.
+  const [english, setEnglish] = useState(startInEnglish)
+  const translated = legalText(doc, language).language !== 'en'
   return (
     <div className="modal-backdrop is-top" onClick={onClose}>
       <div
@@ -154,7 +160,18 @@ export function LegalReader({
             ✕
           </button>
         </div>
-        <LegalDocument doc={doc} onDoc={onDoc} />
+        {translated && (
+          <button
+            type="button"
+            className="link-button legal-english"
+            onClick={() => setEnglish(!english)}
+          >
+            {english
+              ? t('legalReader.backToTranslation', { language: languageInfo(language).nativeName })
+              : t('legalReader.readEnglish')}
+          </button>
+        )}
+        <LegalDocument doc={doc} onDoc={onDoc} language={english ? 'en' : language} />
       </div>
     </div>
   )

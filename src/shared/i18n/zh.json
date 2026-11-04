@@ -369,7 +369,9 @@
   "legalReader": {
     "termsOfUse": "使用条款",
     "privacyPolicy": "隐私政策",
-    "close": "关闭"
+    "close": "关闭",
+    "readEnglish": "阅读具有约束力的英文版本",
+    "backToTranslation": "返回{{language}}"
   },
   "termsGate": {
     "ourTermsHaveChanged": "我们的条款已更新",
@@ -385,7 +387,8 @@
     "acceptAndContinue": "接受并继续",
     "pleaseReadTheFull": "请完整阅读<terms>使用条款</terms>和<privacy>隐私政策</privacy>。",
     "iAm16OrOlder": "我已年满 16 岁,或我的父母或监护人同意我使用 GameMate。",
-    "iAcceptTheTerms": "我接受使用条款,并已阅读隐私政策。"
+    "iAcceptTheTerms": "我接受使用条款,并已阅读隐私政策。",
+    "englishBinding": "翻译仅为方便阅读；具有约束力的是<english>英文版本</english>。"
   },
   "app": {
     "entireScreen": "整个屏幕",

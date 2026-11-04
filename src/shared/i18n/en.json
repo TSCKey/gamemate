@@ -372,7 +372,9 @@
   "legalReader": {
     "termsOfUse": "Terms of Use",
     "privacyPolicy": "Privacy Policy",
-    "close": "Close"
+    "close": "Close",
+    "readEnglish": "Read the binding English version",
+    "backToTranslation": "Back to {{language}}"
   },
   "termsGate": {
     "ourTermsHaveChanged": "Our terms have changed",
@@ -388,7 +390,8 @@
     "acceptAndContinue": "Accept and continue",
     "pleaseReadTheFull": "Please read the full <terms>Terms of Use</terms> and <privacy>Privacy Policy</privacy>.",
     "iAm16OrOlder": "I am 16 or older, or my parent or guardian agrees to my using GameMate.",
-    "iAcceptTheTerms": "I accept the Terms of Use and have read the Privacy Policy."
+    "iAcceptTheTerms": "I accept the Terms of Use and have read the Privacy Policy.",
+    "englishBinding": "Translations are for your convenience; the <english>English version</english> is binding."
   },
   "app": {
     "entireScreen": "Entire screen",

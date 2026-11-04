@@ -3,6 +3,7 @@ import type { Settings } from '../../../preload/index.d'
 import { PrivacySummary } from '../components/PrivacyPanel'
 import { errorMessage } from '../hooks/useSettings'
 import { LegalReader, type LegalDoc } from './LegalReader'
+import { legalText } from './texts'
 import { Trans } from 'react-i18next'
 import { t } from '../i18n'
 
@@ -12,6 +13,7 @@ function TermsGate({ settings }: { settings: Settings }): React.JSX.Element {
   const [ageConfirmed, setAgeConfirmed] = useState(false)
   const [accepted, setAccepted] = useState(false)
   const [reading, setReading] = useState<LegalDoc | null>(null)
+  const [inEnglish, setInEnglish] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   // Accepted an earlier version before.
@@ -26,9 +28,18 @@ function TermsGate({ settings }: { settings: Settings }): React.JSX.Element {
     }
   }
 
-  const link = (doc: LegalDoc): React.JSX.Element => (
-    <button type="button" className="link-button" onClick={() => setReading(doc)} />
+  const link = (doc: LegalDoc, english = false): React.JSX.Element => (
+    <button
+      type="button"
+      className="link-button"
+      onClick={() => {
+        setInEnglish(english)
+        setReading(doc)
+      }}
+    />
   )
+  const language = settings.language || 'en'
+  const translated = legalText('terms', language).language !== 'en'
 
   return (
     <>
@@ -52,6 +63,14 @@ function TermsGate({ settings }: { settings: Settings }): React.JSX.Element {
               components={{ terms: link('terms'), privacy: link('privacy') }}
             />
           </p>
+          {translated && (
+            <p className="field-help">
+              <Trans
+                i18nKey="termsGate.englishBinding"
+                components={{ english: link('terms', true) }}
+              />
+            </p>
+          )}
           <label className="check">
             <input
               type="checkbox"
@@ -107,7 +126,14 @@ function TermsGate({ settings }: { settings: Settings }): React.JSX.Element {
           </div>
         </div>
       </div>
-      {reading && <LegalReader doc={reading} onDoc={setReading} onClose={() => setReading(null)} />}
+      {reading && (
+        <LegalReader
+          doc={reading}
+          onDoc={setReading}
+          onClose={() => setReading(null)}
+          startInEnglish={inEnglish}
+        />
+      )}
     </>
   )
 }

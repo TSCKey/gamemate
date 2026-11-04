@@ -372,7 +372,9 @@
   "legalReader": {
     "termsOfUse": "Nutzungsbedingungen",
     "privacyPolicy": "Datenschutzerklärung",
-    "close": "Schließen"
+    "close": "Schließen",
+    "readEnglish": "Verbindliche englische Fassung lesen",
+    "backToTranslation": "Zurück zu {{language}}"
   },
   "termsGate": {
     "ourTermsHaveChanged": "Unsere Bedingungen haben sich geändert",
@@ -388,7 +390,8 @@
     "acceptAndContinue": "Akzeptieren und weiter",
     "pleaseReadTheFull": "Bitte lies die vollständigen <terms>Nutzungsbedingungen</terms> und die <privacy>Datenschutzerklärung</privacy>.",
     "iAm16OrOlder": "Ich bin mindestens 16 Jahre alt, oder meine Eltern bzw. mein Vormund sind mit meiner Nutzung von GameMate einverstanden.",
-    "iAcceptTheTerms": "Ich akzeptiere die Nutzungsbedingungen und habe die Datenschutzerklärung gelesen."
+    "iAcceptTheTerms": "Ich akzeptiere die Nutzungsbedingungen und habe die Datenschutzerklärung gelesen.",
+    "englishBinding": "Übersetzungen dienen nur deiner Bequemlichkeit; verbindlich ist die <english>englische Fassung</english>."
   },
   "app": {
     "entireScreen": "Ganzer Bildschirm",

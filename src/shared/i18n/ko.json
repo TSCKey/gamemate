@@ -369,7 +369,9 @@
   "legalReader": {
     "termsOfUse": "이용약관",
     "privacyPolicy": "개인정보처리방침",
-    "close": "닫기"
+    "close": "닫기",
+    "readEnglish": "구속력 있는 영어 버전 읽기",
+    "backToTranslation": "{{language}}로 돌아가기"
   },
   "termsGate": {
     "ourTermsHaveChanged": "약관이 변경되었습니다",
@@ -385,7 +387,8 @@
     "acceptAndContinue": "동의하고 계속",
     "pleaseReadTheFull": "<terms>이용약관</terms>과 <privacy>개인정보처리방침</privacy> 전문을 읽어 주세요.",
     "iAm16OrOlder": "만 16세 이상이거나, 부모님 또는 보호자가 GameMate 사용에 동의했습니다.",
-    "iAcceptTheTerms": "이용약관에 동의하며 개인정보처리방침을 읽었습니다."
+    "iAcceptTheTerms": "이용약관에 동의하며 개인정보처리방침을 읽었습니다.",
+    "englishBinding": "번역은 편의를 위한 것이며, 구속력이 있는 것은 <english>영어 버전</english>입니다."
   },
   "app": {
     "entireScreen": "전체 화면",

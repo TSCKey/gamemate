@@ -372,7 +372,9 @@
   "legalReader": {
     "termsOfUse": "Kullanım Koşulları",
     "privacyPolicy": "Gizlilik Politikası",
-    "close": "Kapat"
+    "close": "Kapat",
+    "readEnglish": "Bağlayıcı İngilizce sürümü oku",
+    "backToTranslation": "{{language}} metne dön"
   },
   "termsGate": {
     "ourTermsHaveChanged": "Koşullarımız değişti",
@@ -388,7 +390,8 @@
     "acceptAndContinue": "Kabul et ve devam et",
     "pleaseReadTheFull": "Lütfen <terms>Kullanım Koşulları</terms>'nın ve <privacy>Gizlilik Politikası</privacy>'nın tamamını oku.",
     "iAm16OrOlder": "16 yaşında veya daha büyüğüm ya da ebeveynim veya vasim GameMate'i kullanmamı kabul ediyor.",
-    "iAcceptTheTerms": "Kullanım Koşulları'nı kabul ediyorum ve Gizlilik Politikası'nı okudum."
+    "iAcceptTheTerms": "Kullanım Koşulları'nı kabul ediyorum ve Gizlilik Politikası'nı okudum.",
+    "englishBinding": "Çeviriler kolaylık içindir; bağlayıcı olan <english>İngilizce sürümdür</english>."
   },
   "app": {
     "entireScreen": "Tüm ekran",

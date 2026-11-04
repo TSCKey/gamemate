@@ -384,7 +384,9 @@
   "legalReader": {
     "termsOfUse": "شروط الاستخدام",
     "privacyPolicy": "سياسة الخصوصية",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "readEnglish": "اقرأ النسخة الإنجليزية المُلزِمة",
+    "backToTranslation": "العودة إلى {{language}}"
   },
   "termsGate": {
     "ourTermsHaveChanged": "تغيّرت شروطنا",
@@ -400,7 +402,8 @@
     "acceptAndContinue": "قبول ومتابعة",
     "pleaseReadTheFull": "يُرجى قراءة <terms>شروط الاستخدام</terms> و<privacy>سياسة الخصوصية</privacy> كاملةً.",
     "iAm16OrOlder": "عمري 16 عامًا أو أكثر، أو يوافق وليّ أمري على استخدامي GameMate.",
-    "iAcceptTheTerms": "أقبل شروط الاستخدام وقد قرأت سياسة الخصوصية."
+    "iAcceptTheTerms": "أقبل شروط الاستخدام وقد قرأت سياسة الخصوصية.",
+    "englishBinding": "الترجمات للتيسير عليك فقط؛ <english>النسخة الإنجليزية</english> هي المُلزِمة."
   },
   "app": {
     "entireScreen": "الشاشة كاملة",
