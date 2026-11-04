@@ -17,9 +17,10 @@ const START_TIMEOUT_MS = 180_000
 // Enough for GameMate's prompts, a screenshot and a few looked-up pages, without reserving the
 // model's full (very large) context in graphics memory.
 const CONTEXT_TOKENS = 12288
-// Small models can think for thousands of tokens before answering (over a minute); a cap keeps
-// the first words of an answer within seconds.
-const THINKING_TOKENS = 512
+// Small models can think for thousands of tokens before answering (over a minute). The cap keeps
+// the first words within seconds: a laptop RTX 4050 writes about 43 tokens a second, so 512 were
+// 12 s of waiting; 192 are about 4 s.
+const THINKING_TOKENS = 192
 const THINKING_DONE = 'Okay, I have thought enough; time to answer.'
 
 interface Running {
@@ -109,11 +110,14 @@ async function waitUntilReady(run: Running): Promise<void> {
   await Promise.race([poll, exited])
 }
 
-async function start(modelId: string): Promise<Running> {
-  const files = localModelFiles(modelId)
-  const [port, gpu] = await Promise.all([freePort(), pickDevice()])
-  const apiKey = randomBytes(24).toString('hex')
-  const args = [
+// The engine's command line.
+export function engineArgs(
+  files: { model: string; mmproj: string },
+  port: number,
+  apiKey: string,
+  gpu: string | null
+): string[] {
+  return [
     ...['-m', files.model, '--mmproj', files.mmproj],
     // Only GameMate may talk to it: local address, random port and a random key.
     ...['--host', '127.0.0.1', '--port', String(port), '--api-key', apiKey],
@@ -121,6 +125,13 @@ async function start(modelId: string): Promise<Running> {
     ...['--reasoning-budget', String(THINKING_TOKENS), '--reasoning-budget-message', THINKING_DONE],
     ...(gpu ? ['-dev', gpu] : [])
   ]
+}
+
+async function start(modelId: string): Promise<Running> {
+  const files = localModelFiles(modelId)
+  const [port, gpu] = await Promise.all([freePort(), pickDevice()])
+  const apiKey = randomBytes(24).toString('hex')
+  const args = engineArgs(files, port, apiKey, gpu)
   const proc = spawn(engineExe(), args, {
     cwd: engineDir(),
     windowsHide: true,
