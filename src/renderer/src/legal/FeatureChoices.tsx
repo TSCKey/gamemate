@@ -85,13 +85,17 @@ function FeatureChoices({
         {row(
           'voice',
           t('featureChoices.voice'),
-          t('featureChoices.voiceHelp', { size: sizes.accurate ?? '' })
+          sizes.accurate
+            ? t('featureChoices.voiceHelp', { size: sizes.accurate })
+            : t('featureChoices.voiceHelpNoSize')
         )}
         {naturalVoice &&
           row(
             'naturalVoice',
             t('featureChoices.naturalVoice'),
-            t('featureChoices.naturalVoiceHelp', { size: sizes.supertonic ?? '' })
+            sizes.supertonic
+              ? t('featureChoices.naturalVoiceHelp', { size: sizes.supertonic })
+              : t('featureChoices.naturalVoiceHelpNoSize')
           )}
         {row('screenshot', t('featureChoices.screenshot'), t('featureChoices.screenshotHelp'))}
         {row('tray', t('featureChoices.tray'), t('featureChoices.trayHelp'))}
