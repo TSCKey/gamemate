@@ -38,7 +38,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 ## Getting started
 
 1. **Install GameMate.** Download the latest installer from the [Releases](https://github.com/TSCKey/gamemate/releases) page and run it.
-2. **Open GameMate**, choose your language, and click **Download Qwen3.5 2B (1.9 GB)**. You only do this once. After that, GameMate's AI works offline.
+2. **Open GameMate**, choose your language, and click **Download Qwen3.5 2B (1.9 GB)**. You only do this once. After that, GameMate's AI works offline. Right after you accept the Terms, GameMate also offers its recommended features (finding games, online lookups, voice, a natural voice, screenshots, and keeping GameMate in the tray) to turn on in one go; you can skip this and change them later in **⚙ Settings**.
 3. **Start asking questions.**
 
 Already use Ollama? Click **I use Ollama** instead, or switch any time in **⚙ Settings → Models**.

@@ -15,7 +15,7 @@ E-mail: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate funziona sul tuo PC. **Non riceviamo, raccogliamo né conserviamo nessuno dei tuoi dati.** Non ci sono server di GameMate, account, pubblicità, statistiche né tracciamento.
 - Tutto ciò che GameMate conserva resta sul tuo PC, nella tua cartella utente di Windows.
-- GameMate si collega ai servizi di altre aziende solo quando usi una funzione che ne ha bisogno. Le funzioni che inviano i tuoi dati altrove (Google Gemini, ricerca sul web, ricerche online, ricerca delle wiki dei tuoi giochi) sono **disattivate finché non le attivi**, e puoi disattivarle in qualsiasi momento.
+- GameMate si collega ai servizi di altre aziende solo quando usi una funzione che ne ha bisogno. Le funzioni che inviano i tuoi dati altrove (Google Gemini, ricerca sul web, ricerche online, ricerca delle wiki dei tuoi giochi) sono **disattivate finché non le attivi**, e puoi disattivarle in qualsiasi momento. Puoi attivarle nella schermata che GameMate mostra dopo che hai accettato i Condizioni d'uso, oppure più tardi in **Impostazioni**.
 - **Cancella i miei dati** in **Impostazioni → Privacy e note legali** rimuove tutto ciò che GameMate ha salvato sul tuo PC.
 
 ## 3. Che cosa conserva GameMate sul tuo PC
@@ -40,7 +40,7 @@ Le tue conversazioni, gli screenshot, le registrazioni vocali e ciò che il comp
 
 ## 5. Funzioni facoltative che richiedono il tuo consenso
 
-Queste funzioni sono disattivate finché non le attivi. Attivarne una equivale al tuo consenso a quanto descritto qui (art. 6 (1) (a) GDPR, § 25 (1) TDDDG, PDPL). Puoi revocare ogni consenso in qualsiasi momento disattivando la funzione; questo interrompe la funzione e non incide su quanto fatto in precedenza.
+Queste funzioni sono disattivate finché non le attivi. Attivarne una equivale al tuo consenso a quanto descritto qui (art. 6 (1) (a) GDPR, § 25 (1) TDDDG, PDPL). Puoi revocare ogni consenso in qualsiasi momento disattivando la funzione; questo interrompe la funzione e non incide su quanto fatto in precedenza. Puoi anche attivarle nella schermata che GameMate mostra dopo che hai accettato i Condizioni d'uso.
 
 ### Trovare i tuoi giochi (Impostazioni → Giochi)
 
@@ -60,7 +60,7 @@ Se scegli Gemini per le risposte o per il compagno, GameMate invia a Google: le 
 
 ## 6. Connessioni che non sono consensi facoltativi
 
-- **I download che avvii** (modelli di IA, modelli vocali e la voce naturale da Hugging Face, il motore di IA di GameMate da GitHub) si collegano a questi servizi quando fai clic su **Scarica**, perché li hai richiesti tu (art. 6 (1) (b) GDPR).
+- **I download che avvii** (modelli di IA, modelli vocali e la voce naturale da Hugging Face, il motore di IA di GameMate da GitHub) si collegano a questi servizi quando fai clic su **Scarica**, perché li hai richiesti tu (art. 6 (1) (b) GDPR). Anche selezionare un download in quella schermata e fare clic su **Continua** lo avvia.
 - **La ricerca degli aggiornamenti** chiede a GitHub l'ultima versione di GameMate, poco dopo l'avvio e ogni qualche ora, e scarica una nuova versione se c'è. Lo facciamo per fornire correzioni di sicurezza e miglioramenti (nostro legittimo interesse, art. 6 (1) (f) GDPR). Puoi disattivarla in **Impostazioni → Generali**. GameMate non cerca aggiornamenti prima che tu abbia accettato le Condizioni d'uso.
 
 Come ogni connessione su internet, queste richieste mostrano al servizio il tuo indirizzo IP e informazioni tecniche di base (come il nome e la versione dell'app). Noi non riceviamo mai queste informazioni.

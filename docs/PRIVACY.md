@@ -13,7 +13,7 @@ Email: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate runs on your PC. **We do not receive, collect or store any of your data.** There is no GameMate server, no account, no advertising, no analytics and no tracking.
 - Everything GameMate keeps stays on your PC, in your Windows user folder.
-- GameMate only connects to other companies' services when you use a feature that needs them. Features that send your data elsewhere (Google Gemini, web search, online lookups, finding your games' wikis) are **off until you turn them on**, and you can turn them off at any time.
+- GameMate only connects to other companies' services when you use a feature that needs them. Features that send your data elsewhere (Google Gemini, web search, online lookups, finding your games' wikis) are **off until you turn them on**, and you can turn them off at any time. You can turn them on on the screen GameMate shows after you accept the Terms of Use, or later in Settings.
 - **Delete my data** in **Settings → Privacy & legal** removes everything GameMate stored on your PC.
 
 ## 3. What GameMate keeps on your PC
@@ -38,7 +38,7 @@ Your conversations, screenshots, voice recordings and what the companion noticed
 
 ## 5. Optional features that need your consent
 
-These features are off until you turn them on. Turning one on is your consent to what is described here (Art. 6 (1) (a) GDPR, § 25 (1) TDDDG, PDPL). You can withdraw each consent at any time by turning the feature off; this stops the feature and does not affect anything done before.
+These features are off until you turn them on. Turning one on is your consent to what is described here (Art. 6 (1) (a) GDPR, § 25 (1) TDDDG, PDPL). You can withdraw each consent at any time by turning the feature off; this stops the feature and does not affect anything done before. You can also turn them on on the screen GameMate shows after you accept the Terms of Use.
 
 ### Finding your games (Settings → Games)
 
@@ -58,7 +58,7 @@ If you choose Gemini for answers or for the companion, GameMate sends to Google:
 
 ## 6. Connections that are not optional consents
 
-- **Downloads you start** (AI models, speech models and the natural voice from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR).
+- **Downloads you start** (AI models, speech models and the natural voice from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR). Ticking a download on that screen and pressing **Continue** also starts it.
 - **Update checks** ask GitHub for the latest version of GameMate, shortly after GameMate starts and every few hours, and download a new version if there is one. We do this to deliver security fixes and improvements (our legitimate interest, Art. 6 (1) (f) GDPR). You can turn this off in **Settings → General**. GameMate makes no update check before you have accepted the Terms of Use.
 
 Like any connection on the internet, these requests show the service your IP address and basic technical information (such as the app's name and version). We never receive this information.
