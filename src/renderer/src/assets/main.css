@@ -1700,8 +1700,15 @@ body:lang(ko),
   border-color: var(--accent);
 }
 
-.feature-choices h3 {
+.feature-choices .feature-group {
   margin: 14px 0 0;
+  padding: 0 0 0 12px;
+  border: 0;
+  border-left: 2px solid var(--border, rgba(128, 128, 128, 0.4));
+}
+
+.feature-choices legend {
+  padding: 0;
   font-size: 0.9em;
   opacity: 0.8;
 }

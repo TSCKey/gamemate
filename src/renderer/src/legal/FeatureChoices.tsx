@@ -77,9 +77,11 @@ function FeatureChoices({
       >
         <h2 id="feature-choices-title">{t('featureChoices.title')}</h2>
         <p className="modal-lead">{t('featureChoices.lead')}</p>
-        <h3>{t('featureChoices.sendsData')}</h3>
-        {row('games', t('featureChoices.games'), t('featureChoices.gamesHelp'))}
-        {row('lookups', t('featureChoices.lookups'), t('featureChoices.lookupsHelp'))}
+        <fieldset className="feature-group">
+          <legend>{t('featureChoices.sendsData')}</legend>
+          {row('games', t('featureChoices.games'), t('featureChoices.gamesHelp'))}
+          {row('lookups', t('featureChoices.lookups'), t('featureChoices.lookupsHelp'))}
+        </fieldset>
         {row(
           'voice',
           t('featureChoices.voice'),
@@ -120,7 +122,13 @@ function FeatureChoices({
             type="button"
             className="primary"
             disabled={busy}
-            onClick={() => run(() => window.api.features.apply(choices))}
+            onClick={() =>
+              run(() =>
+                shown.some((r) => choices[r])
+                  ? window.api.features.apply(choices)
+                  : window.api.updateSettings({ featureChoices: 'answered' })
+              )
+            }
           >
             {t('featureChoices.continue')}
           </button>
