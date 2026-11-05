@@ -1702,9 +1702,10 @@ body:lang(ko),
 
 .feature-choices .feature-group {
   margin: 14px 0 0;
-  padding: 0 0 0 12px;
+  padding: 0;
+  padding-inline-start: 12px;
   border: 0;
-  border-left: 2px solid var(--border, rgba(128, 128, 128, 0.4));
+  border-inline-start: 2px solid var(--border, rgba(128, 128, 128, 0.4));
 }
 
 .feature-choices legend {

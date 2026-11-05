@@ -54,11 +54,17 @@ function App(): React.JSX.Element {
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
   const [featuresLater, setFeaturesLater] = useState(false)
-  // The chat's 📷 starts from the player's default, once settings have loaded.
+  // "Remind me later" lasts while the Terms stay accepted: after Delete my data (or withdrawing
+  // them), accepting again shows the screen again.
+  if (featuresLater && settings && settings.termsVersion < TERMS_VERSION) setFeaturesLater(false)
+  // The chat's 📷 starts from the player's default, once settings have loaded, and follows it
+  // when it changes.
   const chatScreenshot = settings?.chatScreenshot
-  useEffect(() => {
+  const [shotDefault, setShotDefault] = useState<boolean | undefined>(undefined)
+  if (chatScreenshot !== shotDefault) {
+    setShotDefault(chatScreenshot)
     if (chatScreenshot !== undefined) setAttachScreenshot(chatScreenshot)
-  }, [chatScreenshot])
+  }
   const [settingsTab, setSettingsTab] = useState<SettingsTab | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 

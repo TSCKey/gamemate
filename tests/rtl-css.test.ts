@@ -20,4 +20,12 @@ describe('right-to-left layout', () => {
   it('gives each line of an answer its own direction', () => {
     expect(rule("[dir='auto']")).toContain('unicode-bidi: plaintext')
   })
+
+  it('puts the line beside the data-sending features on the side the text starts', () => {
+    const group = rule('.feature-choices .feature-group')
+    expect(group).toContain('padding-inline-start')
+    expect(group).toContain('border-inline-start')
+    expect(group).not.toMatch(/(padding|border)-(left|right)/)
+    expect(group).not.toMatch(/padding: \S+ \S+ \S+ \S+/)
+  })
 })
