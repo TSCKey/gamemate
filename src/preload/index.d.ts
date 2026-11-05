@@ -5,6 +5,7 @@ import type {
   CaptureSource,
   ChatMessage,
   CompanionState,
+  FeatureChoices,
   GamesState,
   LocalModelStatus,
   ModelInfo,
@@ -64,6 +65,10 @@ export interface Api {
   legal: {
     accept: (ageConfirmed: boolean) => Promise<Settings>
     withdraw: () => Promise<Settings>
+  }
+  // Turns on the recommended features the player ticked and starts their downloads.
+  features: {
+    apply: (choices: FeatureChoices) => Promise<Settings>
   }
   updates: {
     state: () => Promise<UpdateState>

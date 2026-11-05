@@ -64,6 +64,9 @@ const api: Api = {
     accept: (ageConfirmed) => ipcRenderer.invoke('legal:accept', ageConfirmed),
     withdraw: () => ipcRenderer.invoke('legal:withdraw')
   },
+  features: {
+    apply: (choices) => ipcRenderer.invoke('features:apply', choices)
+  },
   updates: {
     state: () => ipcRenderer.invoke('updates:state'),
     check: () => ipcRenderer.invoke('updates:check'),

@@ -36,7 +36,17 @@ export type AnswerEngine = (typeof ANSWER_ENGINES)[number]
 
 // Whether the recommended-features screen still has to be shown ('ask') or was done ('answered').
 export const FEATURE_CHOICES = ['ask', 'answered'] as const
-export type FeatureChoices = (typeof FEATURE_CHOICES)[number]
+export type FeatureChoicesState = (typeof FEATURE_CHOICES)[number]
+
+// What the player ticked on the recommended-features screen.
+export type FeatureChoices = {
+  games: boolean
+  lookups: boolean
+  voice: boolean
+  naturalVoice: boolean
+  screenshot: boolean
+  tray: boolean
+}
 
 // The current Terms of Use and Privacy Policy (docs/TERMS.md and docs/PRIVACY.md). Bump it when
 // either changes in a way players must accept again.
@@ -105,7 +115,7 @@ export interface Settings {
   // of quitting.
   closeToTray: boolean
   // Whether the screen after the Terms (recommended features) still has to be shown.
-  featureChoices: FeatureChoices
+  featureChoices: FeatureChoicesState
   // Whether the chat attaches a screenshot of the game to each question by default.
   chatScreenshot: boolean
   // Check GitHub for new versions now and then (the installed app only).

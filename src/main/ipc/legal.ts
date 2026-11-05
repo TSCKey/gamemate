@@ -3,6 +3,7 @@
 import { app } from 'electron'
 import { stopEngine } from '../ai/llamaEngine'
 import { gateChannels, handle } from '../system/security'
+import { applyFeatureChoices } from '../system/featureChoices'
 import { acceptTerms, termsAccepted, withdrawTerms } from '../system/settings'
 import { hideOverlay } from '../windows/overlay'
 import { t } from '../system/i18n'
@@ -25,7 +26,8 @@ export const AFTER_TERMS = new Set([
   'gemini:set-key',
   'gemini:models',
   'updates:check',
-  'updates:install'
+  'updates:install',
+  'features:apply'
 ])
 
 export function registerLegalHandlers(): void {
@@ -45,5 +47,6 @@ export function registerLegalHandlers(): void {
     await stopEngine()
     return settings
   })
+  handle('features:apply', (_event, choices: unknown) => applyFeatureChoices(choices))
   handle('app:quit', () => app.quit())
 }
