@@ -30,6 +30,10 @@ vi.mock('../src/main/voice/voiceModels', () => ({
   downloadSpeechModel: (id: string) => downloadSpeechModel(id)
 }))
 
+// The game scan Settings → Games runs; it is never really started here.
+const scanGames = vi.fn(async () => ({ games: [], current: 'minecraft' }))
+vi.mock('../src/main/ipc/games', () => ({ scanGames: () => scanGames() }))
+
 type SettingsModule = typeof import('../src/main/system/settings')
 let settings: SettingsModule
 let features: typeof import('../src/main/system/featureChoices')
@@ -38,6 +42,7 @@ beforeEach(async () => {
   installed = new Set()
   downloads.length = 0
   downloadSpeechModel.mockClear()
+  scanGames.mockClear()
   userData = mkdtempSync(join(tmpdir(), 'gamemate-choices-'))
   vi.resetModules()
   settings = await import('../src/main/system/settings')
@@ -85,7 +90,14 @@ describe('feature choices setting', () => {
 })
 
 describe('applying feature choices', () => {
-  const all = { games: true, lookups: true, voice: true, naturalVoice: false, screenshot: true, tray: false }
+  const all = {
+    games: true,
+    lookups: true,
+    voice: true,
+    naturalVoice: false,
+    screenshot: true,
+    tray: false
+  }
 
   beforeEach(() => {
     settings.acceptTerms()
@@ -107,11 +119,53 @@ describe('applying feature choices', () => {
   it('nothing ticked changes nothing but answers', () => {
     const s = features.applyFeatureChoices({})
     expect(s.featureChoices).toBe('answered')
-    expect(s.deviceConsent).toBe(false)
-    expect(s.webLookup).toBe(false)
-    expect(s.voiceInput).toBe(false)
     expect(s.closeToTray).toBe(false)
     expect(downloadSpeechModel).not.toHaveBeenCalled()
+    expect(scanGames).not.toHaveBeenCalled()
+  })
+
+  it('unticked rows leave features turned on in Settings alone', () => {
+    settings.updateSettings({
+      deviceConsent: true,
+      webLookup: true,
+      voiceInput: true,
+      chatScreenshot: true
+    })
+    settings.setGames([{ id: 'steam-1', name: 'Hades', launcher: 'steam' }])
+    const before = settings.getSettings()
+    const s = features.applyFeatureChoices({ voice: true })
+    expect(s.deviceConsent).toBe(true)
+    expect(s.webLookup).toBe(true)
+    expect(s.chatScreenshot).toBe(true)
+    expect(s.consents.games).toBe(before.consents.games)
+    expect(s.consents.lookups).toBe(before.consents.lookups)
+    expect(s.games).toEqual(before.games)
+    features.applyFeatureChoices({})
+    expect(settings.getSettings().voiceInput).toBe(true)
+    expect(settings.getSettings().games).toEqual(before.games)
+  })
+
+  it('the tray box decides closing to the tray either way', () => {
+    expect(features.applyFeatureChoices({ tray: true }).closeToTray).toBe(true)
+    expect(features.applyFeatureChoices({ tray: false }).closeToTray).toBe(false)
+  })
+
+  it('Find my games scans for games', () => {
+    features.applyFeatureChoices({ games: true })
+    expect(scanGames).toHaveBeenCalledTimes(1)
+    scanGames.mockClear()
+    features.applyFeatureChoices({ lookups: true })
+    expect(scanGames).not.toHaveBeenCalled()
+  })
+
+  it('a failed scan or download is logged, not left unhandled', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    scanGames.mockRejectedValueOnce(new Error('scan broke'))
+    downloadSpeechModel.mockRejectedValueOnce(new Error('download broke'))
+    features.applyFeatureChoices({ games: true, voice: true })
+    await new Promise((r) => setTimeout(r, 0))
+    expect(error).toHaveBeenCalledTimes(2)
+    error.mockRestore()
   })
 
   it('rejects junk', () => {
@@ -131,23 +185,20 @@ describe('applying feature choices', () => {
     expect(downloadSpeechModel).not.toHaveBeenCalled()
   })
 
-  it('natural voice downloads, then is used', async () => {
+  it('natural voice is chosen at once and downloads', () => {
     settings.updateSettings({ language: 'en' })
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).toHaveBeenCalledWith('supertonic')
-    expect(s.voiceEngine).toBe('windows')
-    installed.add('supertonic')
-    downloads[0].done()
-    await new Promise((r) => setTimeout(r, 0))
-    expect(settings.getSettings().voiceEngine).toBe('natural')
+    expect(s.voiceEngine).toBe('natural')
   })
 
-  it('failed natural voice download keeps Windows voices', async () => {
+  it('failed natural voice download keeps the natural voice chosen', async () => {
     settings.updateSettings({ language: 'en' })
     features.applyFeatureChoices({ naturalVoice: true })
     downloads[0].done()
     await new Promise((r) => setTimeout(r, 0))
-    expect(settings.getSettings().voiceEngine).toBe('windows')
+    // Not installed, so Windows voices speak until it is (pickVoice falls back).
+    expect(settings.getSettings().voiceEngine).toBe('natural')
     expect(settings.getSettings().featureChoices).toBe('answered')
   })
 

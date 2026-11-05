@@ -37,7 +37,7 @@ function requireConsent(): void {
 
 // "Scan for games": the launchers' libraries on this PC, then each new game's wiki (only the
 // game's name is sent to wiki.gg and Fandom). Games added by hand and wikis set by the player stay.
-async function scanGames(): Promise<GamesState> {
+export async function scanGames(): Promise<GamesState> {
   requireConsent()
   const found = await scanLaunchers()
   const known = new Map(getSettings().games.map((g) => [g.id, g]))
