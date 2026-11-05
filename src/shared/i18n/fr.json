@@ -181,7 +181,9 @@
     "keepsTheInGameShortcuts": "Les raccourcis en jeu et le compagnon continuent de fonctionner. Quittez depuis l’icône de la zone de notification. Le modèle d’IA est libéré après quelques minutes d’inactivité.",
     "closingTheWindowQuitsGamemate": "Fermer la fenêtre quitte GameMate. Les raccourcis en jeu et le compagnon s’arrêtent jusqu’au prochain lancement.",
     "language": "Langue",
-    "languageHelp": "Pour les fenêtres de GameMate et les réponses de l’IA. Les noms des jeux et les pages des wikis restent tels quels."
+    "languageHelp": "Pour les fenêtres de GameMate et les réponses de l’IA. Les noms des jeux et les pages des wikis restent tels quels.",
+    "chatScreenshot": "Envoyer une capture d'écran avec mes questions par défaut",
+    "chatScreenshotHelp": "Dans la fenêtre de discussion, 📷 est activé dans chaque nouvelle discussion."
   },
   "modelMenu": {
     "builtInAi": "IA intégrée",
@@ -670,5 +672,26 @@
       "beginner": "Qui convient aux débutants ?",
       "better": "Comment progresser à ce jeu ?"
     }
+  },
+  "featureChoices": {
+    "title": "Profitez de toute l'expérience GameMate",
+    "lead": "Cochez ces options pour profiter de toute l'expérience. Vous pourrez les modifier plus tard dans les Paramètres.",
+    "sendsData": "Ces options envoient un peu de données",
+    "games": "Trouver mes jeux",
+    "gamesHelp": "Lit Steam, Epic Games, Battle.net et Riot sur ce PC. Seuls les noms de jeux sont envoyés à wiki.gg et Fandom.",
+    "lookups": "Chercher des informations en ligne",
+    "lookupsHelp": "Seul le sujet d'une question est envoyé au wiki du jeu (et à Modrinth pour les mods).",
+    "voice": "Poser des questions à la voix",
+    "voiceHelp": "Télécharge la reconnaissance vocale ({{size}} Mo). Votre voix est transformée en texte sur ce PC.",
+    "naturalVoice": "Voix naturelle pour les réponses",
+    "naturalVoiceHelp": "Télécharge une voix naturelle ({{size}} Mo) pour lire les réponses à voix haute à la place d'une voix Windows.",
+    "screenshot": "Envoyer une capture d'écran avec mes questions",
+    "screenshotHelp": "📷 est activé dans chaque nouvelle discussion.",
+    "tray": "Laisser GameMate actif dans la zone de notification",
+    "trayHelp": "Fermer la fenêtre laisse GameMate dans la zone de notification, prêt pour le raccourci.",
+    "tickAll": "Tout cocher",
+    "later": "Me le rappeler plus tard",
+    "never": "Ne plus afficher",
+    "continue": "Continuer"
   }
 }

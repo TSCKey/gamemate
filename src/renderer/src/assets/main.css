@@ -1699,3 +1699,9 @@ body:lang(ko),
 .language-option:has(input:checked) {
   border-color: var(--accent);
 }
+
+.feature-choices h3 {
+  margin: 14px 0 0;
+  font-size: 0.9em;
+  opacity: 0.8;
+}

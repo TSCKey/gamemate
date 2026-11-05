@@ -178,7 +178,9 @@
     "keepsTheInGameShortcuts": "Die Tastenkürzel im Spiel und der Begleiter funktionieren weiter. Beenden über das Symbol im Infobereich. Das KI-Modell wird nach ein paar Minuten ohne Nutzung freigegeben.",
     "closingTheWindowQuitsGamemate": "Das Schließen des Fensters beendet GameMate. Die Tastenkürzel im Spiel und der Begleiter stoppen, bis du es wieder startest.",
     "language": "Sprache",
-    "languageHelp": "Für die Fenster von GameMate und die Antworten der KI. Spielnamen und Wikiseiten bleiben, wie sie sind."
+    "languageHelp": "Für die Fenster von GameMate und die Antworten der KI. Spielnamen und Wikiseiten bleiben, wie sie sind.",
+    "chatScreenshot": "Screenshot standardmäßig mit meinen Fragen senden",
+    "chatScreenshotHelp": "Im Chatfenster ist 📷 in jedem neuen Chat eingeschaltet."
   },
   "modelMenu": {
     "builtInAi": "Integrierte KI",
@@ -667,5 +669,26 @@
       "beginner": "Wer ist gut für Anfänger?",
       "better": "Wie werde ich darin besser?"
     }
+  },
+  "featureChoices": {
+    "title": "Das volle GameMate-Erlebnis",
+    "lead": "Haken Sie diese Optionen an, um GameMate voll zu nutzen. Sie können alles später in den Einstellungen ändern.",
+    "sendsData": "Diese senden ein wenig Daten",
+    "games": "Meine Spiele finden",
+    "gamesHelp": "Liest Steam, Epic Games, Battle.net und Riot auf diesem PC. Nur Spielnamen gehen an wiki.gg und Fandom.",
+    "lookups": "Infos online nachschlagen",
+    "lookupsHelp": "Nur das Thema einer Frage geht an das Wiki des Spiels (und an Modrinth bei Mods).",
+    "voice": "Per Sprache fragen",
+    "voiceHelp": "Lädt die Spracherkennung herunter ({{size}} MB). Ihre Sprache wird auf diesem PC in Text umgewandelt.",
+    "naturalVoice": "Natürliche Stimme für Antworten",
+    "naturalVoiceHelp": "Lädt eine natürliche Stimme herunter ({{size}} MB), die Antworten statt einer Windows-Stimme vorliest.",
+    "screenshot": "Screenshot mit meinen Fragen senden",
+    "screenshotHelp": "📷 ist in jedem neuen Chat eingeschaltet.",
+    "tray": "Im Infobereich weiterlaufen lassen",
+    "trayHelp": "Beim Schließen des Fensters bleibt GameMate im Infobereich, bereit für die Tastenkombination.",
+    "tickAll": "Alle anhaken",
+    "later": "Später erinnern",
+    "never": "Nicht mehr anzeigen",
+    "continue": "Weiter"
   }
 }

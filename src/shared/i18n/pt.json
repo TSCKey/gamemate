@@ -181,7 +181,9 @@
     "keepsTheInGameShortcuts": "Os atalhos dentro do jogo e o companheiro continuam funcionando. Saia pelo ícone na bandeja. O modelo de IA é liberado após alguns minutos parado.",
     "closingTheWindowQuitsGamemate": "Fechar a janela encerra o GameMate. Os atalhos dentro do jogo e o companheiro param até você abri-lo de novo.",
     "language": "Idioma",
-    "languageHelp": "Para as janelas do GameMate e as respostas da IA. Os nomes dos jogos e as páginas das wikis continuam como estão."
+    "languageHelp": "Para as janelas do GameMate e as respostas da IA. Os nomes dos jogos e as páginas das wikis continuam como estão.",
+    "chatScreenshot": "Enviar uma captura de tela com minhas perguntas por padrão",
+    "chatScreenshotHelp": "Na janela do chat, 📷 começa ativada em cada novo chat."
   },
   "modelMenu": {
     "builtInAi": "IA integrada",
@@ -670,5 +672,26 @@
       "beginner": "Quem é bom para iniciantes?",
       "better": "Como fico melhor neste jogo?"
     }
+  },
+  "featureChoices": {
+    "title": "Aproveite a experiência completa do GameMate",
+    "lead": "Marque estas opções para ter a experiência completa. Você pode alterá-las depois em Configurações.",
+    "sendsData": "Estas enviam alguns dados",
+    "games": "Encontrar meus jogos",
+    "gamesHelp": "Lê Steam, Epic Games, Battle.net e Riot neste PC. Apenas os nomes dos jogos vão para wiki.gg e Fandom.",
+    "lookups": "Pesquisar informações online",
+    "lookupsHelp": "Apenas o assunto da pergunta vai para a wiki do jogo (e para o Modrinth, no caso de mods).",
+    "voice": "Perguntar por voz",
+    "voiceHelp": "Baixa o reconhecimento de voz ({{size}} MB). Sua fala é transformada em texto neste PC.",
+    "naturalVoice": "Voz natural para as respostas",
+    "naturalVoiceHelp": "Baixa uma voz natural ({{size}} MB) para ler as respostas em voz alta no lugar de uma voz do Windows.",
+    "screenshot": "Enviar uma captura de tela com minhas perguntas",
+    "screenshotHelp": "📷 começa ativada em cada novo chat.",
+    "tray": "Manter na bandeja do sistema",
+    "trayHelp": "Ao fechar a janela, o GameMate continua na bandeja do sistema, pronto para o atalho.",
+    "tickAll": "Marcar tudo",
+    "later": "Lembrar mais tarde",
+    "never": "Não mostrar novamente",
+    "continue": "Continuar"
   }
 }

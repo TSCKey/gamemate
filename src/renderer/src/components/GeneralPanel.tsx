@@ -141,6 +141,13 @@ function GeneralPanel({
             onChange={(overlayScreenshot) => update({ overlayScreenshot })}
           />
         </Field>
+        <Field label={t('generalPanel.chatScreenshot')} help={t('generalPanel.chatScreenshotHelp')}>
+          <Toggle
+            label={t('generalPanel.chatScreenshot')}
+            checked={settings.chatScreenshot}
+            onChange={(chatScreenshot) => update({ chatScreenshot })}
+          />
+        </Field>
       </Section>
 
       <Section

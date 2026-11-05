@@ -175,7 +175,9 @@
     "keepsTheInGameShortcuts": "ゲーム内ショートカットとコンパニオンは動作し続けます。終了はトレイアイコンから行います。AI モデルは数分間使われないと解放されます。",
     "closingTheWindowQuitsGamemate": "ウィンドウを閉じると GameMate が終了します。ゲーム内ショートカットとコンパニオンは、次に起動するまで停止します。",
     "language": "言語",
-    "languageHelp": "GameMate のウィンドウと AI の回答に使われます。ゲーム名と Wiki のページはそのままです。"
+    "languageHelp": "GameMate のウィンドウと AI の回答に使われます。ゲーム名と Wiki のページはそのままです。",
+    "chatScreenshot": "質問にスクリーンショットを添付する(既定)",
+    "chatScreenshotHelp": "チャットウィンドウでは、新しいチャットのたびに📷がオンで始まります。"
   },
   "modelMenu": {
     "builtInAi": "内蔵 AI",
@@ -664,5 +666,26 @@
       "beginner": "初心者におすすめなのは誰?",
       "better": "このゲームが上手くなるには?"
     }
+  },
+  "featureChoices": {
+    "title": "GameMateの全機能を使う",
+    "lead": "すべての機能を使うには、以下にチェックを入れてください。あとから設定でいつでも変更できます。",
+    "sendsData": "少しデータを送信します",
+    "games": "ゲームを探す",
+    "gamesHelp": "このPCのSteam、Epic Games、Battle.net、Riotを読み取ります。wiki.ggとFandomに送られるのはゲーム名だけです。",
+    "lookups": "オンラインで調べる",
+    "lookupsHelp": "ゲームのwiki(MODの場合はModrinth)に送られるのは、質問のトピックだけです。",
+    "voice": "音声で質問する",
+    "voiceHelp": "音声認識をダウンロードします({{size}} MB)。音声はこのPC上でテキストに変換されます。",
+    "naturalVoice": "回答に自然な音声を使う",
+    "naturalVoiceHelp": "Windowsの音声の代わりに回答を読み上げる自然な音声をダウンロードします({{size}} MB)。",
+    "screenshot": "質問にスクリーンショットを添付する",
+    "screenshotHelp": "新しいチャットでは常に📷がオンで始まります。",
+    "tray": "トレイに常駐する",
+    "trayHelp": "ウィンドウを閉じてもGameMateはトレイに残り、ショートカットですぐ使えます。",
+    "tickAll": "すべて選択",
+    "later": "あとで通知",
+    "never": "今後表示しない",
+    "continue": "続ける"
   }
 }

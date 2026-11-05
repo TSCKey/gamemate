@@ -175,7 +175,9 @@
     "keepsTheInGameShortcuts": "게임 내 단축키와 동료가 계속 작동합니다. 종료는 트레이 아이콘에서 하세요. AI 모델은 몇 분간 사용하지 않으면 해제됩니다.",
     "closingTheWindowQuitsGamemate": "창을 닫으면 GameMate가 종료됩니다. 다시 시작할 때까지 게임 내 단축키와 동료가 멈춥니다.",
     "language": "언어",
-    "languageHelp": "GameMate 창과 AI 답변에 사용됩니다. 게임 이름과 위키 페이지는 그대로입니다."
+    "languageHelp": "GameMate 창과 AI 답변에 사용됩니다. 게임 이름과 위키 페이지는 그대로입니다.",
+    "chatScreenshot": "기본으로 질문과 함께 스크린샷 보내기",
+    "chatScreenshotHelp": "채팅 창에서 새 채팅마다 📷이 켜진 상태로 시작합니다."
   },
   "modelMenu": {
     "builtInAi": "내장 AI",
@@ -664,5 +666,26 @@
       "beginner": "초보자에게 좋은 캐릭터는?",
       "better": "이 게임을 더 잘하려면?"
     }
+  },
+  "featureChoices": {
+    "title": "GameMate의 모든 기능을 사용해 보세요",
+    "lead": "모든 기능을 사용하려면 아래 항목을 선택하세요. 나중에 설정에서 언제든 바꿀 수 있습니다.",
+    "sendsData": "데이터를 조금 전송하는 기능",
+    "games": "내 게임 찾기",
+    "gamesHelp": "이 PC의 Steam, Epic Games, Battle.net, Riot를 읽습니다. wiki.gg와 Fandom에는 게임 이름만 전송됩니다.",
+    "lookups": "온라인에서 찾아보기",
+    "lookupsHelp": "게임 위키(모드는 Modrinth)에는 질문의 주제만 전송됩니다.",
+    "voice": "음성으로 질문하기",
+    "voiceHelp": "음성 인식을 내려받습니다({{size}}MB). 음성은 이 PC에서 텍스트로 변환됩니다.",
+    "naturalVoice": "답변에 자연스러운 음성 사용",
+    "naturalVoiceHelp": "Windows 음성 대신 답변을 읽어 주는 자연스러운 음성을 내려받습니다({{size}}MB).",
+    "screenshot": "질문과 함께 스크린샷 보내기",
+    "screenshotHelp": "새 채팅마다 📷이 켜진 상태로 시작합니다.",
+    "tray": "트레이에서 계속 실행",
+    "trayHelp": "창을 닫아도 GameMate가 트레이에 남아 단축키로 바로 쓸 수 있습니다.",
+    "tickAll": "모두 선택",
+    "later": "나중에 알림",
+    "never": "다시 표시 안 함",
+    "continue": "계속"
   }
 }

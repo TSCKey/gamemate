@@ -175,7 +175,9 @@
     "keepsTheInGameShortcuts": "游戏内快捷键和伙伴会继续工作。可从托盘图标退出。AI 模型会在闲置几分钟后释放。",
     "closingTheWindowQuitsGamemate": "关闭窗口会退出 GameMate。游戏内快捷键和伙伴会停止,直到你再次启动它。",
     "language": "语言",
-    "languageHelp": "用于 GameMate 的窗口和 AI 的回答。游戏名称和 Wiki 页面保持原样。"
+    "languageHelp": "用于 GameMate 的窗口和 AI 的回答。游戏名称和 Wiki 页面保持原样。",
+    "chatScreenshot": "默认在提问时附带屏幕截图",
+    "chatScreenshotHelp": "在聊天窗口中,每次新聊天都默认开启 📷。"
   },
   "modelMenu": {
     "builtInAi": "内置 AI",
@@ -664,5 +666,26 @@
       "beginner": "哪个角色适合新手?",
       "better": "怎样才能玩得更好?"
     }
+  },
+  "featureChoices": {
+    "title": "体验完整的 GameMate",
+    "lead": "勾选以下选项即可获得完整体验。你之后可以随时在设置中更改。",
+    "sendsData": "以下功能会发送少量数据",
+    "games": "查找我的游戏",
+    "gamesHelp": "读取此电脑上的 Steam、Epic Games、Battle.net 和 Riot。只有游戏名称会发送到 wiki.gg 和 Fandom。",
+    "lookups": "在线查询",
+    "lookupsHelp": "只有问题的主题会发送到游戏的 wiki(模组则发送到 Modrinth)。",
+    "voice": "语音提问",
+    "voiceHelp": "下载语音识别({{size}} MB)。你的语音会在此电脑上转换为文字。",
+    "naturalVoice": "使用自然语音朗读回答",
+    "naturalVoiceHelp": "下载自然语音({{size}} MB),用它代替 Windows 语音朗读回答。",
+    "screenshot": "提问时附带屏幕截图",
+    "screenshotHelp": "每次新聊天都默认开启 📷。",
+    "tray": "保持在托盘中运行",
+    "trayHelp": "关闭窗口后 GameMate 仍留在托盘中,随时可用快捷键唤出。",
+    "tickAll": "全选",
+    "later": "稍后提醒我",
+    "never": "不再显示",
+    "continue": "继续"
   }
 }

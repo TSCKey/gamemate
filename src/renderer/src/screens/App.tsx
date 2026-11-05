@@ -4,6 +4,7 @@ import CompanionMenu from '../components/CompanionMenu'
 import GameMenu from '../components/GameMenu'
 import ModelMenu from '../components/ModelMenu'
 import TermsGate from '../legal/TermsGate'
+import FeatureChoices from '../legal/FeatureChoices'
 import LanguagePicker from '../legal/LanguagePicker'
 import { initialLanguage, type LanguageCode } from '../../../shared/languages'
 import SetupCard from '../components/SetupCard'
@@ -52,6 +53,12 @@ function App(): React.JSX.Element {
   const [sources, setSources] = useState<CaptureSource[]>([])
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
+  const [featuresLater, setFeaturesLater] = useState(false)
+  // The chat's 📷 starts from the player's default, once settings have loaded.
+  const chatScreenshot = settings?.chatScreenshot
+  useEffect(() => {
+    if (chatScreenshot !== undefined) setAttachScreenshot(chatScreenshot)
+  }, [chatScreenshot])
   const [settingsTab, setSettingsTab] = useState<SettingsTab | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -204,6 +211,8 @@ function App(): React.JSX.Element {
     )
   ) : settings.termsVersion < TERMS_VERSION ? (
     <TermsGate settings={settings} />
+  ) : settings.featureChoices === 'ask' && !featuresLater ? (
+    <FeatureChoices settings={settings} onLater={() => setFeaturesLater(true)} />
   ) : null
 
   if (settingsTab && settings) {
@@ -256,7 +265,10 @@ function App(): React.JSX.Element {
           <button
             type="button"
             className="ghost"
-            onClick={() => setMessages([])}
+            onClick={() => {
+              setMessages([])
+              setAttachScreenshot(settings?.chatScreenshot ?? false)
+            }}
             disabled={loading || messages.length === 0}
           >
             {t('app.newChat')}

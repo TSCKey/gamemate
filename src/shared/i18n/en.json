@@ -178,7 +178,9 @@
     "keepsTheInGameShortcuts": "Keeps the in-game shortcuts and the companion working. Quit from the tray icon. The AI model is freed after a few idle minutes.",
     "closingTheWindowQuitsGamemate": "Closing the window quits GameMate. The in-game shortcuts and the companion stop until you start it again.",
     "language": "Language",
-    "languageHelp": "For GameMate’s windows and the AI’s answers. Game names and wiki pages stay as they are."
+    "languageHelp": "For GameMate’s windows and the AI’s answers. Game names and wiki pages stay as they are.",
+    "chatScreenshot": "Send a screenshot with my questions by default",
+    "chatScreenshotHelp": "In the chat window, 📷 starts on in every new chat."
   },
   "modelMenu": {
     "builtInAi": "Built-in AI",
@@ -667,5 +669,26 @@
       "beginner": "Who is good for beginners?",
       "better": "How do I get better at this?"
     }
+  },
+  "featureChoices": {
+    "title": "Get the full GameMate experience",
+    "lead": "Tick these for the full experience. You can change any of them later in Settings.",
+    "sendsData": "These send a little data",
+    "games": "Find my games",
+    "gamesHelp": "Reads Steam, Epic Games, Battle.net and Riot on this PC. Only game names go to wiki.gg and Fandom.",
+    "lookups": "Look things up online",
+    "lookupsHelp": "Only the topic of a question goes to the game's wiki (and Modrinth for mods).",
+    "voice": "Ask by voice",
+    "voiceHelp": "Downloads speech recognition ({{size}} MB). Your speech is turned into text on this PC.",
+    "naturalVoice": "Natural voice for answers",
+    "naturalVoiceHelp": "Downloads a natural voice ({{size}} MB) to read answers aloud instead of a Windows voice.",
+    "screenshot": "Send a screenshot with my questions",
+    "screenshotHelp": "📷 starts on in every new chat.",
+    "tray": "Keep running in the tray",
+    "trayHelp": "Closing the window keeps GameMate in the tray, ready for the shortcut.",
+    "tickAll": "Tick all",
+    "later": "Remind me later",
+    "never": "Don't show again",
+    "continue": "Continue"
   }
 }

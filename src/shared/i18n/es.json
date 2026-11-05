@@ -181,7 +181,9 @@
     "keepsTheInGameShortcuts": "Los atajos dentro del juego y el compañero siguen funcionando. Sal desde el icono de la bandeja. El modelo de IA se libera tras unos minutos de inactividad.",
     "closingTheWindowQuitsGamemate": "Cerrar la ventana cierra GameMate. Los atajos dentro del juego y el compañero se detienen hasta que lo vuelvas a abrir.",
     "language": "Idioma",
-    "languageHelp": "Para las ventanas de GameMate y las respuestas de la IA. Los nombres de los juegos y las páginas de las wikis no cambian."
+    "languageHelp": "Para las ventanas de GameMate y las respuestas de la IA. Los nombres de los juegos y las páginas de las wikis no cambian.",
+    "chatScreenshot": "Enviar una captura de pantalla con mis preguntas por defecto",
+    "chatScreenshotHelp": "En la ventana del chat, 📷 se activa en cada chat nuevo."
   },
   "modelMenu": {
     "builtInAi": "IA integrada",
@@ -670,5 +672,26 @@
       "beginner": "¿Quién es bueno para principiantes?",
       "better": "¿Cómo mejoro en este juego?"
     }
+  },
+  "featureChoices": {
+    "title": "Disfruta de la experiencia completa de GameMate",
+    "lead": "Marca estas opciones para disfrutar de la experiencia completa. Puedes cambiarlas más tarde en Ajustes.",
+    "sendsData": "Estas envían algunos datos",
+    "games": "Encontrar mis juegos",
+    "gamesHelp": "Lee Steam, Epic Games, Battle.net y Riot en este PC. Solo los nombres de los juegos se envían a wiki.gg y Fandom.",
+    "lookups": "Buscar información en línea",
+    "lookupsHelp": "Solo el tema de la pregunta se envía a la wiki del juego (y a Modrinth para los mods).",
+    "voice": "Preguntar por voz",
+    "voiceHelp": "Descarga el reconocimiento de voz ({{size}} MB). Tu voz se convierte en texto en este PC.",
+    "naturalVoice": "Voz natural para las respuestas",
+    "naturalVoiceHelp": "Descarga una voz natural ({{size}} MB) para leer las respuestas en voz alta en lugar de una voz de Windows.",
+    "screenshot": "Enviar una captura de pantalla con mis preguntas",
+    "screenshotHelp": "📷 se activa en cada chat nuevo.",
+    "tray": "Mantener en la bandeja del sistema",
+    "trayHelp": "Al cerrar la ventana, GameMate sigue en la bandeja del sistema, listo para el atajo.",
+    "tickAll": "Marcar todo",
+    "later": "Recordármelo más tarde",
+    "never": "No volver a mostrar",
+    "continue": "Continuar"
   }
 }

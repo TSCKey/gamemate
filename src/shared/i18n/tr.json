@@ -178,7 +178,9 @@
     "keepsTheInGameShortcuts": "Oyun içi kısayollar ve yoldaş çalışmaya devam eder. Tepsi simgesinden çık. Yapay zekâ modeli birkaç dakika boşta kaldıktan sonra serbest bırakılır.",
     "closingTheWindowQuitsGamemate": "Pencereyi kapatmak GameMate'ten çıkar. Oyun içi kısayollar ve yoldaş, uygulamayı tekrar başlatana kadar durur.",
     "language": "Dil",
-    "languageHelp": "GameMate'in pencereleri ve yapay zekânın cevapları için. Oyun adları ve wiki sayfaları olduğu gibi kalır."
+    "languageHelp": "GameMate'in pencereleri ve yapay zekânın cevapları için. Oyun adları ve wiki sayfaları olduğu gibi kalır.",
+    "chatScreenshot": "Sorularımla birlikte varsayılan olarak ekran görüntüsü gönder",
+    "chatScreenshotHelp": "Sohbet penceresinde 📷 her yeni sohbette açık başlar."
   },
   "modelMenu": {
     "builtInAi": "Yerleşik yapay zekâ",
@@ -667,5 +669,26 @@
       "beginner": "Yeni başlayanlar için kim iyi?",
       "better": "Bu oyunda nasıl daha iyi olurum?"
     }
+  },
+  "featureChoices": {
+    "title": "GameMate'in tam deneyimini yaşayın",
+    "lead": "Tam deneyim için bunları işaretleyin. Hepsini daha sonra Ayarlar'dan değiştirebilirsiniz.",
+    "sendsData": "Bunlar biraz veri gönderir",
+    "games": "Oyunlarımı bul",
+    "gamesHelp": "Bu bilgisayardaki Steam, Epic Games, Battle.net ve Riot'u okur. wiki.gg ve Fandom'a yalnızca oyun adları gider.",
+    "lookups": "Çevrimiçi arama yap",
+    "lookupsHelp": "Oyunun wiki'sine (mod için Modrinth'e) yalnızca sorunun konusu gider.",
+    "voice": "Sesle sor",
+    "voiceHelp": "Konuşma tanımayı indirir ({{size}} MB). Konuşmanız bu bilgisayarda metne dönüştürülür.",
+    "naturalVoice": "Yanıtlar için doğal ses",
+    "naturalVoiceHelp": "Yanıtları bir Windows sesi yerine yüksek sesle okuyacak doğal bir ses indirir ({{size}} MB).",
+    "screenshot": "Sorularımla birlikte ekran görüntüsü gönder",
+    "screenshotHelp": "📷 her yeni sohbette açık başlar.",
+    "tray": "Sistem tepsisinde çalışmaya devam et",
+    "trayHelp": "Pencereyi kapatmak GameMate'i sistem tepsisinde tutar, kısayol için hazır bekler.",
+    "tickAll": "Tümünü işaretle",
+    "later": "Daha sonra hatırlat",
+    "never": "Bir daha gösterme",
+    "continue": "Devam"
   }
 }
