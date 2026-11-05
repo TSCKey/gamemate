@@ -83,6 +83,8 @@ const DEFAULTS: Settings = {
   consents: {},
   geminiConsent: false,
   closeToTray: true,
+  featureChoices: 'ask',
+  chatScreenshot: false,
   autoUpdate: true,
   shortcut: DEFAULT_SHORTCUT,
   voiceShortcut: DEFAULT_VOICE_SHORTCUT,
@@ -118,6 +120,10 @@ export function getSettings(): Settings {
       }
       // Players who set GameMate up with Ollama before the built-in engine existed keep it.
       if (saved.localBackend === undefined && saved.model) current.localBackend = 'ollama'
+      // Players who already accepted the Terms before this screen existed aren't asked again.
+      if (saved.featureChoices === undefined) {
+        current.featureChoices = (saved.termsVersion ?? 0) > 0 ? 'answered' : 'ask'
+      }
       // GameMate 1.0.3's Kokoro voice is gone: Supertonic if it's installed, else Windows voices.
       current.voiceEngine = migrateVoiceEngine(
         saved.voiceEngine ?? DEFAULTS.voiceEngine,
@@ -179,6 +185,9 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.detailedAnswers === 'boolean') next.detailedAnswers = p.detailedAnswers
   if (typeof p.geminiConsent === 'boolean') next.geminiConsent = p.geminiConsent
   if (typeof p.closeToTray === 'boolean') next.closeToTray = p.closeToTray
+  // The screen can be answered, never reopened from a page.
+  if (p.featureChoices === 'answered') next.featureChoices = 'answered'
+  if (typeof p.chatScreenshot === 'boolean') next.chatScreenshot = p.chatScreenshot
   if (typeof p.deviceConsent === 'boolean') next.deviceConsent = p.deviceConsent
   if (typeof p.autoUpdate === 'boolean') next.autoUpdate = p.autoUpdate
   if (isValidShortcut(p.shortcut)) next.shortcut = p.shortcut

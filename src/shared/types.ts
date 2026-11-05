@@ -34,6 +34,10 @@ export type LocalBackend = (typeof LOCAL_BACKENDS)[number]
 export const ANSWER_ENGINES = [...ENGINES, 'auto'] as const
 export type AnswerEngine = (typeof ANSWER_ENGINES)[number]
 
+// Whether the recommended-features screen still has to be shown ('ask') or was done ('answered').
+export const FEATURE_CHOICES = ['ask', 'answered'] as const
+export type FeatureChoices = (typeof FEATURE_CHOICES)[number]
+
 // The current Terms of Use and Privacy Policy (docs/TERMS.md and docs/PRIVACY.md). Bump it when
 // either changes in a way players must accept again.
 export const TERMS_VERSION = 2
@@ -100,6 +104,10 @@ export interface Settings {
   // Closing the window keeps GameMate in the tray (for the shortcuts and companion) instead
   // of quitting.
   closeToTray: boolean
+  // Whether the screen after the Terms (recommended features) still has to be shown.
+  featureChoices: FeatureChoices
+  // Whether the chat attaches a screenshot of the game to each question by default.
+  chatScreenshot: boolean
   // Check GitHub for new versions now and then (the installed app only).
   autoUpdate: boolean
   // The keys that open the in-game window, and that open it listening for a spoken question.
