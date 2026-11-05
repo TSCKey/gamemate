@@ -15,7 +15,7 @@ E-Mail: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate läuft auf deinem PC. **Wir erhalten, erheben oder speichern keine deiner Daten.** Es gibt keinen GameMate-Server, kein Konto, keine Werbung, keine Analyse und kein Tracking.
 - Alles, was GameMate speichert, bleibt auf deinem PC in deinem Windows-Benutzerordner.
-- GameMate verbindet sich nur dann mit Diensten anderer Unternehmen, wenn du eine Funktion nutzt, die sie braucht. Funktionen, die deine Daten anderswohin senden (Google Gemini, Websuche, Online-Nachschlagen, das Finden der Wikis deiner Spiele), sind **aus, bis du sie einschaltest**, und du kannst sie jederzeit wieder ausschalten. Du kannst sie auf dem Bildschirm einschalten, den GameMate nach deiner Annahme der Nutzungsbedingungen zeigt, oder später unter **Einstellungen**.
+- GameMate verbindet sich nur dann mit Diensten anderer Unternehmen, wenn du eine Funktion nutzt, die sie braucht. Funktionen, die deine Daten anderswohin senden (Google Gemini, Websuche, Online-Nachschlagen, das Finden der Wikis deiner Spiele), sind **aus, bis du sie einschaltest**, und du kannst sie jederzeit wieder ausschalten. Du kannst das Finden deiner Spiele und das Online-Nachschlagen auf dem Bildschirm einschalten, den GameMate nach deiner Annahme der Nutzungsbedingungen zeigt, oder jede dieser Funktionen später unter **Einstellungen**.
 - **Meine Daten löschen** unter **Einstellungen → Datenschutz & Rechtliches** entfernt alles, was GameMate auf deinem PC gespeichert hat.
 
 ## 3. Was GameMate auf deinem PC speichert
@@ -40,7 +40,7 @@ Deine Unterhaltungen, Screenshots, Sprachaufnahmen und das, was der Begleiter be
 
 ## 5. Optionale Funktionen, die deine Einwilligung brauchen
 
-Diese Funktionen sind aus, bis du sie einschaltest. Wenn du eine einschaltest, willigst du in das ein, was hier beschrieben ist (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG, PDPL). Du kannst jede Einwilligung jederzeit widerrufen, indem du die Funktion ausschaltest; das beendet die Funktion und berührt nichts, was vorher geschehen ist. Du kannst sie auch auf dem Bildschirm einschalten, den GameMate nach deiner Annahme der Nutzungsbedingungen zeigt.
+Diese Funktionen sind aus, bis du sie einschaltest. Wenn du eine einschaltest, willigst du in das ein, was hier beschrieben ist (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG, PDPL). Du kannst jede Einwilligung jederzeit widerrufen, indem du die Funktion ausschaltest; das beendet die Funktion und berührt nichts, was vorher geschehen ist. Du kannst das Finden deiner Spiele und das Online-Nachschlagen auch auf dem Bildschirm einschalten, den GameMate nach deiner Annahme der Nutzungsbedingungen zeigt.
 
 ### Deine Spiele finden (Einstellungen → Spiele)
 

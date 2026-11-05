@@ -13,7 +13,7 @@ Email: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate runs on your PC. **We do not receive, collect or store any of your data.** There is no GameMate server, no account, no advertising, no analytics and no tracking.
 - Everything GameMate keeps stays on your PC, in your Windows user folder.
-- GameMate only connects to other companies' services when you use a feature that needs them. Features that send your data elsewhere (Google Gemini, web search, online lookups, finding your games' wikis) are **off until you turn them on**, and you can turn them off at any time. You can turn them on on the screen GameMate shows after you accept the Terms of Use, or later in Settings.
+- GameMate only connects to other companies' services when you use a feature that needs them. Features that send your data elsewhere (Google Gemini, web search, online lookups, finding your games' wikis) are **off until you turn them on**, and you can turn them off at any time. You can turn on finding your games and online lookups on the screen GameMate shows after you accept the Terms of Use, or any of these features later in **Settings**.
 - **Delete my data** in **Settings → Privacy & legal** removes everything GameMate stored on your PC.
 
 ## 3. What GameMate keeps on your PC
@@ -38,7 +38,7 @@ Your conversations, screenshots, voice recordings and what the companion noticed
 
 ## 5. Optional features that need your consent
 
-These features are off until you turn them on. Turning one on is your consent to what is described here (Art. 6 (1) (a) GDPR, § 25 (1) TDDDG, PDPL). You can withdraw each consent at any time by turning the feature off; this stops the feature and does not affect anything done before. You can also turn them on on the screen GameMate shows after you accept the Terms of Use.
+These features are off until you turn them on. Turning one on is your consent to what is described here (Art. 6 (1) (a) GDPR, § 25 (1) TDDDG, PDPL). You can withdraw each consent at any time by turning the feature off; this stops the feature and does not affect anything done before. You can also turn on finding your games and online lookups on the screen GameMate shows after you accept the Terms of Use.
 
 ### Finding your games (Settings → Games)
 

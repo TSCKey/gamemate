@@ -15,7 +15,7 @@ E-posta: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate bilgisayarında çalışır. **Verilerinin hiçbirini almıyor, toplamıyor ve saklamıyoruz.** GameMate sunucusu, hesap, reklam, analiz veya takip yoktur.
 - GameMate'in sakladığı her şey bilgisayarında, Windows kullanıcı klasöründe kalır.
-- GameMate, başka şirketlerin hizmetlerine yalnızca bunlara ihtiyaç duyan bir özelliği kullandığında bağlanır. Verilerini başka yere gönderen özellikler (Google Gemini, web araması, çevrim içi arama, oyunlarının wiki'lerini bulma) **sen açana kadar kapalıdır** ve onları istediğin zaman kapatabilirsin. Bunları, Kullanım Koşulları'nı kabul ettikten sonra GameMate'in gösterdiği ekranda ya da daha sonra **Ayarlar**'dan açabilirsin.
+- GameMate, başka şirketlerin hizmetlerine yalnızca bunlara ihtiyaç duyan bir özelliği kullandığında bağlanır. Verilerini başka yere gönderen özellikler (Google Gemini, web araması, çevrim içi arama, oyunlarının wiki'lerini bulma) **sen açana kadar kapalıdır** ve onları istediğin zaman kapatabilirsin. Oyunlarını bulmayı ve çevrim içi aramayı, Kullanım Koşulları'nı kabul ettikten sonra GameMate'in gösterdiği ekranda açabilirsin; bu özelliklerden herhangi birini daha sonra **Ayarlar**'dan da açabilirsin.
 - **Ayarlar → Gizlilik ve yasal** bölümündeki **Verilerimi sil**, GameMate'in bilgisayarına kaydettiği her şeyi siler.
 
 ## 3. GameMate bilgisayarında neleri saklar
@@ -40,7 +40,7 @@ Konuşmaların, ekran görüntülerin, ses kayıtların ve yol arkadaşının fa
 
 ## 5. Onayını gerektiren isteğe bağlı özellikler
 
-Bu özellikler sen açana kadar kapalıdır. Birini açman, burada anlatılanlara onay vermen anlamına gelir (GDPR md. 6 (1) (a), TDDDG § 25 (1), PDPL). Her onayı, özelliği kapatarak istediğin zaman geri çekebilirsin; bu özelliği durdurur ve daha önce yapılanları etkilemez. Bunları ayrıca Kullanım Koşulları'nı kabul ettikten sonra GameMate'in gösterdiği ekranda da açabilirsin.
+Bu özellikler sen açana kadar kapalıdır. Birini açman, burada anlatılanlara onay vermen anlamına gelir (GDPR md. 6 (1) (a), TDDDG § 25 (1), PDPL). Her onayı, özelliği kapatarak istediğin zaman geri çekebilirsin; bu özelliği durdurur ve daha önce yapılanları etkilemez. Oyunlarını bulmayı ve çevrim içi aramayı ayrıca Kullanım Koşulları'nı kabul ettikten sonra GameMate'in gösterdiği ekranda da açabilirsin.
 
 ### Oyunlarını bulma (Ayarlar → Oyunlar)
 

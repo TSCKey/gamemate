@@ -15,7 +15,7 @@ E-mail : [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate fonctionne sur votre PC. **Nous ne recevons, ne collectons et ne conservons aucune de vos données.** Il n'y a ni serveur GameMate, ni compte, ni publicité, ni statistiques, ni suivi.
 - Tout ce que GameMate conserve reste sur votre PC, dans votre dossier utilisateur Windows.
-- GameMate ne se connecte aux services d'autres entreprises que lorsque vous utilisez une fonction qui en a besoin. Les fonctions qui envoient vos données ailleurs (Google Gemini, recherche sur le web, recherches en ligne, recherche des wikis de vos jeux) sont **désactivées jusqu'à ce que vous les activiez**, et vous pouvez les désactiver à tout moment. Vous pouvez les activer sur l'écran que GameMate affiche après que vous avez accepté les Conditions d'utilisation, ou plus tard dans **Paramètres**.
+- GameMate ne se connecte aux services d'autres entreprises que lorsque vous utilisez une fonction qui en a besoin. Les fonctions qui envoient vos données ailleurs (Google Gemini, recherche sur le web, recherches en ligne, recherche des wikis de vos jeux) sont **désactivées jusqu'à ce que vous les activiez**, et vous pouvez les désactiver à tout moment. Vous pouvez activer « Trouver vos jeux » et les recherches en ligne sur l'écran que GameMate affiche après que vous avez accepté les Conditions d'utilisation, ou n'importe laquelle de ces fonctions plus tard dans **Paramètres**.
 - **Supprimer mes données** dans **Paramètres → Confidentialité et mentions légales** efface tout ce que GameMate a enregistré sur votre PC.
 
 ## 3. Ce que GameMate conserve sur votre PC
@@ -40,7 +40,7 @@ Vos conversations, captures d'écran, enregistrements vocaux et ce que le compag
 
 ## 5. Fonctions facultatives qui nécessitent votre consentement
 
-Ces fonctions sont désactivées jusqu'à ce que vous les activiez. En activer une vaut consentement à ce qui est décrit ici (art. 6 (1) (a) RGPD, § 25 (1) TDDDG, PDPL). Vous pouvez retirer chaque consentement à tout moment en désactivant la fonction ; cela arrête la fonction et n'affecte pas ce qui a été fait auparavant. Vous pouvez aussi les activer sur l'écran que GameMate affiche après que vous avez accepté les Conditions d'utilisation.
+Ces fonctions sont désactivées jusqu'à ce que vous les activiez. En activer une vaut consentement à ce qui est décrit ici (art. 6 (1) (a) RGPD, § 25 (1) TDDDG, PDPL). Vous pouvez retirer chaque consentement à tout moment en désactivant la fonction ; cela arrête la fonction et n'affecte pas ce qui a été fait auparavant. Vous pouvez aussi activer la recherche de vos jeux et les recherches en ligne sur l'écran que GameMate affiche après que vous avez accepté les Conditions d'utilisation.
 
 ### Trouver vos jeux (Paramètres → Jeux)
 

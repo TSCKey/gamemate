@@ -15,7 +15,7 @@ E-mail: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - O GameMate roda no seu PC. **Não recebemos, coletamos nem armazenamos nenhum dos seus dados.** Não há servidor do GameMate, conta, publicidade, análise nem rastreamento.
 - Tudo o que o GameMate guarda fica no seu PC, na sua pasta de usuário do Windows.
-- O GameMate só se conecta a serviços de outras empresas quando você usa um recurso que precisa deles. Os recursos que enviam seus dados para outro lugar (Google Gemini, pesquisa na web, consultas on-line, busca das wikis dos seus jogos) ficam **desativados até que você os ative**, e você pode desativá-los a qualquer momento. Você pode ativá-los na tela que o GameMate mostra depois que você aceita os Termos de uso, ou mais tarde em **Configurações**.
+- O GameMate só se conecta a serviços de outras empresas quando você usa um recurso que precisa deles. Os recursos que enviam seus dados para outro lugar (Google Gemini, pesquisa na web, consultas on-line, busca das wikis dos seus jogos) ficam **desativados até que você os ative**, e você pode desativá-los a qualquer momento. Você pode ativar a busca dos seus jogos e as consultas on-line na tela que o GameMate mostra depois que você aceita os Termos de uso, ou qualquer um desses recursos mais tarde em **Configurações**.
 - **Apagar meus dados** em **Configurações → Privacidade e aspectos legais** remove tudo o que o GameMate guardou no seu PC.
 
 ## 3. O que o GameMate guarda no seu PC
@@ -40,7 +40,7 @@ Suas conversas, capturas de tela, gravações de voz e o que o companheiro perce
 
 ## 5. Recursos opcionais que precisam do seu consentimento
 
-Estes recursos ficam desativados até que você os ative. Ativar um deles é o seu consentimento ao que está descrito aqui (art. 6 (1) (a) RGPD, § 25 (1) TDDDG, PDPL). Você pode retirar cada consentimento a qualquer momento desativando o recurso; isso interrompe o recurso e não afeta nada do que foi feito antes. Você também pode ativá-los na tela que o GameMate mostra depois que você aceita os Termos de uso.
+Estes recursos ficam desativados até que você os ative. Ativar um deles é o seu consentimento ao que está descrito aqui (art. 6 (1) (a) RGPD, § 25 (1) TDDDG, PDPL). Você pode retirar cada consentimento a qualquer momento desativando o recurso; isso interrompe o recurso e não afeta nada do que foi feito antes. Você também pode ativar a busca dos seus jogos e as consultas on-line na tela que o GameMate mostra depois que você aceita os Termos de uso.
 
 ### Encontrar seus jogos (Configurações → Jogos)
 
