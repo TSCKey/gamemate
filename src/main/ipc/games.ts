@@ -5,7 +5,7 @@ import { allGames, currentModpack } from '../games/current'
 import { scanLaunchers } from '../games/launchers'
 import { listCurseForgeModpacks, type ModpackSummary } from '../games/modpacks'
 import { handle } from '../system/security'
-import { getSettings, setGames, updateSettings } from '../system/settings'
+import { getSettings, setGames, termsAccepted, updateSettings } from '../system/settings'
 import { discoverWiki, findWikiCandidates, findWikiForGame } from '../games/wiki'
 import { t } from '../system/i18n'
 
@@ -35,6 +35,10 @@ function requireConsent(): void {
   }
 }
 
+// A scan takes a while: the player can delete their data, take back consent or withdraw the Terms
+// while it runs. It then stops asking the wikis and saves nothing.
+const scanAllowed = (): boolean => getSettings().deviceConsent && termsAccepted()
+
 // "Scan for games": the launchers' libraries on this PC, then each new game's wiki (only the
 // game's name is sent to wiki.gg and Fandom). Games added by hand and wikis set by the player stay.
 export async function scanGames(): Promise<GamesState> {
@@ -46,7 +50,7 @@ export async function scanGames(): Promise<GamesState> {
   // A few at a time, so the wikis aren't flooded with requests.
   await Promise.all(
     Array.from({ length: 6 }, async () => {
-      for (let game = queue.shift(); game; game = queue.shift()) {
+      for (let game = queue.shift(); game && scanAllowed(); game = queue.shift()) {
         // Each scan looks again for the best wiki, except the ones the player chose.
         const before = known.get(game.id)
         if (before?.wiki && before.wikiChosen) {
@@ -58,6 +62,7 @@ export async function scanGames(): Promise<GamesState> {
       }
     })
   )
+  if (!scanAllowed()) return gamesState()
   const manual = getSettings().games.filter((g) => g.launcher === 'manual')
   setGames([...scanned.sort((a, b) => a.name.localeCompare(b.name)), ...manual])
   return gamesState()
