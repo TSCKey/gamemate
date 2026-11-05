@@ -270,6 +270,14 @@ GameMate is an assistant, not a bot. It never plays games for you, controls your
 - Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Pictures come from the same wikis, are credited with the wiki's name and link to their page there. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 
+## Contributing
+
+Bug reports, ideas and fixes are welcome, and native speakers who can improve a translation are especially welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) to get started, and please follow the [code of conduct](CODE_OF_CONDUCT.md). Found a security problem? Report it privately as described in [SECURITY.md](SECURITY.md).
+
+## License
+
+GameMate is free software: you can redistribute it and change it under the terms of the [GNU General Public License](LICENSE), version 3 or (at your option) any later version. It comes with no warranty. The AI models, voices and game wikis GameMate downloads or reads have their own licenses (see [Credits](#credits)).
+
 ## Building from source
 
 For developers who want to run GameMate from the code:

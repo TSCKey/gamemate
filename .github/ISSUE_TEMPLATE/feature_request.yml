@@ -1,0 +1,26 @@
+name: Feature request
+description: An idea for something GameMate could do.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What should GameMate do?
+    validations:
+      required: true
+  - type: input
+    id: games
+    attributes:
+      label: Which game or games?
+      placeholder: 'All games, or for example Hollow Knight: Silksong'
+  - type: textarea
+    id: why
+    attributes:
+      label: How would it help you?
+      description: What are you trying to do while you play, and what's in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: Anything you tried instead?

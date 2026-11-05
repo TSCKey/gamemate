@@ -1,0 +1,54 @@
+name: Translation fix
+description: A text in GameMate reads wrong or oddly in your language.
+labels: [translation]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you! GameMate's translations are new, and native speakers make them better.
+        You can also fix the text yourself in `src/shared/i18n/<language>.json`: see [CONTRIBUTING.md](https://github.com/TSCKey/gamemate/blob/main/CONTRIBUTING.md).
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      options:
+        - العربية (Arabic)
+        - Français (French)
+        - Deutsch (German)
+        - Español (Spanish)
+        - Português (Portuguese)
+        - Italiano (Italian)
+        - Türkçe (Turkish)
+        - Русский (Russian)
+        - 日本語 (Japanese)
+        - 中文 (Chinese)
+        - 한국어 (Korean)
+        - English
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where is the text?
+      placeholder: Settings → Voice, the in-game window, the Terms of Use…
+    validations:
+      required: true
+  - type: textarea
+    id: now
+    attributes:
+      label: What it says now
+    validations:
+      required: true
+  - type: textarea
+    id: better
+    attributes:
+      label: What it should say
+    validations:
+      required: true
+  - type: dropdown
+    id: native
+    attributes:
+      label: Are you a native speaker of this language?
+      options:
+        - 'Yes'
+        - 'No'

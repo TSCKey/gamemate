@@ -4,6 +4,7 @@
   "description": "Local AI gaming companion powered by lightweight local language and vision models",
   "main": "./out/main/index.js",
   "author": "TSCKey",
+  "license": "GPL-3.0-or-later",
   "homepage": "https://github.com/TSCKey/gamemate",
   "scripts": {
     "format": "prettier --write .",
