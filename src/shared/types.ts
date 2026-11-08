@@ -96,8 +96,11 @@ export interface Settings {
   commentaryHumor: CommentaryHumor
   // Which kinds of moment the companion reacts to.
   commentaryCategories: CommentaryCategories
-  // Now and then add a constructive observation (in competitive games only between rounds).
+  // Now and then add a constructive observation. Never where only the match feed is watched;
+  // in other competitive games only between rounds.
   commentaryTactics: boolean
+  // The player's in-game names, comma-separated, to recognize their own lines in a kill feed.
+  commentaryPlayerNames: string
   // Show comments as a pop-up. Always on unless they are read aloud (speakComments).
   showComments: boolean
   // Talk to GameMate with the microphone (needs a downloaded speech model).

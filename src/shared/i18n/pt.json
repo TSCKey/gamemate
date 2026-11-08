@@ -83,7 +83,9 @@
     "reactionIntensity": "Intensidade das reações",
     "humorLevel": "Nível de humor",
     "tacticalComments": "Observações táticas",
-    "tacticalCommentsHelp": "De vez em quando acrescenta uma observação útil e gentil. Em jogos competitivos, só entre as rodadas.",
+    "tacticalCommentsHelp": "De vez em quando acrescenta uma observação útil e gentil. Nunca em jogos em que só o feed da partida é observado; em outros jogos competitivos, só entre as rodadas.",
+    "playerNames": "Seu nome no jogo",
+    "playerNamesHelp": "Permite que o GameMate reconheça suas próprias linhas no registro de abates. Separe vários nomes com vírgulas. Sem ele, só reage aos banners.",
     "showReactionsAs": "Mostrar reações como",
     "whatToReactTo": "A que reagir",
     "whatToReactToHelp": "O GameMate só consegue reagir ao que lê na sua tela, então momentos muito rápidos podem passar despercebidos."

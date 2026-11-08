@@ -83,7 +83,9 @@
     "reactionIntensity": "Tepki yoğunluğu",
     "humorLevel": "Mizah düzeyi",
     "tacticalComments": "Taktik gözlemler",
-    "tacticalCommentsHelp": "Arada sırada nazik ve faydalı bir gözlem ekler. Rekabetçi oyunlarda yalnızca turlar arasında.",
+    "tacticalCommentsHelp": "Arada sırada nazik ve faydalı bir gözlem ekler. Yalnızca maç akışının izlendiği oyunlarda asla; diğer rekabetçi oyunlarda yalnızca turlar arasında.",
+    "playerNames": "Oyun içi adın",
+    "playerNamesHelp": "GameMate'in öldürme akışındaki kendi satırlarını tanımasını sağlar. Birden fazla adı virgülle ayır. Ad olmadan yalnızca afişlere tepki verir.",
     "showReactionsAs": "Tepkilerin biçimi",
     "whatToReactTo": "Neye tepki verilsin",
     "whatToReactToHelp": "GameMate yalnızca ekranında okuyabildiklerine tepki verebilir; çok kısa anları kaçırabilir."

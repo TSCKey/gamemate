@@ -87,6 +87,16 @@ export function analysisGapMs(
   return Math.min(MAX_ANALYSIS_GAP_MS, Math.max(base, lastDurationMs * ANALYSIS_DUTY))
 }
 
+const AREA_LOOK_GAP_MS = 3 * S
+const RARE_AREA_LOOK_GAP_MS = 6 * S
+
+// How long to wait between looks at just the feed and banners. A feed line stays up for about
+// five seconds; slow answers still make the wait longer, so the GPU stays with the game.
+export function areaLookGapMs(frequency: CommentaryFrequency, lastDurationMs: number): number {
+  const base = frequency === 'rare' ? RARE_AREA_LOOK_GAP_MS : AREA_LOOK_GAP_MS
+  return Math.min(MAX_ANALYSIS_GAP_MS, Math.max(base, lastDurationMs * ANALYSIS_DUTY))
+}
+
 export interface DecideInput {
   now: number
   inFight: boolean

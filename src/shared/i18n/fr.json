@@ -83,7 +83,9 @@
     "reactionIntensity": "Intensité des réactions",
     "humorLevel": "Niveau d’humour",
     "tacticalComments": "Observations tactiques",
-    "tacticalCommentsHelp": "Ajoute de temps en temps une remarque utile et bienveillante. Dans les jeux compétitifs, seulement entre les manches.",
+    "tacticalCommentsHelp": "Ajoute de temps en temps une remarque utile et bienveillante. Jamais dans les jeux où seul le fil de la partie est observé ; dans les autres jeux compétitifs, seulement entre les manches.",
+    "playerNames": "Votre pseudo en jeu",
+    "playerNamesHelp": "Permet à GameMate de reconnaître vos propres lignes dans le fil des éliminations. Séparez plusieurs pseudos par des virgules. Sans pseudo, il ne réagit qu'aux bannières.",
     "showReactionsAs": "Format des réactions",
     "whatToReactTo": "À quoi réagir",
     "whatToReactToHelp": "GameMate ne peut réagir qu’à ce qu’il lit sur votre écran : les moments très brefs peuvent lui échapper."

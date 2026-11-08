@@ -83,7 +83,9 @@
     "reactionIntensity": "Intensità delle reazioni",
     "humorLevel": "Livello di umorismo",
     "tacticalComments": "Osservazioni tattiche",
-    "tacticalCommentsHelp": "Ogni tanto aggiunge un’osservazione utile e gentile. Nei giochi competitivi, solo tra un round e l’altro.",
+    "tacticalCommentsHelp": "Ogni tanto aggiunge un’osservazione utile e gentile. Mai nei giochi in cui si osserva solo il feed della partita; negli altri giochi competitivi, solo tra un round e l’altro.",
+    "playerNames": "Il tuo nome di gioco",
+    "playerNamesHelp": "Permette a GameMate di riconoscere le tue righe nel feed delle uccisioni. Separa più nomi con virgole. Senza nome reagisce solo ai banner.",
     "showReactionsAs": "Mostra le reazioni come",
     "whatToReactTo": "A cosa reagire",
     "whatToReactToHelp": "GameMate può reagire solo a ciò che legge sul tuo schermo, quindi i momenti molto brevi possono sfuggirgli."

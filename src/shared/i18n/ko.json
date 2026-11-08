@@ -83,7 +83,9 @@
     "reactionIntensity": "리액션 강도",
     "humorLevel": "유머 수준",
     "tacticalComments": "전술 코멘트",
-    "tacticalCommentsHelp": "가끔 친절하고 유용한 의견을 덧붙입니다. 경쟁 게임에서는 라운드 사이에만 합니다.",
+    "tacticalCommentsHelp": "가끔 친절하고 유용한 의견을 덧붙입니다. 경기 피드만 보는 게임에서는 하지 않습니다. 다른 경쟁 게임에서는 라운드 사이에만 합니다.",
+    "playerNames": "게임 내 이름",
+    "playerNamesHelp": "GameMate가 킬 피드에서 내 줄을 알아보게 합니다. 이름이 여러 개면 쉼표로 구분하세요. 이름이 없으면 배너에만 반응합니다.",
     "showReactionsAs": "리액션 방식",
     "whatToReactTo": "반응할 순간",
     "whatToReactToHelp": "GameMate는 화면에서 읽을 수 있는 내용에만 반응할 수 있어, 아주 짧은 순간은 놓칠 수 있습니다."

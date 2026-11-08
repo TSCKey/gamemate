@@ -83,7 +83,9 @@
     "reactionIntensity": "Intensidad de las reacciones",
     "humorLevel": "Nivel de humor",
     "tacticalComments": "Observaciones tácticas",
-    "tacticalCommentsHelp": "De vez en cuando añade una observación útil y amable. En juegos competitivos, solo entre rondas.",
+    "tacticalCommentsHelp": "De vez en cuando añade una observación útil y amable. Nunca en juegos en los que solo se observa el registro de la partida; en otros juegos competitivos, solo entre rondas.",
+    "playerNames": "Tu nombre en el juego",
+    "playerNamesHelp": "Permite a GameMate reconocer tus propias líneas en el registro de bajas. Separa varios nombres con comas. Sin él, solo reacciona a los carteles.",
     "showReactionsAs": "Mostrar reacciones como",
     "whatToReactTo": "A qué reaccionar",
     "whatToReactToHelp": "GameMate solo puede reaccionar a lo que lee en tu pantalla, así que puede perderse los momentos muy breves."

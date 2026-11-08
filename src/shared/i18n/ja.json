@@ -83,7 +83,9 @@
     "reactionIntensity": "リアクションの強さ",
     "humorLevel": "ユーモアの度合い",
     "tacticalComments": "戦術的なひとこと",
-    "tacticalCommentsHelp": "ときどき、やさしく役立つ気づきを添えます。対戦型ゲームではラウンドの合間だけです。",
+    "tacticalCommentsHelp": "ときどき、やさしく役立つ気づきを添えます。試合のフィードだけを見るゲームでは行いません。その他の対戦型ゲームではラウンドの合間だけです。",
+    "playerNames": "ゲーム内の名前",
+    "playerNamesHelp": "キルフィードで自分の行を GameMate が見分けられるようにします。複数の名前はカンマで区切ります。名前がない場合はバナーにだけ反応します。",
     "showReactionsAs": "リアクションの形式",
     "whatToReactTo": "反応する場面",
     "whatToReactToHelp": "GameMate は画面から読み取れることにしか反応できないため、ごく短い場面は見逃すことがあります。"

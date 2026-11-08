@@ -83,7 +83,9 @@
     "reactionIntensity": "Reaction intensity",
     "humorLevel": "Humor level",
     "tacticalComments": "Tactical comments",
-    "tacticalCommentsHelp": "Now and then adds a kind, useful observation. In competitive games, only between rounds.",
+    "tacticalCommentsHelp": "Now and then adds a kind, useful observation. Never in games where only the match feed is watched; in other competitive games, only between rounds.",
+    "playerNames": "Your in-game name",
+    "playerNamesHelp": "Lets GameMate recognize your own lines in the kill feed. Use commas for several names. Without it, only banners get a reaction.",
     "showReactionsAs": "Show reactions as",
     "whatToReactTo": "What to react to",
     "whatToReactToHelp": "GameMate can only react to what it can read on your screen, so it can miss moments that pass quickly."

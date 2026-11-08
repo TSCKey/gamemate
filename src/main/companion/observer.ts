@@ -4,7 +4,7 @@
 //
 // To keep the GPU free for the game, the model is only asked about the screen when a cheap
 // check on a tiny frame suggests something changed, and never more often than MIN_ANALYSIS_GAP_MS.
-import { BrowserWindow, screen, type NativeImage } from 'electron'
+import { BrowserWindow, screen, type Display, type NativeImage } from 'electron'
 import { captureDisplayImage, toScreenshot } from '../windows/capture'
 import { windowRect } from '../system/foreground'
 import { followForegroundGame } from '../games/current'
@@ -16,19 +16,24 @@ import { getSettings, onSettingsChanged, termsAccepted, type Settings } from '..
 import { EVENT_TYPES } from '../../shared/types'
 import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../../shared/types'
 import { Commentator, type CommentaryOptions } from './commentator'
-import { analysisGapMs } from './director'
+import { analysisGapMs, areaLookGapMs } from './director'
 import {
   EVENT_RULES,
   normalizeVisionReport,
   visionEventTypes,
+  type FrameReport,
   type GameEvent,
   type VisionGame
 } from './events'
+import { BANNER_KINDS, parsePlayerNames, readAreas } from './areaReading'
+import { cropBox, gameFrame, hudAreas, type Area, type Box } from './hudAreas'
 import type { MatchContext } from './matchMemory'
 export { EVENT_TYPES }
 export type { EventType, ObservedEvent }
 
 const TICK_MS = 4_000
+// Feed lines fade after a few seconds, so games with a known feed are checked more often.
+const AREA_TICK_MS = 2_000
 // Something urgent (a red flash: damage or death) may be checked sooner.
 const URGENT_ANALYSIS_GAP_MS = 5_000
 // Even if the scene looks the same, take a fresh look this often.
@@ -37,6 +42,10 @@ const MAX_ANALYSIS_GAP_MS = 60_000
 const SCENE_CHANGE_THRESHOLD = 0.08
 const DIFF_FRAME_WIDTH = 64
 const COMMENTARY_WIDTH = 768
+// Feed text is small: the parts that get cut out need the capture at full size.
+const AREA_CAPTURE_WIDTH = 1920
+// A new feed line changes this much of those parts; a screen that stands still, almost none.
+const AREA_CHANGE_THRESHOLD = 0.004
 const MAX_EVENTS = 30
 const MAX_EVENTS_PER_LOOK = 3
 
@@ -92,6 +101,8 @@ export function analysisSchema(game: GameProfile): object {
 let state: ObserverState = { status: 'off', game: null, paused: false, events: [] }
 let timer: NodeJS.Timeout | null = null
 let lastFrame: FrameStats | null = null
+let lastAreas: FrameStats[] | null = null
+let watchingAreas = false
 let lastAnalysisAt = 0
 let lastAnalysisMs = 0
 let lookingNow = false
@@ -206,13 +217,54 @@ Why you are looking now: ${reason}
 ${recent ? `Already noticed recently (don't report the same thing again):\n${recent}` : ''}`
 }
 
-function commentaryOptions(settings: Settings, game: GameProfile): CommentaryOptions {
+const AREA_NAMES: Record<Area['kind'], string> = {
+  feed: "the game's kill feed, listing eliminations",
+  banner: 'where the game shows banners, such as round results and eliminations'
+}
+
+// The instructions for one look at just the parts of the screen that say what happened. The
+// model only copies text; areaReading.ts works out what it means.
+export function areaPrompt(areas: Area[]): string {
+  const images = areas.map((area, i) => `Image ${i + 1}: ${AREA_NAMES[area.kind]}.`).join('\n')
+  return `You read text off parts of a game's screen. Copy only what is written. Never guess.
+${images}
+In the kill feed, each line has a name on the left, then a name on the right.
+- "feed_lines": one entry per feed line, top to bottom, with the two names exactly as written. Empty list if there are no lines.
+- "banner_text": the big banner text exactly as written, "" if there is no banner.
+- "banner_kind": what that banner means, in any language: "round_won", "round_lost", "victory", "defeat", "eliminated_enemy" (the player eliminated someone), "killed_by" (the player was eliminated), or "none" if there is no banner or it means something else.
+- "banner_name": the name in that banner, "" if it has none.`
+}
+
+export function areaSchema(): object {
+  const text = (maxLength: number): object => ({ type: 'string', maxLength })
+  return {
+    type: 'object',
+    properties: {
+      feed_lines: {
+        type: 'array',
+        maxItems: 6,
+        items: {
+          type: 'object',
+          properties: { left: text(32), right: text(32) },
+          required: ['left', 'right']
+        }
+      },
+      banner_text: text(60),
+      banner_kind: { type: 'string', enum: BANNER_KINDS },
+      banner_name: text(32)
+    },
+    required: ['feed_lines', 'banner_text', 'banner_kind', 'banner_name']
+  }
+}
+
+export function commentaryOptions(settings: Settings, game: GameProfile): CommentaryOptions {
   return {
     frequency: settings.commentaryFrequency,
     intensity: settings.commentaryIntensity,
     humor: settings.commentaryHumor,
     categories: settings.commentaryCategories,
-    tactics: settings.commentaryTactics,
+    // Where only the feed is watched, the companion only ever reacts.
+    tactics: settings.commentaryTactics && hudAreas(game.name) === null,
     language: settings.language || 'en',
     game: visionGame(game)
   }
@@ -254,6 +306,31 @@ async function analyze(
   // model reads it much faster.
   const image = await captureDisplayImage(displayId, COMMENTARY_WIDTH)
   if (!image) return
+  await readLook(
+    {
+      displayId,
+      capturedAt,
+      images: [image],
+      prompt: analysisPrompt(reason, game),
+      schema: analysisSchema(game),
+      read: (reply, time) => normalizeVisionReport(reply, time)
+    },
+    settings,
+    game
+  )
+}
+
+interface Look {
+  displayId: number
+  capturedAt: number
+  images: NativeImage[]
+  prompt: string
+  schema: object
+  read: (reply: unknown, capturedAt: number) => FrameReport
+}
+
+async function readLook(look: Look, settings: Settings, game: GameProfile): Promise<void> {
+  const { displayId, capturedAt, images, prompt, schema, read } = look
   const forgetsBefore = forgetCount
   setState({ status: 'analyzing' })
   try {
@@ -262,17 +339,17 @@ async function analyze(
       [
         {
           role: 'user',
-          content: analysisPrompt(reason, game),
-          images: [toScreenshot(image).base64]
+          content: prompt,
+          images: images.map((image) => toScreenshot(image).base64)
         }
       ],
       // Thinking would make each look take several times longer.
-      { jsonSchema: analysisSchema(game), fast: true }
+      { jsonSchema: schema, fast: true }
     )
     lastAnalysisMs = Date.now() - capturedAt
     // The player turned the companion off or deleted their data while the model was reading.
     if (forgetCount !== forgetsBefore) return
-    const report = normalizeVisionReport(JSON.parse(reply.content), capturedAt)
+    const report = read(JSON.parse(reply.content), capturedAt)
     logEvents(commentator.observe(report, visionGame(game)), report.description)
     commentDisplay = displayId
     await commentator.speakIfDue(commentaryOptions(settings, game))
@@ -284,6 +361,7 @@ async function analyze(
 }
 
 async function tick(): Promise<void> {
+  watchingAreas = false
   const settings = getSettings()
   if (!observes(settings)) return setState({ status: 'off', game: null })
   if (state.paused) return setState({ status: 'paused' })
@@ -295,9 +373,11 @@ async function tick(): Promise<void> {
   const found = followForegroundGame()
   if (!found) {
     lastFrame = null
+    lastAreas = null
     return setState({ status: 'waiting-for-game', game: null })
   }
   const { game, program } = found
+  watchingAreas = hudAreas(game.name) !== null
   setState({ status: 'watching', game: game.name })
   // The player asked something: their question gets the GPU first.
   if (isAsking() || lookingNow) return
@@ -318,16 +398,19 @@ async function lookAtGame(
   await commentator.speakIfDue(commentaryOptions(settings, game))
 
   const rect = windowRect(handle)
-  const display = rect
-    ? screen.getDisplayMatching(
-        screen.screenToDipRect(null, {
-          x: rect.left,
-          y: rect.top,
-          width: rect.right - rect.left,
-          height: rect.bottom - rect.top
-        })
-      )
-    : screen.getPrimaryDisplay()
+  const gameWindow = rect
+    ? screen.screenToDipRect(null, {
+        x: rect.left,
+        y: rect.top,
+        width: rect.right - rect.left,
+        height: rect.bottom - rect.top
+      })
+    : null
+  const display = gameWindow ? screen.getDisplayMatching(gameWindow) : screen.getPrimaryDisplay()
+
+  const areas = hudAreas(game.name)
+  if (areas) return lookAtAreas(settings, game, display, gameWindow, areas)
+
   const small = await captureDisplayImage(display.id, DIFF_FRAME_WIDTH * 2)
   if (!small) return
   const frame = frameStats(small)
@@ -345,6 +428,49 @@ async function lookAtGame(
   await analyze(display.id, reason, settings, game)
 }
 
+// Looks at only the parts of the screen that say what happened in the match.
+async function lookAtAreas(
+  settings: Settings,
+  game: GameProfile,
+  display: Display,
+  gameWindow: Box | null,
+  areas: Area[]
+): Promise<void> {
+  const capturedAt = Date.now()
+  const since = capturedAt - lastAnalysisAt
+  if (since < areaLookGapMs(settings.commentaryFrequency, lastAnalysisMs)) return
+  const image = await captureDisplayImage(display.id, AREA_CAPTURE_WIDTH)
+  if (!image) return
+  const size = image.getSize()
+  const frame = gameFrame(gameWindow, display.bounds, size)
+  const crops = areas.map((area) => image.crop(cropBox(area, frame, size)))
+
+  // Not worth the GPU while nothing in them moves, such as in a menu or a paused game.
+  const stats = crops.map(frameStats)
+  const previous = lastAreas
+  const changed =
+    !previous || stats.some((s, i) => sceneChange(s, previous[i]) > AREA_CHANGE_THRESHOLD)
+  if (!changed && since < MAX_ANALYSIS_GAP_MS) return
+
+  lastAreas = stats
+  lastAnalysisAt = capturedAt
+  await readLook(
+    {
+      displayId: display.id,
+      capturedAt,
+      images: crops,
+      prompt: areaPrompt(areas),
+      schema: areaSchema(),
+      read: (reply, time) =>
+        readAreas(reply, time, parsePlayerNames(settings.commentaryPlayerNames))
+    },
+    settings,
+    game
+  )
+}
+
+const nextTickMs = (): number => (watchingAreas ? AREA_TICK_MS : TICK_MS)
+
 function loop(): void {
   timer = setTimeout(async () => {
     try {
@@ -353,7 +479,7 @@ function loop(): void {
       console.error('Observer tick failed', error)
     }
     if (timer) loop()
-  }, TICK_MS)
+  }, nextTickMs())
 }
 
 export function startObserver(onComment: (text: string, displayId: number) => void): void {

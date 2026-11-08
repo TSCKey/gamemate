@@ -453,7 +453,7 @@ function line(value: unknown, max: number): string {
     .trim()
 }
 
-function name(value: unknown): string {
+export function cleanName(value: unknown): string {
   const text = line(value, MAX_NAME)
   return PLACEHOLDER_NAME.test(text) ? '' : text
 }
@@ -510,12 +510,12 @@ function visionEvent(raw: unknown, time: number): GameEvent | null {
   const type = EVENT_TYPES.find((t) => t === raw.type)
   if (!type || type === 'none' || EVENT_RULES[type].seen === undefined) return null
   const detail = line(raw.detail, MAX_DETAIL)
-  const opponent = name(raw.opponent)
+  const opponent = cleanName(raw.opponent)
   return makeEvent(fixKillOrDeath(type, detail, opponent), time, 'vision', {
     importance: clamp(raw.importance, 0, 10, 0),
     detail,
     opponent,
-    place: name(raw.place),
+    place: cleanName(raw.place),
     count: clamp(raw.count, 1, MAX_COUNT, 1)
   })
 }

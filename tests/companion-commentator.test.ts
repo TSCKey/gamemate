@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Commentator, type CommentaryOptions } from '../src/main/companion/commentator'
-import { analysisGapMs } from '../src/main/companion/director'
+import { analysisGapMs, areaLookGapMs } from '../src/main/companion/director'
 import {
   normalizeVisionReport,
   type GameEvent,
@@ -653,6 +653,20 @@ describe('how often the screen is read', () => {
     expect(analysisGapMs('normal', false, 0)).toBe(12_000)
     expect(analysisGapMs('rare', false, 0)).toBe(12_000)
     expect(analysisGapMs('frequent', false, 0)).toBe(8_000)
+  })
+
+  it('looks at the feed often enough to catch a line before it fades', () => {
+    expect(areaLookGapMs('normal', 0)).toBe(3_000)
+    expect(areaLookGapMs('frequent', 0)).toBe(3_000)
+  })
+
+  it('looks at the feed less on the Rare setting', () => {
+    expect(areaLookGapMs('rare', 0)).toBe(6_000)
+  })
+
+  it('still leaves the GPU to the game when looking at the feed', () => {
+    expect(areaLookGapMs('normal', 2_000)).toBe(6_000)
+    expect(areaLookGapMs('frequent', 600_000)).toBe(60_000)
   })
 
   it('looks a little more often during a fight', () => {

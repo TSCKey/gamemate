@@ -177,6 +177,18 @@ function CompanionPanel({
                 onChange={(commentaryTactics) => update({ commentaryTactics })}
               />
             </Field>
+            <Field
+              label={t('companionPanel.playerNames')}
+              help={t('companionPanel.playerNamesHelp')}
+            >
+              <input
+                type="text"
+                maxLength={120}
+                aria-label={t('companionPanel.playerNames')}
+                defaultValue={settings.commentaryPlayerNames}
+                onBlur={(e) => update({ commentaryPlayerNames: e.target.value })}
+              />
+            </Field>
           </>
         )}
         {watching && (

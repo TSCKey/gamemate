@@ -27,6 +27,7 @@ GameMate stores the following in its folder in your Windows user profile, readab
 | AI models, GameMate's AI engine, speech models and voices you downloaded                                            | To run the AI on your PC                                     | Until you remove them or delete your data                             |
 | Games found or added: name, folder or program, wiki address                                                         | To help with the game you are playing                        | Until you withdraw that consent or delete your data                   |
 | A log of what GameMate did (for example starting the AI or checking for updates), without your questions or answers | To find and fix problems                                     | About 1 MB, older entries are overwritten; deleted with your data     |
+| Your in-game names, if you enter them | To recognize your own lines in a game's kill feed | Until you change them or delete your data |
 
 Your conversations, screenshots, voice recordings and what the companion noticed are **kept in memory only** and are gone when you close the chat, switch the companion off or quit GameMate. Screenshots and voice recordings are never saved to disk.
 

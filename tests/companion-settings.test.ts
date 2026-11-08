@@ -42,6 +42,20 @@ describe('companion settings', () => {
     })
   })
 
+  it('keep the player’s in-game names to one short, clean line', async () => {
+    const { getSettings, updateSettings } = await load()
+    expect(getSettings().commentaryPlayerNames).toBe('')
+    expect(
+      updateSettings({ commentaryPlayerNames: ' TSCKEY, Tsc#EUW ' }).commentaryPlayerNames
+    ).toBe('TSCKEY, Tsc#EUW')
+    expect(updateSettings({ commentaryPlayerNames: 42 }).commentaryPlayerNames).toBe(
+      'TSCKEY, Tsc#EUW'
+    )
+    const long = updateSettings({ commentaryPlayerNames: `a\nb${'x'.repeat(500)}` })
+    expect(long.commentaryPlayerNames).not.toMatch(/\n/)
+    expect(long.commentaryPlayerNames.length).toBeLessThanOrEqual(120)
+  })
+
   it('accept valid choices', async () => {
     const { updateSettings } = await load()
     expect(

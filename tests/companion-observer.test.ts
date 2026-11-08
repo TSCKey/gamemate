@@ -16,8 +16,17 @@ vi.mock('koffi', () => ({ default: {} }))
 
 // A screen that looks different every time, so each tick may look at it.
 let shade = 0
+let frozen = false
+const cuts: { x: number; y: number; width: number; height: number }[] = []
 const image = {
-  resize: () => ({ toBitmap: () => Buffer.alloc(64 * 4, (shade = (shade + 90) % 250)) })
+  getSize: () => ({ width: 1920, height: 1080 }),
+  crop: (box: (typeof cuts)[number]) => {
+    cuts.push(box)
+    return image
+  },
+  resize: () => ({
+    toBitmap: () => Buffer.alloc(64 * 4, frozen ? shade : (shade = (shade + 90) % 250))
+  })
 }
 vi.mock('../src/main/windows/capture', () => ({
   captureDisplayImage: async () => image,
@@ -67,6 +76,10 @@ const settings = await import('../src/main/system/settings')
 const observer = await import('../src/main/companion/observer')
 
 const sawVictory = JSON.stringify({
+  feed_lines: [],
+  banner_text: 'VICTORY',
+  banner_kind: 'victory',
+  banner_name: '',
   phase: 'intermission',
   in_fight: false,
   own_score: 13,
@@ -85,6 +98,10 @@ const sawVictory = JSON.stringify({
   ]
 })
 const sawNothing = JSON.stringify({
+  feed_lines: [],
+  banner_text: '',
+  banner_kind: 'none',
+  banner_name: '',
   phase: 'playing',
   in_fight: false,
   own_score: -1,
@@ -212,6 +229,124 @@ describe('forgetting', () => {
     observer.clearEvents()
     expect(observer.matchContext().kills).toBe(0)
     expect(observer.getObserverState().events).toEqual([])
+  })
+})
+
+describe('watching only the parts of the screen that show the match', () => {
+  const sawLine = (left: string, right: string): string =>
+    JSON.stringify({
+      feed_lines: [{ left, right }],
+      banner_text: '',
+      banner_kind: 'none',
+      banner_name: ''
+    })
+
+  beforeEach(() => {
+    cuts.length = 0
+    frozen = false
+    game.name = 'VALORANT'
+  })
+
+  afterEach(() => {
+    frozen = false
+    game.name = 'VALORANT'
+  })
+
+  it('shows the model those parts and nothing else', async () => {
+    looks.length = 0
+    await nextLook()
+    expect(looks[0].images?.length).toBeGreaterThan(1)
+    expect(cuts.length).toBeGreaterThan(1)
+    for (const cut of cuts) expect(cut.width * cut.height).toBeLessThan(0.25 * 1920 * 1080)
+  })
+
+  it('looks again within a few seconds, so a feed line is not missed', async () => {
+    await nextLook()
+    const before = looks.length
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(looks.length).toBeGreaterThan(before)
+  })
+
+  it('leaves the model alone while those parts do not change', async () => {
+    await nextLook()
+    frozen = true
+    await vi.advanceTimersByTimeAsync(5_000)
+    const before = looks.length
+    await vi.advanceTimersByTimeAsync(20_000)
+    expect(looks.length).toBe(before)
+  })
+
+  it('still looks once in a while when nothing changes', async () => {
+    await nextLook()
+    frozen = true
+    await vi.advanceTimersByTimeAsync(5_000)
+    const before = looks.length
+    await vi.advanceTimersByTimeAsync(70_000)
+    expect(looks.length).toBeGreaterThan(before)
+  })
+
+  it('counts the player’s own line in the feed', async () => {
+    settings.updateSettings({ commentaryPlayerNames: 'TSCKEY' })
+    lookReply = sawLine('TSCKEY', 'Sova')
+    await nextLook()
+    expect(observer.matchContext().kills).toBe(1)
+  })
+
+  it('leaves out other players’ lines', async () => {
+    settings.updateSettings({ commentaryPlayerNames: 'TSCKEY' })
+    lookReply = sawLine('Raze', 'Omen')
+    await nextLook()
+    expect(observer.matchContext().kills).toBe(0)
+  })
+
+  it('still reads banners when it does not know the player’s name', async () => {
+    settings.updateSettings({ commentaryPlayerNames: '' })
+    lookReply = sawVictory
+    await nextLook()
+    expect(writes.length).toBeGreaterThan(0)
+  })
+
+  it('asks the model only to copy what is written', () => {
+    const prompt = observer.areaPrompt([
+      { kind: 'feed', x: 0.7, y: 0, width: 0.3, height: 0.3 },
+      { kind: 'banner', x: 0.25, y: 0.1, width: 0.5, height: 0.2 }
+    ])
+    expect(prompt).toMatch(/copy only what is written/i)
+    expect(prompt).toMatch(/Image 1.*feed/)
+    expect(prompt).toMatch(/Image 2.*banner/)
+  })
+
+  it('never tells the model the player’s name', () => {
+    settings.updateSettings({ commentaryPlayerNames: 'TSCKEY' })
+    const prompt = observer.areaPrompt([{ kind: 'feed', x: 0.7, y: 0, width: 0.3, height: 0.3 }])
+    expect(prompt).not.toContain('TSCKEY')
+  })
+
+  it('constrains the reply to text and a fixed list of banners', () => {
+    const schema = observer.areaSchema() as {
+      properties: Record<string, { enum?: string[] }>
+    }
+    expect(Object.keys(schema.properties)).toEqual([
+      'feed_lines',
+      'banner_text',
+      'banner_kind',
+      'banner_name'
+    ])
+    expect(schema.properties.banner_kind.enum).toContain('none')
+  })
+
+  it('offers only reactions, never advice, in those games', () => {
+    const on = { ...settings.getSettings(), commentaryTactics: true }
+    expect(observer.commentaryOptions(on, game).tactics).toBe(false)
+    expect(observer.commentaryOptions(on, { ...game, name: 'Terraria' }).tactics).toBe(true)
+  })
+
+  it('keeps looking at the whole screen in games without a known layout', async () => {
+    game.name = 'Terraria'
+    looks.length = 0
+    await nextLook()
+    expect(looks[0].images).toHaveLength(1)
+    expect(cuts).toHaveLength(0)
   })
 })
 

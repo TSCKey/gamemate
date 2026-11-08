@@ -83,7 +83,9 @@
     "reactionIntensity": "反应强度",
     "humorLevel": "幽默程度",
     "tacticalComments": "战术提示",
-    "tacticalCommentsHelp": "偶尔补充一句友好而有用的观察。在竞技游戏中只在回合之间提示。",
+    "tacticalCommentsHelp": "偶尔补充一句友好而有用的观察。在只查看比赛信息流的游戏中不会提示；在其他竞技游戏中只在回合之间提示。",
+    "playerNames": "你的游戏内名称",
+    "playerNamesHelp": "让 GameMate 在击杀信息中识别你自己的记录。多个名称用逗号分隔。没有名称时只对横幅作出反应。",
     "showReactionsAs": "反应方式",
     "whatToReactTo": "对什么做出反应",
     "whatToReactToHelp": "GameMate 只能对屏幕上读取到的内容做出反应,因此可能错过非常短暂的时刻。"

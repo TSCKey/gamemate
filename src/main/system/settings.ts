@@ -75,6 +75,7 @@ const DEFAULTS: Settings = {
   commentaryHumor: 'light',
   commentaryCategories: ALL_CATEGORIES,
   commentaryTactics: true,
+  commentaryPlayerNames: '',
   showComments: true,
   voiceInput: false,
   speechModel: 'accurate',
@@ -157,6 +158,8 @@ export function getSettings(): Settings {
 }
 
 // Renderer input is untrusted: only accept known keys with the right types.
+const MAX_PLAYER_NAMES = 120
+
 export function updateSettings(patch: unknown): Settings {
   if (typeof patch !== 'object' || patch === null) throw new Error('Invalid settings.')
   const p = patch as Record<string, unknown>
@@ -188,6 +191,12 @@ export function updateSettings(patch: unknown): Settings {
     }
   }
   if (typeof p.commentaryTactics === 'boolean') next.commentaryTactics = p.commentaryTactics
+  if (typeof p.commentaryPlayerNames === 'string') {
+    next.commentaryPlayerNames = p.commentaryPlayerNames
+      .replace(/\p{Cc}+/gu, ' ')
+      .trim()
+      .slice(0, MAX_PLAYER_NAMES)
+  }
   if (typeof p.showComments === 'boolean') next.showComments = p.showComments
   if (typeof p.voiceInput === 'boolean') next.voiceInput = p.voiceInput
   if (isListenModelId(p.speechModel)) next.speechModel = p.speechModel
