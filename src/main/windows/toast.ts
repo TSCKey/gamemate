@@ -1,6 +1,7 @@
 // Small pop-up that shows the companion's comments over the game without taking focus,
 // so the player's keyboard and mouse stay in the game.
 import { app, BrowserWindow, screen } from 'electron'
+import { getSettings } from '../system/settings'
 import type { SayRequest } from '../../shared/types'
 
 const WIDTH = 400
@@ -60,6 +61,8 @@ export function showToast(text: string, displayId: number): void {
   const { x, y, width } = display.workArea
   toast.setPosition(Math.round(x + width - WIDTH - MARGIN), Math.round(y + MARGIN))
   toast.webContents.send('toast:show', text)
+  // This window also reads comments aloud, so it gets the text even when the pop-up stays hidden.
+  if (!getSettings().showComments) return
   toast.showInactive()
   if (hideTimer) clearTimeout(hideTimer)
   hideTimer = setTimeout(hideToast, VISIBLE_MS)

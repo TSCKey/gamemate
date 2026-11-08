@@ -79,7 +79,14 @@
     "pause": "⏸ Pause",
     "whatGamemateSaw": "What GameMate saw",
     "keptOnlyWhileGamemateIs": "Kept only while GameMate is open.",
-    "nothingYetStartPlayingAnd": "Nothing yet. Start playing and GameMate will log what happens."
+    "nothingYetStartPlayingAnd": "Nothing yet. Start playing and GameMate will log what happens.",
+    "reactionIntensity": "Reaction intensity",
+    "humorLevel": "Humor level",
+    "tacticalComments": "Tactical comments",
+    "tacticalCommentsHelp": "Now and then adds a kind, useful observation. In competitive games, only between rounds.",
+    "showReactionsAs": "Show reactions as",
+    "whatToReactTo": "What to react to",
+    "whatToReactToHelp": "GameMate can only react to what it can read on your screen, so it can miss moments that pass quickly."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "The game GameMate helps with",
@@ -489,9 +496,9 @@
       }
     },
     "frequencies": {
-      "rare": "Rarely (big moments only)",
-      "normal": "Sometimes",
-      "frequent": "Often"
+      "rare": "Rare (big moments only)",
+      "normal": "Balanced",
+      "frequent": "Frequent"
     },
     "status": {
       "off": "Not watching",
@@ -501,6 +508,29 @@
       "waiting-for-game": "Waiting for a game to be the active window",
       "watching": "Watching",
       "analyzing": "Looking at your screen…"
+    },
+    "intensities": {
+      "subtle": "Subtle",
+      "normal": "Normal",
+      "expressive": "Expressive"
+    },
+    "humorLevels": {
+      "none": "None",
+      "light": "Light",
+      "playful": "Playful"
+    },
+    "delivery": {
+      "text": "Text",
+      "voice": "Voice",
+      "both": "Text and voice"
+    },
+    "categories": {
+      "combat": "Combat (kills, deaths, multikills)",
+      "skill": "Skill (clutches, close calls)",
+      "teamwork": "Teamwork (saves, team wipes)",
+      "objectives": "Objectives (captures, plants, defuses)",
+      "match": "Match (rounds, streaks, victory, defeat)",
+      "world": "Danger and discoveries"
     }
   },
   "errors": {

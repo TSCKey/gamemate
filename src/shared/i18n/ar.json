@@ -79,7 +79,14 @@
     "pause": "⏸ إيقاف مؤقت",
     "whatGamemateSaw": "ما رآه GameMate",
     "keptOnlyWhileGamemateIs": "يُحفَظ فقط ما دام GameMate مفتوحًا.",
-    "nothingYetStartPlayingAnd": "لا شيء بعد. ابدأ اللعب وسيسجّل GameMate ما يحدث."
+    "nothingYetStartPlayingAnd": "لا شيء بعد. ابدأ اللعب وسيسجّل GameMate ما يحدث.",
+    "reactionIntensity": "شدة ردود الفعل",
+    "humorLevel": "مستوى الفكاهة",
+    "tacticalComments": "ملاحظات تكتيكية",
+    "tacticalCommentsHelp": "يضيف بين الحين والآخر ملاحظة لطيفة ومفيدة. في الألعاب التنافسية بين الجولات فقط.",
+    "showReactionsAs": "طريقة عرض ردود الفعل",
+    "whatToReactTo": "ما يتفاعل معه",
+    "whatToReactToHelp": "لا يمكن لـ GameMate أن يتفاعل إلا مع ما يقرؤه على شاشتك، لذا قد تفوته اللحظات السريعة جدًا."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "اللعبة التي يساعدك فيها GameMate",
@@ -502,8 +509,8 @@
     },
     "frequencies": {
       "rare": "نادرًا (اللحظات الكبيرة فقط)",
-      "normal": "أحيانًا",
-      "frequent": "كثيرًا"
+      "normal": "متوازن",
+      "frequent": "متكرر"
     },
     "status": {
       "off": "لا يتابع",
@@ -513,6 +520,29 @@
       "waiting-for-game": "في انتظار أن تصبح لعبة هي النافذة النشطة",
       "watching": "يتابع",
       "analyzing": "ينظر إلى شاشتك…"
+    },
+    "intensities": {
+      "subtle": "هادئة",
+      "normal": "عادية",
+      "expressive": "معبّرة"
+    },
+    "humorLevels": {
+      "none": "بلا فكاهة",
+      "light": "خفيفة",
+      "playful": "مرحة"
+    },
+    "delivery": {
+      "text": "نص",
+      "voice": "صوت",
+      "both": "نص وصوت"
+    },
+    "categories": {
+      "combat": "القتال (الإقصاءات، الموت، الإقصاءات المتعددة)",
+      "skill": "المهارة (الحسم الفردي، المواقف الحرجة)",
+      "teamwork": "العمل الجماعي (إنقاذ الزملاء، القضاء على فريق الخصم)",
+      "objectives": "الأهداف (السيطرة، زرع القنبلة وتفكيكها)",
+      "match": "المباراة (الجولات، السلاسل، الفوز، الخسارة)",
+      "world": "المخاطر والاكتشافات"
     }
   },
   "errors": {

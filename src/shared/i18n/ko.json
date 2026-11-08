@@ -79,7 +79,14 @@
     "pause": "⏸ 일시 중지",
     "whatGamemateSaw": "GameMate가 본 것",
     "keptOnlyWhileGamemateIs": "GameMate가 열려 있는 동안만 보관됩니다.",
-    "nothingYetStartPlayingAnd": "아직 아무것도 없습니다. 플레이를 시작하면 GameMate가 일어난 일을 기록합니다."
+    "nothingYetStartPlayingAnd": "아직 아무것도 없습니다. 플레이를 시작하면 GameMate가 일어난 일을 기록합니다.",
+    "reactionIntensity": "리액션 강도",
+    "humorLevel": "유머 수준",
+    "tacticalComments": "전술 코멘트",
+    "tacticalCommentsHelp": "가끔 친절하고 유용한 의견을 덧붙입니다. 경쟁 게임에서는 라운드 사이에만 합니다.",
+    "showReactionsAs": "리액션 방식",
+    "whatToReactTo": "반응할 순간",
+    "whatToReactToHelp": "GameMate는 화면에서 읽을 수 있는 내용에만 반응할 수 있어, 아주 짧은 순간은 놓칠 수 있습니다."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "GameMate가 돕는 게임",
@@ -487,7 +494,7 @@
     },
     "frequencies": {
       "rare": "드물게(중요한 순간만)",
-      "normal": "가끔",
+      "normal": "균형",
       "frequent": "자주"
     },
     "status": {
@@ -498,6 +505,29 @@
       "waiting-for-game": "게임이 활성 창이 되기를 기다리는 중",
       "watching": "지켜보는 중",
       "analyzing": "화면을 보는 중…"
+    },
+    "intensities": {
+      "subtle": "차분하게",
+      "normal": "보통",
+      "expressive": "풍부하게"
+    },
+    "humorLevels": {
+      "none": "없음",
+      "light": "가볍게",
+      "playful": "장난스럽게"
+    },
+    "delivery": {
+      "text": "텍스트",
+      "voice": "음성",
+      "both": "텍스트와 음성"
+    },
+    "categories": {
+      "combat": "전투(처치, 죽음, 다중 처치)",
+      "skill": "실력(클러치, 아슬아슬한 순간)",
+      "teamwork": "팀워크(구조, 적 팀 전멸)",
+      "objectives": "목표(점령, 설치, 해체)",
+      "match": "경기(라운드, 연승·연패, 승리, 패배)",
+      "world": "위험과 발견"
     }
   },
   "errors": {
