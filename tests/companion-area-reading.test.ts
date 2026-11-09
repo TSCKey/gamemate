@@ -85,20 +85,51 @@ describe('working out the player’s own lines in the feed', () => {
 
 describe('working out what a banner means', () => {
   it.each([
-    ['round_won', 'round_won'],
-    ['round_lost', 'round_lost'],
-    ['victory', 'victory'],
-    ['defeat', 'defeat']
-  ])('turns %s into its event', (banner_kind, type) => {
-    expect(kinds(reply({ banner_kind, banner_text: 'SOME TEXT' }))).toEqual([type])
+    ['VICTORY', 'victory'],
+    ['DEFEAT', 'defeat'],
+    ['ROUND WON', 'round_won'],
+    ['ROUND LOST', 'round_lost'],
+    ['Victory Royale', 'victory'],
+    ['SIEG', 'victory'],
+    ['NIEDERLAGE', 'defeat'],
+    ['RUNDE GEWONNEN', 'round_won'],
+    ['RUNDE VERLOREN', 'round_lost'],
+    ['DÉFAITE', 'defeat'],
+    ['ПОБЕДА', 'victory'],
+    ['YENİLGİ', 'defeat'],
+    ['هزيمة', 'defeat'],
+    ['勝利', 'victory'],
+    ['패배', 'defeat'],
+    ['胜利', 'victory']
+  ])('reads %s as %s from the words themselves', (banner_text, type) => {
+    expect(kinds(reply({ banner_text }))).toEqual([type])
+  })
+
+  it('ignores numbers next to the words', () => {
+    expect(kinds(reply({ banner_text: 'ROUND 5 LOST' }))).toEqual(['round_lost'])
+    expect(kinds(reply({ banner_text: '#1 VICTORY ROYALE' }))).toEqual(['victory'])
+  })
+
+  // On the real model every one of these came back as a win at least once.
+  it.each([
+    'ROUND 5',
+    'MATCH POINT',
+    'CLUTCH',
+    'THRIFTY',
+    'SWITCHING SIDES',
+    'BUY PHASE',
+    'SPIKE PLANTED',
+    'ENEMY DEFEATED',
+    'COUNTER-TERRORISTS WIN',
+    'HELD WECHSELN'
+  ])('never takes %s for a result, whatever the model says it means', (banner_text) => {
+    for (const banner_kind of ['victory', 'round_won', 'defeat', 'round_lost']) {
+      expect(kinds(reply({ banner_kind, banner_text }))).toEqual([])
+    }
   })
 
   it('quotes the banner', () => {
-    const { events } = readAreas(
-      reply({ banner_kind: 'victory', banner_text: 'SIEG' }),
-      1000,
-      NAMES
-    )
+    const { events } = readAreas(reply({ banner_text: 'SIEG' }), 1000, NAMES)
     expect(events[0].detail).toContain('SIEG')
   })
 
@@ -113,6 +144,15 @@ describe('working out what a banner means', () => {
 
   it('counts a death even without a name', () => {
     expect(kinds(reply({ banner_kind: 'killed_by', banner_text: 'YOU DIED' }))).toEqual(['death'])
+  })
+
+  it('does not believe a killer whose name is not in the banner', () => {
+    const { events } = readAreas(
+      reply({ banner_kind: 'killed_by', banner_text: 'YOU DIED', banner_name: 'Sova' }),
+      1000,
+      NAMES
+    )
+    expect(events[0]).toMatchObject({ type: 'death', opponent: '' })
   })
 
   it('counts a kill banner with a name', () => {
@@ -132,9 +172,23 @@ describe('working out what a banner means', () => {
     expect(kinds(reply({ banner_kind: 'eliminated_enemy', banner_text: 'ELIMINATED' }))).toEqual([])
   })
 
+  it('does not believe a kill whose name is not in the banner', () => {
+    const raw = reply({
+      banner_kind: 'eliminated_enemy',
+      banner_text: 'THRIFTY',
+      banner_name: 'Sova'
+    })
+    expect(kinds(raw)).toEqual([])
+  })
+
+  it('does not take a number for a name', () => {
+    const raw = reply({ banner_kind: 'eliminated_enemy', banner_text: 'ROUND 5', banner_name: '5' })
+    expect(kinds(raw)).toEqual([])
+  })
+
   it('does not believe a banner with no text', () => {
-    expect(kinds(reply({ banner_kind: 'victory', banner_text: '' }))).toEqual([])
-    expect(kinds(reply({ banner_kind: 'victory', banner_text: '   ' }))).toEqual([])
+    expect(kinds(reply({ banner_kind: 'killed_by', banner_text: '' }))).toEqual([])
+    expect(kinds(reply({ banner_kind: 'killed_by', banner_text: '   ' }))).toEqual([])
   })
 
   it('ignores a kind it does not know', () => {
@@ -164,14 +218,12 @@ describe('the report from one look', () => {
     })
   })
 
-  it.each(['round_won', 'round_lost', 'victory', 'defeat'])('is a break on %s', (banner_kind) => {
-    expect(readAreas(reply({ banner_kind, banner_text: 'X' }), 1000, NAMES).phase).toBe(
-      'intermission'
-    )
+  it.each(['ROUND WON', 'ROUND LOST', 'VICTORY', 'DEFEAT'])('is a break on %s', (banner_text) => {
+    expect(readAreas(reply({ banner_text }), 1000, NAMES).phase).toBe('intermission')
   })
 
   it('says what it read, for the log', () => {
-    const read = readAreas(reply({ banner_kind: 'victory', banner_text: 'SIEG' }), 1000, NAMES)
+    const read = readAreas(reply({ banner_text: 'SIEG' }), 1000, NAMES)
     expect(read.description).toContain('SIEG')
   })
 

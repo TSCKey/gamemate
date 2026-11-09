@@ -126,9 +126,11 @@ describe('reacting to bad moments', () => {
   const bad = (over: Partial<ReactionRequest> = {}): string =>
     reactionPrompt(request({ mood: 'negative', events: [event('death')], ...over }))
 
-  it('never blames or insults, and encourages', () => {
+  it('never blames or insults, and is honest instead of flattering', () => {
     expect(bad()).toMatch(/never blame/i)
-    expect(bad()).toMatch(/encourage/i)
+    expect(bad()).not.toMatch(/encourage/i)
+    expect(bad()).toMatch(/do not praise/i)
+    expect(bad()).toMatch(/disappointed/i)
   })
 
   it('does not joke even when humor is set to playful', () => {

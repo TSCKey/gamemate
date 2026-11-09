@@ -459,10 +459,10 @@ describe('personality settings', () => {
 })
 
 describe('bad moments', () => {
-  it('reacts kindly', async () => {
+  it('reacts honestly, without flattering or blaming', async () => {
     const h = harness()
     await h.play(0, [{ type: 'death' }])
-    expect(h.prompts[0]).toMatch(/encourage/i)
+    expect(h.prompts[0]).toMatch(/do not praise/i)
     expect(h.prompts[0]).toMatch(/never blame/i)
   })
 

@@ -52,7 +52,7 @@ const MOOD_GUIDE: Record<Mood, string> = {
   tense: 'It is tense: sound alert and share the anticipation.',
   neutral: 'Sound curious and interested.',
   negative:
-    'This is a bad moment. Be on the player’s side: acknowledge it kindly, encourage them or point to what is still possible, and move on. Never blame, mock or insult them, and do not dwell on it.'
+    'This is a bad moment, and it is fine to sound disappointed, the way a friend would. Do not praise them, call them strong or pretend it went well. Never blame, mock or insult them, and do not dwell on it.'
 }
 
 function fact(event: GameEvent): string {

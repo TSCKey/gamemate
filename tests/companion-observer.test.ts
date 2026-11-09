@@ -333,6 +333,8 @@ describe('watching only the parts of the screen that show the match', () => {
       'banner_name'
     ])
     expect(schema.properties.banner_kind.enum).toContain('none')
+    expect(schema.properties.banner_kind.enum).not.toContain('victory')
+    expect(schema.properties.banner_kind.enum).not.toContain('round_won')
   })
 
   it('offers only reactions, never advice, in those games', () => {

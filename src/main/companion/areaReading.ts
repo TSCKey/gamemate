@@ -9,25 +9,112 @@ import {
   type GameEventType
 } from './events'
 
-export type BannerKind =
-  'none' | 'round_won' | 'round_lost' | 'victory' | 'defeat' | 'eliminated_enemy' | 'killed_by'
+// Only these are left to the model. Results are decided from the words in the banner: asked to
+// classify them, the real model called "ROUND 5" a round won and "CLUTCH" a victory.
+export type BannerKind = 'none' | 'eliminated_enemy' | 'killed_by'
 
-export const BANNER_KINDS: BannerKind[] = [
-  'none',
-  'round_won',
-  'round_lost',
-  'victory',
-  'defeat',
-  'eliminated_enemy',
-  'killed_by'
+export const BANNER_KINDS: BannerKind[] = ['none', 'eliminated_enemy', 'killed_by']
+
+// What result banners say. A banner that isn't on this list gets no reaction, which beats
+// congratulating someone on a loss.
+const RESULT_WORDS: [GameEventType, string[]][] = [
+  [
+    'victory',
+    [
+      'victory',
+      'victory royale',
+      'sieg',
+      'victoire',
+      'victoria',
+      'vitoria',
+      'vittoria',
+      'победа',
+      'zafer',
+      'galibiyet',
+      'انتصار',
+      'فوز',
+      '勝利',
+      '승리',
+      '胜利'
+    ]
+  ],
+  [
+    'defeat',
+    [
+      'defeat',
+      'niederlage',
+      'defaite',
+      'derrota',
+      'sconfitta',
+      'поражение',
+      'yenilgi',
+      'maglubiyet',
+      'هزيمة',
+      '敗北',
+      '패배',
+      '失败',
+      '战败'
+    ]
+  ],
+  [
+    'round_won',
+    [
+      'round won',
+      'round win',
+      'runde gewonnen',
+      'manche gagnee',
+      'ronda ganada',
+      'rodada vencida',
+      'round vinto',
+      'раунд выигран',
+      'tur kazanildi',
+      'جولة مربوحة',
+      'ラウンド勝利',
+      '라운드 승리',
+      '回合胜利'
+    ]
+  ],
+  [
+    'round_lost',
+    [
+      'round lost',
+      'round loss',
+      'runde verloren',
+      'manche perdue',
+      'ronda perdida',
+      'rodada perdida',
+      'round perso',
+      'раунд проигран',
+      'tur kaybedildi',
+      'جولة خاسرة',
+      'ラウンド敗北',
+      '라운드 패배',
+      '回合失败'
+    ]
+  ]
 ]
 
-const RESULTS: Partial<Record<BannerKind, GameEventType>> = {
-  round_won: 'round_won',
-  round_lost: 'round_lost',
-  victory: 'victory',
-  defeat: 'defeat'
-}
+// Accents and punctuation vary between games, so they don't count.
+const plainWords = (text: string): string =>
+  text
+    .normalize('NFD')
+    .replace(/\p{M}+/gu, '')
+    .replace(/ı/g, 'i')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+
+const withoutNumbers = (text: string): string =>
+  plainWords(text)
+    .split(' ')
+    .filter((word) => !/^\p{N}+$/u.test(word))
+    .join(' ')
+
+const RESULTS = new Map<string, GameEventType>(
+  RESULT_WORDS.flatMap(([type, words]) =>
+    words.map((word): [string, GameEventType] => [withoutNumbers(word), type])
+  )
+)
 
 const MAX_EVENTS = 4
 const MIN_PARTIAL_NAME = 3
@@ -73,11 +160,15 @@ function feedEvents(raw: unknown, time: number, names: string[]): GameEvent[] {
 
 function bannerEvents(reply: Record<string, unknown>, time: number): GameEvent[] {
   const text = cleanName(reply.banner_text)
-  const kind = BANNER_KINDS.find((k) => k === reply.banner_kind) ?? 'none'
-  if (!text || kind === 'none') return []
-  const result = RESULTS[kind]
+  if (!text) return []
+  const result = RESULTS.get(withoutNumbers(text))
   if (result) return [makeEvent(result, time, 'vision', { detail: text, importance: 9 })]
-  const opponent = cleanName(reply.banner_name)
+
+  const kind = BANNER_KINDS.find((k) => k === reply.banner_kind) ?? 'none'
+  if (kind === 'none') return []
+  const name = cleanName(reply.banner_name)
+  // A name has to really be in the banner.
+  const opponent = /\p{L}/u.test(name) && plainWords(text).includes(plainWords(name)) ? name : ''
   if (kind === 'killed_by') return [makeEvent('death', time, 'vision', { detail: text, opponent })]
   // A nameless kill can't be told from the same banner read again on the next look.
   return opponent ? [makeEvent('kill', time, 'vision', { detail: text, opponent })] : []

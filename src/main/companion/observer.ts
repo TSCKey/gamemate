@@ -231,7 +231,7 @@ ${images}
 In the kill feed, each line has a name on the left, then a name on the right.
 - "feed_lines": one entry per feed line, top to bottom, with the two names exactly as written. Empty list if there are no lines.
 - "banner_text": the big banner text exactly as written, "" if there is no banner.
-- "banner_kind": what that banner means, in any language: "round_won", "round_lost", "victory", "defeat", "eliminated_enemy" (the player eliminated someone), "killed_by" (the player was eliminated), or "none" if there is no banner or it means something else.
+- "banner_kind": "eliminated_enemy" if the banner says the player eliminated someone, "killed_by" if it says the player was eliminated, otherwise "none". Round and match results are "none" too.
 - "banner_name": the name in that banner, "" if it has none.`
 }
 
