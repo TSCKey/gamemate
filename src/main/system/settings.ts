@@ -56,7 +56,8 @@ const DEFAULTS: Settings = {
   // New players get the built-in engine: no other install needed.
   localBackend: 'builtin',
   builtinModel: LOCAL_MODELS[0].id,
-  saveGraphicsMemory: false,
+  // Most gaming PCs have little graphics memory to spare beside a game.
+  saveGraphicsMemory: true,
   model: '',
   overlayScreenshot: true,
   // Watching the screen is opt-in.
