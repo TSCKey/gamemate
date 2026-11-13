@@ -211,6 +211,8 @@
     "use": "Kullan",
     "delete": "{{size}} sil",
     "tryAgain": "Tekrar dene",
+    "saveGraphicsMemory": "Oyunlara daha fazla ekran kartı belleği bırak",
+    "saveGraphicsMemoryHelp": "Ekran görüntülerini ekran kartı yerine bilgisayarının ikinci grafik çipiyle, yoksa işlemciyle okur. Kartın belleğinde yaklaşık 0,9 GB yer açar; bir ekran görüntüsünü okumak birkaç saniye daha uzun sürer.",
     "alreadyUseOllamaGamemateCan": "Zaten Ollama mı kullanıyorsun? GameMate yerleşik modeller yerine onun modellerini kullanabilir.",
     "useMyOllamaModels": "Ollama modellerimi kullan",
     "ollamaMustBeRunningGamemate": "Ollama çalışıyor olmalı. GameMate kapandığında onun modelini serbest bırakır.",

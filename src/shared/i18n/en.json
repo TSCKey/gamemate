@@ -211,6 +211,8 @@
     "use": "Use",
     "delete": "Delete {{size}}",
     "tryAgain": "Try again",
+    "saveGraphicsMemory": "Leave more graphics memory for games",
+    "saveGraphicsMemoryHelp": "Reads screenshots with your PC's second graphics chip, or with the processor if it has none, instead of the graphics card. Frees about 0.9 GB of the card's memory; reading a screenshot takes a few seconds longer.",
     "alreadyUseOllamaGamemateCan": "Already use Ollama? GameMate can use its models instead of the built-in ones.",
     "useMyOllamaModels": "Use my Ollama models",
     "ollamaMustBeRunningGamemate": "Ollama must be running. GameMate frees its model when GameMate quits.",

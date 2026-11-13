@@ -56,6 +56,7 @@ const DEFAULTS: Settings = {
   // New players get the built-in engine: no other install needed.
   localBackend: 'builtin',
   builtinModel: LOCAL_MODELS[0].id,
+  saveGraphicsMemory: false,
   model: '',
   overlayScreenshot: true,
   // Watching the screen is opt-in.
@@ -146,6 +147,7 @@ export function updateSettings(patch: unknown): Settings {
     next.localBackend = p.localBackend as LocalBackend
   }
   if (isLocalModelId(p.builtinModel)) next.builtinModel = p.builtinModel
+  if (typeof p.saveGraphicsMemory === 'boolean') next.saveGraphicsMemory = p.saveGraphicsMemory
   if (typeof p.model === 'string') next.model = p.model.slice(0, 200)
   if (typeof p.overlayScreenshot === 'boolean') next.overlayScreenshot = p.overlayScreenshot
   if (COMPANION_MODES.includes(p.companionMode as CompanionMode)) {

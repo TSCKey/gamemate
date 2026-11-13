@@ -18,7 +18,8 @@ import type {
   SpeechModelStatus,
   UpdateState,
   WikiChoice,
-  WindowsVoice
+  WindowsVoice,
+  MainWindowSession
 } from '../shared/types'
 import type { LanguageCode } from '../shared/languages'
 
@@ -119,15 +120,26 @@ export interface Api {
     onSay: (callback: (request: SayRequest) => void) => () => void
     onHush: (callback: () => void) => () => void
   }
+  // What the main window was showing, kept while it is closed to the tray.
+  session: {
+    get: () => Promise<MainWindowSession>
+    update: (patch: Partial<MainWindowSession>) => Promise<void>
+  }
   toast: {
     hide: () => Promise<void>
     setHeight: (height: number) => Promise<void>
     onShow: (callback: (text: string) => void) => () => void
+    // The pop-up's page is listening for comments and sentences.
+    ready: () => Promise<void>
+    // The natural voice finished (or was stopped) saying the latest sentence.
+    doneSpeaking: () => Promise<void>
   }
   overlay: {
     hide: () => Promise<void>
     setHeight: (height: number) => Promise<void>
     takeScreenshot: () => Promise<Screenshot | null>
+    // Starts loading the AI model, once the player begins a question.
+    warmUp: () => Promise<void>
     // listen is true when opened with the voice shortcut.
     onShown: (callback: (listen: boolean) => void) => () => void
     // The voice shortcut was pressed while the window was already open.

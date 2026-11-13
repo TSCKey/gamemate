@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { unloadModels } from './ai/ollamaClient'
 import { warmUp } from './ai/engines'
-import { runningModel, stopEngine } from './ai/llamaEngine'
+import { engineUpToDate, runningModel, stopEngine } from './ai/llamaEngine'
 import { startUpdater } from './system/updater'
 import { clearGeminiKey } from './system/secrets'
 import { followForegroundGame } from './games/current'
@@ -26,7 +26,7 @@ import {
 } from './system/settings'
 import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
-import { createToast, showToast } from './windows/toast'
+import { closeToast, setUpToast, showToast } from './windows/toast'
 import { shutdownSpeech } from './voice/tts'
 import { removeOldVoice } from './voice/migrate'
 import { registerModelScheme, serveModels } from './voice/voiceModels'
@@ -121,16 +121,12 @@ function createWindow(): void {
   })
 
   // Closing the window keeps GameMate running in the tray so the shortcuts still work,
-  // unless the player turned that off.
-  mainWindow.on('close', (event) => {
-    if (quitting) return
-    if (getSettings().closeToTray) {
-      event.preventDefault()
-      mainWindow?.hide()
-    } else {
-      // Quit once this close has gone through; quitting from inside the handler cancels it.
-      setImmediate(() => app.quit())
-    }
+  // unless the player turned that off. The window really closes, which frees its page's memory;
+  // opening GameMate again makes a new one that shows the same chat (see system/session).
+  mainWindow.on('close', () => {
+    if (quitting || getSettings().closeToTray) return
+    // Quit once this close has gone through; quitting from inside the handler cancels it.
+    setImmediate(() => app.quit())
   })
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -195,7 +191,9 @@ function openOverlay(voice = false): void {
   }
   // The player is in their game: GameMate follows it before showing up.
   followForegroundGame()
-  warmUp()
+  // A spoken question is on its way, so the AI model loads now. For a typed one the window asks
+  // for it at the first key press: opening and closing the window again loads nothing.
+  if (voice) warmUp()
   toggleOverlay(voice)
 }
 
@@ -279,7 +277,7 @@ if (!app.requestSingleInstanceLock()) {
     serveModels()
     createWindow()
     createOverlay(loadRenderer, preloadPath)
-    createToast(loadRenderer, preloadPath)
+    setUpToast(loadRenderer, preloadPath)
     createTray()
     startObserver(showToast)
     startUpdater()
@@ -299,6 +297,8 @@ if (!app.requestSingleInstanceLock()) {
       if (running && (settings.localBackend !== 'builtin' || settings.builtinModel !== running)) {
         void stopEngine()
       }
+      // A different place for reading screenshots takes a restart; the next question starts it.
+      if (!engineUpToDate(settings)) void stopEngine()
     })
     // Withdrawing consent for Gemini also forgets the key.
     let geminiConsent = getSettings().geminiConsent
@@ -328,6 +328,7 @@ app.on('will-quit', (event) => {
   event.preventDefault()
   cleanedUp = true
   stopObserver()
+  closeToast()
   shutdownSpeech()
   flushSettings()
   globalShortcut.unregisterAll()

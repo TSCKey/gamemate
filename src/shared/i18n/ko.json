@@ -208,6 +208,8 @@
     "use": "사용",
     "delete": "{{size}} 삭제",
     "tryAgain": "다시 시도",
+    "saveGraphicsMemory": "게임을 위해 그래픽 메모리 더 남겨 두기",
+    "saveGraphicsMemoryHelp": "스크린샷을 그래픽 카드 대신 PC의 두 번째 그래픽 칩으로, 없으면 프로세서로 읽습니다. 카드 메모리가 약 0.9 GB 비워지고, 스크린샷을 읽는 데 몇 초 더 걸립니다.",
     "alreadyUseOllamaGamemateCan": "이미 Ollama를 쓰고 있나요? GameMate가 내장 모델 대신 Ollama 모델을 쓸 수 있습니다.",
     "useMyOllamaModels": "내 Ollama 모델 사용",
     "ollamaMustBeRunningGamemate": "Ollama가 실행 중이어야 합니다. GameMate는 종료할 때 Ollama 모델을 해제합니다.",

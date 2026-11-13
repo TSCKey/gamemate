@@ -211,6 +211,8 @@
     "use": "Verwenden",
     "delete": "{{size}} löschen",
     "tryAgain": "Erneut versuchen",
+    "saveGraphicsMemory": "Mehr Grafikspeicher für Spiele frei lassen",
+    "saveGraphicsMemoryHelp": "Liest Screenshots mit dem zweiten Grafikchip deines PCs oder, wenn er keinen hat, mit dem Prozessor statt mit der Grafikkarte. Gibt etwa 0,9 GB Speicher der Karte frei; einen Screenshot zu lesen dauert ein paar Sekunden länger.",
     "alreadyUseOllamaGamemateCan": "Du nutzt schon Ollama? GameMate kann dessen Modelle statt der integrierten verwenden.",
     "useMyOllamaModels": "Meine Ollama-Modelle verwenden",
     "ollamaMustBeRunningGamemate": "Ollama muss laufen. GameMate gibt sein Modell frei, wenn GameMate beendet wird.",

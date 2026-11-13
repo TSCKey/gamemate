@@ -214,6 +214,8 @@
     "use": "Usar",
     "delete": "Excluir {{size}}",
     "tryAgain": "Tentar de novo",
+    "saveGraphicsMemory": "Deixar mais memória de vídeo para os jogos",
+    "saveGraphicsMemoryHelp": "Lê as capturas com o segundo chip gráfico do seu PC, ou com o processador se não houver, em vez da placa de vídeo. Libera cerca de 0,9 GB de memória da placa; ler uma captura leva alguns segundos a mais.",
     "alreadyUseOllamaGamemateCan": "Já usa o Ollama? O GameMate pode usar os modelos dele em vez dos integrados.",
     "useMyOllamaModels": "Usar meus modelos do Ollama",
     "ollamaMustBeRunningGamemate": "O Ollama precisa estar rodando. O GameMate libera o modelo dele quando o GameMate é encerrado.",

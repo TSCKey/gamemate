@@ -223,6 +223,8 @@
     "use": "استخدام",
     "delete": "حذف {{size}}",
     "tryAgain": "حاول مرة أخرى",
+    "saveGraphicsMemory": "ترك ذاكرة رسوميات أكثر للألعاب",
+    "saveGraphicsMemoryHelp": "يقرأ لقطات الشاشة بشريحة الرسوميات الثانية في حاسوبك، أو بالمعالج إن لم توجد، بدلًا من بطاقة الرسوميات. يحرّر نحو 0.9 GB من ذاكرة البطاقة، وتستغرق قراءة اللقطة بضع ثوانٍ إضافية.",
     "alreadyUseOllamaGamemateCan": "تستخدم Ollama بالفعل؟ يمكن لـ GameMate استخدام نماذجه بدلًا من النماذج المدمجة.",
     "useMyOllamaModels": "استخدام نماذج Ollama الخاصة بي",
     "ollamaMustBeRunningGamemate": "يجب أن يكون Ollama قيد التشغيل. يحرّر GameMate نموذجه عند إنهاء GameMate.",

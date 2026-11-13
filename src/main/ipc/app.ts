@@ -11,7 +11,9 @@ import { hideOverlay, setOverlayHeight, takePendingScreenshot } from '../windows
 import { clearGeminiKey } from '../system/secrets'
 import { handle } from '../system/security'
 import { getSettings, resetSettings, updateSettings } from '../system/settings'
-import { hideToast, setToastHeight } from '../windows/toast'
+import { hideToast, setToastHeight, toastDoneSpeaking, toastReady } from '../windows/toast'
+import { warmUp } from '../ai/engines'
+import { clearSession, getSession, updateSession } from '../system/session'
 import { checkForUpdates, installUpdate, updateState } from '../system/updater'
 import { removeSpeechModel, speechModelStatuses } from '../voice/voiceModels'
 import { systemLanguage } from '../system/language'
@@ -43,6 +45,7 @@ export function registerAppHandlers(
     deleteLogs()
     clearGeminiKey()
     clearEvents()
+    clearSession()
     await stopEngine()
     await Promise.all([
       ...speechModelStatuses().map((m) => removeSpeechModel(m.id)),
@@ -69,9 +72,16 @@ export function registerAppHandlers(
   handle('overlay:hide', () => hideOverlay())
   handle('overlay:set-height', (_event, height: unknown) => setOverlayHeight(height))
   handle('overlay:take-screenshot', () => takePendingScreenshot())
+  // The player started typing (or speaking) a question: load the AI model while they finish.
+  handle('overlay:warm-up', () => warmUp())
 
   handle('toast:hide', () => hideToast())
   handle('toast:set-height', (_event, height: unknown) => setToastHeight(height))
+  handle('toast:ready', () => toastReady())
+  handle('toast:done-speaking', () => toastDoneSpeaking())
+
+  handle('session:get', () => getSession())
+  handle('session:update', (_event, patch: unknown) => updateSession(patch))
 
   handle('companion:get-state', () => getObserverState())
   handle('companion:set-paused', (_event, paused: unknown) => {

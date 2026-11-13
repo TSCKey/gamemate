@@ -29,7 +29,8 @@ interface VersionData {
 }
 
 const dataDir = (): string => join(app.getAppPath(), 'resources', 'minecraft')
-const cache = new Map<string, VersionData>()
+// One version's items and recipes (a few MB once read): the one asked about last.
+let loaded: { version: string; data: VersionData } | null = null
 
 export function listVersions(): string[] {
   return JSON.parse(readFileSync(join(dataDir(), 'versions.json'), 'utf8')) as string[]
@@ -38,12 +39,11 @@ export function listVersions(): string[] {
 function load(version: string): VersionData {
   if (!listVersions().includes(version))
     throw new Error(`Unsupported Minecraft version ${version}.`)
-  let data = cache.get(version)
-  if (!data) {
-    data = JSON.parse(readFileSync(join(dataDir(), `${version}.json`), 'utf8')) as VersionData
-    cache.set(version, data)
+  if (loaded?.version !== version) {
+    const data = JSON.parse(readFileSync(join(dataDir(), `${version}.json`), 'utf8')) as VersionData
+    loaded = { version, data }
   }
-  return data
+  return loaded.data
 }
 
 function normalize(text: string): string {

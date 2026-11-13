@@ -14,6 +14,7 @@ export const AFTER_TERMS = new Set([
   'capture:list-sources',
   'capture:screenshot',
   'overlay:take-screenshot',
+  'overlay:warm-up',
   'games:scan',
   'games:running-apps',
   'games:add',

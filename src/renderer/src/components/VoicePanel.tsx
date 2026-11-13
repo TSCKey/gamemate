@@ -10,7 +10,7 @@ import type {
 } from '../../../preload/index.d'
 import { SUPERTONIC_VOICES } from '../../../shared/types'
 import { speak } from '../voice/speak'
-import { Field, Section, Toggle } from './ui'
+import { Field, Section, Slider, Toggle } from './ui'
 import { t } from '../i18n'
 import { languageInfo } from '../../../shared/languages'
 import { canListen } from '../../../shared/speech'
@@ -241,25 +241,23 @@ function VoicePanel({
           )}
         </Field>
         <Field label={t('voicePanel.volume')}>
-          <input
-            type="range"
+          <Slider
             min={0}
             max={1}
             step={0.05}
             value={settings.voiceVolume}
-            aria-label={t('voicePanel.volume')}
-            onChange={(e) => update({ voiceVolume: Number(e.target.value) })}
+            label={t('voicePanel.volume')}
+            onCommit={(voiceVolume) => update({ voiceVolume })}
           />
         </Field>
         <Field label={t('voicePanel.speed')}>
-          <input
-            type="range"
+          <Slider
             min={0.5}
             max={2}
             step={0.1}
             value={settings.voiceRate}
-            aria-label={t('voicePanel.speed')}
-            onChange={(e) => update({ voiceRate: Number(e.target.value) })}
+            label={t('voicePanel.speed')}
+            onCommit={(voiceRate) => update({ voiceRate })}
           />
         </Field>
         <Field label={t('voicePanel.tryIt')}>

@@ -105,15 +105,22 @@ const api: Api = {
     onSay: (callback) => listen<[SayRequest]>('voice:say', callback),
     onHush: (callback) => listen<[]>('voice:hush', callback)
   },
+  session: {
+    get: () => ipcRenderer.invoke('session:get'),
+    update: (patch) => ipcRenderer.invoke('session:update', patch)
+  },
   toast: {
     hide: () => ipcRenderer.invoke('toast:hide'),
     setHeight: (height) => ipcRenderer.invoke('toast:set-height', height),
-    onShow: (callback) => listen<[string]>('toast:show', callback)
+    onShow: (callback) => listen<[string]>('toast:show', callback),
+    ready: () => ipcRenderer.invoke('toast:ready'),
+    doneSpeaking: () => ipcRenderer.invoke('toast:done-speaking')
   },
   overlay: {
     hide: () => ipcRenderer.invoke('overlay:hide'),
     setHeight: (height) => ipcRenderer.invoke('overlay:set-height', height),
     takeScreenshot: () => ipcRenderer.invoke('overlay:take-screenshot'),
+    warmUp: () => ipcRenderer.invoke('overlay:warm-up'),
     onShown: (callback) => listen<[boolean]>('overlay:shown', callback),
     onListen: (callback) => listen('overlay:listen', callback)
   }

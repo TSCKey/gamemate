@@ -119,6 +119,16 @@ function ModelsPanel({
             </div>
           </div>
         ))}
+        <Field
+          label={t('modelsPanel.saveGraphicsMemory')}
+          help={t('modelsPanel.saveGraphicsMemoryHelp')}
+        >
+          <Toggle
+            label={t('modelsPanel.saveGraphicsMemory')}
+            checked={settings.saveGraphicsMemory}
+            onChange={(on) => update({ saveGraphicsMemory: on })}
+          />
+        </Field>
       </Section>
 
       <Section title="Ollama" description={t('modelsPanel.alreadyUseOllamaGamemateCan')}>

@@ -10,6 +10,7 @@ import { useGames } from '../hooks/useGames'
 import { speak, stopSpeaking } from '../voice/speak'
 import { useVoiceInput } from '../voice/useVoiceInput'
 import { t, useAppLanguage } from '../i18n'
+import { withLatestScreenshotOnly } from '../../../shared/chat'
 
 // Reopening after this long starts a new conversation instead of continuing the old one.
 const FRESH_CONVERSATION_MS = 10 * 60 * 1000
@@ -32,6 +33,14 @@ function Overlay(): React.JSX.Element {
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const lastActivity = useRef(0)
+  // The AI model starts loading when the player begins a question (first key press, or the
+  // microphone), once each time the window is opened: opening and closing it loads nothing.
+  const warmed = useRef(false)
+  const warmUp = (): void => {
+    if (warmed.current) return
+    warmed.current = true
+    window.api.overlay.warmUp()
+  }
 
   const engine = settings?.answersEngine ?? 'local'
   const cloud = engine !== 'local'
@@ -55,6 +64,7 @@ function Overlay(): React.JSX.Element {
   useEffect(
     () =>
       window.api.overlay.onShown((listen) => {
+        warmed.current = false
         if (Date.now() - lastActivity.current > FRESH_CONVERSATION_MS) {
           setHistory([])
           setError(null)
@@ -101,7 +111,7 @@ function Overlay(): React.JSX.Element {
       if (asking.current !== mine) return
       setHistory(next)
       setInput('')
-      const reply = await window.api.ask(next, setWritten)
+      const reply = await window.api.ask(withLatestScreenshotOnly(next), setWritten)
       // Stopped with ■ meanwhile: the conversation is already back to how it was.
       if (asking.current !== mine) return
       setHistory([...next, reply])
@@ -136,8 +146,12 @@ function Overlay(): React.JSX.Element {
 
   // Spoken questions are sent as soon as they're transcribed.
   const voice = useVoiceInput(settings, (text) => send(text, true))
+  const listen = (): void => {
+    warmUp()
+    voice.toggle()
+  }
   useEffect(() => {
-    listenRef.current = voice.toggle
+    listenRef.current = listen
   })
 
   const hide = (): void => {
@@ -165,7 +179,10 @@ function Overlay(): React.JSX.Element {
           <input
             ref={inputRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value)
+              if (e.target.value) warmUp()
+            }}
             onKeyDown={onKeyDown}
             placeholder={
               !model
@@ -205,7 +222,7 @@ function Overlay(): React.JSX.Element {
                     }
                   : undefined
               }
-              onClick={voice.toggle}
+              onClick={listen}
               disabled={!model || voice.status === 'transcribing' || thinking}
               title={
                 voice.status === 'listening'

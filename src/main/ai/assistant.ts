@@ -20,6 +20,7 @@ import type { AnsweredBy, WikiPicture } from '../../shared/types'
 import { t } from '../system/i18n'
 import { languageInfo, type LanguageCode } from '../../shared/languages'
 import { throwIfStopped } from './stop'
+import { BoundedCache } from '../../shared/boundedCache'
 export type { AnsweredBy }
 
 // Stops a confused model from looping on tool calls forever.
@@ -239,7 +240,7 @@ const OTHER_GAME_TOOL: LlmTool = {
 }
 
 // Wikis found for games named in questions, so each is only looked up once.
-const otherWikis = new Map<string, WikiSite | null>()
+const otherWikis = new BoundedCache<WikiSite | null>(100)
 
 const MODPACK_TOOL: LlmTool = {
   name: 'modpack_mods',

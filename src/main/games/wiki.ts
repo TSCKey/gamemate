@@ -1,6 +1,7 @@
 // Looks things up on a game's wiki (any MediaWiki site: minecraft.wiki, wiki.gg, Fandom, …) for
 import type { WikiSite, WikiSource } from '../../shared/types'
 import { t } from '../system/i18n'
+import { BoundedCache } from '../../shared/boundedCache'
 export type { WikiSite, WikiSource }
 // questions GameMate's own data can't answer. Only the search words are sent. Wiki text is under
 // the wiki's license (usually Creative Commons), so every answer that uses it links to the page.
@@ -20,7 +21,7 @@ export interface WikiLookup {
   source: WikiSource | null
 }
 
-const cache = new Map<string, { at: number; result: WikiLookup }>()
+const cache = new BoundedCache<WikiLookup>(100, CACHE_MS)
 
 // Calls a wiki's MediaWiki API (JSON, format version 2).
 export async function queryWiki<T>(apiUrl: string, params: Record<string, string>): Promise<T> {
@@ -206,14 +207,14 @@ async function findTitle(site: WikiSite, query: string): Promise<string | undefi
 }
 
 // Pages read recently, as plain text, so different questions about a page don't fetch it again.
-const pages = new Map<string, { at: number; page: Promise<{ title: string; text: string }> }>()
+const pages = new BoundedCache<Promise<{ title: string; text: string }>>(40, CACHE_MS)
 
 function pageText(site: WikiSite, title: string): Promise<{ title: string; text: string }> {
   const key = `${site.api} ${title}`
   const hit = pages.get(key)
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.page
+  if (hit) return hit
   const page = fetchPageText(site, title)
-  pages.set(key, { at: Date.now(), page })
+  pages.set(key, page)
   page.catch(() => pages.delete(key))
   return page
 }
@@ -260,12 +261,12 @@ export async function lookupWiki(site: WikiSite, query: string): Promise<WikiLoo
   if (!q) return { text: 'No search words given.', source: null }
   const key = `${site.api} ${q.toLowerCase()}`
   const hit = cache.get(key)
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.result
+  if (hit) return hit
 
   const title = await findTitle(site, q)
   if (!title) return { text: `The ${site.name} has no page about "${q}".`, source: null }
   const result = await readPage(site, title, focusFor(q))
-  cache.set(key, { at: Date.now(), result })
+  cache.set(key, result)
   return result
 }
 
@@ -294,7 +295,7 @@ const QUESTION_WORDS = new Set(
   picture play playing please should show so some tell thanks that there this to use want way what
   when where which who why will with work works would you`.split(/\s+/)
 )
-const prefetched = new Map<string, { at: number; result: WikiLookup[] }>()
+const prefetched = new BoundedCache<WikiLookup[]>(40, CACHE_MS)
 
 // The meaningful words of a question, for a web search: "What are the characters currently in
 // meta in Overwatch?" -> "characters currently meta overwatch".
@@ -375,7 +376,7 @@ export async function prefetchWiki(
   // The same page is cut differently for different questions.
   const key = `${site.api} prefetch ${titles.join('|')} ${focus.join(',')}`
   const hit = prefetched.get(key)
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.result
+  if (hit) return hit
 
   const data = await queryWiki<{
     query?: {
@@ -431,7 +432,7 @@ export async function prefetchWiki(
     })
   )
   const result = read.filter((page) => page.source)
-  prefetched.set(key, { at: Date.now(), result })
+  prefetched.set(key, result)
   return result
 }
 

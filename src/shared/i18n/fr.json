@@ -214,6 +214,8 @@
     "use": "Utiliser",
     "delete": "Supprimer {{size}}",
     "tryAgain": "Réessayer",
+    "saveGraphicsMemory": "Laisser plus de mémoire graphique aux jeux",
+    "saveGraphicsMemoryHelp": "Lit les captures avec la deuxième puce graphique de votre PC, ou avec le processeur s’il n’en a pas, au lieu de la carte graphique. Libère environ 0,9 Go de mémoire sur la carte ; lire une capture prend quelques secondes de plus.",
     "alreadyUseOllamaGamemateCan": "Vous utilisez déjà Ollama ? GameMate peut utiliser ses modèles à la place des modèles intégrés.",
     "useMyOllamaModels": "Utiliser mes modèles Ollama",
     "ollamaMustBeRunningGamemate": "Ollama doit être lancé. GameMate libère son modèle à sa fermeture.",

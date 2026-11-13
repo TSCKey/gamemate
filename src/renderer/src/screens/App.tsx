@@ -19,6 +19,7 @@ import { useGames, useModpack } from '../hooks/useGames'
 import logo from '../assets/logo.png'
 import { Trans } from 'react-i18next'
 import { t, useAppLanguage } from '../i18n'
+import { withLatestScreenshotOnly, withoutScreenshots } from '../../../shared/chat'
 
 // Prefer a game window, then the main screen.
 function pickDefaultSource(sources: CaptureSource[]): string {
@@ -45,6 +46,7 @@ function App(): React.JSX.Element {
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null)
   const [companion, setCompanion] = useState<CompanionState | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [restored, setRestored] = useState(false)
   const [input, setInput] = useState('')
   const [status, setStatus] = useState<'idle' | 'capturing' | 'thinking'>('idle')
   // The answer so far, while it is being written.
@@ -54,6 +56,22 @@ function App(): React.JSX.Element {
   const [sourceId, setSourceId] = useState('')
   const [attachScreenshot, setAttachScreenshot] = useState(false)
   const [featuresLater, setFeaturesLater] = useState(false)
+  // Closing the window to the tray frees this page. GameMate itself keeps the chat and "Remind
+  // me later" meanwhile, and a window opened again starts from them.
+  useEffect(() => {
+    window.api.session.get().then((session) => {
+      setFeaturesLater(session.featuresLater)
+      setMessages(session.messages)
+      setRestored(true)
+    })
+  }, [])
+  useEffect(() => {
+    if (restored) window.api.session.update({ featuresLater })
+  }, [restored, featuresLater])
+  useEffect(() => {
+    // Without the screenshots: they are megabytes, and only the newest one is ever used.
+    if (restored) window.api.session.update({ messages: withoutScreenshots(messages) })
+  }, [restored, messages])
   // "Remind me later" lasts while the Terms stay accepted: after Delete my data (or withdrawing
   // them), accepting again shows the screen again.
   if (featuresLater && settings && settings.termsVersion < TERMS_VERSION) setFeaturesLater(false)
@@ -166,7 +184,7 @@ function App(): React.JSX.Element {
     setStatus('thinking')
 
     try {
-      const reply = await window.api.ask(history, setWritten)
+      const reply = await window.api.ask(withLatestScreenshotOnly(history), setWritten)
       // Stopped with ■ meanwhile: the chat is already back to how it was.
       if (asking.current !== mine) return
       setMessages([...history, reply])
@@ -217,7 +235,7 @@ function App(): React.JSX.Element {
     )
   ) : settings.termsVersion < TERMS_VERSION ? (
     <TermsGate settings={settings} />
-  ) : settings.featureChoices === 'ask' && !featuresLater ? (
+  ) : settings.featureChoices === 'ask' && restored && !featuresLater ? (
     <FeatureChoices settings={settings} onLater={() => setFeaturesLater(true)} />
   ) : null
 

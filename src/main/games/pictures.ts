@@ -3,6 +3,7 @@
 // hands it to its windows as a data: URL, so the windows themselves never go online.
 import type { WikiPicture, WikiSite } from '../../shared/types'
 import { pageUrl, queryWiki, USER_AGENT } from './wiki'
+import { BoundedCache } from '../../shared/boundedCache'
 
 const MAX_BYTES = 2 * 1024 * 1024
 const TIMEOUT_MS = 10_000
@@ -95,7 +96,8 @@ export function pickMap(place: string, files: string[]): string | undefined {
     .sort((a, b) => a.length - b.length)[0]
 }
 
-const cache = new Map<string, { at: number; picture: Promise<WikiPicture | null> }>()
+// Pictures are kept as whole images, so only the latest few stay in memory.
+const cache = new BoundedCache<Promise<WikiPicture | null>>(40, CACHE_MS)
 
 // A picture for a wiki page: its area map when the player asked for a map (if the wiki has one),
 // otherwise the page's main picture.
@@ -106,9 +108,9 @@ export function pagePicture(
 ): Promise<WikiPicture | null> {
   const key = `${site.api} ${title} ${wantMap}`
   const hit = cache.get(key)
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.picture
+  if (hit) return hit
   const picture = findPagePicture(site, title, wantMap).catch(() => null)
-  cache.set(key, { at: Date.now(), picture })
+  cache.set(key, picture)
   return picture
 }
 
@@ -166,8 +168,8 @@ async function toPicture(
   return src ? { src, caption, url: pageUrl(site, info.title), wiki: site.name, kind } : null
 }
 
-// Minecraft's inventory icons by item name, kept for the whole session (they're tiny).
-const icons = new Map<string, Promise<string | null>>()
+// Minecraft's inventory icons by item name (they're tiny): the ones used most recently.
+const icons = new BoundedCache<Promise<string | null>>(400)
 
 // Inventory icons ("Invicon Oak Planks.png", some animated .gif) for items, by item name.
 export async function minecraftIcons(
@@ -197,8 +199,10 @@ export async function minecraftIcons(
     }
   }
   const out: Record<string, string> = {}
-  for (const name of new Set(items)) {
-    const src = await icons.get(name)
+  // Collected before waiting for any, so a long recipe list can't push its own icons out.
+  const wanted = [...new Set(items)].map((name) => [name, icons.get(name)] as const)
+  for (const [name, icon] of wanted) {
+    const src = await icon
     if (src) out[name] = src
   }
   return out

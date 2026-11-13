@@ -51,11 +51,6 @@ export function useVoiceInput(
         ? t('useVoiceInput.notDownloaded')
         : null
 
-  // Load the model in the background as soon as voice input is usable.
-  useEffect(() => {
-    if (ready) preloadSpeechModel(repo)
-  }, [ready, repo])
-
   const start = useCallback(async () => {
     setError(null)
     stopSpeaking()
@@ -63,6 +58,9 @@ export function useVoiceInput(
       const rec = await recordQuestion((l) => setLevel(l))
       recording.current = rec
       setStatus('listening')
+      // The model loads while the player speaks, not when GameMate starts: it takes several
+      // hundred MB of memory, which it gives back after a few minutes without voice questions.
+      preloadSpeechModel(repo)
       const audio = await rec.result
       recording.current = null
       setLevel(0)

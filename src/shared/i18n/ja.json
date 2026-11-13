@@ -208,6 +208,8 @@
     "use": "使う",
     "delete": "{{size}} を削除",
     "tryAgain": "再試行",
+    "saveGraphicsMemory": "ゲーム用にグラフィックメモリを多く空ける",
+    "saveGraphicsMemoryHelp": "スクリーンショットの読み取りに、グラフィックカードではなく PC の 2 つ目のグラフィックチップ(ない場合はプロセッサ)を使います。カードのメモリが約 0.9 GB 空きますが、スクリーンショットの読み取りに数秒長くかかります。",
     "alreadyUseOllamaGamemateCan": "Ollama をすでに使っていますか?GameMate は内蔵モデルの代わりに Ollama のモデルを使えます。",
     "useMyOllamaModels": "自分の Ollama モデルを使う",
     "ollamaMustBeRunningGamemate": "Ollama が起動している必要があります。GameMate は終了時に Ollama のモデルを解放します。",

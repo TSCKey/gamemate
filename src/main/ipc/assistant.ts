@@ -10,6 +10,7 @@ import { getGeminiKey } from '../system/secrets'
 import { getSettings } from '../system/settings'
 import { t } from '../system/i18n'
 import { endAnswer, startAnswer, stopAnswer } from '../ai/stop'
+import { withLatestScreenshotOnly } from '../../shared/chat'
 
 const VALID_ROLES = new Set(['user', 'assistant'])
 const MAX_IMAGE_BASE64_LENGTH = 10 * 1024 * 1024
@@ -47,7 +48,7 @@ export function registerAssistantHandlers(): void {
   handle('ollama:list-models', () => listModels())
 
   handle('assistant:ask', async (event, messages: unknown, requestId: unknown, stream: unknown) => {
-    const history = parseChatMessages(messages)
+    const history = withLatestScreenshotOnly(parseChatMessages(messages))
     if (typeof requestId !== 'number') throw new Error('Invalid request.')
     // The answer is shown while it is written, when the window asked for that.
     const onText =

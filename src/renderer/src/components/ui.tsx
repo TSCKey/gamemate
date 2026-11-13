@@ -1,4 +1,5 @@
 // Small building blocks shared by the settings pages.
+import { useState } from 'react'
 
 export function Section({
   title,
@@ -63,6 +64,49 @@ export function Toggle({
       />
       <span className="toggle-track" />
     </label>
+  )
+}
+
+// A slider that moves freely while dragged and reports its value once, when it is let go:
+// saving on every step would send the settings to every window many times a second.
+export function Slider({
+  value,
+  min,
+  max,
+  step,
+  label,
+  onCommit
+}: {
+  value: number
+  min: number
+  max: number
+  step: number
+  label: string
+  onCommit: (value: number) => void
+}): React.JSX.Element {
+  const [local, setLocal] = useState(value)
+  // Follows the saved value when it changes elsewhere.
+  const [saved, setSaved] = useState(value)
+  if (value !== saved) {
+    setSaved(value)
+    setLocal(value)
+  }
+  const commit = (): void => {
+    if (local !== value) onCommit(local)
+  }
+  return (
+    <input
+      type="range"
+      min={min}
+      max={max}
+      step={step}
+      value={local}
+      aria-label={label}
+      onChange={(e) => setLocal(Number(e.target.value))}
+      onPointerUp={commit}
+      onKeyUp={commit}
+      onBlur={commit}
+    />
   )
 }
 

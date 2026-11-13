@@ -19,21 +19,25 @@ function Toast(): React.JSX.Element {
   }, [])
   const bubbleRef = useRef<HTMLDivElement>(null)
 
-  useEffect(
-    () =>
-      window.api.toast.onShow(async (comment) => {
-        setText(comment)
-        const settings = await window.api.getSettings()
-        if (settings.speakComments) speak(comment)
-      }),
-    []
-  )
-
-  // This window is also where GameMate's natural voice speaks, for every window.
+  // This window is also where GameMate's natural voice speaks, for every window. It is opened
+  // when there is something to show or say, and tells GameMate once it listens.
   useEffect(() => {
-    const stopSay = window.api.voice.onSay((request) => void say(request))
+    const stopShow = window.api.toast.onShow(async (comment) => {
+      setText(comment)
+      const settings = await window.api.getSettings()
+      if (settings.speakComments) speak(comment)
+    })
+    let latest = 0
+    const stopSay = window.api.voice.onSay(async (request) => {
+      const mine = ++latest
+      await say(request).catch((error) => console.error('Natural voice failed', error))
+      // Lets GameMate close this window again after a few quiet minutes.
+      if (mine === latest) window.api.toast.doneSpeaking()
+    })
     const stopHush = window.api.voice.onHush(hush)
+    window.api.toast.ready()
     return () => {
+      stopShow()
       stopSay()
       stopHush()
     }

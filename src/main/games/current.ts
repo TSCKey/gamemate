@@ -8,6 +8,7 @@ import type { WikiSite } from './wiki'
 import { MINECRAFT, savedGameProfile, type GameProfile } from './catalog'
 import { listVersions } from './minecraft'
 import { gameDirOfProcess, readModpack, type Modpack } from './modpacks'
+import { BoundedCache } from '../../shared/boundedCache'
 
 const MODPACK_CACHE_MS = 60_000
 
@@ -72,14 +73,13 @@ export function followForegroundGame(): { game: GameProfile; program: WindowProg
   return found
 }
 
-const packs = new Map<string, { at: number; pack: Modpack | null }>()
+const packs = new BoundedCache<Modpack | null>(4, MODPACK_CACHE_MS)
 let running: { pid: number; dir: string | null } | null = null
 
 async function cachedModpack(dir: string): Promise<Modpack | null> {
-  const hit = packs.get(dir)
-  if (hit && Date.now() - hit.at < MODPACK_CACHE_MS) return hit.pack
+  if (packs.has(dir)) return packs.get(dir) ?? null
   const pack = await readModpack(dir)
-  packs.set(dir, { at: Date.now(), pack })
+  packs.set(dir, pack)
   return pack
 }
 

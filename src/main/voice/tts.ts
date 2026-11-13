@@ -6,6 +6,10 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process'
 import { createInterface } from 'readline'
 import type { WindowsVoice } from '../../shared/types'
+import { idleTimer } from '../../shared/idle'
+
+// The voice process is closed after this long without speaking; the next sentence starts it again.
+const IDLE_MS = 5 * 60_000
 
 const SCRIPT = `
 # Replies (voice names, error messages) go back as UTF-8.
@@ -113,6 +117,7 @@ export function encodeCommand(command: object): string {
 function send(command: object): boolean {
   const p = engine()
   if (!p) return false
+  idle.touch()
   p.stdin.write(encodeCommand(command) + '\n')
   return true
 }
@@ -153,8 +158,11 @@ export function stopSpeaking(): void {
 }
 
 export function shutdownSpeech(): void {
+  idle.cancel()
   proc?.kill()
   proc = null
   voicesWaiters.forEach((resolve) => resolve([]))
   voicesWaiters = []
 }
+
+const idle = idleTimer(IDLE_MS, shutdownSpeech)

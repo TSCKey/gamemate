@@ -79,7 +79,17 @@ const observes = (s: Settings): boolean =>
     s.companionMode === 'commentary' ||
     s.companionMode === 'quiet')
 
+// Whether a patch would change anything (an empty list of events stays an empty list).
+export function changes(current: ObserverState, patch: Partial<ObserverState>): boolean {
+  return (Object.keys(patch) as (keyof ObserverState)[]).some((key) => {
+    const [was, now] = [current[key], patch[key]]
+    return was !== now && !(Array.isArray(was) && Array.isArray(now) && !was.length && !now.length)
+  })
+}
+
 function setState(patch: Partial<ObserverState>): void {
+  // Every look at the game ends here; the windows and the tray only hear about real changes.
+  if (!changes(state, patch)) return
   state = { ...state, ...patch }
   for (const win of BrowserWindow.getAllWindows()) win.webContents.send('companion:state', state)
   for (const listener of stateListeners) listener(state)
@@ -88,7 +98,11 @@ function setState(patch: Partial<ObserverState>): void {
 // Tiny grayscale frame plus overall brightness and how red the screen is
 // (Minecraft flashes red when you take damage and the death screen is red).
 function frameStats(image: NativeImage): FrameStats {
-  const small = image.resize({ width: DIFF_FRAME_WIDTH, quality: 'good' })
+  // Already captured this small; only an odd-sized capture is scaled.
+  const small =
+    image.getSize().width === DIFF_FRAME_WIDTH
+      ? image
+      : image.resize({ width: DIFF_FRAME_WIDTH, quality: 'good' })
   const bitmap = small.toBitmap() // BGRA
   const count = bitmap.length / 4
   const pixels = new Float32Array(count)
@@ -254,7 +268,7 @@ async function tick(): Promise<void> {
         })
       )
     : screen.getPrimaryDisplay()
-  const small = await captureDisplayImage(display.id, DIFF_FRAME_WIDTH * 2)
+  const small = await captureDisplayImage(display.id, DIFF_FRAME_WIDTH)
   if (!small) return
   const frame = frameStats(small)
   const now = Date.now()
@@ -267,6 +281,7 @@ async function tick(): Promise<void> {
 }
 
 function loop(): void {
+  if (timer) clearTimeout(timer)
   timer = setTimeout(async () => {
     try {
       await tick()
@@ -282,9 +297,15 @@ export function startObserver(onComment: (text: string, displayId: number) => vo
   onSettingsChanged((settings) => {
     // Turning observation off forgets everything GameMate saw.
     if (!observes(settings) && state.events.length > 0) setState({ events: [] })
+    // Nothing runs in the background while the companion isn't watching.
+    if (observes(settings)) {
+      if (!timer) loop()
+    } else {
+      stopObserver()
+    }
     tick().catch((error) => console.error('Observer tick failed', error))
   })
-  loop()
+  if (observes(getSettings())) loop()
 }
 
 export function stopObserver(): void {

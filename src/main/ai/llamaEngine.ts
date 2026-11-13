@@ -10,6 +10,7 @@ import { tieToGameMate } from '../system/jobObject'
 import type { EngineServer } from './llamaClient'
 import { engineDir, engineExe, localModelFiles } from './localModels'
 import { t } from '../system/i18n'
+import { getSettings } from '../system/settings'
 import { UnreachableError } from './errors'
 
 const IDLE_MS = Number(process.env.GAMEMATE_ENGINE_IDLE_MS) || 5 * 60_000
@@ -26,6 +27,8 @@ const THINKING_DONE = 'Okay, I have thought enough; time to answer.'
 
 interface Running {
   modelId: string
+  // Started with the screenshot reader off the graphics card.
+  saving: boolean
   proc: ChildProcess
   server: EngineServer
   log: string[]
@@ -53,22 +56,46 @@ function freePort(): Promise<number> {
 // Integrated graphics share the PC's memory and are much slower, so prefer a dedicated card.
 const INTEGRATED =
   /radeon\(tm\) graphics|radeon graphics|vega \d+ graphics|uhd graphics|iris|hd graphics|intel\(r\) graphics/i
-let device: Promise<string | null> | null = null
 
-function pickDevice(): Promise<string | null> {
-  device ??= promisify(execFile)(engineExe(), ['--list-devices'], { cwd: engineDir() })
-    .then(({ stdout }) => {
-      const devices = [...stdout.matchAll(/^\s*(\S+): (.+?) \((\d+) MiB, (\d+) MiB free\)/gm)].map(
-        (m) => ({ id: m[1], name: m[2], free: Number(m[4]) })
-      )
-      // With one device (or none), llama.cpp's own choice is right.
-      if (devices.length < 2) return null
-      const dedicated = devices.filter((d) => !INTEGRATED.test(d.name))
-      const pool = dedicated.length ? dedicated : devices
-      return pool.sort((a, b) => b.free - a.free)[0].id
-    })
-    .catch(() => null)
-  return device
+export interface Devices {
+  // The graphics card the model runs on (null: llama.cpp's own choice).
+  main: string | null
+  // An integrated graphics chip that is free to help out, if the PC has one besides the card.
+  spare: string | null
+}
+
+// Reads llama-server's --list-devices.
+export function chooseDevices(stdout: string): Devices {
+  const devices = [...stdout.matchAll(/^\s*(\S+): (.+?) \((\d+) MiB, (\d+) MiB free\)/gm)].map(
+    (m) => ({ id: m[1], name: m[2], free: Number(m[4]) })
+  )
+  // With one device (or none), llama.cpp's own choice is right.
+  if (devices.length < 2) return { main: null, spare: null }
+  const dedicated = devices.filter((d) => !INTEGRATED.test(d.name))
+  const pool = dedicated.length ? dedicated : devices
+  const main = pool.sort((a, b) => b.free - a.free)[0].id
+  const spare = dedicated.length ? devices.find((d) => INTEGRATED.test(d.name)) : undefined
+  return { main, spare: spare?.id ?? null }
+}
+
+let devices: Promise<Devices> | null = null
+
+function pickDevices(): Promise<Devices> {
+  devices ??= promisify(execFile)(engineExe(), ['--list-devices'], { cwd: engineDir() })
+    .then(({ stdout }) => chooseDevices(stdout))
+    .catch(() => ({ main: null, spare: null }))
+  return devices
+}
+
+// Where the part of the model that reads screenshots runs.
+export type VisionPlace = 'card' | 'processor' | { device: string }
+
+// On the graphics card it reads a screenshot in under a second, and takes about 870 MB of the
+// card's memory. A player who wants that memory for the game moves it to the PC's integrated
+// graphics chip (a few seconds per screenshot), or to the processor when there is none (slower).
+export function visionPlace(saveGraphicsMemory: boolean, found: Devices): VisionPlace {
+  if (!saveGraphicsMemory) return 'card'
+  return found.spare ? { device: found.spare } : 'processor'
 }
 
 function friendlyError(log: string[]): string {
@@ -116,7 +143,8 @@ export function engineArgs(
   files: { model: string; mmproj: string },
   port: number,
   apiKey: string,
-  gpu: string | null
+  gpu: string | null,
+  vision: VisionPlace = 'card'
 ): string[] {
   return [
     ...['-m', files.model, '--mmproj', files.mmproj],
@@ -124,15 +152,24 @@ export function engineArgs(
     ...['--host', '127.0.0.1', '--port', String(port), '--api-key', apiKey],
     ...['-c', String(CONTEXT_TOKENS), '-np', '1', '--cache-ram', '256', '--no-webui'],
     ...['--reasoning-budget', String(THINKING_TOKENS), '--reasoning-budget-message', THINKING_DONE],
-    ...(gpu ? ['-dev', gpu] : [])
+    // The conversation's cache in 8 bits instead of 16: less graphics memory, same answers.
+    ...['-fa', 'on', '-ctk', 'q8_0', '-ctv', 'q8_0'],
+    ...(gpu ? ['-dev', gpu] : []),
+    ...(vision === 'card'
+      ? []
+      : vision === 'processor'
+        ? ['--no-mmproj-offload']
+        : ['-mmdev', vision.device])
   ]
 }
 
 async function start(modelId: string): Promise<Running> {
   const files = localModelFiles(modelId)
-  const [port, gpu] = await Promise.all([freePort(), pickDevice()])
+  const [port, found] = await Promise.all([freePort(), pickDevices()])
+  const gpu = found.main
   const apiKey = randomBytes(24).toString('hex')
-  const args = engineArgs(files, port, apiKey, gpu)
+  const saving = getSettings().saveGraphicsMemory
+  const args = engineArgs(files, port, apiKey, gpu, visionPlace(saving, found))
   const proc = spawn(engineExe(), args, {
     cwd: engineDir(),
     windowsHide: true,
@@ -140,6 +177,7 @@ async function start(modelId: string): Promise<Running> {
   })
   const run: Running = {
     modelId,
+    saving,
     proc,
     server: { url: `http://127.0.0.1:${port}`, apiKey },
     log: []
@@ -242,4 +280,9 @@ export async function stopEngine(): Promise<void> {
 // The model the engine has loaded right now, if any.
 export function runningModel(): string | null {
   return currentModel || null
+}
+
+// Whether the running engine was started the way the settings ask now.
+export function engineUpToDate(settings: { saveGraphicsMemory: boolean }): boolean {
+  return !activeRun || activeRun.saving === settings.saveGraphicsMemory
 }

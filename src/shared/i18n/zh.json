@@ -208,6 +208,8 @@
     "use": "使用",
     "delete": "删除 {{size}}",
     "tryAgain": "重试",
+    "saveGraphicsMemory": "为游戏留出更多显存",
+    "saveGraphicsMemoryHelp": "读取截图时不用显卡,而是用电脑的第二块图形芯片;没有的话用处理器。可腾出约 0.9 GB 显存,读取一张截图会多花几秒。",
     "alreadyUseOllamaGamemateCan": "已经在用 Ollama?GameMate 可以用它的模型代替内置模型。",
     "useMyOllamaModels": "使用我的 Ollama 模型",
     "ollamaMustBeRunningGamemate": "Ollama 必须在运行。GameMate 退出时会释放它的模型。",

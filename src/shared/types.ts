@@ -70,6 +70,8 @@ export interface Settings {
   localBackend: LocalBackend
   // Built-in model from the catalog in localModels.ts.
   builtinModel: string
+  // Read screenshots off the graphics card, to leave its memory to the game.
+  saveGraphicsMemory: boolean
   // Ollama model used when localBackend is 'ollama' ('' until the user or GameMate picks one).
   model: string
   // Whether the floating window sends a screenshot of the screen with each question.
@@ -265,6 +267,15 @@ export interface ChatMessage {
   searchSuggestions?: string
   // Which AI answered (assistant messages only).
   answeredBy?: AnsweredBy
+}
+
+// What the main window was showing, kept while GameMate runs so a window closed to the tray and
+// opened again picks up where the player left off.
+export interface MainWindowSession {
+  // "Remind me later" on the first-start features screen lasts until GameMate restarts.
+  featuresLater: boolean
+  // The chat, without its screenshots.
+  messages: ChatMessage[]
 }
 
 export interface CaptureSource {
