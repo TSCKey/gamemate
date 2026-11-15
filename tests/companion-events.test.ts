@@ -180,6 +180,26 @@ describe('what the model is asked to look for', () => {
     expect(types).not.toContain('dark_area')
   })
 
+  it('never asks for streaks or headshots, which a teammate’s feed line can carry too', () => {
+    for (const game of [valorant, other]) {
+      const types = visionEventTypes(game)
+      expect(types).not.toContain('kill_streak')
+      expect(types).not.toContain('headshot')
+    }
+  })
+
+  it('throws away a streak or headshot the model reports anyway', () => {
+    const out = normalizeVisionReport(
+      report({ events: [seen({ type: 'kill_streak', count: 4 }), seen({ type: 'headshot' })] }),
+      1
+    )
+    expect(out.events).toEqual([])
+  })
+
+  it('asks for multikills only from a banner, never from a kill-feed line', () => {
+    expect(EVENT_RULES.multikill.seen).toMatch(/never a badge on a kill-feed line/)
+  })
+
   it('never asks a model for what only match memory can work out', () => {
     for (const game of [minecraft, valorant, other]) {
       const types = visionEventTypes(game)

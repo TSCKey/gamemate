@@ -100,8 +100,9 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     staleMs: 25 * S,
     dedupeMs: 30 * S,
     namedDedupe: true,
-    meaning: "The player's elimination was a headshot.",
-    seen: "a headshot icon or text on the player's own elimination"
+    // Not asked of the model: a headshot icon sits on every player's kill-feed line, and small
+    // models can't tell the player's line from a teammate's. A source that knows can report it.
+    meaning: "The player's elimination was a headshot."
   },
   multikill: {
     category: 'combat',
@@ -112,7 +113,7 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     staleMs: 30 * S,
     dedupeMs: 20 * S,
     meaning: 'The player eliminated several opponents in quick succession.',
-    seen: 'a double/triple/multi-kill banner for the player; put the number in "count"'
+    seen: 'a double/triple/multi-kill banner in the middle of the screen, never a badge on a kill-feed line; put the number in "count"'
   },
   kill_streak: {
     category: 'combat',
@@ -122,8 +123,9 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     cooldownMs: 30 * S,
     staleMs: 30 * S,
     dedupeMs: 20 * S,
-    meaning: 'The player keeps eliminating opponents without being eliminated.',
-    seen: 'a kill-streak banner or medal for the player; put the number in "count" if shown'
+    // Worked out by match memory from the player's own kills. Not asked of the model: streak
+    // badges sit on kill-feed lines, a teammate's included, and were taken for the player's.
+    meaning: 'The player keeps eliminating opponents without being eliminated.'
   },
   death: {
     category: 'combat',

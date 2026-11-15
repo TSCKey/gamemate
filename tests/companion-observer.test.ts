@@ -375,6 +375,12 @@ describe('what the model is asked', () => {
     expect(observer.analysisPrompt('x', game)).toMatch(/result screen .*is always an event/i)
   })
 
+  it('tells it that badges on a kill-feed line belong to whoever made that kill', () => {
+    expect(observer.analysisPrompt('x', game)).toMatch(
+      /Badges, icons and numbers on a kill-feed line belong to whoever made that kill/
+    )
+  })
+
   it('tells it to report only what is visible', () => {
     expect(observer.analysisPrompt('x', game)).toMatch(/only what is visible/i)
   })

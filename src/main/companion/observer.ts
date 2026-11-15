@@ -201,6 +201,7 @@ In ${game.name}, watch especially for: ${game.watchFor}.
 Rules:
 - Report at most ${MAX_EVENTS_PER_LOOK} events, most important first. If nothing happened, use an empty list: normal gameplay is not an event.
 - Never report something because it is likely. A kill-feed line between other players is not the player's kill.
+- Badges, icons and numbers on a kill-feed line belong to whoever made that kill, often a teammate: never report them as the player's.
 - Read banners carefully: "ELIMINATED <name>" or "KILLED <name>" means the player eliminated that enemy (kill). "KILLED BY <name>", "ELIMINATED BY <name>" or "YOU DIED" means the player was eliminated (death), and only then.
 - A result screen (VICTORY, DEFEAT, ROUND WON, ROUND LOST) is always an event.
 - "sure": true only if text or an icon on screen clearly shows it.
