@@ -2,7 +2,7 @@
 
 Ceci est une traduction fournie pour votre confort. Seule la [version anglaise](../PRIVACY.md) fait foi.
 
-Version 2 · Dernière mise à jour : 4 novembre 2026
+Version 2 · Dernière mise à jour : 15 novembre 2026
 
 Cette politique explique ce qu'il advient de vos données personnelles lorsque vous utilisez GameMate. Elle est rédigée pour respecter le Règlement général sur la protection des données de l'UE (RGPD), la loi allemande sur la protection des données dans les télécommunications et les services numériques (TDDDG) et la loi sur la protection des données personnelles du Royaume d'Arabie saoudite (PDPL).
 
@@ -22,14 +22,14 @@ E-mail : [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 GameMate enregistre les éléments suivants dans son dossier de votre profil utilisateur Windows, lisible uniquement par votre compte Windows. Cet enregistrement est nécessaire pour fournir les fonctions que vous utilisez (§ 25 (2) n° 2 TDDDG).
 
-| Quoi                                                                                                                                | Pourquoi                                                    | Combien de temps                                                                              |
-| ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| Vos paramètres, y compris la date à laquelle vous avez accepté ces documents et donné chaque consentement                           | Pour retenir vos choix, et comme trace de vos consentements | Jusqu'à ce que vous les modifiiez ou supprimiez vos données                                   |
-| Votre clé API Gemini, si vous en ajoutez une, chiffrée par Windows                                                                  | Pour utiliser Gemini                                        | Jusqu'à ce que vous la retiriez, retiriez votre consentement Gemini ou supprimiez vos données |
-| Les modèles d'IA, le moteur d'IA de GameMate, les modèles vocaux et les voix que vous avez téléchargés                              | Pour faire fonctionner l'IA sur votre PC                    | Jusqu'à ce que vous les retiriez ou supprimiez vos données                                    |
-| Les jeux trouvés ou ajoutés : nom, dossier ou programme, adresse du wiki                                                            | Pour vous aider avec le jeu auquel vous jouez               | Jusqu'à ce que vous retiriez ce consentement ou supprimiez vos données                        |
-| Un journal de ce que GameMate a fait (par exemple démarrer l'IA ou rechercher des mises à jour), sans vos questions ni vos réponses | Pour trouver et corriger les problèmes                      | Environ 1 Mo, les entrées les plus anciennes sont écrasées ; supprimé avec vos données        |
-| Vos pseudos en jeu, si vous les saisissez | Pour reconnaître vos propres lignes dans le fil des éliminations d'un jeu | Jusqu'à ce que vous les modifiiez ou supprimiez vos données |
+| Quoi                                                                                                                                | Pourquoi                                                                  | Combien de temps                                                                              |
+| ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Vos paramètres, y compris la date à laquelle vous avez accepté ces documents et donné chaque consentement                           | Pour retenir vos choix, et comme trace de vos consentements               | Jusqu'à ce que vous les modifiiez ou supprimiez vos données                                   |
+| Votre clé API Gemini, si vous en ajoutez une, chiffrée par Windows                                                                  | Pour utiliser Gemini                                                      | Jusqu'à ce que vous la retiriez, retiriez votre consentement Gemini ou supprimiez vos données |
+| Les modèles d'IA, le moteur d'IA de GameMate, les modèles vocaux et les voix que vous avez téléchargés                              | Pour faire fonctionner l'IA sur votre PC                                  | Jusqu'à ce que vous les retiriez ou supprimiez vos données                                    |
+| Les jeux trouvés ou ajoutés : nom, dossier ou programme, adresse du wiki                                                            | Pour vous aider avec le jeu auquel vous jouez                             | Jusqu'à ce que vous retiriez ce consentement ou supprimiez vos données                        |
+| Un journal de ce que GameMate a fait (par exemple démarrer l'IA ou rechercher des mises à jour), sans vos questions ni vos réponses | Pour trouver et corriger les problèmes                                    | Environ 1 Mo, les entrées les plus anciennes sont écrasées ; supprimé avec vos données        |
+| Vos pseudos en jeu, si vous les saisissez                                                                                           | Pour reconnaître vos propres lignes dans le fil des éliminations d'un jeu | Jusqu'à ce que vous les modifiiez ou supprimiez vos données                                   |
 
 Vos conversations, captures d'écran, enregistrements vocaux et ce que le compagnon a remarqué sont **conservés uniquement en mémoire** et disparaissent lorsque vous fermez la discussion, désactivez le compagnon ou quittez GameMate. Les captures d'écran et les enregistrements vocaux ne sont jamais enregistrés sur le disque.
 

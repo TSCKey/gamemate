@@ -2,7 +2,7 @@
 
 Bu çeviri kolaylık olsun diye sunulmuştur. Bağlayıcı olan [İngilizce sürümdür](../PRIVACY.md).
 
-Sürüm 2 · Son güncelleme: 4 Kasım 2026
+Sürüm 2 · Son güncelleme: 15 Kasım 2026
 
 Bu politika, GameMate'i kullandığında kişisel verilerine ne olduğunu açıklar. AB Genel Veri Koruma Tüzüğü'ne (GDPR), Almanya'nın Telekomünikasyon ve Dijital Hizmetlerde Veri Koruma Kanunu'na (TDDDG) ve Suudi Arabistan Krallığı'nın Kişisel Verilerin Korunması Kanunu'na (PDPL) uygun olacak şekilde yazılmıştır.
 
@@ -22,14 +22,14 @@ E-posta: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 GameMate aşağıdakileri, Windows kullanıcı profilindeki kendi klasöründe, yalnızca Windows hesabının okuyabileceği şekilde saklar. Bunları saklamak, kullandığın özellikleri sunmak için gereklidir (§ 25 (2) no. 2 TDDDG).
 
-| Ne                                                                                                                                     | Neden                                              | Ne kadar süre                                                                |
-| -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Ayarların, bu belgeleri ne zaman kabul ettiğin ve her onayı ne zaman verdiğin dahil                                                    | Seçimlerini hatırlamak ve onaylarının kaydı olarak | Değiştirene veya verilerini silene kadar                                     |
-| Eklersen, Windows tarafından şifrelenmiş Gemini API anahtarın                                                                          | Gemini'yi kullanmak için                           | Kaldırana, Gemini onayını geri çekene veya verilerini silene kadar           |
-| İndirdiğin yapay zekâ modelleri, GameMate'in yapay zekâ motoru, konuşma modelleri ve sesler                                            | Yapay zekâyı bilgisayarında çalıştırmak için       | Kaldırana veya verilerini silene kadar                                       |
-| Bulunan veya eklenen oyunlar: ad, klasör veya program, wiki adresi                                                                     | Oynadığın oyunda yardım etmek için                 | O onayı geri çekene veya verilerini silene kadar                             |
-| GameMate'in yaptıklarının bir günlüğü (örneğin yapay zekâyı başlatma veya güncellemeleri denetleme), soruların veya yanıtların olmadan | Sorunları bulup düzeltmek için                     | Yaklaşık 1 MB; eski kayıtların üzerine yazılır; verilerinle birlikte silinir |
-| Oyun içi adların, girersen | Bir oyunun öldürme akışında kendi satırlarını tanımak için | Sen değiştirene veya verilerini silene kadar |
+| Ne                                                                                                                                     | Neden                                                      | Ne kadar süre                                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Ayarların, bu belgeleri ne zaman kabul ettiğin ve her onayı ne zaman verdiğin dahil                                                    | Seçimlerini hatırlamak ve onaylarının kaydı olarak         | Değiştirene veya verilerini silene kadar                                     |
+| Eklersen, Windows tarafından şifrelenmiş Gemini API anahtarın                                                                          | Gemini'yi kullanmak için                                   | Kaldırana, Gemini onayını geri çekene veya verilerini silene kadar           |
+| İndirdiğin yapay zekâ modelleri, GameMate'in yapay zekâ motoru, konuşma modelleri ve sesler                                            | Yapay zekâyı bilgisayarında çalıştırmak için               | Kaldırana veya verilerini silene kadar                                       |
+| Bulunan veya eklenen oyunlar: ad, klasör veya program, wiki adresi                                                                     | Oynadığın oyunda yardım etmek için                         | O onayı geri çekene veya verilerini silene kadar                             |
+| GameMate'in yaptıklarının bir günlüğü (örneğin yapay zekâyı başlatma veya güncellemeleri denetleme), soruların veya yanıtların olmadan | Sorunları bulup düzeltmek için                             | Yaklaşık 1 MB; eski kayıtların üzerine yazılır; verilerinle birlikte silinir |
+| Oyun içi adların, girersen                                                                                                             | Bir oyunun öldürme akışında kendi satırlarını tanımak için | Sen değiştirene veya verilerini silene kadar                                 |
 
 Konuşmaların, ekran görüntülerin, ses kayıtların ve yol arkadaşının fark ettikleri **yalnızca bellekte tutulur** ve sohbeti kapattığında, yol arkadaşını kapattığında veya GameMate'ten çıktığında kaybolur. Ekran görüntüleri ve ses kayıtları asla diske kaydedilmez.
 

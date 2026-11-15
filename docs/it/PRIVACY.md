@@ -2,7 +2,7 @@
 
 Questa è una traduzione per tua comodità. Fa fede la [versione inglese](../PRIVACY.md).
 
-Versione 2 · Ultimo aggiornamento: 4 novembre 2026
+Versione 2 · Ultimo aggiornamento: 15 novembre 2026
 
 Questa informativa spiega che cosa succede ai tuoi dati personali quando usi GameMate. È scritta per rispettare il Regolamento generale sulla protezione dei dati dell'UE (GDPR), la legge tedesca sulla protezione dei dati nelle telecomunicazioni e nei servizi digitali (TDDDG) e la Legge sulla protezione dei dati personali del Regno dell'Arabia Saudita (PDPL).
 
@@ -22,14 +22,14 @@ E-mail: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 GameMate salva quanto segue nella sua cartella del tuo profilo utente di Windows, leggibile solo dal tuo account Windows. Salvarlo è necessario per fornire le funzioni che usi (§ 25 (2) n. 2 TDDDG).
 
-| Cosa                                                                                                                             | Perché                                                        | Per quanto tempo                                                                 |
-| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Le tue impostazioni, compreso quando hai accettato questi documenti e dato ciascun consenso                                      | Per ricordare le tue scelte e come registro dei tuoi consensi | Finché non le modifichi o cancelli i tuoi dati                                   |
-| La tua chiave API di Gemini, se ne aggiungi una, cifrata da Windows                                                              | Per usare Gemini                                              | Finché non la rimuovi, revochi il consenso a Gemini o cancelli i tuoi dati       |
-| Modelli di IA, il motore di IA di GameMate, modelli vocali e voci che hai scaricato                                              | Per eseguire l'IA sul tuo PC                                  | Finché non li rimuovi o cancelli i tuoi dati                                     |
-| Giochi trovati o aggiunti: nome, cartella o programma, indirizzo della wiki                                                      | Per aiutarti con il gioco a cui stai giocando                 | Finché non revochi quel consenso o cancelli i tuoi dati                          |
-| Un registro di ciò che GameMate ha fatto (per esempio avviare l'IA o cercare aggiornamenti), senza le tue domande né le risposte | Per trovare e correggere i problemi                           | Circa 1 MB; le voci più vecchie vengono sovrascritte; cancellato con i tuoi dati |
-| I tuoi nomi di gioco, se li inserisci | Per riconoscere le tue righe nel feed delle uccisioni di un gioco | Finché non li cambi o elimini i tuoi dati |
+| Cosa                                                                                                                             | Perché                                                            | Per quanto tempo                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Le tue impostazioni, compreso quando hai accettato questi documenti e dato ciascun consenso                                      | Per ricordare le tue scelte e come registro dei tuoi consensi     | Finché non le modifichi o cancelli i tuoi dati                                   |
+| La tua chiave API di Gemini, se ne aggiungi una, cifrata da Windows                                                              | Per usare Gemini                                                  | Finché non la rimuovi, revochi il consenso a Gemini o cancelli i tuoi dati       |
+| Modelli di IA, il motore di IA di GameMate, modelli vocali e voci che hai scaricato                                              | Per eseguire l'IA sul tuo PC                                      | Finché non li rimuovi o cancelli i tuoi dati                                     |
+| Giochi trovati o aggiunti: nome, cartella o programma, indirizzo della wiki                                                      | Per aiutarti con il gioco a cui stai giocando                     | Finché non revochi quel consenso o cancelli i tuoi dati                          |
+| Un registro di ciò che GameMate ha fatto (per esempio avviare l'IA o cercare aggiornamenti), senza le tue domande né le risposte | Per trovare e correggere i problemi                               | Circa 1 MB; le voci più vecchie vengono sovrascritte; cancellato con i tuoi dati |
+| I tuoi nomi di gioco, se li inserisci                                                                                            | Per riconoscere le tue righe nel feed delle uccisioni di un gioco | Finché non li cambi o elimini i tuoi dati                                        |
 
 Le tue conversazioni, gli screenshot, le registrazioni vocali e ciò che il compagno ha notato sono **conservati solo in memoria** e spariscono quando chiudi la chat, spegni il compagno o esci da GameMate. Screenshot e registrazioni vocali non vengono mai salvati su disco.
 
