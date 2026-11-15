@@ -252,3 +252,30 @@ describe('the player’s names', () => {
     expect(parsePlayerNames('   ')).toEqual([])
   })
 })
+
+// From the owner's real VALORANT screenshots: a teammate's row, which can carry the teammate's own
+// kill-streak badge, above two of the owner's rows.
+describe('a teammate’s kills and streak badge in the feed', () => {
+  const teammateAboveOwnRows = reply({
+    feed_lines: [line('Chamber IV', 'Jett'), line('TSCKey', 'Sova'), line('TSCKey', 'Omen')]
+  })
+
+  it('count only the player’s own rows', () => {
+    const { events } = readAreas(teammateAboveOwnRows, 1000, NAMES)
+    expect(events.map((e) => [e.type, e.opponent])).toEqual([
+      ['kill', 'Sova'],
+      ['kill', 'Omen']
+    ])
+  })
+
+  it('never give the player a streak', async () => {
+    const { MatchMemory } = await import('../src/main/companion/matchMemory')
+    const memory = new MatchMemory()
+    const derived = [
+      ...memory.absorb(readAreas(teammateAboveOwnRows, 1000, NAMES)),
+      ...memory.absorb(readAreas(reply({ feed_lines: [line('Chamber V', 'Sage')] }), 13_000, NAMES))
+    ]
+    expect(derived.map((e) => e.type)).not.toContain('kill_streak')
+    expect(memory.context(13_000)).toMatchObject({ kills: 2, killStreak: 2 })
+  })
+})
