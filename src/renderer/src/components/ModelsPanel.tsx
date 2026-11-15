@@ -104,7 +104,7 @@ function ModelsPanel({
                     </button>
                   )}
                   <button type="button" onClick={() => setConfirmDelete(m.id)}>
-                    {t('modelsPanel.delete')}
+                    {t('modelsPanel.delete', { size: formatSize(m.sizeMb) })}
                   </button>
                 </>
               ) : (
