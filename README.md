@@ -16,7 +16,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **All your games.** Click **Scan for games** and GameMate finds what you installed with Steam, Epic Games, Battle.net and Riot (VALORANT, Overwatch, Marvel Rivals, and so on), plus each game's wiki. Minecraft works out of the box. You can also add any game that's running.
 - **Knows your modpack.** GameMate reads your CurseForge modpacks (and the pack that's running in other launchers), so it knows which mods you have, and can read what a mod does.
 - **Real Minecraft recipes.** Ask "How do I craft a bookshelf?" and GameMate looks up the actual recipe and shows it as a crafting grid, instead of guessing. It uses the newest Minecraft, or your modpack's version.
-- **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, popping up a short comment when it spots danger, low health, a death or a great find. You decide how chatty it is.
+- **Always-on companion (optional).** Turn on Commentary mode and GameMate watches your game, reacting like a friend beside you: kills and deaths it can see on screen, rounds won and lost, objectives, danger and great finds. You decide how chatty it is and how it sounds.
 - **Talk to it.** Press **Alt + V** and ask your question out loud, in your language. GameMate can read its answers and comments aloud, too. Speech recognition and the voice both run on your PC.
 - **Ask about your screen.** Attach a screenshot of your game window or your whole screen and ask "What is this creature?" or "What should I do next?". GameMate picks your Minecraft window automatically when it's open.
 - **Download and play.** No other installs: GameMate downloads its AI with one click the first time you open it. Choose from three models, from fast to best, or use your Ollama models.
@@ -75,19 +75,25 @@ GameMate always helps with one game, shown at the top of the chat window (for ex
 
 Click the companion mode at the top of the chat window (for example **On-demand ▾**) to choose how much GameMate watches and talks on its own. **⚙ Settings → Companion** has the same choices plus the log:
 
-| Mode                    | What GameMate does                                                                                                                                                      |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Disabled**            | Never looks at your screen, not even when you press **Alt + Space**.                                                                                                    |
-| **On-demand** (default) | Only looks and answers when you ask.                                                                                                                                    |
-| **Observation**         | Watches your game and keeps a log of what it noticed on the Companion page, without pop-ups.                                                                            |
-| **Commentary**          | Watches your game and pops up a short comment when something important happens, such as a creeper nearby, low health, dying, entering a dark cave or finding a village. |
-| **Quiet**               | Watches silently and uses what it saw only to answer your questions.                                                                                                    |
+| Mode                    | What GameMate does                                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Disabled**            | Never looks at your screen, not even when you press **Alt + Space**.                                                                                |
+| **On-demand** (default) | Only looks and answers when you ask.                                                                                                                |
+| **Observation**         | Watches your game and keeps a log of what it noticed on the Companion page, without pop-ups.                                                        |
+| **Commentary**          | Watches your game and reacts when something happens, such as a kill, a round won or lost, a creeper nearby, low health, dying or finding a village. |
+| **Quiet**               | Watches silently and uses what it saw only to answer your questions.                                                                                |
 
-- In Commentary mode, use **How often to comment** to choose how often GameMate speaks up: **Rarely** (big moments only), **Sometimes**, or **Often**. It also waits a while before commenting on the same kind of thing again.
+- In Commentary mode, use **How often to comment** to choose how often GameMate speaks up: **Rare** (big moments only), **Balanced**, or **Frequent**. Small moments get a quick word and big ones a bigger reaction. Things that happen close together become one comment, and it tries not to talk during a fight.
+- **Reaction intensity** (Subtle, Normal, Expressive) and **Humor level** (None, Light, Playful) set how it sounds. It stays kind after bad moments, and it doesn't joke when that would feel wrong.
+- **Show reactions as** picks text, voice, or both. **Tactical comments** adds a kind, useful observation now and then, based on what went wrong more than once. It never does so in games where GameMate only watches the match feed. In other competitive games it only does so between rounds, and it never points out enemies.
+- **What to react to** turns whole kinds of moment on or off: combat, skill, teamwork, objectives, the match itself, and danger and discoveries.
+- During a match GameMate keeps a short memory of what it saw, such as a streak, the same opponent getting you twice or a comeback on the scoreboard. That memory stays on your PC unless you use Gemini for the Companion, and it is gone when the match ends or you stop watching.
+- In well-known competitive games (VALORANT, Overwatch, Counter-Strike, League of Legends, Apex Legends, Fortnite and others) GameMate looks only at the parts of the screen that show the kill feed and match banners, never the map or the area around your crosshair. It only copies the text there, and enter **Your in-game name** in the Companion settings so it can tell which feed lines are yours. Without a name it reacts to banners only, and games whose feed shows icons instead of names can't show it your kills. If you moved those parts of your HUD, you'll get fewer reactions. In other games it looks at the whole screen.
+- GameMate only knows what it can read in screenshots taken every few seconds. It doesn't read the game itself, so it can miss quick moments, its counts are only what it saw, and it can't judge things like aim or movement.
 - Comments appear in the top-right corner of the screen for a few seconds. They never take focus, so your keyboard and mouse stay in the game. Click a comment to dismiss it.
 - In any watching mode, GameMate remembers what it saw recently, so questions like "What should I do next?" get better answers.
 - Click **⏸ Pause** on the Companion page, or **Pause watching** in the tray icon's menu, to stop watching for a while. While GameMate is watching, the top of the chat window shows its status.
-- GameMate only watches while a game it found (or Minecraft) is the active window, and only after you allowed game detection. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 12 seconds.
+- GameMate only watches while a game it found (or Minecraft) is the active window, and only after you allowed game detection. When you alt-tab away, it stops. To spare your GPU, it only asks the AI about your screen when the picture has changed, at most every 8 to 12 seconds, and less often if your PC needs longer to answer.
 
 ### AI models
 
@@ -147,7 +153,7 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 **GameMate's voice**
 
 - **Read answers aloud:** Never, When I ask by voice (the default), or Always.
-- **Read companion comments aloud:** speaks Commentary mode's pop-ups.
+- **Read companion comments aloud:** speaks Commentary mode's reactions.
 - **Voice type:** **Natural (Supertonic)** sounds like a real person and speaks every GameMate language except Chinese. Click **Download** once (401 MB); it then runs on your PC and works offline. Until it's downloaded, for Chinese, or if you pick **Windows voices**, GameMate uses a Windows voice for your language.
 - Choose a **Voice** (Supertonic has 5 female and 5 male voices; Windows voices are listed for your language) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
 - **No Windows voice for your language?** Click **Add Windows voices** to open Windows' speech settings, add a voice there, then come back to the Voice page.
@@ -216,7 +222,7 @@ The selected Ollama model can't see images, or the Companion is set to **Disable
 Make sure the game is open and not minimized, then open the list again. If it still doesn't appear, choose your whole screen instead.
 
 **Commentary mode never says anything**
-Check the status on the Companion settings page. It needs Minecraft to be the active window and a model that can see screenshots. GameMate only comments on important moments, so try **How often to comment: Often**. Smaller models may miss things, and **Qwen3.5 4B** sees more if your graphics card has room for it.
+Check the status on the Companion settings page. It needs Minecraft to be the active window and a model that can see screenshots. GameMate only comments on moments it can read on screen, so try **How often to comment: Frequent**. Smaller models may miss things, and **Qwen3.5 4B** sees more if your graphics card has room for it.
 
 **Alt + V does nothing, or the 🎤 button is missing**
 Turn on **Ask with your microphone** in **⚙ Settings → Voice** and download the speech model. If another app uses **Alt + V**, the Voice page tells you, and you can still click **🎤**.

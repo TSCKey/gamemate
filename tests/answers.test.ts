@@ -151,10 +151,24 @@ describe('the answer language', () => {
   })
 
   it('is used for the companion’s comments', async () => {
-    const { analysisPrompt } = await import('../src/main/companion/observer')
-    const { MINECRAFT } = await import('../src/main/games/catalog')
-    expect(analysisPrompt('the scene changed', MINECRAFT, 'ar')).toContain('"comment" in Arabic')
-    expect(analysisPrompt('the scene changed', MINECRAFT, 'en')).toContain('"comment" in English')
+    const { reactionPrompt } = await import('../src/main/companion/reaction')
+    const { makeEvent } = await import('../src/main/companion/events')
+    const { MatchMemory } = await import('../src/main/companion/matchMemory')
+    const prompt = (language: 'ar' | 'en'): string =>
+      reactionPrompt({
+        game: { name: 'Minecraft', competitive: false },
+        language,
+        tier: 'significant',
+        mood: 'negative',
+        events: [makeEvent('death', 1, 'vision')],
+        context: new MatchMemory().context(1),
+        recent: [],
+        intensity: 'normal',
+        humor: 'light',
+        tactical: false
+      })
+    expect(prompt('ar')).toContain('comment in Arabic')
+    expect(prompt('en')).toContain('comment in English')
   })
 })
 

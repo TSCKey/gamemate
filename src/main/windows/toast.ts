@@ -3,6 +3,7 @@
 // this window. It is opened when there is something to show or say, and closed again after a few
 // quiet minutes, so its page and the voice model don't stay in memory while nothing happens.
 import { app, BrowserWindow, screen } from 'electron'
+import { getSettings } from '../system/settings'
 import type { SayRequest } from '../../shared/types'
 import { idleTimer } from '../../shared/idle'
 
@@ -99,6 +100,8 @@ export function showToast(text: string, displayId: number): void {
     const { x, y, width } = display.workArea
     win.setPosition(Math.round(x + width - WIDTH - MARGIN), Math.round(y + MARGIN))
     win.webContents.send('toast:show', text)
+    // This window also reads comments aloud, so it gets the text even when the pop-up stays hidden.
+    if (!getSettings().showComments) return
     win.showInactive()
     if (hideTimer) clearTimeout(hideTimer)
     hideTimer = setTimeout(hideToast, VISIBLE_MS)

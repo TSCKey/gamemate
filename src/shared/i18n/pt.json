@@ -79,7 +79,16 @@
     "pause": "⏸ Pausar",
     "whatGamemateSaw": "O que o GameMate viu",
     "keptOnlyWhileGamemateIs": "Guardado apenas enquanto o GameMate está aberto.",
-    "nothingYetStartPlayingAnd": "Nada ainda. Comece a jogar e o GameMate vai registrar o que acontecer."
+    "nothingYetStartPlayingAnd": "Nada ainda. Comece a jogar e o GameMate vai registrar o que acontecer.",
+    "reactionIntensity": "Intensidade das reações",
+    "humorLevel": "Nível de humor",
+    "tacticalComments": "Observações táticas",
+    "tacticalCommentsHelp": "De vez em quando acrescenta uma observação útil e gentil. Nunca em jogos em que só o feed da partida é observado; em outros jogos competitivos, só entre as rodadas.",
+    "playerNames": "Seu nome no jogo",
+    "playerNamesHelp": "Permite que o GameMate reconheça suas próprias linhas no registro de abates. Separe vários nomes com vírgulas. Sem ele, só reage aos banners.",
+    "showReactionsAs": "Mostrar reações como",
+    "whatToReactTo": "A que reagir",
+    "whatToReactToHelp": "O GameMate só consegue reagir ao que lê na sua tela, então momentos muito rápidos podem passar despercebidos."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "O jogo em que o GameMate ajuda",
@@ -495,8 +504,8 @@
     },
     "frequencies": {
       "rare": "Raramente (só os grandes momentos)",
-      "normal": "Às vezes",
-      "frequent": "Com frequência"
+      "normal": "Equilibrado",
+      "frequent": "Frequente"
     },
     "status": {
       "off": "Sem acompanhamento",
@@ -506,6 +515,29 @@
       "waiting-for-game": "Esperando um jogo ser a janela ativa",
       "watching": "Acompanhando",
       "analyzing": "Olhando sua tela…"
+    },
+    "intensities": {
+      "subtle": "Sutil",
+      "normal": "Normal",
+      "expressive": "Expressiva"
+    },
+    "humorLevels": {
+      "none": "Nenhum",
+      "light": "Leve",
+      "playful": "Brincalhão"
+    },
+    "delivery": {
+      "text": "Texto",
+      "voice": "Voz",
+      "both": "Texto e voz"
+    },
+    "categories": {
+      "combat": "Combate (abates, mortes, abates múltiplos)",
+      "skill": "Habilidade (clutches, situações apertadas)",
+      "teamwork": "Trabalho em equipe (resgates, times inimigos eliminados)",
+      "objectives": "Objetivos (capturas, plantar e desarmar)",
+      "match": "Partida (rodadas, sequências, vitória, derrota)",
+      "world": "Perigos e descobertas"
     }
   },
   "errors": {

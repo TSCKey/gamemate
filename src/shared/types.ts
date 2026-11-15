@@ -17,6 +17,22 @@ export const COMPANION_MODES = [
 export type CompanionMode = (typeof COMPANION_MODES)[number]
 export const COMMENTARY_FREQUENCIES = ['rare', 'normal', 'frequent'] as const
 export type CommentaryFrequency = (typeof COMMENTARY_FREQUENCIES)[number]
+// How much energy the companion's reactions have.
+export const REACTION_INTENSITIES = ['subtle', 'normal', 'expressive'] as const
+export type ReactionIntensity = (typeof REACTION_INTENSITIES)[number]
+export const COMMENTARY_HUMOR_LEVELS = ['none', 'light', 'playful'] as const
+export type CommentaryHumor = (typeof COMMENTARY_HUMOR_LEVELS)[number]
+// The kinds of moment the player can switch on and off.
+export const COMMENTARY_CATEGORIES = [
+  'combat',
+  'skill',
+  'teamwork',
+  'objectives',
+  'match',
+  'world'
+] as const
+export type CommentaryCategory = (typeof COMMENTARY_CATEGORIES)[number]
+export type CommentaryCategories = Record<CommentaryCategory, boolean>
 
 export const SPEAK_ANSWERS = ['off', 'voice', 'always'] as const
 export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
@@ -78,6 +94,17 @@ export interface Settings {
   overlayScreenshot: boolean
   companionMode: CompanionMode
   commentaryFrequency: CommentaryFrequency
+  commentaryIntensity: ReactionIntensity
+  commentaryHumor: CommentaryHumor
+  // Which kinds of moment the companion reacts to.
+  commentaryCategories: CommentaryCategories
+  // Now and then add a constructive observation. Never where only the match feed is watched;
+  // in other competitive games only between rounds.
+  commentaryTactics: boolean
+  // The player's in-game names, comma-separated, to recognize their own lines in a kill feed.
+  commentaryPlayerNames: string
+  // Show comments as a pop-up. Always on unless they are read aloud (speakComments).
+  showComments: boolean
   // Talk to GameMate with the microphone (needs a downloaded speech model).
   voiceInput: boolean
   speechModel: ListenModelId
@@ -376,11 +403,36 @@ export const EVENT_TYPES = [
   'death',
   'dark_area',
   'discovery',
-  'other'
+  'other',
+  'kill',
+  'assist',
+  'headshot',
+  'multikill',
+  'kill_streak',
+  'fight_won',
+  'clutch',
+  'recovery',
+  'teammate_saved',
+  'team_wipe',
+  'objective_won',
+  'objective_lost',
+  'objective_contested',
+  'bomb_planted',
+  'bomb_defused',
+  'round_won',
+  'round_lost',
+  'match_point',
+  'comeback',
+  'win_streak',
+  'loss_streak',
+  'victory',
+  'defeat',
+  'milestone'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 
 export interface ObservedEvent {
+  id: string
   time: number
   type: Exclude<EventType, 'none'>
   importance: number

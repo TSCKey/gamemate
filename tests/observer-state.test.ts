@@ -25,6 +25,7 @@ describe("the companion's state", () => {
     expect(changes(state, { status: 'analyzing' })).toBe(true)
     expect(changes(state, { game: 'Valorant' })).toBe(true)
     const event = {
+      id: 'vision-1',
       time: 1,
       type: 'death' as const,
       importance: 10,

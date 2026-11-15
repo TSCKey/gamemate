@@ -79,7 +79,16 @@
     "pause": "⏸ Pausa",
     "whatGamemateSaw": "Cosa ha visto GameMate",
     "keptOnlyWhileGamemateIs": "Conservato solo finché GameMate è aperto.",
-    "nothingYetStartPlayingAnd": "Ancora niente. Inizia a giocare e GameMate annoterà quello che succede."
+    "nothingYetStartPlayingAnd": "Ancora niente. Inizia a giocare e GameMate annoterà quello che succede.",
+    "reactionIntensity": "Intensità delle reazioni",
+    "humorLevel": "Livello di umorismo",
+    "tacticalComments": "Osservazioni tattiche",
+    "tacticalCommentsHelp": "Ogni tanto aggiunge un’osservazione utile e gentile. Mai nei giochi in cui si osserva solo il feed della partita; negli altri giochi competitivi, solo tra un round e l’altro.",
+    "playerNames": "Il tuo nome di gioco",
+    "playerNamesHelp": "Permette a GameMate di riconoscere le tue righe nel feed delle uccisioni. Separa più nomi con virgole. Senza nome reagisce solo ai banner.",
+    "showReactionsAs": "Mostra le reazioni come",
+    "whatToReactTo": "A cosa reagire",
+    "whatToReactToHelp": "GameMate può reagire solo a ciò che legge sul tuo schermo, quindi i momenti molto brevi possono sfuggirgli."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "Il gioco in cui ti aiuta GameMate",
@@ -495,8 +504,8 @@
     },
     "frequencies": {
       "rare": "Raramente (solo i momenti importanti)",
-      "normal": "A volte",
-      "frequent": "Spesso"
+      "normal": "Bilanciato",
+      "frequent": "Frequente"
     },
     "status": {
       "off": "Non segue",
@@ -506,6 +515,29 @@
       "waiting-for-game": "In attesa che un gioco sia la finestra attiva",
       "watching": "Segue",
       "analyzing": "Guarda il tuo schermo…"
+    },
+    "intensities": {
+      "subtle": "Discreta",
+      "normal": "Normale",
+      "expressive": "Espressiva"
+    },
+    "humorLevels": {
+      "none": "Nessuno",
+      "light": "Leggero",
+      "playful": "Giocoso"
+    },
+    "delivery": {
+      "text": "Testo",
+      "voice": "Voce",
+      "both": "Testo e voce"
+    },
+    "categories": {
+      "combat": "Combattimento (uccisioni, morti, uccisioni multiple)",
+      "skill": "Abilità (clutch, situazioni al limite)",
+      "teamwork": "Gioco di squadra (salvataggi, squadre nemiche eliminate)",
+      "objectives": "Obiettivi (conquiste, piazzamenti, disinnesco)",
+      "match": "Partita (round, serie, vittoria, sconfitta)",
+      "world": "Pericoli e scoperte"
     }
   },
   "errors": {

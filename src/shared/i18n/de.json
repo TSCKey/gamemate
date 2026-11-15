@@ -79,7 +79,16 @@
     "pause": "⏸ Pausieren",
     "whatGamemateSaw": "Was GameMate gesehen hat",
     "keptOnlyWhileGamemateIs": "Wird nur gespeichert, solange GameMate geöffnet ist.",
-    "nothingYetStartPlayingAnd": "Noch nichts. Fang an zu spielen, und GameMate hält fest, was passiert."
+    "nothingYetStartPlayingAnd": "Noch nichts. Fang an zu spielen, und GameMate hält fest, was passiert.",
+    "reactionIntensity": "Stärke der Reaktionen",
+    "humorLevel": "Humor",
+    "tacticalComments": "Taktische Hinweise",
+    "tacticalCommentsHelp": "Gibt ab und zu eine freundliche, nützliche Beobachtung. Nie in Spielen, in denen nur der Match-Feed beobachtet wird; in anderen kompetitiven Spielen nur zwischen den Runden.",
+    "playerNames": "Dein Spielername",
+    "playerNamesHelp": "Damit erkennt GameMate deine eigenen Zeilen im Kill-Feed. Mehrere Namen mit Kommas trennen. Ohne Namen gibt es nur Reaktionen auf Banner.",
+    "showReactionsAs": "Reaktionen als",
+    "whatToReactTo": "Worauf reagieren",
+    "whatToReactToHelp": "GameMate kann nur auf das reagieren, was es auf deinem Bildschirm lesen kann. Sehr kurze Momente können ihm entgehen."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "Das Spiel, bei dem GameMate hilft",
@@ -492,8 +501,8 @@
     },
     "frequencies": {
       "rare": "Selten (nur große Momente)",
-      "normal": "Manchmal",
-      "frequent": "Oft"
+      "normal": "Ausgewogen",
+      "frequent": "Häufig"
     },
     "status": {
       "off": "Beobachtet nicht",
@@ -503,6 +512,29 @@
       "waiting-for-game": "Wartet darauf, dass ein Spiel das aktive Fenster ist",
       "watching": "Beobachtet",
       "analyzing": "Schaut auf deinen Bildschirm…"
+    },
+    "intensities": {
+      "subtle": "Dezent",
+      "normal": "Normal",
+      "expressive": "Ausdrucksstark"
+    },
+    "humorLevels": {
+      "none": "Keiner",
+      "light": "Leicht",
+      "playful": "Verspielt"
+    },
+    "delivery": {
+      "text": "Text",
+      "voice": "Stimme",
+      "both": "Text und Stimme"
+    },
+    "categories": {
+      "combat": "Kampf (Eliminierungen, Tode, Mehrfach-Kills)",
+      "skill": "Können (Clutches, knappe Situationen)",
+      "teamwork": "Teamwork (Rettungen, ausgelöschte Gegnerteams)",
+      "objectives": "Ziele (Einnahmen, Platzieren, Entschärfen)",
+      "match": "Match (Runden, Serien, Sieg, Niederlage)",
+      "world": "Gefahren und Entdeckungen"
     }
   },
   "errors": {

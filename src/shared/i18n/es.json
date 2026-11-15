@@ -79,7 +79,16 @@
     "pause": "⏸ Pausar",
     "whatGamemateSaw": "Lo que vio GameMate",
     "keptOnlyWhileGamemateIs": "Solo se guarda mientras GameMate está abierto.",
-    "nothingYetStartPlayingAnd": "Nada por ahora. Empieza a jugar y GameMate anotará lo que pase."
+    "nothingYetStartPlayingAnd": "Nada por ahora. Empieza a jugar y GameMate anotará lo que pase.",
+    "reactionIntensity": "Intensidad de las reacciones",
+    "humorLevel": "Nivel de humor",
+    "tacticalComments": "Observaciones tácticas",
+    "tacticalCommentsHelp": "De vez en cuando añade una observación útil y amable. Nunca en juegos en los que solo se observa el registro de la partida; en otros juegos competitivos, solo entre rondas.",
+    "playerNames": "Tu nombre en el juego",
+    "playerNamesHelp": "Permite a GameMate reconocer tus propias líneas en el registro de bajas. Separa varios nombres con comas. Sin él, solo reacciona a los carteles.",
+    "showReactionsAs": "Mostrar reacciones como",
+    "whatToReactTo": "A qué reaccionar",
+    "whatToReactToHelp": "GameMate solo puede reaccionar a lo que lee en tu pantalla, así que puede perderse los momentos muy breves."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "El juego en el que te ayuda GameMate",
@@ -495,8 +504,8 @@
     },
     "frequencies": {
       "rare": "Rara vez (solo los grandes momentos)",
-      "normal": "A veces",
-      "frequent": "A menudo"
+      "normal": "Equilibrado",
+      "frequent": "Frecuente"
     },
     "status": {
       "off": "Sin seguimiento",
@@ -506,6 +515,29 @@
       "waiting-for-game": "Esperando a que un juego sea la ventana activa",
       "watching": "Siguiendo",
       "analyzing": "Mirando tu pantalla…"
+    },
+    "intensities": {
+      "subtle": "Sutil",
+      "normal": "Normal",
+      "expressive": "Expresiva"
+    },
+    "humorLevels": {
+      "none": "Ninguno",
+      "light": "Ligero",
+      "playful": "Juguetón"
+    },
+    "delivery": {
+      "text": "Texto",
+      "voice": "Voz",
+      "both": "Texto y voz"
+    },
+    "categories": {
+      "combat": "Combate (bajas, muertes, bajas múltiples)",
+      "skill": "Habilidad (clutches, situaciones apuradas)",
+      "teamwork": "Trabajo en equipo (rescates, equipos rivales eliminados)",
+      "objectives": "Objetivos (capturas, plantar y desactivar)",
+      "match": "Partida (rondas, rachas, victoria, derrota)",
+      "world": "Peligros y descubrimientos"
     }
   },
   "errors": {

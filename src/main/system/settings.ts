@@ -12,6 +12,9 @@ import { isLanguageCode } from '../../shared/languages'
 import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
+  COMMENTARY_CATEGORIES,
+  COMMENTARY_HUMOR_LEVELS,
+  REACTION_INTENSITIES,
   SPEAK_ANSWERS,
   SUPERTONIC_VOICES,
   VOICE_ENGINES,
@@ -22,7 +25,10 @@ import {
 } from '../../shared/types'
 import type {
   CompanionMode,
+  CommentaryCategories,
   CommentaryFrequency,
+  CommentaryHumor,
+  ReactionIntensity,
   SpeakAnswers,
   SupertonicVoice,
   VoiceEngine,
@@ -52,6 +58,10 @@ export type {
   Settings
 }
 
+const ALL_CATEGORIES = Object.fromEntries(
+  COMMENTARY_CATEGORIES.map((category) => [category, true])
+) as CommentaryCategories
+
 const DEFAULTS: Settings = {
   // New players get the built-in engine: no other install needed.
   localBackend: 'builtin',
@@ -63,6 +73,12 @@ const DEFAULTS: Settings = {
   // Watching the screen is opt-in.
   companionMode: 'on-demand',
   commentaryFrequency: 'normal',
+  commentaryIntensity: 'normal',
+  commentaryHumor: 'light',
+  commentaryCategories: ALL_CATEGORIES,
+  commentaryTactics: true,
+  commentaryPlayerNames: '',
+  showComments: true,
   voiceInput: false,
   speechModel: 'accurate',
   speakAnswers: 'voice',
@@ -111,7 +127,11 @@ export function getSettings(): Settings {
   if (!current) {
     try {
       const saved = JSON.parse(readFileSync(file(), 'utf8')) as Partial<Settings>
-      current = { ...DEFAULTS, ...saved }
+      current = {
+        ...DEFAULTS,
+        ...saved,
+        commentaryCategories: { ...ALL_CATEGORIES, ...saved.commentaryCategories }
+      }
       // From before GameMate recorded consent dates: the consent stands, its date is unknown.
       current.consents = {
         ...(current.geminiConsent ? { gemini: '' } : {}),
@@ -140,6 +160,8 @@ export function getSettings(): Settings {
 }
 
 // Renderer input is untrusted: only accept known keys with the right types.
+const MAX_PLAYER_NAMES = 120
+
 export function updateSettings(patch: unknown): Settings {
   if (typeof patch !== 'object' || patch === null) throw new Error('Invalid settings.')
   const p = patch as Record<string, unknown>
@@ -157,12 +179,36 @@ export function updateSettings(patch: unknown): Settings {
   if (COMMENTARY_FREQUENCIES.includes(p.commentaryFrequency as CommentaryFrequency)) {
     next.commentaryFrequency = p.commentaryFrequency as CommentaryFrequency
   }
+  if (REACTION_INTENSITIES.includes(p.commentaryIntensity as ReactionIntensity)) {
+    next.commentaryIntensity = p.commentaryIntensity as ReactionIntensity
+  }
+  if (COMMENTARY_HUMOR_LEVELS.includes(p.commentaryHumor as CommentaryHumor)) {
+    next.commentaryHumor = p.commentaryHumor as CommentaryHumor
+  }
+  if (typeof p.commentaryCategories === 'object' && p.commentaryCategories !== null) {
+    const changes = p.commentaryCategories as Record<string, unknown>
+    next.commentaryCategories = { ...next.commentaryCategories }
+    for (const category of COMMENTARY_CATEGORIES) {
+      const value = changes[category]
+      if (typeof value === 'boolean') next.commentaryCategories[category] = value
+    }
+  }
+  if (typeof p.commentaryTactics === 'boolean') next.commentaryTactics = p.commentaryTactics
+  if (typeof p.commentaryPlayerNames === 'string') {
+    next.commentaryPlayerNames = p.commentaryPlayerNames
+      .replace(/\p{Cc}+/gu, ' ')
+      .trim()
+      .slice(0, MAX_PLAYER_NAMES)
+  }
+  if (typeof p.showComments === 'boolean') next.showComments = p.showComments
   if (typeof p.voiceInput === 'boolean') next.voiceInput = p.voiceInput
   if (isListenModelId(p.speechModel)) next.speechModel = p.speechModel
   if (SPEAK_ANSWERS.includes(p.speakAnswers as SpeakAnswers)) {
     next.speakAnswers = p.speakAnswers as SpeakAnswers
   }
   if (typeof p.speakComments === 'boolean') next.speakComments = p.speakComments
+  // A comment has to reach the player somehow.
+  if (!next.speakComments) next.showComments = true
   if (typeof p.voiceName === 'string') next.voiceName = p.voiceName.slice(0, 200)
   if (VOICE_ENGINES.includes(p.voiceEngine as VoiceEngine))
     next.voiceEngine = p.voiceEngine as VoiceEngine

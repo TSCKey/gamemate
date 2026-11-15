@@ -1,7 +1,22 @@
 import { useEffect, useState } from 'react'
-import type { CommentaryFrequency, CompanionState, Settings } from '../../../preload/index.d'
-import { COMMENTARY_FREQUENCIES, COMPANION_MODES, statusText } from '../constants'
-import { Field, Section } from './ui'
+import type {
+  CommentaryFrequency,
+  CommentaryHumor,
+  CompanionState,
+  ReactionIntensity,
+  Settings
+} from '../../../preload/index.d'
+import {
+  COMMENT_DELIVERIES,
+  COMMENTARY_CATEGORIES,
+  COMMENTARY_FREQUENCIES,
+  COMMENTARY_HUMOR_LEVELS,
+  COMPANION_MODES,
+  REACTION_INTENSITIES,
+  statusText,
+  type CommentDelivery
+} from '../constants'
+import { Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
 
 const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
@@ -10,7 +25,42 @@ const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   death: '💀',
   dark_area: '🌑',
   discovery: '✨',
-  other: '👀'
+  other: '👀',
+  kill: '🎯',
+  assist: '🤝',
+  headshot: '🎯',
+  multikill: '🔥',
+  kill_streak: '🔥',
+  fight_won: '🏅',
+  clutch: '🌟',
+  recovery: '💪',
+  teammate_saved: '🛟',
+  team_wipe: '🤝',
+  objective_won: '🚩',
+  objective_lost: '🏳️',
+  objective_contested: '⚠️',
+  bomb_planted: '💣',
+  bomb_defused: '✂️',
+  round_won: '✅',
+  round_lost: '❌',
+  match_point: '❗',
+  comeback: '🚀',
+  win_streak: '📈',
+  loss_streak: '📉',
+  victory: '🏆',
+  defeat: '🫡',
+  milestone: '🎉'
+}
+
+function deliveryOf(settings: Settings): CommentDelivery {
+  if (!settings.speakComments) return 'text'
+  return settings.showComments ? 'both' : 'voice'
+}
+
+const DELIVERY_SETTINGS: Record<CommentDelivery, Partial<Settings>> = {
+  text: { showComments: true, speakComments: false },
+  voice: { showComments: false, speakComments: true },
+  both: { showComments: true, speakComments: true }
 }
 
 function timeAgo(time: number): string {
@@ -77,6 +127,70 @@ function CompanionPanel({
             </select>
           </Field>
         )}
+        {settings.companionMode === 'commentary' && (
+          <>
+            <Field label={t('companionPanel.reactionIntensity')}>
+              <select
+                value={settings.commentaryIntensity}
+                onChange={(e) =>
+                  update({ commentaryIntensity: e.target.value as ReactionIntensity })
+                }
+              >
+                {REACTION_INTENSITIES.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label={t('companionPanel.humorLevel')}>
+              <select
+                value={settings.commentaryHumor}
+                onChange={(e) => update({ commentaryHumor: e.target.value as CommentaryHumor })}
+              >
+                {COMMENTARY_HUMOR_LEVELS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label={t('companionPanel.showReactionsAs')}>
+              <select
+                value={deliveryOf(settings)}
+                onChange={(e) => update(DELIVERY_SETTINGS[e.target.value as CommentDelivery])}
+              >
+                {COMMENT_DELIVERIES.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field
+              label={t('companionPanel.tacticalComments')}
+              help={t('companionPanel.tacticalCommentsHelp')}
+            >
+              <Toggle
+                label={t('companionPanel.tacticalComments')}
+                checked={settings.commentaryTactics}
+                onChange={(commentaryTactics) => update({ commentaryTactics })}
+              />
+            </Field>
+            <Field
+              label={t('companionPanel.playerNames')}
+              help={t('companionPanel.playerNamesHelp')}
+            >
+              <input
+                type="text"
+                maxLength={120}
+                aria-label={t('companionPanel.playerNames')}
+                defaultValue={settings.commentaryPlayerNames}
+                onBlur={(e) => update({ commentaryPlayerNames: e.target.value })}
+              />
+            </Field>
+          </>
+        )}
         {watching && (
           <Field
             label={
@@ -93,6 +207,30 @@ function CompanionPanel({
         )}
       </Section>
 
+      {settings.companionMode === 'commentary' && (
+        <Section
+          title={t('companionPanel.whatToReactTo')}
+          description={t('companionPanel.whatToReactToHelp')}
+        >
+          {COMMENTARY_CATEGORIES.map((category) => (
+            <Field key={category.value} label={category.label}>
+              <Toggle
+                label={category.label}
+                checked={settings.commentaryCategories[category.value]}
+                onChange={(on) =>
+                  update({
+                    commentaryCategories: {
+                      ...settings.commentaryCategories,
+                      [category.value]: on
+                    }
+                  })
+                }
+              />
+            </Field>
+          ))}
+        </Section>
+      )}
+
       {showLog && (
         <Section
           title={t('companionPanel.whatGamemateSaw')}
@@ -101,7 +239,7 @@ function CompanionPanel({
           {state && state.events.length > 0 ? (
             <ul className="companion-log">
               {[...state.events].reverse().map((e) => (
-                <li key={e.time}>
+                <li key={e.id}>
                   <span>{EVENT_ICONS[e.type]}</span>
                   <span className="companion-log-text" dir="auto">
                     {e.spoken && e.comment ? `“${e.comment}”` : e.description}

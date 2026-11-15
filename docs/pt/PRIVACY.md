@@ -29,6 +29,7 @@ O GameMate guarda o seguinte na pasta dele no seu perfil de usuário do Windows,
 | Modelos de IA, o mecanismo de IA do GameMate, modelos de fala e vozes que você baixou                                   | Para rodar a IA no seu PC                                          | Até você removê-los ou apagar seus dados                                         |
 | Jogos encontrados ou adicionados: nome, pasta ou programa, endereço da wiki                                             | Para ajudar no jogo que você está jogando                          | Até você retirar esse consentimento ou apagar seus dados                         |
 | Um registro do que o GameMate fez (por exemplo, iniciar a IA ou procurar atualizações), sem suas perguntas ou respostas | Para encontrar e corrigir problemas                                | Cerca de 1 MB; as entradas mais antigas são sobrescritas; apagado com seus dados |
+| Seus nomes nos jogos, se você os informar | Para reconhecer suas próprias linhas no registro de abates de um jogo | Até você alterá-los ou excluir seus dados |
 
 Suas conversas, capturas de tela, gravações de voz e o que o companheiro percebeu ficam **somente na memória** e somem quando você fecha o chat, desliga o companheiro ou sai do GameMate. Capturas de tela e gravações de voz nunca são salvas no disco.
 

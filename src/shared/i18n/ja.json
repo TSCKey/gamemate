@@ -79,7 +79,16 @@
     "pause": "⏸ 一時停止",
     "whatGamemateSaw": "GameMate が見たこと",
     "keptOnlyWhileGamemateIs": "GameMate が開いている間だけ保持されます。",
-    "nothingYetStartPlayingAnd": "まだ何もありません。プレイを始めると、GameMate が起きたことを記録します。"
+    "nothingYetStartPlayingAnd": "まだ何もありません。プレイを始めると、GameMate が起きたことを記録します。",
+    "reactionIntensity": "リアクションの強さ",
+    "humorLevel": "ユーモアの度合い",
+    "tacticalComments": "戦術的なひとこと",
+    "tacticalCommentsHelp": "ときどき、やさしく役立つ気づきを添えます。試合のフィードだけを見るゲームでは行いません。その他の対戦型ゲームではラウンドの合間だけです。",
+    "playerNames": "ゲーム内の名前",
+    "playerNamesHelp": "キルフィードで自分の行を GameMate が見分けられるようにします。複数の名前はカンマで区切ります。名前がない場合はバナーにだけ反応します。",
+    "showReactionsAs": "リアクションの形式",
+    "whatToReactTo": "反応する場面",
+    "whatToReactToHelp": "GameMate は画面から読み取れることにしか反応できないため、ごく短い場面は見逃すことがあります。"
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "GameMate がサポートするゲーム",
@@ -489,7 +498,7 @@
     },
     "frequencies": {
       "rare": "まれに(大きな場面だけ)",
-      "normal": "ときどき",
+      "normal": "バランス",
       "frequent": "頻繁に"
     },
     "status": {
@@ -500,6 +509,29 @@
       "waiting-for-game": "ゲームがアクティブなウィンドウになるのを待っています",
       "watching": "見守り中",
       "analyzing": "画面を見ています…"
+    },
+    "intensities": {
+      "subtle": "控えめ",
+      "normal": "標準",
+      "expressive": "豊か"
+    },
+    "humorLevels": {
+      "none": "なし",
+      "light": "軽め",
+      "playful": "おちゃめ"
+    },
+    "delivery": {
+      "text": "テキスト",
+      "voice": "音声",
+      "both": "テキストと音声"
+    },
+    "categories": {
+      "combat": "戦闘(キル、デス、マルチキル)",
+      "skill": "スキル(クラッチ、危機一髪)",
+      "teamwork": "チームプレイ(救助、敵チーム全滅)",
+      "objectives": "目標(占領、設置、解除)",
+      "match": "試合(ラウンド、連勝・連敗、勝利、敗北)",
+      "world": "危険と発見"
     }
   },
   "errors": {

@@ -79,7 +79,16 @@
     "pause": "⏸ Duraklat",
     "whatGamemateSaw": "GameMate'in gördükleri",
     "keptOnlyWhileGamemateIs": "Yalnızca GameMate açıkken saklanır.",
-    "nothingYetStartPlayingAnd": "Henüz bir şey yok. Oynamaya başla, GameMate olanları kaydetsin."
+    "nothingYetStartPlayingAnd": "Henüz bir şey yok. Oynamaya başla, GameMate olanları kaydetsin.",
+    "reactionIntensity": "Tepki yoğunluğu",
+    "humorLevel": "Mizah düzeyi",
+    "tacticalComments": "Taktik gözlemler",
+    "tacticalCommentsHelp": "Arada sırada nazik ve faydalı bir gözlem ekler. Yalnızca maç akışının izlendiği oyunlarda asla; diğer rekabetçi oyunlarda yalnızca turlar arasında.",
+    "playerNames": "Oyun içi adın",
+    "playerNamesHelp": "GameMate'in öldürme akışındaki kendi satırlarını tanımasını sağlar. Birden fazla adı virgülle ayır. Ad olmadan yalnızca afişlere tepki verir.",
+    "showReactionsAs": "Tepkilerin biçimi",
+    "whatToReactTo": "Neye tepki verilsin",
+    "whatToReactToHelp": "GameMate yalnızca ekranında okuyabildiklerine tepki verebilir; çok kısa anları kaçırabilir."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "GameMate'in yardım ettiği oyun",
@@ -492,8 +501,8 @@
     },
     "frequencies": {
       "rare": "Nadiren (yalnızca büyük anlar)",
-      "normal": "Bazen",
-      "frequent": "Sık sık"
+      "normal": "Dengeli",
+      "frequent": "Sık"
     },
     "status": {
       "off": "İzlemiyor",
@@ -503,6 +512,29 @@
       "waiting-for-game": "Bir oyunun etkin pencere olması bekleniyor",
       "watching": "İzliyor",
       "analyzing": "Ekranına bakıyor…"
+    },
+    "intensities": {
+      "subtle": "Ölçülü",
+      "normal": "Normal",
+      "expressive": "Coşkulu"
+    },
+    "humorLevels": {
+      "none": "Yok",
+      "light": "Hafif",
+      "playful": "Şakacı"
+    },
+    "delivery": {
+      "text": "Yazı",
+      "voice": "Ses",
+      "both": "Yazı ve ses"
+    },
+    "categories": {
+      "combat": "Çatışma (leşler, ölümler, çoklu leşler)",
+      "skill": "Beceri (clutch’lar, kıl payı anlar)",
+      "teamwork": "Takım oyunu (kurtarmalar, silinen rakip takımlar)",
+      "objectives": "Hedefler (ele geçirme, kurma, imha)",
+      "match": "Maç (turlar, seriler, galibiyet, mağlubiyet)",
+      "world": "Tehlikeler ve keşifler"
     }
   },
   "errors": {

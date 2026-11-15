@@ -79,7 +79,16 @@
     "pause": "⏸ Pause",
     "whatGamemateSaw": "Ce que GameMate a vu",
     "keptOnlyWhileGamemateIs": "Conservé uniquement tant que GameMate est ouvert.",
-    "nothingYetStartPlayingAnd": "Rien pour l’instant. Commencez à jouer et GameMate notera ce qui se passe."
+    "nothingYetStartPlayingAnd": "Rien pour l’instant. Commencez à jouer et GameMate notera ce qui se passe.",
+    "reactionIntensity": "Intensité des réactions",
+    "humorLevel": "Niveau d’humour",
+    "tacticalComments": "Observations tactiques",
+    "tacticalCommentsHelp": "Ajoute de temps en temps une remarque utile et bienveillante. Jamais dans les jeux où seul le fil de la partie est observé ; dans les autres jeux compétitifs, seulement entre les manches.",
+    "playerNames": "Votre pseudo en jeu",
+    "playerNamesHelp": "Permet à GameMate de reconnaître vos propres lignes dans le fil des éliminations. Séparez plusieurs pseudos par des virgules. Sans pseudo, il ne réagit qu'aux bannières.",
+    "showReactionsAs": "Format des réactions",
+    "whatToReactTo": "À quoi réagir",
+    "whatToReactToHelp": "GameMate ne peut réagir qu’à ce qu’il lit sur votre écran : les moments très brefs peuvent lui échapper."
   },
   "gameMenu": {
     "theGameGamemateHelpsWith": "Le jeu pour lequel GameMate vous aide",
@@ -495,8 +504,8 @@
     },
     "frequencies": {
       "rare": "Rarement (grands moments seulement)",
-      "normal": "Parfois",
-      "frequent": "Souvent"
+      "normal": "Équilibré",
+      "frequent": "Fréquent"
     },
     "status": {
       "off": "Pas de suivi",
@@ -506,6 +515,29 @@
       "waiting-for-game": "En attente qu’un jeu soit la fenêtre active",
       "watching": "Suivi en cours",
       "analyzing": "Regarde votre écran…"
+    },
+    "intensities": {
+      "subtle": "Discrète",
+      "normal": "Normale",
+      "expressive": "Expressive"
+    },
+    "humorLevels": {
+      "none": "Aucun",
+      "light": "Léger",
+      "playful": "Taquin"
+    },
+    "delivery": {
+      "text": "Texte",
+      "voice": "Voix",
+      "both": "Texte et voix"
+    },
+    "categories": {
+      "combat": "Combat (éliminations, morts, multi-éliminations)",
+      "skill": "Talent (clutchs, situations serrées)",
+      "teamwork": "Travail d’équipe (sauvetages, équipe adverse éliminée)",
+      "objectives": "Objectifs (captures, poses, désamorçages)",
+      "match": "Match (manches, séries, victoire, défaite)",
+      "world": "Dangers et découvertes"
     }
   },
   "errors": {
