@@ -41,7 +41,7 @@ export function useVoiceInput(
   const repo = model?.repo ?? ''
   const ready = !!settings?.voiceInput && canListen(model, language)
 
-  // With voice input on but nothing that can listen (no model yet, or 1.0.3's English-only one
+  // With voice input on but nothing that can listen (no model yet, or 0.1.3's English-only one
   // in another language), say why instead of ignoring the shortcut.
   const problem = settings?.voiceInput ? listenProblem(model, language) : null
   const why =

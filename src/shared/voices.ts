@@ -24,7 +24,7 @@ export function pickVoice(o: {
     return { kind: 'natural', voice: o.naturalVoice }
   }
   const speaking = windowsVoicesFor(o.language, o.windowsVoices)
-  // GameMate 1.0.3 saved the older System.Speech names ("Microsoft Zira Desktop").
+  // GameMate 0.1.3 saved the older System.Speech names ("Microsoft Zira Desktop").
   const voice =
     speaking.find((v) => v.name === o.voiceName || o.voiceName.startsWith(`${v.name} `)) ??
     speaking[0]

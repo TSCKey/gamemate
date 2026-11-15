@@ -55,7 +55,7 @@ describe('the voice GameMate speaks with', () => {
     ).toEqual({ kind: 'windows', name: 'Microsoft Mark' })
   })
 
-  it('recognizes a voice chosen in GameMate 1.0.3 by its older name', () => {
+  it('recognizes a voice chosen in GameMate 0.1.3 by its older name', () => {
     const two = [...voices, { name: 'Microsoft Mark', language: 'en-US' }]
     expect(
       pickVoice({

@@ -146,7 +146,7 @@ export function getSettings(): Settings {
       if (saved.featureChoices === undefined) {
         current.featureChoices = (saved.termsVersion ?? 0) > 0 ? 'answered' : 'ask'
       }
-      // GameMate 1.0.3's Kokoro voice is gone: Supertonic if it's installed, else Windows voices.
+      // GameMate 0.1.3's Kokoro voice is gone: Supertonic if it's installed, else Windows voices.
       current.voiceEngine = migrateVoiceEngine(
         saved.voiceEngine ?? DEFAULTS.voiceEngine,
         isSpeechModelInstalled('supertonic')

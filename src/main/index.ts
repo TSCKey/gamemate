@@ -287,7 +287,7 @@ if (!app.requestSingleInstanceLock()) {
     // The tray menu names the shortcut.
     onSettingsChanged(() => updateTray(getObserverState()))
     followLanguage()
-    // Kokoro's files from GameMate 1.0.3 (340 MB) aren't used any more.
+    // Kokoro's files from GameMate 0.1.3 (340 MB) aren't used any more.
     removeOldVoice(join(app.getPath('userData'), 'models')).catch((error) =>
       console.error('Could not remove the old voice:', error)
     )

@@ -66,7 +66,7 @@ describe('the language setting', () => {
     expect(settings.updateSettings({ language: 'xx' }).language).toBe('ar')
   })
 
-  it('is unchosen for settings saved by GameMate 1.0.3, which keep everything else', async () => {
+  it('is unchosen for settings saved by GameMate 0.1.3, which keep everything else', async () => {
     writeFileSync(
       join(userData, 'settings.json'),
       JSON.stringify({ termsVersion: 1, webLookup: true, shortcut: 'Ctrl+Shift+G' })

@@ -3,7 +3,7 @@ import type { LanguageCode } from './languages'
 import type { SpeechModelStatus } from './types'
 
 // Multilingual Whisper is told the language so it doesn't guess; English-only models
-// (GameMate 1.0.3's downloads, repos ending ".en") refuse a language option.
+// (GameMate 0.1.3's downloads, repos ending ".en") refuse a language option.
 export function whisperOptions(
   repo: string,
   language: LanguageCode

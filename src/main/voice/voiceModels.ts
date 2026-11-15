@@ -30,7 +30,7 @@ const WHISPER_FILES = [
 ]
 
 // Speech recognition: multilingual Whisper (MIT), converted to ONNX by onnx-community, 8-bit
-// quantized. `legacyRepo` is the English-only version GameMate 1.0.3 downloaded, still used for
+// quantized. `legacyRepo` is the English-only version GameMate 0.1.3 downloaded, still used for
 // English. Pinned revisions so every install gets the same files.
 export const SPEECH_MODELS = {
   fast: {
@@ -179,7 +179,7 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     await rm(dir, { recursive: true, force: true })
     await mkdir(dirname(dir), { recursive: true })
     await rename(tmp, dir)
-    // The multilingual model replaces 1.0.3's English-only one.
+    // The multilingual model replaces 0.1.3's English-only one.
     const legacy = legacyDir(id)
     if (legacy) await rm(legacy, { recursive: true, force: true })
     downloads.delete(id)

@@ -1,4 +1,4 @@
-// Moving players from GameMate 1.0.3's Kokoro voice to Supertonic.
+// Moving players from GameMate 0.1.3's Kokoro voice to Supertonic.
 import { rm } from 'fs/promises'
 import { join } from 'path'
 import { VOICE_ENGINES, type VoiceEngine } from '../../shared/types'
