@@ -232,6 +232,15 @@ describe('SilksongTracker fades', () => {
     expect(run.kinds()).toEqual(['room_change'])
   })
 
+  // The owner's Silksong scenes measured 0.11-0.16 mean brightness.
+  it('notices a room change in a scene as dim as Silksong usually is', () => {
+    const run = new Run()
+      .frames(4, { brightness: 0.12 })
+      .frames(2, { brightness: 0.01, masks: 0 })
+      .frames(2, { brightness: 0.12 })
+    expect(run.kinds()).toEqual(['room_change'])
+  })
+
   it('ignores a dip that is gone within 0.2 s', () => {
     const run = new Run()
     run.tracker.push({ ...base }, 0)
@@ -241,16 +250,16 @@ describe('SilksongTracker fades', () => {
 
   it('does not count a fade that did not start from a bright frame', () => {
     const run = new Run()
-      .frames(4, { brightness: 0.1 })
+      .frames(4, { brightness: 0.05 })
       .frames(4, { brightness: 0.02, masks: 0 })
-      .frames(2, { brightness: 0.1 })
+      .frames(2, { brightness: 0.05 })
     expect(run.kinds()).toEqual([])
   })
 
   it('does not count a slow fade where brightness takes more than 1 s to fall', () => {
     const run = new Run()
       .frames(4)
-      .frames(6, { brightness: 0.1 }) // 1.5 s at a middling level
+      .frames(6, { brightness: 0.05 }) // 1.5 s at a middling level
       .frames(4, { brightness: 0.02, masks: 0 })
       .frames(2)
     expect(run.kinds()).toEqual([])

@@ -60,6 +60,16 @@ function filledColour(): Rgb {
 }
 
 describe('measureSilksong', () => {
+  // Measured on the owner's own Silksong frames: a full mask's box is about a fifth white (the
+  // mask has a dark face drawn on it), an empty one has no white at all.
+  it('counts a mask whose box is only about a fifth white, as in Silksong', () => {
+    const frame = solid(480, 270, [20, 20, 20])
+    for (const mask of SILKSONG_LAYOUT.masks.slice(0, 4)) {
+      paint(frame, { ...mask, height: mask.height * 0.22 }, filledColour())
+    }
+    expect(measureSilksong(frame).masks).toBe(4)
+  })
+
   for (const [w, h] of [
     [480, 270],
     [1280, 720]

@@ -14,13 +14,15 @@ export interface SilksongLayout {
   textLuma: number
 }
 
-// First estimates for a 16:9 frame. They are to be measured from real footage and replaced.
+// Masks measured on the owner's own Silksong frames (1920x1080, Windowed Fullscreen,
+// 2026-11-17): each mask sits 28x42 px from (191 + 50 * i, 84), one every 50 px. The other boxes
+// are still first estimates, to be measured from frames that show them.
 const MASK_COUNT = 10
 const MASK_BOXES: Box[] = Array.from({ length: MASK_COUNT }, (_, i) => ({
-  x: 0.1 + i * 0.03,
-  y: 0.05,
-  width: 0.022,
-  height: 0.05
+  x: (191 + 50 * i) / 1920,
+  y: 84 / 1080,
+  width: 28 / 1920,
+  height: 42 / 1080
 }))
 
 export const SILKSONG_LAYOUT: SilksongLayout = {
@@ -41,8 +43,11 @@ export interface SilksongMeasure {
   pickupText: number
 }
 
-/** A mask counts as filled when at least this share of its box passes the colour test. */
-const MASK_FILLED_SHARE = 0.5
+/**
+ * A mask counts as filled when at least this share of its box passes the colour test. A full mask
+ * measured 0.18-0.27 white (its face is drawn dark), an empty one 0.
+ */
+const MASK_FILLED_SHARE = 0.1
 
 export function measureSilksong(
   frame: Frame,

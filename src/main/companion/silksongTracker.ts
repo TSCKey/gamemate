@@ -9,9 +9,9 @@ const MASK_HOLD_FRAMES = 2
 /** Having 2 or more masks for this long after a close call means the player recovered. */
 const RECOVERY_MS = 3000
 /** Below this brightness the frame is a fade or death screen, which reads 0 masks. */
-const FADE_BRIGHTNESS = 0.05
-/** A fade has to start from a frame at least this bright. */
-const BRIGHT_BEFORE_FADE = 0.2
+const FADE_BRIGHTNESS = 0.03
+/** A fade has to start from a frame at least this bright (the owner's Silksong scenes measured 0.11-0.16). */
+const BRIGHT_BEFORE_FADE = 0.08
 /** ... and get dark within this long. */
 const FADE_START_WINDOW_MS = 1000
 /** A fade at least this long can be a death. */

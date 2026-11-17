@@ -148,7 +148,7 @@ function showText(region: 'areaText' | 'bossText' | 'pickupText'): void {
 // A death as the screen shows it: down to the last mask, a 2 second fade, then the masks refill.
 function die(): void {
   feed({ masks: 1 }, 2)
-  feed({ brightness: 0.03, masks: 0 }, 8)
+  feed({ brightness: 0.01, masks: 0 }, 8)
   feed({}, 2)
 }
 
@@ -300,7 +300,7 @@ describe('watching Silksong', () => {
     await settle()
     feed({}, 7 * 4)
     // A short fade is a room change: more than 20 seconds after the encounter began.
-    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({ brightness: 0.01, masks: 0 }, 2)
     feed({}, 1)
     await settle()
     // The second sighting is no new attempt, and the fight is still won.
@@ -320,7 +320,7 @@ describe('watching Silksong', () => {
     expect(logged().filter((t) => t === 'boss_encounter')).toHaveLength(2)
     // More than 20 seconds into the retry, a room change means it was beaten.
     feed({}, 21 * 4)
-    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({ brightness: 0.01, masks: 0 }, 2)
     feed({}, 1)
     await settle()
     const won = observer.getObserverState().events.find((e) => e.type === 'fight_won')
@@ -333,7 +333,7 @@ describe('watching Silksong', () => {
     showText('bossText')
     await settle()
     feed({}, 21 * 4)
-    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({ brightness: 0.01, masks: 0 }, 2)
     feed({}, 1)
     await settle()
     expect(logged()).toEqual(['boss_encounter'])
@@ -345,7 +345,7 @@ describe('watching Silksong', () => {
     await settle()
     // Out of the arena 5 seconds in: the fight is over, neither won nor lost.
     feed({}, 5 * 4)
-    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({ brightness: 0.01, masks: 0 }, 2)
     feed({}, 10 * 4)
     showText('bossText')
     await settle()
@@ -361,7 +361,7 @@ describe('watching Silksong', () => {
     expect(writes.at(-1)?.content).toContain('This is attempt 1 at Moss Mother')
     // A long fight, then a room change: the fight is over, with no word on how.
     feed({}, 21 * 4)
-    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({ brightness: 0.01, masks: 0 }, 2)
     feed({}, 1)
     await settle()
     const said = writes.length
@@ -380,7 +380,7 @@ describe('watching Silksong', () => {
 
   it('takes a dark stretch with full masks for no death', async () => {
     feed({}, 2)
-    feed({ brightness: 0.03, masks: 0 }, 8)
+    feed({ brightness: 0.01, masks: 0 }, 8)
     feed({}, 8)
     await settle()
     expect(logged()).toEqual([])
