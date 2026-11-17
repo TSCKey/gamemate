@@ -427,7 +427,9 @@ export const EVENT_TYPES = [
   'loss_streak',
   'victory',
   'defeat',
-  'milestone'
+  'milestone',
+  'boss_encounter',
+  'area_entered'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 
@@ -443,7 +445,14 @@ export interface ObservedEvent {
 }
 
 export type CompanionStatus =
-  'off' | 'paused' | 'no-model' | 'needs-consent' | 'waiting-for-game' | 'watching' | 'analyzing'
+  | 'off'
+  | 'paused'
+  | 'no-model'
+  | 'needs-consent'
+  | 'waiting-for-game'
+  | 'watching'
+  | 'analyzing'
+  | 'blocked-by-fullscreen'
 
 export interface CompanionState {
   status: CompanionStatus

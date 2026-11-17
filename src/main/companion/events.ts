@@ -8,7 +8,7 @@ import type { CommentaryCategory, EventType } from '../../shared/types'
 export type GameEventType = Exclude<EventType, 'none'>
 export type Tier = 'minor' | 'significant' | 'exceptional'
 export type Mood = 'positive' | 'negative' | 'tense' | 'neutral'
-export type EventSource = 'vision' | 'memory'
+export type EventSource = 'vision' | 'memory' | 'screen'
 export type Phase = 'playing' | 'intermission' | 'menu'
 
 export interface GameEvent {
@@ -348,6 +348,28 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     dedupeMs: 60 * S,
     meaning: 'The player reached a personal milestone.',
     seen: 'a level-up, rank-up or achievement banner'
+  },
+  // The two below come from the screen source only, so they have no `seen`: the vision model
+  // is never asked for them.
+  boss_encounter: {
+    category: 'combat',
+    tier: 'significant',
+    mood: 'tense',
+    priority: 80,
+    cooldownMs: 20 * S,
+    staleMs: 20 * S,
+    dedupeMs: 30 * S,
+    meaning: 'The player is facing a boss.'
+  },
+  area_entered: {
+    category: 'world',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 30,
+    cooldownMs: 60 * S,
+    staleMs: 20 * S,
+    dedupeMs: 120 * S,
+    meaning: 'The player entered a new area.'
   },
   low_health: {
     category: 'world',

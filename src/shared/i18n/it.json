@@ -514,7 +514,8 @@
       "needs-consent": "Consenti il rilevamento dei giochi in Impostazioni → Giochi per iniziare a seguire",
       "waiting-for-game": "In attesa che un gioco sia la finestra attiva",
       "watching": "Segue",
-      "analyzing": "Guarda il tuo schermo…"
+      "analyzing": "Guarda il tuo schermo…",
+      "blocked-by-fullscreen": "Il gioco è a schermo intero esclusivo, quindi GameMate non può vederlo. Passa allo schermo intero in finestra."
     },
     "intensities": {
       "subtle": "Discreta",

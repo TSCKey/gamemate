@@ -511,7 +511,8 @@
       "needs-consent": "Allow game detection in Settings → Games to start watching",
       "waiting-for-game": "Waiting for a game to be the active window",
       "watching": "Watching",
-      "analyzing": "Looking at your screen…"
+      "analyzing": "Looking at your screen…",
+      "blocked-by-fullscreen": "The game runs in exclusive Fullscreen, so GameMate can't see it. Switch it to Windowed Fullscreen."
     },
     "intensities": {
       "subtle": "Subtle",

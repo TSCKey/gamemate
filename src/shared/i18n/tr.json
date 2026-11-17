@@ -511,7 +511,8 @@
       "needs-consent": "İzlemeye başlamak için Ayarlar → Oyunlar'da oyun algılamaya izin ver",
       "waiting-for-game": "Bir oyunun etkin pencere olması bekleniyor",
       "watching": "İzliyor",
-      "analyzing": "Ekranına bakıyor…"
+      "analyzing": "Ekranına bakıyor…",
+      "blocked-by-fullscreen": "Oyun özel tam ekranda çalışıyor, bu yüzden GameMate onu göremiyor. Pencereli tam ekrana geç."
     },
     "intensities": {
       "subtle": "Ölçülü",

@@ -508,7 +508,8 @@
       "needs-consent": "지켜보기를 시작하려면 설정 → 게임에서 게임 감지를 허용하세요",
       "waiting-for-game": "게임이 활성 창이 되기를 기다리는 중",
       "watching": "지켜보는 중",
-      "analyzing": "화면을 보는 중…"
+      "analyzing": "화면을 보는 중…",
+      "blocked-by-fullscreen": "게임이 전용 전체 화면으로 실행되고 있어 GameMate가 볼 수 없습니다. 창 전체 화면으로 바꾸세요."
     },
     "intensities": {
       "subtle": "차분하게",

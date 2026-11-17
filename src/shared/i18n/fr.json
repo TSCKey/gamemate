@@ -514,7 +514,8 @@
       "needs-consent": "Autorisez la détection des jeux dans Paramètres → Jeux pour commencer le suivi",
       "waiting-for-game": "En attente qu’un jeu soit la fenêtre active",
       "watching": "Suivi en cours",
-      "analyzing": "Regarde votre écran…"
+      "analyzing": "Regarde votre écran…",
+      "blocked-by-fullscreen": "Le jeu est en plein écran exclusif, GameMate ne peut donc pas le voir. Passez-le en plein écran fenêtré."
     },
     "intensities": {
       "subtle": "Discrète",

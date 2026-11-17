@@ -271,3 +271,36 @@ describe('claims the facts do not back up', () => {
     expect(claimsTooMuch('That round really mattered', [event('round_won')])).toBe(false)
   })
 })
+
+describe('the reaction prompt for a single-player session', () => {
+  const session = {
+    boss: { name: 'Moss Mother', attempt: 4 },
+    deathsHere: 3,
+    area: 'Moss Grotto',
+    closeCalls: 1,
+    areasVisited: 2,
+    timeline: ['entered Moss Grotto', 'attempt 3 at Moss Mother', 'died to Moss Mother']
+  }
+
+  it('says which attempt it is, how often they died here and what just happened', () => {
+    const prompt = reactionPrompt(request({ session }))
+    expect(prompt).toContain('This is attempt 4 at Moss Mother.')
+    expect(prompt).toContain('They have died here 3 times.')
+    expect(prompt).toContain(
+      'What just happened: entered Moss Grotto, attempt 3 at Moss Mother, died to Moss Mother.'
+    )
+  })
+
+  it('only gives the last four timeline entries', () => {
+    const long = { ...session, timeline: ['a1', 'b2', 'c3', 'd4', 'e5', 'f6'] }
+    const prompt = reactionPrompt(request({ session: long }))
+    expect(prompt).toContain('What just happened: c3, d4, e5, f6.')
+    expect(prompt).not.toContain('b2')
+  })
+
+  it('has no session lines when there is no session', () => {
+    const prompt = reactionPrompt(request())
+    expect(prompt).not.toContain('What just happened:')
+    expect(prompt).not.toContain('This is attempt')
+  })
+})

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Commentator, type CommentaryOptions } from '../src/main/companion/commentator'
 import { analysisGapMs, areaLookGapMs } from '../src/main/companion/director'
 import {
+  makeEvent,
   normalizeVisionReport,
   type GameEvent,
   type GameEventType,
@@ -676,5 +677,78 @@ describe('how often the screen is read', () => {
   it('backs off when the model is slow, to leave the GPU to the game', () => {
     expect(analysisGapMs('normal', true, 6_000)).toBe(18_000)
     expect(analysisGapMs('frequent', false, 600_000)).toBe(60_000)
+  })
+})
+
+describe('a single-player session seen through the screen', () => {
+  const SILKSONG = { id: 'silksong', name: 'Hollow Knight: Silksong', competitive: false }
+  const screenEvents = (
+    h: Harness,
+    at: number,
+    types: GameEventType[],
+    fields: { opponent?: string; place?: string } = {}
+  ): GameEvent[] =>
+    h.commentator.observe(
+      {
+        time: at * 1000,
+        source: 'screen',
+        phase: 'playing',
+        inFight: false,
+        score: null,
+        description: '',
+        events: types.map((type) => makeEvent(type, at * 1000, 'screen', fields))
+      },
+      SILKSONG
+    )
+
+  it('tells the model which attempt this is', async () => {
+    const h = harness({ game: SILKSONG })
+    screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })
+    await h.wait(4)
+    expect(h.prompts[0]).toContain('attempt 1')
+  })
+
+  it('sizes beating a boss as exceptional after three attempts', () => {
+    const h = harness({ game: SILKSONG })
+    for (let i = 0; i < 3; i++) {
+      screenEvents(h, i * 100, ['boss_encounter'], { opponent: 'Moss Mother' })
+    }
+    const won = screenEvents(h, 400, ['fight_won'], { opponent: 'Moss Mother' })
+    expect(won[0].tier).toBe('exceptional')
+  })
+
+  it('sizes a death as minor early in a boss fight and significant from the third attempt', () => {
+    const h = harness({ game: SILKSONG })
+    screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })
+    expect(screenEvents(h, 10, ['death'], { place: 'Grotto' })[0].tier).toBe('minor')
+    screenEvents(h, 100, ['boss_encounter'], { opponent: 'Moss Mother' })
+    screenEvents(h, 200, ['boss_encounter'], { opponent: 'Moss Mother' })
+    expect(screenEvents(h, 210, ['death'], { place: 'Grotto' })[0].tier).toBe('significant')
+  })
+
+  it('counts the same area entered twice within two minutes once', () => {
+    const h = harness({ game: SILKSONG })
+    expect(screenEvents(h, 0, ['area_entered'], { place: 'Moss Grotto' })).toHaveLength(1)
+    expect(screenEvents(h, 60, ['area_entered'], { place: 'Moss Grotto' })).toHaveLength(0)
+  })
+
+  it('forgets the session when the game changes', async () => {
+    const h = harness({ game: SILKSONG })
+    screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })
+    h.commentator.observe(
+      {
+        time: 500_000,
+        source: 'screen',
+        phase: 'playing',
+        inFight: false,
+        score: null,
+        description: '',
+        events: []
+      },
+      { id: 'other', name: 'Other', competitive: false }
+    )
+    screenEvents(h, 600, ['boss_encounter'], { opponent: 'Moss Mother' })
+    await h.wait(604)
+    expect(h.prompts[0]).toContain('attempt 1')
   })
 })

@@ -514,7 +514,8 @@
       "needs-consent": "Permite la detección de juegos en Ajustes → Juegos para empezar el seguimiento",
       "waiting-for-game": "Esperando a que un juego sea la ventana activa",
       "watching": "Siguiendo",
-      "analyzing": "Mirando tu pantalla…"
+      "analyzing": "Mirando tu pantalla…",
+      "blocked-by-fullscreen": "El juego está en pantalla completa exclusiva, así que GameMate no puede verlo. Cámbialo a pantalla completa en ventana."
     },
     "intensities": {
       "subtle": "Sutil",

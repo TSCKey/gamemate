@@ -511,7 +511,8 @@
       "needs-consent": "Erlaube die Spielerkennung unter Einstellungen → Spiele, um mit dem Beobachten zu beginnen",
       "waiting-for-game": "Wartet darauf, dass ein Spiel das aktive Fenster ist",
       "watching": "Beobachtet",
-      "analyzing": "Schaut auf deinen Bildschirm…"
+      "analyzing": "Schaut auf deinen Bildschirm…",
+      "blocked-by-fullscreen": "Das Spiel läuft im exklusiven Vollbild, deshalb kann GameMate es nicht sehen. Stell es auf Fenster-Vollbild um."
     },
     "intensities": {
       "subtle": "Dezent",

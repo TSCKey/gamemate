@@ -19,6 +19,7 @@ import {
   type VisionGame
 } from './events'
 import { MatchMemory, type MatchContext } from './matchMemory'
+import { SessionMemory, type SessionContext } from './sessionMemory'
 import {
   claimsTooMuch,
   cleanReaction,
@@ -51,6 +52,8 @@ const STICKY_MAX_GAP_MS = 120_000
 const STREAK_EXCEPTIONAL = 5
 const MULTIKILL_EXCEPTIONAL = 4
 const WORLD_SIGNIFICANT = 8
+// From this many tries at a boss, beating it or losing to it is a story.
+const HARD_BOSS_ATTEMPTS = 3
 const SAY_IT_DIFFERENTLY =
   '\nThat last attempt was too close to something you already said: word it differently.'
 
@@ -60,8 +63,20 @@ function eventKey(event: GameEvent): string {
 }
 
 // How big a moment this is, given the match so far.
-function sizeOf(event: GameEvent, context: MatchContext, game: VisionGame): Tier {
+function sizeOf(
+  event: GameEvent,
+  context: MatchContext,
+  session: SessionContext,
+  game: VisionGame
+): Tier {
   switch (event.type) {
+    case 'boss_encounter':
+      return 'significant'
+    case 'fight_won':
+      // Memory put the number of attempts in `count`.
+      return event.source === 'screen' && event.count >= HARD_BOSS_ATTEMPTS
+        ? 'exceptional'
+        : event.tier
     case 'kill':
       return event.count >= 2 || context.killStreak >= 2 ? 'significant' : 'minor'
     case 'multikill':
@@ -69,6 +84,9 @@ function sizeOf(event: GameEvent, context: MatchContext, game: VisionGame): Tier
     case 'kill_streak':
       return event.count >= STREAK_EXCEPTIONAL ? 'exceptional' : 'significant'
     case 'death': {
+      if (event.source === 'screen') {
+        return (session.boss?.attempt ?? 0) >= HARD_BOSS_ATTEMPTS ? 'significant' : 'minor'
+      }
       if (!game.competitive) return 'significant'
       const sameOpponent =
         event.opponent !== '' &&
@@ -83,6 +101,9 @@ function sizeOf(event: GameEvent, context: MatchContext, game: VisionGame): Tier
 
 export class Commentator {
   private memory = new MatchMemory()
+  // Used instead of match memory for games read off the screen (single-player).
+  private session = new SessionMemory()
+  private lastSource: FrameReport['source'] = 'vision'
   private director = new Director()
   private seen = new Map<string, number>()
   private lastFrameKeys = new Set<string>()
@@ -108,16 +129,21 @@ export class Commentator {
       this.gameId = game.id
     }
     const { fresh, held } = this.removeRepeats(report)
-    const derived = this.memory.absorb({ ...report, events: fresh }, held)
+    const derived =
+      report.source === 'screen'
+        ? this.session.absorb(fresh, report.time)
+        : this.memory.absorb({ ...report, events: fresh }, held)
     for (const event of derived) this.seen.set(eventKey(event), event.time)
 
     const events = [...fresh, ...derived]
     const context = this.memory.context(this.now())
-    for (const event of events) event.tier = sizeOf(event, context, game)
+    const session = this.session.context(this.now())
+    for (const event of events) event.tier = sizeOf(event, context, session, game)
     this.director.offer(events)
 
     if (report.time >= this.newestFrame) {
       this.newestFrame = report.time
+      this.lastSource = report.source
       this.inFight = report.inFight
       this.phase = report.phase
     }
@@ -211,7 +237,8 @@ export class Commentator {
       recent,
       intensity: options.intensity,
       humor: options.humor,
-      tactical: decision.tactical
+      tactical: decision.tactical,
+      ...(this.lastSource === 'screen' ? { session: this.session.context(this.now()) } : {})
     }
     const prompt = reactionPrompt(request)
     const usable = (text: string): boolean =>
@@ -238,6 +265,8 @@ export class Commentator {
 
   private startOver(): void {
     this.memory.startNewMatch()
+    this.session.reset()
+    this.lastSource = 'vision'
     this.director.clearPending()
     this.seen.clear()
     this.lastFrameKeys = new Set()

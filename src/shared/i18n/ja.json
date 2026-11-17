@@ -508,7 +508,8 @@
       "needs-consent": "見守りを始めるには 設定 → ゲーム でゲームの検出を許可してください",
       "waiting-for-game": "ゲームがアクティブなウィンドウになるのを待っています",
       "watching": "見守り中",
-      "analyzing": "画面を見ています…"
+      "analyzing": "画面を見ています…",
+      "blocked-by-fullscreen": "ゲームが排他的フルスクリーンで動いているため、GameMate からは見えません。ウィンドウ化フルスクリーンに切り替えてください。"
     },
     "intensities": {
       "subtle": "控えめ",

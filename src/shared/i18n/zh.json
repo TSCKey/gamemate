@@ -508,7 +508,8 @@
       "needs-consent": "请在“设置 → 游戏”中允许检测游戏以开始关注",
       "waiting-for-game": "正在等待游戏成为活动窗口",
       "watching": "正在关注",
-      "analyzing": "正在查看你的屏幕…"
+      "analyzing": "正在查看你的屏幕…",
+      "blocked-by-fullscreen": "游戏正以独占全屏运行,GameMate 无法看到它。请切换为窗口化全屏。"
     },
     "intensities": {
       "subtle": "含蓄",

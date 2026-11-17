@@ -4,6 +4,10 @@ import { languageInfo, type LanguageCode } from '../../shared/languages'
 import type { CommentaryHumor, ReactionIntensity } from '../../shared/types'
 import { EVENT_RULES, type GameEvent, type GameEventType, type Mood, type Tier } from './events'
 import type { MatchContext } from './matchMemory'
+import type { SessionContext } from './sessionMemory'
+
+// How many of the latest timeline facts the model gets.
+const TIMELINE_NOTES = 4
 
 export interface ReactionRequest {
   game: { name: string; competitive: boolean }
@@ -18,6 +22,8 @@ export interface ReactionRequest {
   humor: CommentaryHumor
   // Whether a short constructive observation is allowed this time.
   tactical: boolean
+  // What a single-player session has shown so far (set only for screen-read games).
+  session?: SessionContext
 }
 
 const WORD_LIMIT: Record<ReactionIntensity, Record<Tier, number>> = {
@@ -83,6 +89,14 @@ function memoryNotes(request: ReactionRequest): string[] {
     notes.push(`"${nemesis.name}" has now eliminated them ${nemesis.count} times.`)
   }
   if (tactical && context.pattern) notes.push(patternNote(context.pattern))
+  const { session } = request
+  if (session) {
+    if (session.boss) notes.push(`This is attempt ${session.boss.attempt} at ${session.boss.name}.`)
+    if (session.deathsHere >= 2) notes.push(`They have died here ${session.deathsHere} times.`)
+    if (session.timeline.length > 0) {
+      notes.push(`What just happened: ${session.timeline.slice(-TIMELINE_NOTES).join(', ')}.`)
+    }
+  }
   return notes
 }
 

@@ -48,6 +48,8 @@ const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   win_streak: '📈',
   loss_streak: '📉',
   victory: '🏆',
+  boss_encounter: '👑',
+  area_entered: '🗺️',
   defeat: '🫡',
   milestone: '🎉'
 }

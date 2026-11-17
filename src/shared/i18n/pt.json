@@ -514,7 +514,8 @@
       "needs-consent": "Permita a detecção de jogos em Configurações → Jogos para começar a acompanhar",
       "waiting-for-game": "Esperando um jogo ser a janela ativa",
       "watching": "Acompanhando",
-      "analyzing": "Olhando sua tela…"
+      "analyzing": "Olhando sua tela…",
+      "blocked-by-fullscreen": "O jogo está em tela cheia exclusiva, então o GameMate não consegue vê-lo. Mude para tela cheia em janela."
     },
     "intensities": {
       "subtle": "Sutil",
