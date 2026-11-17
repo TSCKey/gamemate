@@ -134,6 +134,7 @@ export class Commentator {
         ? this.session.absorb(fresh, report.time)
         : this.memory.absorb({ ...report, events: fresh }, held)
     for (const event of derived) this.seen.set(eventKey(event), event.time)
+    if (report.source === 'screen' && report.fightEnded) this.session.endFight()
 
     const events = [...fresh, ...derived]
     const context = this.memory.context(this.now())

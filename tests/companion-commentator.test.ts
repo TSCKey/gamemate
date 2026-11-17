@@ -766,6 +766,36 @@ describe('a single-player session seen through the screen', () => {
     expect(screenEvents(h, 15, ['boss_encounter'], { opponent: 'Moss Mother' })).toHaveLength(1)
   })
 
+  it('lets go of the boss when the screen says the fight ended without a result', async () => {
+    const h = harness({ game: SILKSONG })
+    for (let i = 0; i < 3; i++) {
+      screenEvents(h, i * 40, ['boss_encounter'], { opponent: 'Lace' })
+    }
+    await h.wait(84)
+    const said = h.prompts.length
+    // The player left the arena: no event and nothing to say, the fight is just over.
+    const ended = h.commentator.observe(
+      {
+        time: 200_000,
+        source: 'screen',
+        phase: 'playing',
+        inFight: false,
+        score: null,
+        description: '',
+        events: [],
+        fightEnded: true
+      },
+      SILKSONG
+    )
+    expect(ended).toEqual([])
+    await h.wait(204)
+    expect(h.prompts).toHaveLength(said)
+    screenEvents(h, 300, ['low_health'])
+    await h.wait(304)
+    expect(h.prompts).toHaveLength(said + 1)
+    expect(h.prompts.at(-1)).not.toContain('This is attempt')
+  })
+
   it('counts two screen deaths a minute apart, with nothing between, as two deaths', () => {
     const h = harness({ game: SILKSONG })
     expect(screenEvents(h, 0, ['death'], { place: 'Moss Grotto' })).toHaveLength(1)

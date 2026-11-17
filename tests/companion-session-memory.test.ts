@@ -121,6 +121,15 @@ describe('session memory', () => {
     expect(won.detail).toContain('Lace')
   })
 
+  it('forgets the boss when the fight ends with no result, and notes nothing about it', () => {
+    const memory = new SessionMemory()
+    memory.absorb([boss(0, 'Lace')], 0)
+    const before = memory.context(1000).timeline
+    memory.endFight()
+    expect(memory.context(2000).boss).toBeNull()
+    expect(memory.context(2000).timeline).toEqual(before)
+  })
+
   it('keeps the timeline to ten entries, newest last', () => {
     const memory = new SessionMemory()
     for (let i = 0; i < 15; i++) {

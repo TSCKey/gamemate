@@ -128,6 +128,12 @@ export class SessionMemory {
     this.boss = null
   }
 
+  // The player left the boss's arena with no death or win seen: the fight is over, so the next
+  // prompt no longer calls it an attempt in progress. Nothing is noted, as nothing is known.
+  endFight(): void {
+    this.boss = null
+  }
+
   private note(fact: string): void {
     this.timeline.push(fact)
     if (this.timeline.length > MAX_TIMELINE) this.timeline.shift()

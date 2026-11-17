@@ -38,6 +38,9 @@ export interface FrameReport {
   score: { own: number; enemy: number } | null
   description: string
   events: GameEvent[]
+  // Screen checks only: the player left the room, so any boss fight ended, with no word on how.
+  // It is no event: nothing is said or logged about it, the fight is just forgotten.
+  fightEnded?: boolean
 }
 
 export interface EventRule {

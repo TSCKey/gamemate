@@ -689,12 +689,18 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
   // Leaving the room ended the fight as the tracker sees it, won or not, so the boss's title
   // shown again later is a new encounter.
   if (leftRoom) currentBoss = ''
-  deliverScreen(run, events, time)
+  deliverScreen(run, events, time, leftRoom)
 }
 
 // Events from the screen go through the same pipeline as the model's; returns what was new.
-function deliverScreen(run: ScreenRun, events: GameEvent[], time: number): GameEvent[] {
-  if (events.length === 0 || screenRun !== run) return []
+// `fightEnded` tells session memory a room change ended any boss fight, even with no events.
+function deliverScreen(
+  run: ScreenRun,
+  events: GameEvent[],
+  time: number,
+  fightEnded = false
+): GameEvent[] {
+  if ((events.length === 0 && !fightEnded) || screenRun !== run) return []
   const report: FrameReport = {
     time,
     source: 'screen',
@@ -702,7 +708,8 @@ function deliverScreen(run: ScreenRun, events: GameEvent[], time: number): GameE
     inFight: tracker.fighting(),
     score: null,
     description: '',
-    events
+    events,
+    fightEnded
   }
   const fresh = commentator.observe(report, visionGame(run.game))
   logEvents(fresh, '')

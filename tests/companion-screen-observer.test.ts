@@ -352,6 +352,32 @@ describe('watching Silksong', () => {
     expect(logged()).toEqual(['boss_encounter', 'boss_encounter'])
   })
 
+  it('stops calling it an attempt at the boss once the player left the arena', async () => {
+    switches.inferBossDefeat = shipped.INFER_BOSS_DEFEAT
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(writes.at(-1)?.content).toContain('This is attempt 1 at Moss Mother')
+    // A long fight, then a room change: the fight is over, with no word on how.
+    feed({}, 21 * 4)
+    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({}, 1)
+    await settle()
+    const said = writes.length
+    await vi.advanceTimersByTimeAsync(30_000)
+    expect(writes).toHaveLength(said)
+    feed({ masks: 3 }, 2)
+    feed({ masks: 1 }, 2)
+    await settle()
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(logged()).toEqual(['boss_encounter', 'low_health'])
+    // The low-health comment (a repeated reply is asked for again, so there may be two tries).
+    const fresh = writes.slice(said)
+    expect(fresh.length).toBeGreaterThan(0)
+    for (const write of fresh) expect(write.content).not.toContain('This is attempt')
+  })
+
   it('takes a dark stretch with full masks for no death', async () => {
     feed({}, 2)
     feed({ brightness: 0.03, masks: 0 }, 8)
