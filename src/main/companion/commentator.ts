@@ -165,7 +165,10 @@ export class Commentator {
       keys.add(key)
       const lastSeen = this.seen.get(key)
       const closeEnough = lastSeen !== undefined && Math.abs(report.time - lastSeen) < rule.dedupeMs
+      // The screen checks only ever report something new as it happens, so a second death from
+      // them is a second death, never the same death screen still up.
       const stillUp =
+        report.source !== 'screen' &&
         rule.sticky === true &&
         this.lastFrameKeys.has(key) &&
         lastSeen !== undefined &&

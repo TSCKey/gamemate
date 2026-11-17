@@ -766,6 +766,24 @@ describe('a single-player session seen through the screen', () => {
     expect(screenEvents(h, 15, ['boss_encounter'], { opponent: 'Moss Mother' })).toHaveLength(1)
   })
 
+  it('counts two screen deaths a minute apart, with nothing between, as two deaths', () => {
+    const h = harness({ game: SILKSONG })
+    expect(screenEvents(h, 0, ['death'], { place: 'Moss Grotto' })).toHaveLength(1)
+    expect(screenEvents(h, 60, ['death'], { place: 'Moss Grotto' })).toHaveLength(1)
+  })
+
+  it('counts two close calls a minute apart, with nothing between, as two', () => {
+    const h = harness({ game: SILKSONG })
+    expect(screenEvents(h, 0, ['low_health'])).toHaveLength(1)
+    expect(screenEvents(h, 60, ['low_health'])).toHaveLength(1)
+  })
+
+  it('still drops the same screen death reported again within seconds', () => {
+    const h = harness({ game: SILKSONG })
+    expect(screenEvents(h, 0, ['death'], { place: 'Moss Grotto' })).toHaveLength(1)
+    expect(screenEvents(h, 3, ['death'], { place: 'Moss Grotto' })).toHaveLength(0)
+  })
+
   it('counts the same area entered twice within two minutes once', () => {
     const h = harness({ game: SILKSONG })
     expect(screenEvents(h, 0, ['area_entered'], { place: 'Moss Grotto' })).toHaveLength(1)
