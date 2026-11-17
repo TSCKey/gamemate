@@ -62,15 +62,31 @@ describe('matching text to known names', () => {
     expect(names.matchName('~ Moss Grotto ~', areas)).toBe('Moss Grotto')
   })
 
-  it('finds the name among noise words', async () => {
+  it('finds the name next to a stray word', async () => {
     const { names } = await load({})
-    expect(names.matchName('x7 Moss Grotto lq', areas)).toBe('Moss Grotto')
+    expect(names.matchName('Moss Grotto lq', areas)).toBe('Moss Grotto')
   })
 
   it('matches a plain name that the wiki lists with a disambiguation', async () => {
     const { names, silksong } = await load({})
     expect(silksong.SILKSONG_FALLBACK.areas).toContain('The Abyss')
     expect(names.matchName('THE ABYSS', silksong.SILKSONG_FALLBACK.areas)).toBe('The Abyss')
+  })
+
+  it('prefers the longer name when two score the same', async () => {
+    const { names, silksong } = await load({})
+    expect(names.matchName('LOST LACE', silksong.SILKSONG_FALLBACK.bosses)).toBe('Lost Lace')
+  })
+
+  it('does not take ordinary text for a name', async () => {
+    const { names, silksong } = await load({})
+    const { bosses, areas } = silksong.SILKSONG_FALLBACK
+    expect(names.matchName('narrow passage', [...areas, 'The Marrow'])).toBeNull()
+    expect(names.matchName('narrow', areas)).toBeNull()
+    expect(names.matchName('window', bosses)).toBeNull()
+    expect(names.matchName('sharp', bosses)).toBeNull()
+    expect(names.matchName('Silk Lace obtained', bosses)).toBeNull()
+    expect(names.matchName('phantoms', bosses)).toBeNull()
   })
 
   it('ignores accents', async () => {
