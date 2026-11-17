@@ -1,0 +1,340 @@
+import { describe, expect, it } from 'vitest'
+import { SilksongTracker, type ScreenSignal } from '../src/main/companion/silksongTracker'
+import type { SilksongMeasure } from '../src/shared/screen/silksong'
+
+const STEP = 250 // the renderer measures four times a second
+
+const base: SilksongMeasure = {
+  brightness: 0.5,
+  masks: 5,
+  areaText: 0,
+  bossText: 0,
+  pickupText: 0
+}
+
+/** Feeds `count` frames of one scene, 250 ms apart, and returns every signal with its time. */
+class Run {
+  time = 0
+  signals: { time: number; signal: ScreenSignal }[] = []
+  constructor(public tracker = new SilksongTracker()) {}
+
+  frames(count: number, over: Partial<SilksongMeasure> = {}, step = STEP): this {
+    for (let i = 0; i < count; i++) {
+      const out = this.tracker.push({ ...base, ...over }, this.time)
+      for (const signal of out) this.signals.push({ time: this.time, signal })
+      this.time += step
+    }
+    return this
+  }
+
+  /** Same, for a number of seconds. */
+  seconds(s: number, over: Partial<SilksongMeasure> = {}): this {
+    return this.frames(Math.round((s * 1000) / STEP), over)
+  }
+
+  kinds(): string[] {
+    return this.signals.map((s) => s.signal.kind)
+  }
+}
+
+describe('SilksongTracker masks', () => {
+  it('reports damage when a held mask count drops', () => {
+    const run = new Run().frames(4, { masks: 5 }).frames(3, { masks: 4 })
+    expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'damage', masks: 4 }])
+  })
+
+  it('does not trust a mask count that lasts a single frame', () => {
+    const run = new Run().frames(3, { masks: 3 }).frames(1, { masks: 2 }).frames(3, { masks: 3 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('reports damage only after the lower count holds for 2 frames', () => {
+    const run = new Run().frames(3, { masks: 5 }).frames(1, { masks: 4 })
+    expect(run.kinds()).toEqual([])
+    run.frames(1, { masks: 4 })
+    expect(run.kinds()).toEqual(['damage'])
+  })
+
+  it('does not report damage when masks go up', () => {
+    const run = new Run().frames(3, { masks: 3 }).frames(3, { masks: 4 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('reports a close call once when masks reach 1', () => {
+    const run = new Run().frames(3, { masks: 3 }).frames(3, { masks: 1 }).frames(6, { masks: 1 })
+    expect(run.kinds()).toEqual(['damage', 'close_call'])
+  })
+
+  it('allows another close call after masks went back up to 2 or more', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .frames(3, { masks: 2 })
+      .frames(3, { masks: 1 })
+    expect(run.kinds().filter((k) => k === 'close_call')).toHaveLength(2)
+  })
+
+  it('reports recovered when 2 or more masks hold for 3 s after a close call', () => {
+    const run = new Run().frames(3, { masks: 3 }).frames(3, { masks: 1 }).frames(2, { masks: 3 })
+    const before = run.kinds()
+    expect(before).not.toContain('recovered')
+    run.seconds(3, { masks: 3 })
+    expect(run.kinds().filter((k) => k === 'recovered')).toHaveLength(1)
+  })
+
+  it('does not report recovered when masks fall back to 1 before 3 s', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .seconds(2, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .seconds(2, { masks: 3 })
+    expect(run.kinds()).not.toContain('recovered')
+  })
+
+  it('does not report recovered without a close call first', () => {
+    const run = new Run().seconds(10, { masks: 4 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('ignores the mask count on dark frames, so fades are not close calls', () => {
+    const run = new Run()
+      .frames(4, { masks: 5 })
+      .frames(3, { brightness: 0.03, masks: 0 })
+      .frames(4, { masks: 5 })
+    expect(run.kinds()).not.toContain('damage')
+    expect(run.kinds()).not.toContain('close_call')
+  })
+
+  it('lets dark frames neither confirm nor break a held mask count', () => {
+    // One real frame of 4, a dark frame, then one more real frame of 4: that is 2 frames.
+    const run = new Run()
+      .frames(4, { masks: 5 })
+      .frames(1, { masks: 4 })
+      .frames(1, { brightness: 0.03, masks: 0 })
+      .frames(1, { masks: 4 })
+    expect(run.kinds()).toContain('damage')
+  })
+})
+
+describe('SilksongTracker fades', () => {
+  it('reports a death for a fade of at least 1.5 s', () => {
+    const run = new Run()
+      .frames(4)
+      .frames(6, { brightness: 0.02, masks: 0 }) // dark 1.5 s
+      .frames(2)
+    expect(run.kinds()).toContain('death')
+    expect(run.kinds()).not.toContain('room_change')
+  })
+
+  it('reports a room change for a fade between 0.2 s and 1.5 s', () => {
+    const run = new Run()
+      .frames(4)
+      .frames(2, { brightness: 0.02, masks: 0 }) // dark 0.5 s
+      .frames(2)
+    expect(run.kinds()).toEqual(['room_change'])
+  })
+
+  it('ignores a dip that is gone within 0.2 s', () => {
+    const run = new Run()
+    run.tracker.push({ ...base }, 0)
+    expect(run.tracker.push({ ...base, brightness: 0.02 }, 100)).toEqual([])
+    expect(run.tracker.push({ ...base }, 200)).toEqual([])
+  })
+
+  it('does not count a fade that did not start from a bright frame', () => {
+    const run = new Run()
+      .frames(4, { brightness: 0.1 })
+      .frames(4, { brightness: 0.02, masks: 0 })
+      .frames(2, { brightness: 0.1 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('does not count a slow fade where brightness takes more than 1 s to fall', () => {
+    const run = new Run()
+      .frames(4)
+      .frames(6, { brightness: 0.1 }) // 1.5 s at a middling level
+      .frames(4, { brightness: 0.02, masks: 0 })
+      .frames(2)
+    expect(run.kinds()).toEqual([])
+  })
+})
+
+describe('SilksongTracker titles', () => {
+  it('reports an area title held for 0.5 s', () => {
+    const run = new Run().frames(1).frames(4, { areaText: 0.6 })
+    expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'title', title: 'area' }])
+  })
+
+  it('reports a boss title as a boss title', () => {
+    const run = new Run().frames(5, { bossText: 0.6 })
+    expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'title', title: 'boss' }])
+  })
+
+  it('does not report text that is gone before 0.5 s', () => {
+    const run = new Run().frames(2, { areaText: 0.6 }).frames(4)
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('does not report a score at or under 0.3', () => {
+    const run = new Run().seconds(3, { areaText: 0.3 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('gives one signal for a title held for 10 s', () => {
+    const run = new Run().seconds(10, { areaText: 0.8 })
+    expect(run.kinds()).toEqual(['title'])
+  })
+
+  it('allows a new showing after the score was below 0.1 for 2 s', () => {
+    const run = new Run()
+      .seconds(2, { areaText: 0.8 })
+      .seconds(2.25, {})
+      .seconds(2, { areaText: 0.8 })
+    expect(run.kinds()).toEqual(['title', 'title'])
+  })
+
+  it('does not allow a new showing after a pause shorter than 2 s', () => {
+    const run = new Run().seconds(2, { areaText: 0.8 }).seconds(1, {}).seconds(2, { areaText: 0.8 })
+    expect(run.kinds()).toEqual(['title'])
+  })
+
+  it('does not re-arm while the score hovers between 0.1 and 0.3', () => {
+    const run = new Run()
+      .seconds(2, { areaText: 0.8 })
+      .seconds(5, { areaText: 0.2 })
+      .seconds(2, { areaText: 0.8 })
+    expect(run.kinds()).toEqual(['title'])
+  })
+
+  it('keeps area and boss titles apart', () => {
+    const run = new Run().seconds(2, { areaText: 0.8, bossText: 0.8 })
+    expect(run.signals.map((s) => s.signal)).toEqual([
+      { kind: 'title', title: 'area' },
+      { kind: 'title', title: 'boss' }
+    ])
+  })
+
+  it('forgets a half-held title on reset', () => {
+    const t = new SilksongTracker()
+    const out: ScreenSignal[] = []
+    for (const time of [0, 100, 200, 300]) out.push(...t.push({ ...base, areaText: 0.8 }, time))
+    t.reset()
+    for (const time of [400, 500, 600, 700]) out.push(...t.push({ ...base, areaText: 0.8 }, time))
+    expect(out).toEqual([])
+  })
+})
+
+describe('SilksongTracker pickups', () => {
+  it('reports a pickup once per showing', () => {
+    const run = new Run().seconds(8, { pickupText: 0.7 })
+    expect(run.kinds()).toEqual(['pickup'])
+  })
+
+  it('allows another pickup after the text was gone for 2 s', () => {
+    const run = new Run()
+      .seconds(2, { pickupText: 0.7 })
+      .seconds(2.25, {})
+      .seconds(2, { pickupText: 0.7 })
+    expect(run.kinds()).toEqual(['pickup', 'pickup'])
+  })
+})
+
+describe('SilksongTracker boss defeated', () => {
+  const roomChange = (run: Run): Run => run.frames(2, { brightness: 0.02, masks: 0 }).frames(2)
+
+  it('reports boss_defeated for a room change 20 s or more after the boss began', () => {
+    const run = new Run().frames(2)
+    run.tracker.setBoss('Moorwing')
+    run.seconds(21)
+    roomChange(run)
+    expect(run.kinds()).toEqual(['room_change', 'boss_defeated'])
+  })
+
+  it('does not report boss_defeated for a room change within 20 s', () => {
+    const run = new Run().frames(2)
+    run.tracker.setBoss('Moorwing')
+    run.seconds(5)
+    roomChange(run)
+    expect(run.kinds()).toEqual(['room_change'])
+  })
+
+  it('reports it only once, then forgets the boss', () => {
+    const run = new Run().frames(2)
+    run.tracker.setBoss('Moorwing')
+    run.seconds(21)
+    roomChange(run)
+    run.seconds(2)
+    roomChange(run)
+    expect(run.kinds().filter((k) => k === 'boss_defeated')).toHaveLength(1)
+  })
+
+  it('does not report boss_defeated when the player died during the boss', () => {
+    const run = new Run().frames(2)
+    run.tracker.setBoss('Moorwing')
+    run.seconds(21)
+    run.frames(6, { brightness: 0.02, masks: 0 }).frames(2) // death
+    roomChange(run)
+    expect(run.kinds()).toEqual(['death', 'room_change'])
+  })
+
+  it('does nothing without a boss', () => {
+    const run = new Run().frames(2).seconds(30)
+    roomChange(run)
+    expect(run.kinds()).toEqual(['room_change'])
+  })
+})
+
+describe('SilksongTracker blocked capture', () => {
+  const black = { brightness: 0, masks: 0 }
+
+  it('reports blocked after 8 black frames in a row, once', () => {
+    const run = new Run().frames(3).frames(7, black)
+    expect(run.kinds()).not.toContain('blocked')
+    run.frames(1, black).frames(10, black)
+    expect(run.kinds().filter((k) => k === 'blocked')).toHaveLength(1)
+  })
+
+  it('does not report blocked when a bright frame interrupts the black ones', () => {
+    const run = new Run().frames(7, black).frames(1).frames(7, black)
+    expect(run.kinds()).not.toContain('blocked')
+  })
+
+  it('can report blocked again after a non-black frame arrives', () => {
+    const run = new Run().frames(8, black).frames(2).frames(8, black)
+    expect(run.kinds().filter((k) => k === 'blocked')).toHaveLength(2)
+  })
+})
+
+describe('SilksongTracker fighting', () => {
+  it('is true for 10 s after damage and false after', () => {
+    const run = new Run().frames(3, { masks: 5 }).frames(2, { masks: 4 })
+    expect(run.tracker.fighting()).toBe(true)
+    run.seconds(9, { masks: 4 })
+    expect(run.tracker.fighting()).toBe(true)
+    run.seconds(2, { masks: 4 })
+    expect(run.tracker.fighting()).toBe(false)
+  })
+
+  it('is false before any damage', () => {
+    const run = new Run().seconds(5)
+    expect(run.tracker.fighting()).toBe(false)
+  })
+})
+
+describe('SilksongTracker reset', () => {
+  it('clears fighting, the boss and the held mask count', () => {
+    const run = new Run().frames(3, { masks: 5 }).frames(2, { masks: 4 })
+    run.tracker.setBoss('Moorwing')
+    run.tracker.reset()
+    expect(run.tracker.fighting()).toBe(false)
+    // After a reset the first held count is a fresh start, not a drop from 4 to 3.
+    const after = new Run(run.tracker)
+    after.time = 100000
+    after.frames(3, { masks: 3 })
+    expect(after.kinds()).toEqual([])
+    after.seconds(21)
+    after.frames(2, { brightness: 0.02, masks: 0 }).frames(2)
+    expect(after.kinds()).toEqual(['room_change'])
+  })
+})
