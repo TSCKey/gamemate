@@ -28,6 +28,7 @@ import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
 import { closeToast, setUpToast, showToast } from './windows/toast'
 import { shutdownSpeech } from './voice/tts'
+import { shutdownOcr } from './system/ocr'
 import { removeOldVoice } from './voice/migrate'
 import { registerModelScheme, serveModels } from './voice/voiceModels'
 import {
@@ -330,6 +331,7 @@ app.on('will-quit', (event) => {
   stopObserver()
   closeToast()
   shutdownSpeech()
+  shutdownOcr()
   flushSettings()
   globalShortcut.unregisterAll()
   Promise.allSettled([unloadModels(), stopEngine()]).finally(() => {
