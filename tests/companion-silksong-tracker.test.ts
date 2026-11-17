@@ -141,13 +141,66 @@ describe('SilksongTracker fades', () => {
     expect(run.kinds()).toEqual(['blocked'])
   })
 
-  it('reports a death for a fade of at least 1.5 s', () => {
+  it('reports a death for a fade of at least 1.5 s from 1 mask, once the masks refill', () => {
     const run = new Run()
-      .frames(4)
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
       .frames(6, { brightness: 0.02, masks: 0 }) // dark 1.5 s
-      .frames(2)
+    const fadeEnd = run.time
+    run.frames(1, { masks: 5 })
+    expect(run.kinds()).not.toContain('death')
+    // The refilled count is trusted on its second frame: that confirms the death.
+    run.frames(1, { masks: 5 })
+    expect(run.kinds()).toEqual(['damage', 'close_call', 'death'])
+    // It is dated to the end of the fade, when it happened.
+    expect(run.signals.at(-1)?.signal).toEqual({ kind: 'death', at: fadeEnd })
+  })
+
+  it('reports a death from 2 masks too', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 2 })
+      .frames(8, { brightness: 0.02, masks: 0 })
+      .frames(3, { masks: 5 })
     expect(run.kinds()).toContain('death')
-    expect(run.kinds()).not.toContain('room_change')
+  })
+
+  it('gives nothing for a death-length fade with 5 masks before it', () => {
+    const run = new Run()
+      .frames(4, { masks: 5 })
+      .frames(6, { brightness: 0.02, masks: 0 })
+      .seconds(5, { masks: 5 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('gives nothing when the masks are still 1 after the fade', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .frames(6, { brightness: 0.02, masks: 0 })
+      .seconds(11, { masks: 1 })
+    expect(run.kinds()).not.toContain('death')
+  })
+
+  it('gives nothing when the masks refill more than 10 s after the fade', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .frames(6, { brightness: 0.02, masks: 0 })
+      .seconds(10.5, { masks: 1 })
+      .frames(3, { masks: 5 })
+    expect(run.kinds()).not.toContain('death')
+  })
+
+  it('reports no recovery for the masks refilled after a death', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .frames(2, { masks: 2 })
+      .frames(12, { brightness: 0.02, masks: 0 }) // dark 3 s
+      .seconds(5, { masks: 5 })
+    expect(run.kinds()).toContain('death')
+    expect(run.kinds()).not.toContain('recovered')
   })
 
   it('reports a room change for a fade between 0.2 s and 1.5 s', () => {
@@ -316,9 +369,10 @@ describe('SilksongTracker boss defeated', () => {
     const run = inferring().frames(2)
     run.tracker.setBoss('Moorwing')
     run.seconds(21)
+    run.frames(2, { masks: 1 })
     run.frames(6, { brightness: 0.02, masks: 0 }).frames(2) // death
     roomChange(run)
-    expect(run.kinds()).toEqual(['death', 'room_change'])
+    expect(run.kinds()).toEqual(['damage', 'close_call', 'death', 'room_change'])
   })
 
   it('does nothing without a boss', () => {
@@ -349,8 +403,8 @@ describe('SilksongTracker blocked capture', () => {
   })
 
   it('does not report blocked for a 3 s death fade, only the death', () => {
-    const run = new Run().frames(4).frames(12, black).frames(2)
-    expect(run.kinds()).toEqual(['death'])
+    const run = new Run().frames(4, { masks: 1 }).frames(12, black).frames(2)
+    expect(run.kinds()).toEqual(['close_call', 'death'])
   })
 })
 

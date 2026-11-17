@@ -14,13 +14,20 @@ const FADE_BRIGHTNESS = 0.05
 const BRIGHT_BEFORE_FADE = 0.2
 /** ... and get dark within this long. */
 const FADE_START_WINDOW_MS = 1000
-/** A fade at least this long is a death. */
+/** A fade at least this long can be a death. */
 const DEATH_FADE_MS = 1500
 /**
  * A black stretch longer than this is no death or room change: it is a load screen or a lost
  * capture. A first guess; Silksong's real death fade gets measured later.
  */
 const DEATH_FADE_MAX_MS = 6000
+/**
+ * A death needs more than a dark screen: before the fade the player was down to this many masks
+ * or fewer (one hit, or one double hit, from dying) ...
+ */
+const DEATH_MAX_MASKS = 2
+/** ... and after it, a higher mask count (the refill on respawning) is read within this long. */
+const DEATH_REFILL_MS = 10000
 /** A fade at least this long, but shorter than a death, is a room change. */
 const ROOM_FADE_MIN_MS = 200
 /** Text scores above this count as text on screen. */
@@ -49,7 +56,7 @@ export type ScreenSignal =
   | { kind: 'damage'; masks: number }
   | { kind: 'close_call' }
   | { kind: 'recovered' }
-  | { kind: 'death' }
+  | { kind: 'death'; at: number }
   | { kind: 'room_change' }
   | { kind: 'title'; title: 'area' | 'boss' }
   | { kind: 'pickup' }
@@ -102,6 +109,9 @@ export class SilksongTracker {
 
   private lastBright: number | null = null
   private fadeStart: number | null = null
+  // A fade that could have been a death, waiting for the masks to refill. `masks` is the last
+  // count trusted before it; `at` is when it ended.
+  private deathPending: { at: number; masks: number } | null = null
 
   private area = new TextWatch()
   private boss = new TextWatch()
@@ -122,8 +132,10 @@ export class SilksongTracker {
     if (this.bossName !== null) this.bossSince ??= time
     const out: ScreenSignal[] = []
 
-    this.trackMasks(m, time, out)
+    if (this.deathPending && time - this.deathPending.at > DEATH_REFILL_MS) this.deathPending = null
+    // The fade first, so a frame that ends a death fade is never also read as a recovery.
     this.trackFade(m, time, out)
+    this.trackMasks(m, time, out)
 
     if (this.area.update(m.areaText, time)) out.push({ kind: 'title', title: 'area' })
     if (this.boss.update(m.bossText, time)) out.push({ kind: 'title', title: 'boss' })
@@ -152,6 +164,7 @@ export class SilksongTracker {
     this.lastDamage = null
     this.lastBright = null
     this.fadeStart = null
+    this.deathPending = null
     this.area = new TextWatch()
     this.boss = new TextWatch()
     this.pickup = new TextWatch()
@@ -178,10 +191,20 @@ export class SilksongTracker {
         this.lastDamage = time
         out.push({ kind: 'damage', masks: this.masks })
       }
+      const pending = this.deathPending
+      if (pending && this.masks > pending.masks) {
+        this.deathPending = null
+        this.death(pending.at, out)
+      }
     }
 
     const held = this.masks
     if (held === null) return
+    // Until a possible death is settled, the masks say nothing about close calls or recovery.
+    if (this.deathPending) {
+      this.goodSince = null
+      return
+    }
     if (held === 1) {
       this.goodSince = null
       if (this.closeCallArmed) {
@@ -225,7 +248,10 @@ export class SilksongTracker {
       return
     }
     if (length >= DEATH_FADE_MS) {
-      this.death(out)
+      // Only a possible death: it counts once the masks refill, and is dated to now.
+      if (this.masks !== null && this.masks <= DEATH_MAX_MASKS) {
+        this.deathPending = { at: time, masks: this.masks }
+      }
     } else if (length >= ROOM_FADE_MIN_MS) {
       out.push({ kind: 'room_change' })
       this.leaveRoom(time, out)
@@ -239,18 +265,19 @@ export class SilksongTracker {
     const long = this.bossSince !== null && time - this.bossSince >= BOSS_MIN_MS
     this.bossName = null
     this.bossSince = null
-    if (long && (this.options.inferBossDefeat ?? INFER_BOSS_DEFEAT)) {
+    // A fade that may have been a death just before is no sign of a win.
+    if (long && !this.deathPending && (this.options.inferBossDefeat ?? INFER_BOSS_DEFEAT)) {
       out.push({ kind: 'boss_defeated' })
     }
   }
 
-  private death(out: ScreenSignal[]): void {
+  private death(at: number, out: ScreenSignal[]): void {
     // Dying ends the fight and any close call; the boss is not beaten.
     this.bossName = null
     this.bossSince = null
     this.recoveryPending = false
     this.goodSince = null
-    out.push({ kind: 'death' })
+    out.push({ kind: 'death', at })
   }
 
   private trackBlocked(m: SilksongMeasure, out: ScreenSignal[]): void {

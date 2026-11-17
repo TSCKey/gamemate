@@ -145,6 +145,13 @@ function showText(region: 'areaText' | 'bossText' | 'pickupText'): void {
   feed({}, 1)
 }
 
+// A death as the screen shows it: down to the last mask, a 2 second fade, then the masks refill.
+function die(): void {
+  feed({ masks: 1 }, 2)
+  feed({ brightness: 0.03, masks: 0 }, 8)
+  feed({}, 2)
+}
+
 const settle = (): Promise<unknown> => vi.advanceTimersByTimeAsync(100)
 const logged = (): string[] => observer.getObserverState().events.map((e) => e.type)
 
@@ -253,10 +260,7 @@ describe('watching Silksong', () => {
     showText('areaText')
     await settle()
     expect(logged()).toEqual(['area_entered'])
-    // A fade from a bright frame that lasts 2 seconds is a death.
-    feed({}, 2)
-    feed({ brightness: 0.03, masks: 0 }, 8)
-    feed({}, 1)
+    die()
     await settle()
     const death = observer.getObserverState().events.find((e) => e.type === 'death')
     expect(death?.description).toContain('Moss Grotto')
@@ -266,9 +270,7 @@ describe('watching Silksong', () => {
     readAs = async () => [{ text: 'Moss Mother' }]
     showText('bossText')
     await settle()
-    feed({}, 2)
-    feed({ brightness: 0.03, masks: 0 }, 8)
-    feed({}, 1)
+    die()
     await settle()
     const death = observer.getObserverState().events.find((e) => e.type === 'death')
     expect(death?.description).toBe('died on attempt 1 at Moss Mother')
@@ -281,9 +283,7 @@ describe('watching Silksong', () => {
     readAs = async () => [{ text: 'Moss Grotto' }]
     showText('areaText')
     await settle()
-    feed({}, 2)
-    feed({ brightness: 0.03, masks: 0 }, 8)
-    feed({}, 1)
+    die()
     await settle()
     const death = observer.getObserverState().events.find((e) => e.type === 'death')
     expect(death?.description).toBe('died in Moss Grotto')
@@ -311,11 +311,10 @@ describe('watching Silksong', () => {
     readAs = async () => [{ text: 'Moss Mother' }]
     showText('bossText')
     await settle()
-    // The player dies (a 2 second fade) and is back at the boss about 10 seconds after the first
-    // sighting: well within the 30 seconds a repeat used to be dropped for.
-    feed({}, 2)
-    feed({ brightness: 0.03, masks: 0 }, 8)
-    feed({}, 20)
+    // The player dies (down to the last mask, a fade, a refill) and is back at the boss about 10
+    // seconds after the first sighting: well within the 30 seconds a repeat used to be dropped for.
+    die()
+    feed({}, 18)
     showText('bossText')
     await settle()
     expect(logged().filter((t) => t === 'boss_encounter')).toHaveLength(2)
@@ -351,6 +350,14 @@ describe('watching Silksong', () => {
     showText('bossText')
     await settle()
     expect(logged()).toEqual(['boss_encounter', 'boss_encounter'])
+  })
+
+  it('takes a dark stretch with full masks for no death', async () => {
+    feed({}, 2)
+    feed({ brightness: 0.03, masks: 0 }, 8)
+    feed({}, 8)
+    await settle()
+    expect(logged()).toEqual([])
   })
 
   it('comments on a low-health moment', async () => {

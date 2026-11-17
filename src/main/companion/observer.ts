@@ -645,7 +645,7 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
         // A death while a boss fight is on is put down to that boss; session memory adds which
         // attempt it was. Either way the fight is over.
         events.push(
-          makeEvent('death', time, 'screen', {
+          makeEvent('death', signal.at, 'screen', {
             place: currentArea,
             opponent: currentBoss,
             detail: currentArea ? `died in ${currentArea}` : 'died'
