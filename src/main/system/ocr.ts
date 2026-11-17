@@ -42,6 +42,7 @@ function Wait-Op($op, [Type]$type) {
 $engines = @{}
 while ($null -ne ($line = [Console]::In.ReadLine())) {
   $id = 0
+  $stream = $null; $writer = $null; $bitmap = $null
   try {
     $cmd = $line | ConvertFrom-Json
     $id = [int]$cmd.id
@@ -76,6 +77,12 @@ while ($null -ne ($line = [Console]::In.ReadLine())) {
     [Console]::Out.WriteLine((ConvertTo-Json -Compress -Depth 4 -InputObject @{ id = $id; lines = $lines }))
   } catch {
     [Console]::Out.WriteLine((ConvertTo-Json -Compress -InputObject @{ id = $id; error = $_.Exception.Message }))
+  } finally {
+    # The image memory is native, which PowerShell's garbage collector does not feel; during
+    # continuous play the helper never goes idle, so free it after every read.
+    if ($bitmap) { $bitmap.Dispose() }
+    if ($writer) { $writer.Dispose() }
+    if ($stream) { $stream.Dispose() }
   }
 }
 `
