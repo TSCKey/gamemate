@@ -259,7 +259,8 @@ describe('watching Silksong', () => {
     feed({ brightness: 0.03, masks: 0 }, 2)
     feed({}, 1)
     await settle()
-    expect(logged()).toContain('fight_won')
+    // The second sighting is no new attempt, and the fight is still won.
+    expect(logged()).toEqual(['boss_encounter', 'fight_won'])
   })
 
   it('counts a quick retry after a death as a new attempt that can be won', async () => {

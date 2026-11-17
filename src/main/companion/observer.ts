@@ -745,18 +745,17 @@ async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): P
     deliverScreen(run, [entered], time)
     return
   }
+  // A title shown again in the same fight (no death or win since) is no new attempt: it gives
+  // no event and leaves the fight's clock running. A new boss, or one whose fight a death or a
+  // win ended, is a new encounter, and its clock starts now.
+  if (currentBoss === name) return
+  currentBoss = name
+  tracker.setBoss(name)
   const encounter = makeEvent('boss_encounter', time, 'screen', {
     opponent: name,
     detail: `facing ${name}`
   })
   deliverScreen(run, [encounter], time)
-  // The fight's clock starts when there is no fight with this boss on: after a death (which
-  // ends the fight) even if the title came back too soon to count as new. A title seen again
-  // in the same fight leaves the clock running.
-  if (currentBoss !== name) {
-    currentBoss = name
-    tracker.setBoss(name)
-  }
 }
 
 async function readPickup(run: ScreenRun, time: number): Promise<void> {
