@@ -1,4 +1,5 @@
 import { categoryMembers } from '../games/wiki'
+import type { WikiSite } from '../../shared/types'
 import { getSettings } from '../system/settings'
 
 export interface SilksongNames {
@@ -7,9 +8,12 @@ export interface SilksongNames {
 }
 
 // Taken from the Hollow Knight Silksong wiki (hollowknightsilksong.fandom.com) on 2026-11-17.
-// Page titles are copied as the wiki writes them.
+// Page titles are copied as the wiki writes them, except that a trailing disambiguation such as
+// "(Silksong)" is dropped, because the screen shows the plain name. Its other categories
+// (Biomes, Points of Interest, Exploration) and the sub-categories of the two below hold no
+// further bosses or areas, so nothing more was added.
 
-// From "Category:Bosses (Silksong)".
+// From "Category:Bosses (Silksong)" (42 pages).
 const BOSSES = [
   'Bell Beast',
   'Bell Eater',
@@ -55,7 +59,7 @@ const BOSSES = [
   'Widow'
 ]
 
-// From "Category:Areas (Silksong)".
+// From "Category:Areas (Silksong)" (15 pages, no sub-categories).
 const AREAS = [
   'Bilewater',
   'Blasted Steps',
@@ -69,14 +73,29 @@ const AREAS = [
   'Moss Grotto',
   'Shellwood',
   "Sinner's Road",
-  'The Abyss (Silksong)',
+  'The Abyss',
   'The Mists',
   'Weavenest Atla'
 ]
 
 export const SILKSONG_FALLBACK: SilksongNames = { bosses: BOSSES, areas: AREAS }
 
-const union = (a: string[], b: string[]): string[] => [...new Set([...a, ...b])]
+// "The Abyss (Silksong)" and "Lace (boss)" are shown on screen as plain "The Abyss" and "Lace".
+const plain = (title: string): string => title.replace(/\s*\([^)]*\)\s*$/, '')
+
+const union = (a: string[], b: string[]): string[] => [...new Set([...a, ...b].map(plain))]
+
+// A category's pages plus those of its sub-categories, one level deep.
+async function withSubcategories(wiki: WikiSite, category: string): Promise<string[]> {
+  const [pages, subs] = await Promise.all([
+    categoryMembers(wiki, category),
+    categoryMembers(wiki, category, 500, 'subcat')
+  ])
+  const deeper = await Promise.all(
+    subs.map((sub) => categoryMembers(wiki, sub.replace(/^Category:/, '')))
+  )
+  return [...pages, ...deeper.flat()]
+}
 
 let cached: SilksongNames | null = null
 
@@ -90,7 +109,7 @@ export async function silksongNames(): Promise<SilksongNames> {
   try {
     const [bosses, areas] = await Promise.all([
       categoryMembers(wiki, 'Bosses (Silksong)'),
-      categoryMembers(wiki, 'Areas (Silksong)')
+      withSubcategories(wiki, 'Areas (Silksong)')
     ])
     cached = {
       bosses: union(SILKSONG_FALLBACK.bosses, bosses),

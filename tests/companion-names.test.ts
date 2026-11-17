@@ -67,6 +67,12 @@ describe('matching text to known names', () => {
     expect(names.matchName('x7 Moss Grotto lq', areas)).toBe('Moss Grotto')
   })
 
+  it('matches a plain name that the wiki lists with a disambiguation', async () => {
+    const { names, silksong } = await load({})
+    expect(silksong.SILKSONG_FALLBACK.areas).toContain('The Abyss')
+    expect(names.matchName('THE ABYSS', silksong.SILKSONG_FALLBACK.areas)).toBe('The Abyss')
+  })
+
   it('ignores accents', async () => {
     const { names } = await load({})
     expect(names.matchName('Móss Grottö', areas)).toBe('Moss Grotto')
@@ -156,6 +162,52 @@ describe('Silksong names', () => {
     const calls = fetchMock.mock.calls.length
     await silksong.silksongNames()
     expect(fetchMock.mock.calls.length).toBe(calls)
+  })
+
+  it('drops a trailing disambiguation from live names and de-duplicates', async () => {
+    const { silksong } = await load({ webLookup: true, games: [game] })
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async (url: string) =>
+        reply({
+          query: {
+            categorymembers: url.includes('Bosses')
+              ? [{ title: 'Lace (boss)' }, { title: 'Lace' }]
+              : [{ title: 'The Abyss (Silksong)' }]
+          }
+        })
+      )
+    )
+    const names = await silksong.silksongNames()
+    expect(names.areas).toContain('The Abyss')
+    expect(names.areas.some((n) => n.includes('('))).toBe(false)
+    expect(names.bosses.filter((n) => n === 'Lace')).toHaveLength(1)
+  })
+
+  it('also reads sub-categories of the areas category, one level deep', async () => {
+    const { silksong } = await load({ webLookup: true, games: [game] })
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockImplementation(async (url: string) => {
+        const u = decodeURIComponent(String(url).replace(/\+/g, ' '))
+        if (u.includes('Bosses')) return reply({ query: { categorymembers: [] } })
+        if (u.includes('cmtype=subcat')) {
+          return reply({
+            query: {
+              categorymembers: u.includes('Areas (Silksong)')
+                ? [{ title: 'Category:Sub-areas' }]
+                : []
+            }
+          })
+        }
+        return reply({
+          query: {
+            categorymembers: u.includes('Category:Sub-areas') ? [{ title: 'Hidden Cavern' }] : []
+          }
+        })
+      })
+    )
+    expect((await silksong.silksongNames()).areas).toContain('Hidden Cavern')
   })
 
   it('has built-in names for bosses and areas', async () => {

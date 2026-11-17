@@ -576,11 +576,13 @@ export async function discoverWiki(address: string): Promise<WikiSite> {
   throw new Error(t('errors.wiki.notFound'))
 }
 
-// The pages in one wiki category (not its sub-categories), following the wiki's paging.
+// The pages (or, with type 'subcat', the sub-categories) in one wiki category, following the
+// wiki's paging.
 export async function categoryMembers(
   site: WikiSite,
   category: string,
-  limit = 500
+  limit = 500,
+  type: 'page' | 'subcat' = 'page'
 ): Promise<string[]> {
   const titles: string[] = []
   let more: string | undefined
@@ -592,7 +594,7 @@ export async function categoryMembers(
       action: 'query',
       list: 'categorymembers',
       cmtitle: `Category:${category}`,
-      cmtype: 'page',
+      cmtype: type,
       cmlimit: String(Math.min(500, limit - titles.length)),
       ...(more ? { cmcontinue: more } : {})
     })
