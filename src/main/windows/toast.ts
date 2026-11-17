@@ -22,8 +22,10 @@ let ready = false
 let waiting: { say: boolean; run: (win: BrowserWindow) => void }[] = []
 let speaking = false
 let quitting = false
-// Other work that runs in this window (watching the game's screen) and keeps it open meanwhile.
+// Other work that runs in this window (watching the game's screen): it keeps the window open
+// meanwhile, and is stopped when the window is closed anyway.
 let alsoBusy: () => boolean = () => false
+let stopAlso: () => void = () => {}
 
 const idle = idleTimer(IDLE_MS, closeToast, () => speaking || !!toast?.isVisible() || alsoBusy())
 
@@ -37,7 +39,8 @@ export function setUpToast(
 }
 
 function createToast(): BrowserWindow | null {
-  if (!open) return null
+  // Nothing opens the window again while GameMate quits.
+  if (!open || quitting) return null
   const win = new BrowserWindow({
     width: WIDTH,
     height: MIN_HEIGHT,
@@ -90,9 +93,16 @@ export function sendToToast(channel: string, ...args: unknown[]): boolean {
   return withToast((win) => win.webContents.send(channel, ...args))
 }
 
-// Keeps the window open while `busy` says its page is still at work.
-export function keepToastOpenWhile(busy: () => boolean): void {
+// Keeps the window open while `busy` says its page is still at work; `stop` ends that work
+// when the window is closed regardless (at quit), so it can't open the window again.
+export function keepToastOpenWhile(busy: () => boolean, stop: () => void): void {
   alsoBusy = busy
+  stopAlso = stop
+}
+
+// Whether the window exists, so a stop message doesn't open it just to be heard.
+export function toastOpen(): boolean {
+  return !!toast && !toast.isDestroyed()
 }
 
 // Whether a request comes from this window's page.
@@ -159,6 +169,8 @@ export function hushToast(): void {
 
 // Frees the window, its page and the voice model with it.
 export function closeToast(): void {
+  // First, while the window can still be told to stop.
+  stopAlso()
   idle.cancel()
   if (hideTimer) clearTimeout(hideTimer)
   hideTimer = null

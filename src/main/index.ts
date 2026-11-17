@@ -27,7 +27,7 @@ import {
 import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
 import { closeToast, setUpToast, showToast } from './windows/toast'
-import { screenWatchingFrom } from './windows/screenWatch'
+import { screenWatchingFrom, stopScreenWatch } from './windows/screenWatch'
 import { shutdownSpeech } from './voice/tts'
 import { shutdownOcr } from './system/ocr'
 import { removeOldVoice } from './voice/migrate'
@@ -335,6 +335,7 @@ app.on('will-quit', (event) => {
   event.preventDefault()
   cleanedUp = true
   stopObserver()
+  stopScreenWatch()
   closeToast()
   shutdownSpeech()
   shutdownOcr()

@@ -8,7 +8,7 @@ import type { Box } from '../../shared/screen/frame'
 import { SILKSONG_LAYOUT, type SilksongMeasure } from '../../shared/screen/silksong'
 import type { ScreenStart } from '../../shared/types'
 import { handleFromSourceId, windowAreas, windowProgram, type Rect } from '../system/foreground'
-import { isToastPage, keepToastOpenWhile, sendToToast } from './toast'
+import { isToastPage, keepToastOpenWhile, sendToToast, toastOpen } from './toast'
 
 const FPS = 4
 // Wide enough to see the health masks and title text, small enough to measure in a few ms.
@@ -47,7 +47,7 @@ let watch: Watch | null = null
 let lastGrab = 0
 const grabs = new Map<number, (png: Buffer | null) => void>()
 
-keepToastOpenWhile(screenWatching)
+keepToastOpenWhile(screenWatching, stopScreenWatch)
 
 /**
  * The capture source of the game window: the one whose id holds its handle
@@ -244,7 +244,7 @@ export function stopScreenWatch(): void {
   watch = null
   for (const resolve of grabs.values()) resolve(null)
   grabs.clear()
-  sendToToast('screen:stop')
+  if (toastOpen()) sendToToast('screen:stop')
 }
 
 export function screenWatching(): boolean {

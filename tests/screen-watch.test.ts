@@ -42,11 +42,16 @@ const display = {
   workArea: { x: 0, y: 0, width: 1920, height: 1040 }
 }
 let sources: { id: string; name: string; display_id: string }[] = []
+let beforeQuit: () => void = () => {}
 type Rect = { left: number; top: number; right: number; bottom: number }
 let areas: { frame: Rect; client: Rect } | null = null
 
 vi.mock('electron', () => ({
-  app: { once: () => {} },
+  app: {
+    once: (event: string, run: () => void) => {
+      if (event === 'before-quit') beforeQuit = run
+    }
+  },
   BrowserWindow: FakeWindow,
   desktopCapturer: { getSources: async () => sources },
   screen: {
@@ -328,6 +333,44 @@ describe('watching the game window', () => {
     expect(open()).toHaveLength(1)
     watch.stopScreenWatch()
     await vi.advanceTimersByTimeAsync(6 * 60_000)
+    expect(open()).toHaveLength(0)
+  })
+
+  it('stops watching when the pop-up window is closed, and never opens it again by itself', async () => {
+    await startWatching()
+    toast.closeToast()
+    expect(watch.screenWatching()).toBe(false)
+    await vi.advanceTimersByTimeAsync(15_000)
+    expect(open()).toHaveLength(0)
+  })
+
+  it('stops the stream without opening the pop-up window just to say so', async () => {
+    await startWatching()
+    open()[0].destroy()
+    watch.stopScreenWatch()
+    expect(open()).toHaveLength(0)
+  })
+})
+
+// Last, because GameMate quits only once: nothing in this file runs after it.
+describe('while GameMate quits', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+    FakeWindow.all = []
+    sources = [{ id: `window:${HANDLE}:0`, name: 'Hollow Knight Silksong', display_id: '' }]
+    toast.setUpToast(() => {}, 'preload.js')
+  })
+  afterEach(() => {
+    watch.stopScreenWatch()
+    toast.closeToast()
+    vi.useRealTimers()
+  })
+
+  it('opens no pop-up window, not even for the screen watch', async () => {
+    beforeQuit()
+    expect(toast.sendToToast('screen:start', {})).toBe(false)
+    await watch.startScreenWatch(SILKSONG, HANDLE, () => {})
+    await vi.advanceTimersByTimeAsync(15_000)
     expect(open()).toHaveLength(0)
   })
 })
