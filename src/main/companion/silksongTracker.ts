@@ -26,7 +26,10 @@ const DEATH_FADE_MAX_MS = 6000
  * or fewer (one hit, or one double hit, from dying) ...
  */
 const DEATH_MAX_MASKS = 2
-/** ... and after it, a higher mask count (the refill on respawning) is read within this long. */
+/**
+ * ... and after it, the first trusted mask count is higher (the refill on respawning) and is read
+ * within this long.
+ */
 const DEATH_REFILL_MS = 10000
 /** A fade at least this long, but shorter than a death, is a room change. */
 const ROOM_FADE_MIN_MS = 200
@@ -184,17 +187,21 @@ export class SilksongTracker {
     if (this.candidate && this.candidate.count === m.masks) this.candidate.frames++
     else this.candidate = { count: m.masks, frames: 1 }
 
+    // A possible death is settled by the first count trusted after the fade: a respawn comes
+    // back with more masks. The same count or fewer is the player still alive, and a later heal
+    // or bench rest is no death.
+    const pending = this.deathPending
+    if (pending && this.candidate.frames >= MASK_HOLD_FRAMES) {
+      this.deathPending = null
+      if (this.candidate.count > pending.masks) this.death(pending.at, out)
+    }
+
     if (this.candidate.frames >= MASK_HOLD_FRAMES && this.masks !== this.candidate.count) {
       const previous = this.masks
       this.masks = this.candidate.count
       if (previous !== null && this.masks < previous) {
         this.lastDamage = time
         out.push({ kind: 'damage', masks: this.masks })
-      }
-      const pending = this.deathPending
-      if (pending && this.masks > pending.masks) {
-        this.deathPending = null
-        this.death(pending.at, out)
       }
     }
 
@@ -251,6 +258,8 @@ export class SilksongTracker {
       // Only a possible death: it counts once the masks refill, and is dated to now.
       if (this.masks !== null && this.masks <= DEATH_MAX_MASKS) {
         this.deathPending = { at: time, masks: this.masks }
+        // Frames from before the fade must not count toward the first count after it.
+        this.candidate = null
       }
     } else if (length >= ROOM_FADE_MIN_MS) {
       out.push({ kind: 'room_change' })

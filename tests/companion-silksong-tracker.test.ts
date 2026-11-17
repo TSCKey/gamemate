@@ -182,6 +182,27 @@ describe('SilksongTracker fades', () => {
     expect(run.kinds()).not.toContain('death')
   })
 
+  it('gives no death for a heal after a dark stretch the masks came back from unchanged', () => {
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .frames(8, { brightness: 0.02, masks: 0 }) // dark 2 s
+      .frames(2, { masks: 1 }) // the HUD comes back with the same mask: no respawn
+      .frames(3, { masks: 4 }) // then a heal
+    expect(run.kinds()).not.toContain('death')
+  })
+
+  it('judges by the first trusted count after the fade, not a single untrusted frame', () => {
+    // One frame of 1 is not trusted, so the first trusted count is the 4: a refill.
+    const run = new Run()
+      .frames(3, { masks: 3 })
+      .frames(3, { masks: 1 })
+      .frames(8, { brightness: 0.02, masks: 0 })
+      .frames(1, { masks: 1 })
+      .frames(2, { masks: 4 })
+    expect(run.kinds()).toContain('death')
+  })
+
   it('gives nothing when the masks refill more than 10 s after the fade', () => {
     const run = new Run()
       .frames(3, { masks: 3 })
