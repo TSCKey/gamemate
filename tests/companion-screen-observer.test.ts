@@ -262,6 +262,33 @@ describe('watching Silksong', () => {
     expect(death?.description).toContain('Moss Grotto')
   })
 
+  it('ties a death during a boss fight to that boss', async () => {
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    feed({}, 2)
+    feed({ brightness: 0.03, masks: 0 }, 8)
+    feed({}, 1)
+    await settle()
+    const death = observer.getObserverState().events.find((e) => e.type === 'death')
+    expect(death?.description).toBe('died on attempt 1 at Moss Mother')
+  })
+
+  it('does not tie a death to a boss once a new area was entered', async () => {
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    readAs = async () => [{ text: 'Moss Grotto' }]
+    showText('areaText')
+    await settle()
+    feed({}, 2)
+    feed({ brightness: 0.03, masks: 0 }, 8)
+    feed({}, 1)
+    await settle()
+    const death = observer.getObserverState().events.find((e) => e.type === 'death')
+    expect(death?.description).toBe('died in Moss Grotto')
+  })
+
   it('counts a boss as beaten from the first sighting, not a later one', async () => {
     readAs = async () => [{ text: 'Moss Mother' }]
     showText('bossText')

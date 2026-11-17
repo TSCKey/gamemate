@@ -642,13 +642,16 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
         )
         break
       case 'death':
-        currentBoss = ''
+        // A death while a boss fight is on is put down to that boss; session memory adds which
+        // attempt it was. Either way the fight is over.
         events.push(
           makeEvent('death', time, 'screen', {
             place: currentArea,
+            opponent: currentBoss,
             detail: currentArea ? `died in ${currentArea}` : 'died'
           })
         )
+        currentBoss = ''
         break
       case 'boss_defeated':
         // Worked out, never seen: the player left the arena alive after a long enough fight.
@@ -748,6 +751,12 @@ async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): P
   if (!name) return
   if (kind === 'area') {
     currentArea = name
+    // A new place means the fight there is over (session memory forgets the boss too), so a
+    // death from here on is not put down to it.
+    if (currentBoss) {
+      currentBoss = ''
+      tracker.setBoss(null)
+    }
     const entered = makeEvent('area_entered', time, 'screen', {
       place: name,
       detail: `entered ${name}`

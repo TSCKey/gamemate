@@ -733,11 +733,30 @@ describe('a single-player session seen through the screen', () => {
 
   it('sizes a death as minor early in a boss fight and significant from the third attempt', () => {
     const h = harness({ game: SILKSONG })
+    const toBoss = { place: 'Grotto', opponent: 'Moss Mother' }
     screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })
-    expect(screenEvents(h, 10, ['death'], { place: 'Grotto' })[0].tier).toBe('minor')
+    expect(screenEvents(h, 10, ['death'], toBoss)[0].tier).toBe('minor')
     screenEvents(h, 100, ['boss_encounter'], { opponent: 'Moss Mother' })
     screenEvents(h, 200, ['boss_encounter'], { opponent: 'Moss Mother' })
-    expect(screenEvents(h, 210, ['death'], { place: 'Grotto' })[0].tier).toBe('significant')
+    expect(screenEvents(h, 210, ['death'], toBoss)[0].tier).toBe('significant')
+  })
+
+  it('forgets the boss after a death, so a later ordinary death is small and not blamed on it', async () => {
+    const h = harness({ game: SILKSONG })
+    screenEvents(h, 0, ['area_entered'], { place: 'Moss Grotto' })
+    for (let i = 0; i < 3; i++) {
+      screenEvents(h, 5 + i * 40, ['boss_encounter'], { opponent: 'Lace' })
+    }
+    const toLace = screenEvents(h, 100, ['death'], { place: 'Moss Grotto', opponent: 'Lace' })
+    expect(toLace[0].tier).toBe('significant')
+    await h.wait(104)
+    // The prompt about that death no longer calls it an attempt in progress.
+    expect(h.prompts.at(-1)).not.toContain('This is attempt 3 at Lace')
+    const later = screenEvents(h, 400, ['death'], { place: 'Moss Grotto' })
+    expect(later[0].tier).toBe('minor')
+    await h.wait(404)
+    expect(h.prompts.at(-1)).toContain('died in Moss Grotto')
+    expect(h.prompts.at(-1)).not.toContain('This is attempt')
   })
 
   it('counts a boss title seen again ten seconds later as a new attempt', () => {

@@ -19,7 +19,7 @@ import {
   type VisionGame
 } from './events'
 import { MatchMemory, type MatchContext } from './matchMemory'
-import { SessionMemory, type SessionContext } from './sessionMemory'
+import { SessionMemory } from './sessionMemory'
 import {
   claimsTooMuch,
   cleanReaction,
@@ -67,12 +67,7 @@ function eventKey(event: GameEvent): string {
 }
 
 // How big a moment this is, given the match so far.
-function sizeOf(
-  event: GameEvent,
-  context: MatchContext,
-  session: SessionContext,
-  game: VisionGame
-): Tier {
+function sizeOf(event: GameEvent, context: MatchContext, game: VisionGame): Tier {
   switch (event.type) {
     case 'boss_encounter':
       return 'significant'
@@ -89,7 +84,8 @@ function sizeOf(
       return event.count >= STREAK_EXCEPTIONAL ? 'exceptional' : 'significant'
     case 'death': {
       if (event.source === 'screen') {
-        return (session.boss?.attempt ?? 0) >= HARD_BOSS_ATTEMPTS ? 'significant' : 'minor'
+        // Memory put the attempt number at the boss it died to in `count` (1 for no boss).
+        return event.opponent !== '' && event.count >= HARD_BOSS_ATTEMPTS ? 'significant' : 'minor'
       }
       if (!game.competitive) return 'significant'
       const sameOpponent =
@@ -141,8 +137,7 @@ export class Commentator {
 
     const events = [...fresh, ...derived]
     const context = this.memory.context(this.now())
-    const session = this.session.context(this.now())
-    for (const event of events) event.tier = sizeOf(event, context, session, game)
+    for (const event of events) event.tier = sizeOf(event, context, game)
     this.director.offer(events)
 
     if (report.time >= this.newestFrame) {

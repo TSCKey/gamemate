@@ -101,14 +101,23 @@ export class SessionMemory {
       this.drop(this.areas, MAX_AREAS)
       this.area = id
     }
-    const boss = this.boss ? this.bosses.get(this.boss) : undefined
+    // Only the boss the screen tied the death to is blamed for it. Dying ends that fight, so the
+    // next prompt no longer calls it an attempt in progress and a later death is just a death.
+    const boss = event.opponent ? this.bosses.get(key(event.opponent)) : undefined
+    this.boss = null
+    if (boss) {
+      event.count = boss.attempts
+      event.detail = `died on attempt ${boss.attempts} at ${boss.name}${name ? ` in ${name}` : ''}`
+    }
     this.note(boss ? `died to ${boss.name}` : name ? `died in ${name}` : 'died')
   }
 
   // A win off the screen is worked out (the player left the arena alive), never seen, so it is
   // only ever worded as likely.
   private win(event: GameEvent): void {
-    const boss = this.boss ? this.bosses.get(this.boss) : undefined
+    // The attempts at the boss named on the win; the current boss only when it names none.
+    const id = event.opponent ? key(event.opponent) : this.boss
+    const boss = id ? this.bosses.get(id) : undefined
     const name = event.opponent || boss?.name || ''
     const attempts = boss?.attempts ?? 0
     if (attempts > 0) {

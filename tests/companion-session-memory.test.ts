@@ -78,6 +78,49 @@ describe('session memory', () => {
     expect(memory.context(31_000).timeline.at(-1)).toBe('likely beat Moss Mother')
   })
 
+  it('credits a death to the boss named on it, then forgets that fight', () => {
+    const memory = new SessionMemory()
+    memory.absorb([screen('area_entered', 0, { place: 'Moss Grotto' })], 0)
+    memory.absorb([boss(1, 'Lace'), boss(40, 'Lace')], 40_000)
+    const died = screen('death', 50, { place: 'Moss Grotto', opponent: 'Lace' })
+    memory.absorb([died], 50_000)
+    expect(died.count).toBe(2)
+    expect(died.detail).toBe('died on attempt 2 at Lace in Moss Grotto')
+    expect(memory.context(51_000).timeline.at(-1)).toBe('died to Lace')
+    // The fight is over: the prompt no longer says this is an attempt at Lace.
+    expect(memory.context(51_000).boss).toBeNull()
+  })
+
+  it('words a later ordinary death in the same area as a death there, not to the boss', () => {
+    const memory = new SessionMemory()
+    memory.absorb([screen('area_entered', 0, { place: 'Moss Grotto' })], 0)
+    memory.absorb([boss(1, 'Lace')], 1000)
+    memory.absorb([screen('death', 20, { place: 'Moss Grotto', opponent: 'Lace' })], 20_000)
+    const later = screen('death', 200, { place: 'Moss Grotto' })
+    memory.absorb([later], 200_000)
+    expect(later.count).toBe(1)
+    expect(memory.context(201_000).timeline.at(-1)).toBe('died in Moss Grotto')
+  })
+
+  it('does not blame the boss for a death the screen did not tie to it', () => {
+    const memory = new SessionMemory()
+    memory.absorb([screen('area_entered', 0, { place: 'Moss Grotto' })], 0)
+    memory.absorb([boss(1, 'Lace')], 1000)
+    memory.absorb([screen('death', 20, { place: 'Moss Grotto' })], 20_000)
+    expect(memory.context(21_000).timeline.at(-1)).toBe('died in Moss Grotto')
+    expect(memory.context(21_000).boss).toBeNull()
+  })
+
+  it('counts a win at the boss named on it, not at the last boss seen', () => {
+    const memory = new SessionMemory()
+    for (let i = 0; i < 3; i++) memory.absorb([boss(i * 100, 'Lace')], i * 100_000)
+    memory.absorb([boss(350, 'Moorwing')], 350_000)
+    const won = screen('fight_won', 400, { opponent: 'Lace' })
+    memory.absorb([won], 400_000)
+    expect(won.count).toBe(3)
+    expect(won.detail).toContain('Lace')
+  })
+
   it('keeps the timeline to ten entries, newest last', () => {
     const memory = new SessionMemory()
     for (let i = 0; i < 15; i++) {
@@ -93,7 +136,7 @@ describe('session memory', () => {
     const memory = new SessionMemory()
     memory.absorb([screen('area_entered', 0, { place: 'Moss Grotto' })], 0)
     for (let i = 1; i <= 3; i++) memory.absorb([boss(i)], i * 1000)
-    memory.absorb([screen('death', 5, { place: 'Moss Grotto' })], 5000)
+    memory.absorb([screen('death', 5, { place: 'Moss Grotto', opponent: 'Moss Mother' })], 5000)
     expect(memory.context(6000).timeline).toEqual([
       'entered Moss Grotto',
       'attempt 1 at Moss Mother',
