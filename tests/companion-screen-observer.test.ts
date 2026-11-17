@@ -437,7 +437,7 @@ describe('watching Silksong', () => {
   })
 
   it('tells the player when the capture stays black', async () => {
-    feed({ brightness: 0, masks: 0 }, 40)
+    feed({ brightness: 0, masks: 0 }, 120)
     expect(observer.getObserverState().status).toBe('blocked-by-fullscreen')
     // The next tick does not hide it again.
     await vi.advanceTimersByTimeAsync(4_000)

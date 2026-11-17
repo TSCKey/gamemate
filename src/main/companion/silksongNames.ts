@@ -65,6 +65,8 @@ const AREAS = [
   'Blasted Steps',
   'Bone Bottom',
   'Citadel',
+  // Not a wiki page: the name the game's own act card shows (owner's recording, 2026-11-17).
+  'Citadel of Song',
   'Deep Docks',
   'Far Fields',
   'Greymoor',

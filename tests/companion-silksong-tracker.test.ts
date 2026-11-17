@@ -137,7 +137,7 @@ describe('SilksongTracker fades', () => {
   })
 
   it('gives no death when the capture was reported blocked and then came back', () => {
-    const run = new Run().frames(4).frames(44, { brightness: 0, masks: 0 }).frames(2)
+    const run = new Run().frames(4).frames(124, { brightness: 0, masks: 0 }).frames(2)
     expect(run.kinds()).toEqual(['blocked'])
   })
 
@@ -272,6 +272,18 @@ describe('SilksongTracker titles', () => {
     expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'title', title: 'area' }])
   })
 
+  // Measured on the owner's recording: Silksong's area card scored 0.08-0.12 in its spot for
+  // about 5 s, while ordinary play peaked at 0.04-0.05 for a frame or two.
+  it('reports an area card as dim in its spot as Silksong’s (0.08)', () => {
+    const run = new Run().frames(1).frames(4, { areaText: 0.08 })
+    expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'title', title: 'area' }])
+  })
+
+  it('ignores the brief flickers of ordinary play in the title spot (up to 0.05)', () => {
+    const run = new Run().seconds(3, { areaText: 0.05 })
+    expect(run.kinds()).toEqual([])
+  })
+
   it('reports a boss title as a boss title', () => {
     const run = new Run().frames(5, { bossText: 0.6 })
     expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'title', title: 'boss' }])
@@ -282,8 +294,8 @@ describe('SilksongTracker titles', () => {
     expect(run.kinds()).toEqual([])
   })
 
-  it('does not report a score at or under 0.3', () => {
-    const run = new Run().seconds(3, { areaText: 0.3 })
+  it('does not report a score at or under 0.06', () => {
+    const run = new Run().seconds(3, { areaText: 0.06 })
     expect(run.kinds()).toEqual([])
   })
 
@@ -292,7 +304,7 @@ describe('SilksongTracker titles', () => {
     expect(run.kinds()).toEqual(['title'])
   })
 
-  it('allows a new showing after the score was below 0.1 for 2 s', () => {
+  it('allows a new showing after the score was below 0.02 for 2 s', () => {
     const run = new Run()
       .seconds(2, { areaText: 0.8 })
       .seconds(2.25, {})
@@ -305,10 +317,10 @@ describe('SilksongTracker titles', () => {
     expect(run.kinds()).toEqual(['title'])
   })
 
-  it('does not re-arm while the score hovers between 0.1 and 0.3', () => {
+  it('does not re-arm while the score hovers between 0.02 and 0.06', () => {
     const run = new Run()
       .seconds(2, { areaText: 0.8 })
-      .seconds(5, { areaText: 0.2 })
+      .seconds(5, { areaText: 0.04 })
       .seconds(2, { areaText: 0.8 })
     expect(run.kinds()).toEqual(['title'])
   })
@@ -415,21 +427,27 @@ describe('SilksongTracker boss defeated', () => {
 describe('SilksongTracker blocked capture', () => {
   const black = { brightness: 0, masks: 0 }
 
-  it('reports blocked after 40 black frames in a row, once', () => {
-    const run = new Run().frames(3).frames(39, black)
+  it('reports blocked after 120 black frames in a row, once', () => {
+    const run = new Run().frames(3).frames(119, black)
     expect(run.kinds()).not.toContain('blocked')
     run.frames(1, black).frames(10, black)
     expect(run.kinds().filter((k) => k === 'blocked')).toHaveLength(1)
   })
 
   it('does not report blocked when a bright frame interrupts the black ones', () => {
-    const run = new Run().frames(39, black).frames(1).frames(39, black)
+    const run = new Run().frames(119, black).frames(1).frames(119, black)
     expect(run.kinds()).not.toContain('blocked')
   })
 
   it('can report blocked again after a non-black frame arrives', () => {
-    const run = new Run().frames(40, black).frames(2).frames(40, black)
+    const run = new Run().frames(120, black).frames(2).frames(120, black)
     expect(run.kinds().filter((k) => k === 'blocked')).toHaveLength(2)
+  })
+
+  // The owner's recording had a black act card and cutscene lasting about 12 s.
+  it('does not report blocked for a 20 s black cutscene', () => {
+    const run = new Run().frames(4).seconds(20, black).frames(2)
+    expect(run.kinds()).not.toContain('blocked')
   })
 
   it('does not report blocked for a 3 s death fade, only the death', () => {

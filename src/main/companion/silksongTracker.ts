@@ -33,12 +33,12 @@ const DEATH_MAX_MASKS = 2
 const DEATH_REFILL_MS = 10000
 /** A fade at least this long, but shorter than a death, is a room change. */
 const ROOM_FADE_MIN_MS = 200
-/** Text scores above this count as text on screen. */
-const TEXT_ON = 0.3
+/** Text scores above this count as text on screen (Silksong's area card measured 0.08-0.12; ordinary play peaked at 0.05). */
+const TEXT_ON = 0.06
 /** Text must stay on this long before it counts as a title or pickup. */
 const TEXT_HOLD_MS = 500
 /** Scores below this count as no text at all. */
-const TEXT_OFF = 0.1
+const TEXT_OFF = 0.02
 /** After this long with no text, the next text is a new showing. */
 const TEXT_REARM_MS = 2000
 /**
@@ -48,10 +48,10 @@ const TEXT_REARM_MS = 2000
 const BOSS_MIN_MS = 20000
 /**
  * Black frames in a row, with no masks, that mean the capture is blocked (10 s at 4 per second).
- * Longer than any death fade, which is black for a few seconds at most; a blocked capture stays
- * black for good.
+ * Longer than any death fade or black cutscene (the owner's recording had a 12 s act card); a
+ * blocked capture stays black for good.
  */
-const BLOCKED_FRAMES = 40
+const BLOCKED_FRAMES = 120
 /** Damage this recently means the player is in a fight. */
 const FIGHTING_MS = 10000
 

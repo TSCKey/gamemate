@@ -94,6 +94,14 @@ describe('matching text to known names', () => {
     expect(names.matchName('Móss Grottö', areas)).toBe('Moss Grotto')
   })
 
+  // The owner's recording showed this act card: "ACT 2" above, "CITADEL OF SONG" in the title spot.
+  it('knows the area name shown on Silksong’s act card', async () => {
+    const { names, silksong } = await load({})
+    expect(names.matchName('CITADEL OF SONG', silksong.SILKSONG_FALLBACK.areas)).toBe(
+      'Citadel of Song'
+    )
+  })
+
   it('returns nothing for empty text or no names', async () => {
     const { names } = await load({})
     expect(names.matchName('', areas)).toBeNull()
