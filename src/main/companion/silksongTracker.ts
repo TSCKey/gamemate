@@ -15,6 +15,11 @@ const BRIGHT_BEFORE_FADE = 0.2
 const FADE_START_WINDOW_MS = 1000
 /** A fade at least this long is a death. */
 const DEATH_FADE_MS = 1500
+/**
+ * A black stretch longer than this is no death or room change: it is a load screen or a lost
+ * capture. A first guess; Silksong's real death fade gets measured later.
+ */
+const DEATH_FADE_MAX_MS = 6000
 /** A fade at least this long, but shorter than a death, is a room change. */
 const ROOM_FADE_MIN_MS = 200
 /** Text scores above this count as text on screen. */
@@ -148,8 +153,9 @@ export class SilksongTracker {
   }
 
   private trackMasks(m: SilksongMeasure, time: number, out: ScreenSignal[]): void {
-    // Fades and death screens show no masks; those frames say nothing about health.
-    if (m.brightness < FADE_BRIGHTNESS) return
+    // Fades and death screens show no masks, and neither does a map, inventory or cutscene with
+    // the HUD hidden. A living player always has at least 1 mask, so 0 is unreadable, not health.
+    if (m.brightness < FADE_BRIGHTNESS || m.masks === 0) return
 
     if (this.candidate && this.candidate.count === m.masks) this.candidate.frames++
     else this.candidate = { count: m.masks, frames: 1 }
@@ -203,6 +209,10 @@ export class SilksongTracker {
     const length = time - this.fadeStart
     this.fadeStart = null
     this.lastBright = m.brightness > BRIGHT_BEFORE_FADE ? time : null
+    if (length > DEATH_FADE_MAX_MS || this.blockedSent) {
+      // Too long to be a death or a room change, or the capture was reported blocked meanwhile.
+      return
+    }
     if (length >= DEATH_FADE_MS) {
       this.death(out)
     } else if (length >= ROOM_FADE_MIN_MS) {

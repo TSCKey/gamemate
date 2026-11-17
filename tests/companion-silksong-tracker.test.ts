@@ -117,7 +117,30 @@ describe('SilksongTracker masks', () => {
   })
 })
 
+describe('SilksongTracker hidden HUD', () => {
+  it('does not read a bright screen with no masks as damage', () => {
+    const run = new Run().frames(4, { masks: 5 }).seconds(3, { masks: 0 }).frames(4, { masks: 5 })
+    expect(run.kinds()).toEqual([])
+    expect(run.tracker.fighting()).toBe(false)
+  })
+
+  it('still reports a close call and recovery with 1 mask as a real reading', () => {
+    const run = new Run().frames(3, { masks: 3 }).frames(3, { masks: 1 }).seconds(4, { masks: 3 })
+    expect(run.kinds()).toEqual(['damage', 'close_call', 'recovered'])
+  })
+})
+
 describe('SilksongTracker fades', () => {
+  it('gives neither death nor room change for an 8 s black stretch', () => {
+    const run = new Run().frames(4).seconds(8, { brightness: 0.02, masks: 0 }).frames(2)
+    expect(run.kinds()).toEqual([])
+  })
+
+  it('gives no death when the capture was reported blocked and then came back', () => {
+    const run = new Run().frames(4).frames(44, { brightness: 0, masks: 0 }).frames(2)
+    expect(run.kinds()).toEqual(['blocked'])
+  })
+
   it('reports a death for a fade of at least 1.5 s', () => {
     const run = new Run()
       .frames(4)
