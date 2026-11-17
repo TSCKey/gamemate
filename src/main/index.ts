@@ -143,6 +143,8 @@ function trayStatus(observer: ObserverState): string {
   if (status === 'watching' && observer.game) {
     return t('tray.status.watchingGame', { game: observer.game })
   }
+  // The tray has no shorter text of its own for this one: the companion's explanation is used.
+  if (status === 'blocked-by-fullscreen') return t('companion.status.blocked-by-fullscreen')
   return t(`tray.status.${status}`)
 }
 

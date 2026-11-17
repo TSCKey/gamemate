@@ -104,6 +104,12 @@ const HINTS: { name: RegExp; watchFor: string; examples: [string, string] }[] = 
   }
 ]
 
+// Games the companion follows with light checks on a live stream of the screen instead of the
+// vision model, by which set of checks fits them; null for every other game.
+export function screenPack(game: GameProfile): 'silksong' | null {
+  return /^hollow knight: silksong$/i.test(game.name) ? 'silksong' : null
+}
+
 // What the rest of GameMate knows about a found or added game.
 export function savedGameProfile(game: SavedGame): GameProfile {
   const hint = HINTS.find((h) => h.name.test(game.name))

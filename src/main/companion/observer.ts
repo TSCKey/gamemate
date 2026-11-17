@@ -4,11 +4,25 @@
 //
 // To keep the GPU free for the game, the model is only asked about the screen when a cheap
 // check on a tiny frame suggests something changed, and never more often than MIN_ANALYSIS_GAP_MS.
-import { BrowserWindow, screen, type Display, type NativeImage } from 'electron'
+//
+// Silksong is followed without the vision model, which invented events there: a live stream of
+// the game window is measured a few times a second (screenWatch.ts), the measurements become
+// moments (silksongTracker.ts), and only titles and pickups are read as text, offline.
+import { closeSync, fstatSync, openSync, readSync } from 'fs'
+import { join } from 'path'
+import { app, BrowserWindow, screen, type Display, type NativeImage } from 'electron'
 import { captureDisplayImage, toScreenshot } from '../windows/capture'
+import {
+  grabRegion,
+  screenWatching,
+  startScreenWatch,
+  stopScreenWatch
+} from '../windows/screenWatch'
 import { windowRect } from '../system/foreground'
+import { readText } from '../system/ocr'
 import { followForegroundGame } from '../games/current'
-import type { GameProfile } from '../games/catalog'
+import { screenPack, type GameProfile } from '../games/catalog'
+import { isBlackFrame, SILKSONG_LAYOUT, type SilksongMeasure } from '../../shared/screen/silksong'
 import { complete } from '../ai/llm'
 import { engineFor, engineReady } from '../ai/engines'
 import { isAsking } from '../ai/assistant'
@@ -19,12 +33,16 @@ import { Commentator, type CommentaryOptions } from './commentator'
 import { analysisGapMs, areaLookGapMs } from './director'
 import {
   EVENT_RULES,
+  makeEvent,
   normalizeVisionReport,
   visionEventTypes,
   type FrameReport,
   type GameEvent,
   type VisionGame
 } from './events'
+import { matchName } from './names'
+import { silksongNames } from './silksongNames'
+import { SilksongTracker } from './silksongTracker'
 import { BANNER_KINDS, parsePlayerNames, readAreas } from './areaReading'
 import { cropBox, gameFrame, hudAreas, type Area, type Box } from './hudAreas'
 import type { MatchContext } from './matchMemory'
@@ -378,20 +396,27 @@ async function readLook(look: Look, settings: Settings, game: GameProfile): Prom
 async function tick(): Promise<void> {
   watchingAreas = false
   const settings = getSettings()
-  if (!observes(settings)) return setState({ status: 'off', game: null })
-  if (state.paused) return setState({ status: 'paused' })
-  if (!engineReady('commentary')) return setState({ status: 'no-model' })
+  // Whenever the companion is not watching a game, nothing streams the screen either.
+  const stop = (patch: Partial<ObserverState>): void => {
+    endScreenWatch()
+    setState(patch)
+  }
+  if (!observes(settings)) return stop({ status: 'off', game: null })
+  if (state.paused) return stop({ status: 'paused' })
+  if (!engineReady('commentary')) return stop({ status: 'no-model' })
 
   // Only watch while a game is the window in front: not while alt-tabbed or in GameMate.
   // Telling which game is in front needs the player's OK.
-  if (!settings.deviceConsent) return setState({ status: 'needs-consent', game: null })
+  if (!settings.deviceConsent) return stop({ status: 'needs-consent', game: null })
   const found = followForegroundGame()
   if (!found) {
     lastFrame = null
     lastAreas = null
-    return setState({ status: 'waiting-for-game', game: null })
+    return stop({ status: 'waiting-for-game', game: null })
   }
   const { game, program } = found
+  if (screenPack(game)) return followScreen(settings, game, program.handle)
+  endScreenWatch()
   watchingAreas = hudAreas(game.name) !== null
   setState({ status: 'watching', game: game.name })
   // The player asked something: their question gets the GPU first.
@@ -404,14 +429,11 @@ async function tick(): Promise<void> {
   }
 }
 
-async function lookAtGame(
-  settings: Settings,
-  game: GameProfile,
-  handle: Parameters<typeof windowRect>[0]
-): Promise<void> {
-  // A comment that was waiting for a fight to end or for a cooldown may be due now.
-  await commentator.speakIfDue(commentaryOptions(settings, game))
-
+// The game window's place on screen (null when Windows won't say) and the display showing it.
+function gamePlace(handle: Parameters<typeof windowRect>[0]): {
+  gameWindow: Box | null
+  display: Display
+} {
   const rect = windowRect(handle)
   const gameWindow = rect
     ? screen.screenToDipRect(null, {
@@ -422,7 +444,18 @@ async function lookAtGame(
       })
     : null
   const display = gameWindow ? screen.getDisplayMatching(gameWindow) : screen.getPrimaryDisplay()
+  return { gameWindow, display }
+}
 
+async function lookAtGame(
+  settings: Settings,
+  game: GameProfile,
+  handle: Parameters<typeof windowRect>[0]
+): Promise<void> {
+  // A comment that was waiting for a fight to end or for a cooldown may be due now.
+  await commentator.speakIfDue(commentaryOptions(settings, game))
+
+  const { gameWindow, display } = gamePlace(handle)
   const areas = hudAreas(game.name)
   if (areas) return lookAtAreas(settings, game, display, gameWindow, areas)
 
@@ -484,6 +517,258 @@ async function lookAtAreas(
   )
 }
 
+// ---- Silksong: light checks on a live stream of the game window ----
+
+// A pickup's name is short; longer text is a description or a misread.
+const PICKUP_MAX_LENGTH = 40
+// The same pickup text this soon again is the same pickup shown again.
+const PICKUP_REPEAT_MS = 5 * 60_000
+// Player.log is written anew at every start of the game and stays small; only its end is read,
+// and never more than this.
+const MAX_LOG_BYTES = 1024 * 1024
+// A 1x1 picture, read once when watching starts so the first real read doesn't wait for the
+// text recognition helper to start (about half a second).
+const BLANK_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  'base64'
+)
+
+// One stretch of watching one game window. Anything still underway for an older one is dropped.
+interface ScreenRun {
+  game: GameProfile
+  handle: bigint
+  // What the game's text is written in, for reading it.
+  language: string
+}
+
+const tracker = new SilksongTracker()
+let screenRun: ScreenRun | null = null
+// The capture shows only black (exclusive fullscreen): the player is told until a frame shows.
+let blocked = false
+// Where the player is and which boss they face, as last read off the screen.
+let currentArea = ''
+let currentBoss = ''
+const pickupsSeen = new Map<string, number>()
+
+/** The language Silksong is set to, from the newest line of its Player.log that names one. */
+export function silksongLanguage(log: string): string {
+  let code: string | null = null
+  for (const match of log.matchAll(
+    /Loaded saved language code '([A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*)'/g
+  )) {
+    code = match[1]
+  }
+  return code ? code.replace(/_/g, '-').toLowerCase() : 'en'
+}
+
+// Only this one log file is read, and only its end: never the game's other files or its process.
+function playerLogLanguage(): string {
+  const path = join(
+    app.getPath('home'),
+    'AppData',
+    'LocalLow',
+    'Team Cherry',
+    'Hollow Knight Silksong',
+    'Player.log'
+  )
+  let fd: number | null = null
+  try {
+    fd = openSync(path, 'r')
+    const size = fstatSync(fd).size
+    const length = Math.min(size, MAX_LOG_BYTES)
+    const tail = Buffer.alloc(length)
+    readSync(fd, tail, 0, length, size - length)
+    return silksongLanguage(tail.toString('utf8'))
+  } catch {
+    // No log yet (the game never ran here) or it can't be read.
+    return 'en'
+  } finally {
+    if (fd !== null) closeSync(fd)
+  }
+}
+
+async function followScreen(settings: Settings, game: GameProfile, handle: bigint): Promise<void> {
+  const same = screenRun?.game.id === game.id && screenRun.handle === handle
+  if (!same || !screenWatching()) startScreen(game, handle)
+  setState({ status: blocked ? 'blocked-by-fullscreen' : 'watching', game: game.name })
+  commentDisplay = gamePlace(handle).display.id
+  // A comment that was waiting for a fight to end or for a cooldown may be due now.
+  await commentator.speakIfDue(commentaryOptions(settings, game))
+}
+
+function startScreen(game: GameProfile, handle: bigint): void {
+  endScreenWatch()
+  const run: ScreenRun = { game, handle, language: playerLogLanguage() }
+  screenRun = run
+  // Started now, so the first title read later is quick.
+  readText(BLANK_PNG, run.language).catch(() => {})
+  silksongNames().catch(() => {})
+  startScreenWatch(game, handle, (m, time) => onScreenMeasure(run, m, time)).catch((error) =>
+    console.error('Could not watch the game window', error)
+  )
+}
+
+// Leaving the game, pausing, forgetting or turning the companion off ends the stream, and what
+// the checks had built up starts over.
+function endScreenWatch(): void {
+  if (!screenRun) return
+  screenRun = null
+  stopScreenWatch()
+  tracker.reset()
+  blocked = false
+  currentArea = ''
+  currentBoss = ''
+  pickupsSeen.clear()
+}
+
+function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void {
+  if (screenRun !== run) return
+  if (blocked && !isBlackFrame(m)) {
+    blocked = false
+    setState({ status: 'watching' })
+  }
+  const events: GameEvent[] = []
+  for (const signal of tracker.push(m, time)) {
+    switch (signal.kind) {
+      case 'close_call':
+        events.push(makeEvent('low_health', time, 'screen', { detail: 'down to the last mask' }))
+        break
+      case 'recovered':
+        events.push(
+          makeEvent('recovery', time, 'screen', {
+            detail: 'back above one mask after a close call'
+          })
+        )
+        break
+      case 'death':
+        currentBoss = ''
+        events.push(
+          makeEvent('death', time, 'screen', {
+            place: currentArea,
+            detail: currentArea ? `died in ${currentArea}` : 'died'
+          })
+        )
+        break
+      case 'boss_defeated':
+        events.push(
+          makeEvent('fight_won', time, 'screen', {
+            opponent: currentBoss,
+            detail: currentBoss ? `beat ${currentBoss}` : 'beat a boss'
+          })
+        )
+        currentBoss = ''
+        break
+      case 'title':
+        readTitle(run, signal.title, time).catch((error) =>
+          console.error('Could not read a title', error)
+        )
+        break
+      case 'pickup':
+        readPickup(run, time).catch((error) => console.error('Could not read a pickup', error))
+        break
+      case 'blocked':
+        blocked = true
+        setState({ status: 'blocked-by-fullscreen' })
+        break
+      // Damage only tells the tracker a fight is on, and a room change only ends a boss fight.
+    }
+  }
+  deliverScreen(run, events, time)
+}
+
+// Events from the screen go through the same pipeline as the model's; returns what was new.
+function deliverScreen(run: ScreenRun, events: GameEvent[], time: number): GameEvent[] {
+  if (events.length === 0 || screenRun !== run) return []
+  const report: FrameReport = {
+    time,
+    source: 'screen',
+    phase: 'playing',
+    inFight: tracker.fighting(),
+    score: null,
+    description: '',
+    events
+  }
+  const fresh = commentator.observe(report, visionGame(run.game))
+  logEvents(fresh, '')
+  commentator
+    .speakIfDue(commentaryOptions(getSettings(), run.game))
+    .catch((error) => console.error('Could not comment', error))
+  return fresh
+}
+
+// Whether something read for this run may still be used: not once the log was cleared, the
+// companion turned off or paused, or the player left the game meanwhile.
+function stillCurrent(run: ScreenRun): () => boolean {
+  const forgetsBefore = forgetCount
+  return () => screenRun === run && forgetCount === forgetsBefore
+}
+
+// The text in one region of the game window, or null when there is none or it came too late.
+async function readRegion(
+  run: ScreenRun,
+  box: Box,
+  current: () => boolean
+): Promise<string | null> {
+  try {
+    const png = await grabRegion(box)
+    if (!png || !current()) return null
+    const lines = await readText(png, run.language)
+    if (!current()) return null
+    const text = lines
+      .map((l) => l.text)
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+    return text || null
+  } catch (error) {
+    console.error('Could not read text off the screen', error)
+    return null
+  }
+}
+
+// A title is only ever a known boss or area name: text that matches none is never commented on.
+async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): Promise<void> {
+  const current = stillCurrent(run)
+  const box = kind === 'boss' ? SILKSONG_LAYOUT.bossTitle : SILKSONG_LAYOUT.areaTitle
+  const text = await readRegion(run, box, current)
+  if (!text) return
+  const names = await silksongNames()
+  if (!current()) return
+  const name = matchName(text, kind === 'boss' ? names.bosses : names.areas)
+  if (!name) return
+  if (kind === 'area') {
+    currentArea = name
+    const entered = makeEvent('area_entered', time, 'screen', {
+      place: name,
+      detail: `entered ${name}`
+    })
+    deliverScreen(run, [entered], time)
+    return
+  }
+  const encounter = makeEvent('boss_encounter', time, 'screen', {
+    opponent: name,
+    detail: `facing ${name}`
+  })
+  // Only a new encounter starts the fight's clock: a title seen again is the same fight.
+  if (deliverScreen(run, [encounter], time).some((e) => e.type === 'boss_encounter')) {
+    currentBoss = name
+    tracker.setBoss(name)
+  }
+}
+
+async function readPickup(run: ScreenRun, time: number): Promise<void> {
+  const current = stillCurrent(run)
+  const text = await readRegion(run, SILKSONG_LAYOUT.pickup, current)
+  if (!text || !/\p{L}/u.test(text) || text.length > PICKUP_MAX_LENGTH) return
+  for (const [seen, at] of pickupsSeen) {
+    if (time - at >= PICKUP_REPEAT_MS) pickupsSeen.delete(seen)
+  }
+  const key = text.toLowerCase()
+  if (pickupsSeen.has(key)) return
+  pickupsSeen.set(key, time)
+  deliverScreen(run, [makeEvent('milestone', time, 'screen', { detail: text })], time)
+}
+
 const nextTickMs = (): number => (watchingAreas ? AREA_TICK_MS : TICK_MS)
 
 function loop(): void {
@@ -517,6 +802,7 @@ export function startObserver(onComment: (text: string, displayId: number) => vo
 export function stopObserver(): void {
   if (timer) clearTimeout(timer)
   timer = null
+  endScreenWatch()
 }
 
 export function getObserverState(): ObserverState {
@@ -524,6 +810,7 @@ export function getObserverState(): ObserverState {
 }
 
 export function setPaused(paused: boolean): void {
+  if (paused) endScreenWatch()
   setState({
     paused,
     status: paused ? 'paused' : state.status === 'paused' ? 'waiting-for-game' : state.status
@@ -532,6 +819,7 @@ export function setPaused(paused: boolean): void {
 
 function forget(): void {
   forgetCount++
+  endScreenWatch()
   commentator.reset()
   if (state.events.length > 0) setState({ events: [] })
 }
