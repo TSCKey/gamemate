@@ -2,6 +2,7 @@
 // Time is passed in (milliseconds), never read from the clock, so tests can drive it.
 // Every number below is a first estimate, to be tuned against real footage.
 import { isBlackFrame, type SilksongMeasure } from '../../shared/screen/silksong'
+import { INFER_BOSS_DEFEAT } from './silksongSwitches'
 
 /** A mask count is only trusted once it holds for this many frames in a row. */
 const MASK_HOLD_FRAMES = 2
@@ -30,7 +31,10 @@ const TEXT_HOLD_MS = 500
 const TEXT_OFF = 0.1
 /** After this long with no text, the next text is a new showing. */
 const TEXT_REARM_MS = 2000
-/** A room change this long after a boss began, with no death, means it was beaten. */
+/**
+ * A room change this long after a boss began, with no death, is taken to mean it was beaten
+ * (only with inferBossDefeat on). A shorter stay ends the fight without a winner.
+ */
 const BOSS_MIN_MS = 20000
 /**
  * Black frames in a row, with no masks, that mean the capture is blocked (10 s at 4 per second).
@@ -81,7 +85,14 @@ class TextWatch {
   }
 }
 
+export interface TrackerOptions {
+  /** Report a boss as beaten when the player leaves its arena alive (INFER_BOSS_DEFEAT if unset). */
+  inferBossDefeat?: boolean
+}
+
 export class SilksongTracker {
+  constructor(private readonly options: TrackerOptions = {}) {}
+
   private candidate: { count: number; frames: number } | null = null
   private masks: number | null = null
   private closeCallArmed = true
@@ -217,15 +228,19 @@ export class SilksongTracker {
       this.death(out)
     } else if (length >= ROOM_FADE_MIN_MS) {
       out.push({ kind: 'room_change' })
-      if (
-        this.bossName !== null &&
-        this.bossSince !== null &&
-        time - this.bossSince >= BOSS_MIN_MS
-      ) {
-        this.bossName = null
-        this.bossSince = null
-        out.push({ kind: 'boss_defeated' })
-      }
+      this.leaveRoom(time, out)
+    }
+  }
+
+  // Leaving the room ends any boss fight, won or not: a later room change must never be read as
+  // beating this boss.
+  private leaveRoom(time: number, out: ScreenSignal[]): void {
+    if (this.bossName === null) return
+    const long = this.bossSince !== null && time - this.bossSince >= BOSS_MIN_MS
+    this.bossName = null
+    this.bossSince = null
+    if (long && (this.options.inferBossDefeat ?? INFER_BOSS_DEFEAT)) {
+      out.push({ kind: 'boss_defeated' })
     }
   }
 

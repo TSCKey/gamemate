@@ -61,8 +61,16 @@ const MOOD_GUIDE: Record<Mood, string> = {
     'This is a bad moment, and it is fine to sound disappointed, the way a friend would. Do not praise them, call them strong or pretend it went well. Never blame, mock or insult them, and do not dwell on it.'
 }
 
+// A boss win read off the screen is worked out from the player leaving the arena alive.
+const inferredWin = (event: GameEvent): boolean =>
+  event.type === 'fight_won' && event.source === 'screen'
+
 function fact(event: GameEvent): string {
-  const parts = [EVENT_RULES[event.type].meaning]
+  const parts = [
+    inferredWin(event)
+      ? 'The player probably beat a boss: they left its arena alive, but the win itself was not seen.'
+      : EVENT_RULES[event.type].meaning
+  ]
   if (event.detail) parts.push(`Seen: "${event.detail}".`)
   if (event.opponent) parts.push(`The enemy involved is "${event.opponent}" (not the player).`)
   if (event.place) parts.push(`Place: "${event.place}".`)
@@ -156,6 +164,11 @@ export function reactionPrompt(request: ReactionRequest): string {
       : '- Do not give advice or tips.',
     '- Never say anything that is not listed above: no invented weapons, abilities, numbers, names, places or who did what. Only mention these facts.',
     '- Do not describe how it happened (aim, positioning, surviving, being hit or not) unless that is listed.',
+    ...(events.some(inferredWin)
+      ? [
+          '- The boss win was worked out, not seen: do not say for certain that they beat it. Words like "looks like" or "seems" fit.'
+        ]
+      : []),
     '- Use game terms like clutch, ace or comeback only if the list above says so.',
     '- You do not know their name: never call the player by a name.',
     '- If a number comes from what you remember, say "at least" or avoid the exact number.',

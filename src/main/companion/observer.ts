@@ -628,6 +628,7 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
     setState({ status: 'watching' })
   }
   const events: GameEvent[] = []
+  let leftRoom = false
   for (const signal of tracker.push(m, time)) {
     switch (signal.kind) {
       case 'close_call':
@@ -650,13 +651,19 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
         )
         break
       case 'boss_defeated':
+        // Worked out, never seen: the player left the arena alive after a long enough fight.
         events.push(
           makeEvent('fight_won', time, 'screen', {
             opponent: currentBoss,
-            detail: currentBoss ? `beat ${currentBoss}` : 'beat a boss'
+            detail: currentBoss
+              ? `left the arena of ${currentBoss} alive after 20+ s, likely beaten`
+              : 'left the boss arena alive after 20+ s, likely beaten'
           })
         )
         currentBoss = ''
+        break
+      case 'room_change':
+        leftRoom = true
         break
       case 'title':
         readTitle(run, signal.title, time).catch((error) =>
@@ -670,9 +677,12 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
         blocked = true
         setState({ status: 'blocked-by-fullscreen' })
         break
-      // Damage only tells the tracker a fight is on, and a room change only ends a boss fight.
+      // Damage only tells the tracker a fight is on.
     }
   }
+  // Leaving the room ended the fight as the tracker sees it, won or not, so the boss's title
+  // shown again later is a new encounter.
+  if (leftRoom) currentBoss = ''
   deliverScreen(run, events, time)
 }
 

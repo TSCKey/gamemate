@@ -717,6 +717,20 @@ describe('a single-player session seen through the screen', () => {
     expect(won[0].tier).toBe('exceptional')
   })
 
+  it('words a boss win from the screen as likely, and tells the model not to be sure', async () => {
+    const h = harness({ game: SILKSONG })
+    for (let i = 0; i < 3; i++) {
+      screenEvents(h, i * 100, ['boss_encounter'], { opponent: 'Moss Mother' })
+    }
+    await h.wait(404)
+    screenEvents(h, 500, ['fight_won'], { opponent: 'Moss Mother' })
+    await h.wait(504)
+    const prompt = h.prompts.at(-1) ?? ''
+    expect(prompt).toContain('left the arena of Moss Mother alive on attempt 3, likely beaten')
+    expect(prompt).toMatch(/do not say for certain/i)
+    expect(prompt).not.toContain('The player won a hard fight')
+  })
+
   it('sizes a death as minor early in a boss fight and significant from the third attempt', () => {
     const h = harness({ game: SILKSONG })
     screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })

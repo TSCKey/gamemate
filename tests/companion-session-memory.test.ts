@@ -66,6 +66,16 @@ describe('session memory', () => {
     memory.absorb([won], 400_000)
     expect(won.detail).toContain('attempt 3')
     expect(won.detail).toContain('Moss Mother')
+    expect(won.count).toBe(3)
+  })
+
+  it('words a boss win as likely, since it is worked out rather than seen', () => {
+    const memory = new SessionMemory()
+    memory.absorb([boss(0)], 0)
+    const won = screen('fight_won', 30, { opponent: 'Moss Mother' })
+    memory.absorb([won], 30_000)
+    expect(won.detail).toBe('left the arena of Moss Mother alive on attempt 1, likely beaten')
+    expect(memory.context(31_000).timeline.at(-1)).toBe('likely beat Moss Mother')
   })
 
   it('keeps the timeline to ten entries, newest last', () => {

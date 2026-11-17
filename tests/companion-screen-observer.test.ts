@@ -82,6 +82,21 @@ const readText = vi.fn(async (png: Buffer) => {
 })
 vi.mock('../src/main/system/ocr', () => ({ readText, shutdownOcr: () => {} }))
 
+// Rules the app ships switched off. Most tests here turn them on to check the rules themselves;
+// the tests of the shipped behaviour put back the real values.
+const switches = vi.hoisted(() => ({ inferBossDefeat: true, readPickups: true }))
+vi.mock('../src/main/companion/silksongSwitches', () => ({
+  get INFER_BOSS_DEFEAT() {
+    return switches.inferBossDefeat
+  },
+  get READ_PICKUPS() {
+    return switches.readPickups
+  }
+}))
+const shipped = await vi.importActual<typeof import('../src/main/companion/silksongSwitches')>(
+  '../src/main/companion/silksongSwitches'
+)
+
 interface Call {
   content: string
   images?: string[]
@@ -138,6 +153,8 @@ beforeEach(async () => {
   vi.setSystemTime((testClock += 3_600_000))
   inFront = silksong
   readAs = async () => []
+  switches.inferBossDefeat = true
+  switches.readPickups = true
   settings.acceptTerms()
   observer.startObserver((text) => toasts.push(text))
   settings.updateSettings({ deviceConsent: true, companionMode: 'commentary', language: 'en' })
@@ -281,9 +298,32 @@ describe('watching Silksong', () => {
     feed({}, 1)
     await settle()
     const won = observer.getObserverState().events.find((e) => e.type === 'fight_won')
-    expect(won?.description).toBe('beaten on attempt 2 at Moss Mother')
-    await vi.advanceTimersByTimeAsync(4_000)
-    expect(writes.some((w) => w.content.includes('attempt 2 at Moss Mother'))).toBe(true)
+    expect(won?.description).toBe('left the arena of Moss Mother alive on attempt 2, likely beaten')
+  })
+
+  it('says nothing about a boss win with the shipped settings', async () => {
+    switches.inferBossDefeat = shipped.INFER_BOSS_DEFEAT
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    feed({}, 21 * 4)
+    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({}, 1)
+    await settle()
+    expect(logged()).toEqual(['boss_encounter'])
+  })
+
+  it('counts the boss title after leaving the arena early as a new encounter', async () => {
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    // Out of the arena 5 seconds in: the fight is over, neither won nor lost.
+    feed({}, 5 * 4)
+    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({}, 10 * 4)
+    showText('bossText')
+    await settle()
+    expect(logged()).toEqual(['boss_encounter', 'boss_encounter'])
   })
 
   it('comments on a low-health moment', async () => {

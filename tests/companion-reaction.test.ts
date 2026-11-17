@@ -304,3 +304,34 @@ describe('the reaction prompt for a single-player session', () => {
     expect(prompt).not.toContain('This is attempt')
   })
 })
+
+describe('the reaction prompt for a boss win worked out from the screen', () => {
+  const SILKSONG = { name: 'Hollow Knight: Silksong', competitive: false }
+  const inferred = makeEvent('fight_won', 1000, 'screen', {
+    opponent: 'Lace',
+    count: 3,
+    detail: 'left the arena of Lace alive on attempt 3, likely beaten'
+  })
+
+  it('says the win was likely, never that it was seen', () => {
+    const prompt = reactionPrompt(
+      request({ game: SILKSONG, tier: 'exceptional', events: [inferred] })
+    )
+    expect(prompt).not.toContain('The player won a hard fight')
+    expect(prompt).toContain('likely beaten')
+    expect(prompt).toMatch(/probably beat/i)
+  })
+
+  it('tells the model not to state the win as certain', () => {
+    const prompt = reactionPrompt(
+      request({ game: SILKSONG, tier: 'exceptional', events: [inferred] })
+    )
+    expect(prompt).toMatch(/do not say for certain/i)
+  })
+
+  it('keeps the plain wording for a win the vision model read off the screen', () => {
+    const prompt = reactionPrompt(request({ events: [event('fight_won')] }))
+    expect(prompt).toContain('The player won a hard fight')
+    expect(prompt).not.toMatch(/do not say for certain/i)
+  })
+})

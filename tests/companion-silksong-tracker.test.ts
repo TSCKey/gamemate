@@ -265,9 +265,29 @@ describe('SilksongTracker pickups', () => {
 
 describe('SilksongTracker boss defeated', () => {
   const roomChange = (run: Run): Run => run.frames(2, { brightness: 0.02, masks: 0 }).frames(2)
+  // Inferring a win is switched off in the app; these tests turn it on to check the rule itself.
+  const inferring = (): Run => new Run(new SilksongTracker({ inferBossDefeat: true }))
+
+  it('gives no boss_defeated with the shipped settings, however long the fight', () => {
+    const run = new Run().frames(2)
+    run.tracker.setBoss('Moorwing')
+    run.seconds(21)
+    roomChange(run)
+    expect(run.kinds()).toEqual(['room_change'])
+  })
+
+  it('treats a room change under 20 s into a fight as the end of it, so a later one is no win', () => {
+    const run = inferring().frames(2)
+    run.tracker.setBoss('Moorwing')
+    run.seconds(5)
+    roomChange(run)
+    run.seconds(30)
+    roomChange(run)
+    expect(run.kinds()).toEqual(['room_change', 'room_change'])
+  })
 
   it('reports boss_defeated for a room change 20 s or more after the boss began', () => {
-    const run = new Run().frames(2)
+    const run = inferring().frames(2)
     run.tracker.setBoss('Moorwing')
     run.seconds(21)
     roomChange(run)
@@ -275,7 +295,7 @@ describe('SilksongTracker boss defeated', () => {
   })
 
   it('does not report boss_defeated for a room change within 20 s', () => {
-    const run = new Run().frames(2)
+    const run = inferring().frames(2)
     run.tracker.setBoss('Moorwing')
     run.seconds(5)
     roomChange(run)
@@ -283,7 +303,7 @@ describe('SilksongTracker boss defeated', () => {
   })
 
   it('reports it only once, then forgets the boss', () => {
-    const run = new Run().frames(2)
+    const run = inferring().frames(2)
     run.tracker.setBoss('Moorwing')
     run.seconds(21)
     roomChange(run)
@@ -293,7 +313,7 @@ describe('SilksongTracker boss defeated', () => {
   })
 
   it('does not report boss_defeated when the player died during the boss', () => {
-    const run = new Run().frames(2)
+    const run = inferring().frames(2)
     run.tracker.setBoss('Moorwing')
     run.seconds(21)
     run.frames(6, { brightness: 0.02, masks: 0 }).frames(2) // death
@@ -302,7 +322,7 @@ describe('SilksongTracker boss defeated', () => {
   })
 
   it('does nothing without a boss', () => {
-    const run = new Run().frames(2).seconds(30)
+    const run = inferring().frames(2).seconds(30)
     roomChange(run)
     expect(run.kinds()).toEqual(['room_change'])
   })
@@ -352,7 +372,9 @@ describe('SilksongTracker fighting', () => {
 
 describe('SilksongTracker reset', () => {
   it('clears fighting, the boss and the held mask count', () => {
-    const run = new Run().frames(3, { masks: 5 }).frames(2, { masks: 4 })
+    const run = new Run(new SilksongTracker({ inferBossDefeat: true }))
+      .frames(3, { masks: 5 })
+      .frames(2, { masks: 4 })
     run.tracker.setBoss('Moorwing')
     run.tracker.reset()
     expect(run.tracker.fighting()).toBe(false)
