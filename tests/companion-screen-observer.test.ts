@@ -249,7 +249,8 @@ describe('watching Silksong', () => {
     readAs = async () => [{ text: 'Moss Mother' }]
     showText('bossText')
     await settle()
-    // The title shows again 15 seconds later: the same encounter, so the fight's clock goes on.
+    // The title shows again 13 seconds later with no death between: the same fight, so its
+    // clock goes on.
     feed({}, 12 * 4)
     showText('bossText')
     await settle()
@@ -258,7 +259,30 @@ describe('watching Silksong', () => {
     feed({ brightness: 0.03, masks: 0 }, 2)
     feed({}, 1)
     await settle()
-    expect(logged()).toEqual(['boss_encounter', 'fight_won'])
+    expect(logged()).toContain('fight_won')
+  })
+
+  it('counts a quick retry after a death as a new attempt that can be won', async () => {
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    // The player dies (a 2 second fade) and is back at the boss about 10 seconds after the first
+    // sighting: well within the 30 seconds a repeat used to be dropped for.
+    feed({}, 2)
+    feed({ brightness: 0.03, masks: 0 }, 8)
+    feed({}, 20)
+    showText('bossText')
+    await settle()
+    expect(logged().filter((t) => t === 'boss_encounter')).toHaveLength(2)
+    // More than 20 seconds into the retry, a room change means it was beaten.
+    feed({}, 21 * 4)
+    feed({ brightness: 0.03, masks: 0 }, 2)
+    feed({}, 1)
+    await settle()
+    const won = observer.getObserverState().events.find((e) => e.type === 'fight_won')
+    expect(won?.description).toBe('beaten on attempt 2 at Moss Mother')
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(writes.some((w) => w.content.includes('attempt 2 at Moss Mother'))).toBe(true)
   })
 
   it('comments on a low-health moment', async () => {

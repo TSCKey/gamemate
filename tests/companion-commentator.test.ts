@@ -726,6 +726,13 @@ describe('a single-player session seen through the screen', () => {
     expect(screenEvents(h, 210, ['death'], { place: 'Grotto' })[0].tier).toBe('significant')
   })
 
+  it('counts a boss title seen again ten seconds later as a new attempt', () => {
+    const h = harness({ game: SILKSONG })
+    expect(screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })).toHaveLength(1)
+    expect(screenEvents(h, 5, ['boss_encounter'], { opponent: 'Moss Mother' })).toHaveLength(0)
+    expect(screenEvents(h, 15, ['boss_encounter'], { opponent: 'Moss Mother' })).toHaveLength(1)
+  })
+
   it('counts the same area entered twice within two minutes once', () => {
     const h = harness({ game: SILKSONG })
     expect(screenEvents(h, 0, ['area_entered'], { place: 'Moss Grotto' })).toHaveLength(1)

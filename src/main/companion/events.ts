@@ -358,7 +358,9 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     priority: 80,
     cooldownMs: 20 * S,
     staleMs: 20 * S,
-    dedupeMs: 30 * S,
+    // Short: the screen checks already give one title per showing, and a title shown again after
+    // a quick death and retry is a new attempt.
+    dedupeMs: 8 * S,
     meaning: 'The player is facing a boss.'
   },
   area_entered: {

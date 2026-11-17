@@ -749,8 +749,11 @@ async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): P
     opponent: name,
     detail: `facing ${name}`
   })
-  // Only a new encounter starts the fight's clock: a title seen again is the same fight.
-  if (deliverScreen(run, [encounter], time).some((e) => e.type === 'boss_encounter')) {
+  deliverScreen(run, [encounter], time)
+  // The fight's clock starts when there is no fight with this boss on: after a death (which
+  // ends the fight) even if the title came back too soon to count as new. A title seen again
+  // in the same fight leaves the clock running.
+  if (currentBoss !== name) {
     currentBoss = name
     tracker.setBoss(name)
   }
