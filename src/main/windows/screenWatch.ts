@@ -7,7 +7,7 @@ import type { GameProfile } from '../games/catalog'
 import type { Box } from '../../shared/screen/frame'
 import { SILKSONG_LAYOUT, type SilksongMeasure } from '../../shared/screen/silksong'
 import type { ScreenStart } from '../../shared/types'
-import { handleFromSourceId, windowProgram, windowRect } from '../system/foreground'
+import { handleFromSourceId, windowAreas, windowProgram, type Rect } from '../system/foreground'
 import { isToastPage, keepToastOpenWhile, sendToToast } from './toast'
 
 const FPS = 4
@@ -27,6 +27,8 @@ interface Choice {
   sourceId: string
   maxWidth: number
   maxHeight: number
+  // The game's client area in the streamed picture.
+  crop: Box
 }
 
 interface Watch {
@@ -66,10 +68,32 @@ export function sourceFor(
   return windows.find((s) => s.name.trim().toLowerCase() === wanted)?.id ?? null
 }
 
-type Rect = { left: number; top: number; right: number; bottom: number }
+const WHOLE: Box = { x: 0, y: 0, width: 1, height: 1 }
 
 function sizeOf(rect: Rect): { width: number; height: number } {
   return { width: rect.right - rect.left, height: rect.bottom - rect.top }
+}
+
+/**
+ * Where the client area (where the game draws) sits in a picture of `frame`, as fractions, so the
+ * title bar and borders of a windowed game don't shift the layout. The whole picture for a
+ * borderless or fullscreen window, or when either area has no size.
+ */
+export function clientBox(frame: Rect, client: Rect): Box {
+  const { width, height } = sizeOf(frame)
+  if (width <= 0 || height <= 0) return WHOLE
+  const clamp = (v: number, max: number): number => Math.min(max, Math.max(0, v))
+  const left = clamp(client.left - frame.left, width)
+  const right = clamp(client.right - frame.left, width)
+  const top = clamp(client.top - frame.top, height)
+  const bottom = clamp(client.bottom - frame.top, height)
+  if (right <= left || bottom <= top) return WHOLE
+  return {
+    x: left / width,
+    y: top / height,
+    width: (right - left) / width,
+    height: (bottom - top) / height
+  }
 }
 
 // The display showing most of the window (window bounds are in physical pixels).
@@ -80,12 +104,31 @@ function displayFor(rect: Rect | null): Display {
   return screen.getDisplayMatching(dip)
 }
 
-// The window's size and display: when either changes, the stream is chosen again.
-function placementOf(handle: bigint | null): string {
-  const rect = handle !== null ? windowRect(handle) : null
-  if (!rect) return 'none'
-  const { width, height } = sizeOf(rect)
-  return `${width}x${height}@${displayFor(rect).id}`
+// A display's bounds in physical pixels, like the window's.
+function physicalBounds(display: Display): Rect {
+  const { x, y, width, height } =
+    process.platform === 'win32'
+      ? screen.dipToScreenRect(null, display.bounds)
+      : {
+          x: display.bounds.x * display.scaleFactor,
+          y: display.bounds.y * display.scaleFactor,
+          width: display.size.width * display.scaleFactor,
+          height: display.size.height * display.scaleFactor
+        }
+  return { left: x, top: y, right: x + width, bottom: y + height }
+}
+
+// The window's size, client area and display: when any changes, the stream is chosen again.
+// While the whole display is streamed, a move also changes where the game is in the picture.
+function placementOf(handle: bigint | null, wholeDisplay: boolean): string {
+  const areas = handle !== null ? windowAreas(handle) : null
+  if (!areas) return 'none'
+  const { frame, client } = areas
+  const at = (r: Rect): string =>
+    wholeDisplay
+      ? `${r.left},${r.top},${r.right},${r.bottom}`
+      : `${r.left - frame.left},${r.top - frame.top},${r.right - frame.left},${r.bottom - frame.top}`
+  return `${at(frame)}|${at(client)}@${displayFor(frame).id}`
 }
 
 async function chooseSource(handle: bigint | null, title: string): Promise<Choice | null> {
@@ -96,30 +139,50 @@ async function chooseSource(handle: bigint | null, title: string): Promise<Choic
   })
   const windowId = sourceFor(sources, handle, title)
   const matched = windowId ? handleFromSourceId(windowId) : null
-  const rect = matched !== null ? windowRect(matched) : null
+  const areas = matched !== null ? windowAreas(matched) : null
   // Streamed at the window's full size, so text read from a region is as sharp as on screen.
-  if (windowId && rect) {
-    const { width, height } = sizeOf(rect)
-    if (width > 0 && height > 0) return { sourceId: windowId, maxWidth: width, maxHeight: height }
+  if (windowId && areas) {
+    const { width, height } = sizeOf(areas.frame)
+    if (width > 0 && height > 0) {
+      return {
+        sourceId: windowId,
+        maxWidth: width,
+        maxHeight: height,
+        crop: clientBox(areas.frame, areas.client)
+      }
+    }
   }
-  // The game window can't be captured on its own: the whole display it is on instead.
-  const display = displayFor(handle !== null ? windowRect(handle) : null)
+  // The game window can't be captured on its own: the whole display it is on instead, measured
+  // inside the game's client area.
+  const own = handle !== null ? windowAreas(handle) : null
+  const display = displayFor(own?.frame ?? null)
   const screens = sources.filter((s) => s.id.startsWith('screen:'))
   const source = screens.find((s) => s.display_id === String(display.id)) ?? screens[0]
   if (!source) return null
+  const bounds = physicalBounds(display)
+  const { width, height } = sizeOf(bounds)
   return {
     sourceId: source.id,
-    maxWidth: Math.round(display.size.width * display.scaleFactor),
-    maxHeight: Math.round(display.size.height * display.scaleFactor)
+    maxWidth: Math.round(width),
+    maxHeight: Math.round(height),
+    crop: own ? clientBox(bounds, own.client) : WHOLE
   }
 }
 
+const sameBox = (a: Box, b: Box): boolean =>
+  a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+
 const sameChoice = (a: Choice | null, b: Choice): boolean =>
-  !!a && a.sourceId === b.sourceId && a.maxWidth === b.maxWidth && a.maxHeight === b.maxHeight
+  !!a &&
+  a.sourceId === b.sourceId &&
+  a.maxWidth === b.maxWidth &&
+  a.maxHeight === b.maxHeight &&
+  sameBox(a.crop, b.crop)
+
+const streamsDisplay = (w: Watch): boolean => !!w.choice?.sourceId.startsWith('screen:')
 
 // Chooses what to stream and (re)starts the stream if that changed, or always with `force`.
 async function begin(w: Watch, force: boolean): Promise<void> {
-  w.placement = placementOf(w.handle)
   const choice = await chooseSource(w.handle, w.title).catch((error) => {
     console.warn('Could not list the windows to capture', error)
     return null
@@ -127,16 +190,18 @@ async function begin(w: Watch, force: boolean): Promise<void> {
   // Stopped (or replaced by a new watch) while the sources were listed.
   if (watch !== w) return
   w.lastMeasure = Date.now()
-  if (!choice || (!force && sameChoice(w.choice, choice))) return
-  w.choice = choice
-  const start: ScreenStart = { ...choice, fps: FPS, width: MEASURE_WIDTH }
-  sendToToast('screen:start', start)
+  if (choice && (force || !sameChoice(w.choice, choice))) {
+    w.choice = choice
+    const start: ScreenStart = { ...choice, fps: FPS, width: MEASURE_WIDTH }
+    sendToToast('screen:start', start)
+  }
+  w.placement = placementOf(w.handle, streamsDisplay(w))
 }
 
 async function check(w: Watch): Promise<void> {
   if (watch !== w || w.checking) return
   const stalled = Date.now() - w.lastMeasure >= STALL_MS
-  if (!stalled && placementOf(w.handle) === w.placement) return
+  if (!stalled && placementOf(w.handle, streamsDisplay(w)) === w.placement) return
   w.checking = true
   try {
     await begin(w, stalled)
@@ -239,7 +304,8 @@ function validBox(box: Box): boolean {
 
 /**
  * A full-size PNG of one region of the live stream (for reading text), or null when not watching
- * or when the pop-up window doesn't answer within 2 seconds.
+ * or when the pop-up window doesn't answer within 2 seconds. Like the measurements, the region is
+ * a part of the game's client area.
  */
 export function grabRegion(box: Box): Promise<Buffer | null> {
   if (!watch || !validBox(box)) return Promise.resolve(null)

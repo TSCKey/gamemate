@@ -37,11 +37,13 @@ class FakeWindow {
 const display = {
   id: 7,
   scaleFactor: 1,
+  bounds: { x: 0, y: 0, width: 1920, height: 1080 },
   size: { width: 1920, height: 1080 },
   workArea: { x: 0, y: 0, width: 1920, height: 1040 }
 }
 let sources: { id: string; name: string; display_id: string }[] = []
-let rect: { left: number; top: number; right: number; bottom: number } | null = null
+type Rect = { left: number; top: number; right: number; bottom: number }
+let areas: { frame: Rect; client: Rect } | null = null
 
 vi.mock('electron', () => ({
   app: { once: () => {} },
@@ -51,13 +53,14 @@ vi.mock('electron', () => ({
     getAllDisplays: () => [display],
     getPrimaryDisplay: () => display,
     getDisplayMatching: () => display,
-    screenToDipRect: (_win: unknown, r: unknown) => r
+    screenToDipRect: (_win: unknown, r: unknown) => r,
+    dipToScreenRect: (_win: unknown, r: unknown) => r
   }
 }))
 vi.mock('koffi', () => ({ default: {} }))
 vi.mock('../src/main/system/foreground', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../src/main/system/foreground')>()),
-  windowRect: () => rect,
+  windowAreas: () => areas,
   windowProgram: () => null
 }))
 
@@ -102,6 +105,35 @@ describe('choosing what to capture', () => {
   })
 })
 
+describe('the client area inside the captured window', () => {
+  const frame = { left: 0, top: 0, right: 1000, bottom: 800 }
+
+  it('leaves out the title bar and borders of a bordered window', () => {
+    const client = { left: 10, top: 40, right: 990, bottom: 790 }
+    expect(watch.clientBox(frame, client)).toEqual({
+      x: 0.01,
+      y: 0.05,
+      width: 0.98,
+      height: 0.9375
+    })
+  })
+
+  it('is the whole picture for a borderless or fullscreen window', () => {
+    expect(watch.clientBox(frame, frame)).toEqual({ x: 0, y: 0, width: 1, height: 1 })
+  })
+
+  it('is the whole picture when either area has no size (a minimized window)', () => {
+    const empty = { left: 0, top: 0, right: 0, bottom: 0 }
+    expect(watch.clientBox(frame, empty)).toEqual({ x: 0, y: 0, width: 1, height: 1 })
+    expect(watch.clientBox(empty, frame)).toEqual({ x: 0, y: 0, width: 1, height: 1 })
+  })
+
+  it('stays inside the picture when the client area pokes out of it', () => {
+    const client = { left: -8, top: 30, right: 1008, bottom: 808 }
+    expect(watch.clientBox(frame, client)).toEqual({ x: 0, y: 0.0375, width: 1, height: 0.9625 })
+  })
+})
+
 describe('watching the game window', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -110,7 +142,11 @@ describe('watching the game window', () => {
       { id: 'screen:0:0', name: 'Entire screen', display_id: '7' },
       { id: `window:${HANDLE}:0`, name: 'Hollow Knight Silksong', display_id: '' }
     ]
-    rect = { left: 100, top: 50, right: 1380, bottom: 770 }
+    // A bordered 1280x720 window: a 36 px title bar above a 1280x684 client area.
+    areas = {
+      frame: { left: 100, top: 50, right: 1380, bottom: 770 },
+      client: { left: 100, top: 86, right: 1380, bottom: 770 }
+    }
     toast.setUpToast(() => {}, 'preload.js')
   })
   afterEach(() => {
@@ -137,7 +173,8 @@ describe('watching the game window', () => {
           fps: 4,
           width: 480,
           maxWidth: 1280,
-          maxHeight: 720
+          maxHeight: 720,
+          crop: { x: 0, y: 0.05, width: 1, height: 0.95 }
         }
       ]
     ])
@@ -151,7 +188,9 @@ describe('watching the game window', () => {
     expect(sentOn('screen:start')[0][1]).toMatchObject({
       sourceId: 'screen:0:0',
       maxWidth: 1920,
-      maxHeight: 1080
+      maxHeight: 1080,
+      // Still measured inside the game's client area, now as a part of the display.
+      crop: { x: 100 / 1920, y: 86 / 1080, width: 1280 / 1920, height: 684 / 1080 }
     })
   })
 
@@ -190,11 +229,28 @@ describe('watching the game window', () => {
 
   it('restarts the stream when the game window changes size', async () => {
     await startWatching()
-    rect = { left: 0, top: 0, right: 1920, bottom: 1080 }
+    const whole = { left: 0, top: 0, right: 1920, bottom: 1080 }
+    areas = { frame: whole, client: whole }
     await vi.advanceTimersByTimeAsync(2_000)
     const starts = sentOn('screen:start')
     expect(starts).toHaveLength(2)
-    expect(starts[1][1]).toMatchObject({ maxWidth: 1920, maxHeight: 1080 })
+    expect(starts[1][1]).toMatchObject({
+      maxWidth: 1920,
+      maxHeight: 1080,
+      crop: { x: 0, y: 0, width: 1, height: 1 }
+    })
+  })
+
+  it('restarts the stream when only the client area changes, as when the title bar goes', async () => {
+    await startWatching()
+    areas = { frame: areas!.frame, client: areas!.frame }
+    await vi.advanceTimersByTimeAsync(2_000)
+    const starts = sentOn('screen:start')
+    expect(starts).toHaveLength(2)
+    expect(starts[1][1]).toMatchObject({
+      maxWidth: 1280,
+      crop: { x: 0, y: 0, width: 1, height: 1 }
+    })
   })
 
   it('keeps the same stream while nothing about the window changes', async () => {

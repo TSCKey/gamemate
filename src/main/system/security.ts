@@ -57,3 +57,24 @@ export function hardenWindows(allowedLink: (url: string) => boolean): void {
     })
   })
 }
+
+// Which camera, microphone or screen requests a page gets. `types` is Electron's list for a
+// 'media' request (null for any other permission); it names only cameras and microphones, so a
+// stream of a window or screen comes with an empty list. GameMate's own pages may use the
+// microphone (for voice questions) when voice input is on, and the comment pop-up may stream the
+// game window while the companion watches it. Nothing else.
+export function mediaAllowed({
+  types,
+  voiceInput,
+  watchingFromThisPage,
+  ownPage
+}: {
+  types: readonly string[] | null
+  voiceInput: boolean
+  watchingFromThisPage: boolean
+  ownPage: boolean
+}): boolean {
+  if (!types || !ownPage) return false
+  if (types.length === 0) return watchingFromThisPage
+  return voiceInput && types.every((t) => t === 'audio')
+}

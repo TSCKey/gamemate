@@ -470,10 +470,13 @@ export interface AppInfo {
 
 // What the comment pop-up window streams to measure the game's screen: a window or display
 // source, streamed at up to maxWidth x maxHeight, measured `fps` times a second at `width` wide.
+// Only the `crop` part of each picture (the game's client area, as fractions) is measured and
+// grabbed, so a title bar or borders don't shift where things are.
 export interface ScreenStart {
   sourceId: string
   fps: number
   width: number
   maxWidth: number
   maxHeight: number
+  crop: { x: number; y: number; width: number; height: number }
 }

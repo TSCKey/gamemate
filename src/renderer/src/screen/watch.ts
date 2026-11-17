@@ -10,6 +10,8 @@ interface Running {
   video: HTMLVideoElement
   canvas: OffscreenCanvas
   context: OffscreenCanvasRenderingContext2D
+  // The game's client area in each picture: only this part is measured and grabbed.
+  crop: Box
   timer: ReturnType<typeof setInterval>
 }
 
@@ -17,7 +19,14 @@ let running: Running | null = null
 // Counts starts and stops, so a stream that opens after a newer request is dropped.
 let generation = 0
 
-async function start({ sourceId, fps, width, maxWidth, maxHeight }: ScreenStart): Promise<void> {
+async function start({
+  sourceId,
+  fps,
+  width,
+  maxWidth,
+  maxHeight,
+  crop
+}: ScreenStart): Promise<void> {
   stop()
   const mine = generation
   let stream: MediaStream
@@ -61,32 +70,53 @@ async function start({ sourceId, fps, width, maxWidth, maxHeight }: ScreenStart)
     return
   }
   const timer = setInterval(() => measure(width), 1000 / fps)
-  running = { stream, video, canvas, context, timer }
+  running = { stream, video, canvas, context, crop, timer }
+}
+
+// The client area in the video's pixels, or null before the first frame.
+function clientPixels(
+  video: HTMLVideoElement,
+  crop: Box
+): { x: number; y: number; width: number; height: number } | null {
+  const { videoWidth, videoHeight } = video
+  if (!videoWidth || !videoHeight) return null
+  const x = Math.min(videoWidth - 1, Math.round(crop.x * videoWidth))
+  const y = Math.min(videoHeight - 1, Math.round(crop.y * videoHeight))
+  return {
+    x,
+    y,
+    width: Math.max(1, Math.min(videoWidth - x, Math.round(crop.width * videoWidth))),
+    height: Math.max(1, Math.min(videoHeight - y, Math.round(crop.height * videoHeight)))
+  }
 }
 
 function measure(width: number): void {
   if (!running) return
-  const { video, canvas, context } = running
-  if (!video.videoWidth || !video.videoHeight) return
+  const { video, canvas, context, crop } = running
+  const client = clientPixels(video, crop)
+  if (!client) return
   // The same width whatever the window's size, so each measurement costs the same.
-  const height = Math.max(1, Math.round((width * video.videoHeight) / video.videoWidth))
+  const height = Math.max(1, Math.round((width * client.height) / client.width))
   if (canvas.width !== width || canvas.height !== height) {
     canvas.width = width
     canvas.height = height
   }
-  context.drawImage(video, 0, 0, width, height)
+  context.drawImage(video, client.x, client.y, client.width, client.height, 0, 0, width, height)
   const { data } = context.getImageData(0, 0, width, height)
   window.api.screen.measure(measureSilksong({ width, height, data }))
 }
 
-// A full-size PNG of one region of the latest frame, or null without a frame.
+// A full-size PNG of one region (a part of the client area) of the latest frame, or null without
+// a frame.
 async function grab(box: Box): Promise<Uint8Array | null> {
-  const video = running?.video
-  if (!video || !video.videoWidth || !video.videoHeight) return null
-  const x = Math.round(box.x * video.videoWidth)
-  const y = Math.round(box.y * video.videoHeight)
-  const width = Math.min(video.videoWidth - x, Math.round(box.width * video.videoWidth))
-  const height = Math.min(video.videoHeight - y, Math.round(box.height * video.videoHeight))
+  if (!running) return null
+  const { video, crop } = running
+  const client = clientPixels(video, crop)
+  if (!client) return null
+  const x = client.x + Math.round(box.x * client.width)
+  const y = client.y + Math.round(box.y * client.height)
+  const width = Math.min(client.x + client.width - x, Math.round(box.width * client.width))
+  const height = Math.min(client.y + client.height - y, Math.round(box.height * client.height))
   if (width <= 0 || height <= 0) return null
   const canvas = new OffscreenCanvas(width, height)
   const context = canvas.getContext('2d')

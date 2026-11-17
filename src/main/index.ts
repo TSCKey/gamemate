@@ -8,7 +8,7 @@ import { engineUpToDate, runningModel, stopEngine } from './ai/llamaEngine'
 import { startUpdater } from './system/updater'
 import { clearGeminiKey } from './system/secrets'
 import { followForegroundGame } from './games/current'
-import { hardenWindows } from './system/security'
+import { hardenWindows, mediaAllowed } from './system/security'
 import { allowedLink } from './system/links'
 import { registerAppHandlers } from './ipc/app'
 import { registerAssistantHandlers } from './ipc/assistant'
@@ -226,7 +226,7 @@ function updateShortcuts(settings: Settings): void {
 }
 
 // GameMate's own pages may use the microphone (for voice questions), and the comment pop-up may
-// stream the game window while the companion watches it. Nothing else.
+// stream the game window while the companion watches it (see mediaAllowed). Nothing else.
 function restrictPermissions(): void {
   const ownPage = (url: string): boolean =>
     url.startsWith('file://') ||
@@ -235,13 +235,14 @@ function restrictPermissions(): void {
       url.startsWith(process.env['ELECTRON_RENDERER_URL']))
   session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => {
     const types = permission === 'media' && 'mediaTypes' in details ? details.mediaTypes : null
-    const microphone = !!types && types.length > 0 && types.every((t) => t === 'audio')
-    // Electron lists only cameras and microphones here, so a stream of a window or screen
-    // comes with an empty list.
-    const screenCapture = !!types && types.length === 0
-    const allowed =
-      (microphone && getSettings().voiceInput) || (screenCapture && screenWatchingFrom(contents))
-    callback(allowed && ownPage(contents.getURL()))
+    callback(
+      mediaAllowed({
+        types: types ?? null,
+        voiceInput: getSettings().voiceInput,
+        watchingFromThisPage: screenWatchingFrom(contents),
+        ownPage: ownPage(contents.getURL())
+      })
+    )
   })
   session.defaultSession.setPermissionCheckHandler(
     (_contents, permission, origin) => permission === 'media' && ownPage(origin)
