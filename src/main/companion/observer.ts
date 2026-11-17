@@ -43,6 +43,7 @@ import {
 import { matchName } from './names'
 import { silksongNames } from './silksongNames'
 import { SilksongTracker } from './silksongTracker'
+import { READ_PICKUPS } from './silksongSwitches'
 import { BANNER_KINDS, parsePlayerNames, readAreas } from './areaReading'
 import { cropBox, gameFrame, hudAreas, type Area, type Box } from './hudAreas'
 import type { MatchContext } from './matchMemory'
@@ -674,6 +675,8 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
         )
         break
       case 'pickup':
+        // Switched off until the region is known to hold only pickup names.
+        if (!READ_PICKUPS) break
         readPickup(run, time).catch((error) => console.error('Could not read a pickup', error))
         break
       case 'blocked':

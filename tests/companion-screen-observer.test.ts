@@ -367,6 +367,16 @@ describe('watching Silksong', () => {
     expect(logged()).toContain('low_health')
   })
 
+  it('reads no pickup text and logs nothing with the shipped settings', async () => {
+    switches.readPickups = shipped.READ_PICKUPS
+    readAs = async () => [{ text: 'Silk Spool' }]
+    showText('pickupText')
+    await settle()
+    expect(grabRegion).not.toHaveBeenCalled()
+    expect(readText).not.toHaveBeenCalled()
+    expect(logged()).toEqual([])
+  })
+
   it('logs a pickup once, and only text that looks like a name', async () => {
     readAs = async () => [{ text: 'Silk Spool' }]
     showText('pickupText')

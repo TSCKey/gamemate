@@ -8,3 +8,10 @@
  * into a win.
  */
 export const INFER_BOSS_DEFEAT = false
+
+/**
+ * Text in the pickup region is read and logged as a pickup. Off: the region is only an estimate,
+ * and dialogue, prompts or misreads there would be logged (and sent to the model) as pickups.
+ * Turn on once calibration shows the region holds only pickup names.
+ */
+export const READ_PICKUPS = false
