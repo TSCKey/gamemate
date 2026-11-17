@@ -40,8 +40,12 @@ describe('replies from the Windows text reader', () => {
     expect(parseOcrReply('garbage')).toBeNull()
   })
 
-  it('count an error reply as no lines', () => {
-    expect(parseOcrReply('{"id":5,"error":"no engine"}')).toEqual({ id: 5, lines: [] })
+  it('count an error reply as no lines, and keep its message', () => {
+    expect(parseOcrReply('{"id":5,"error":"no engine"}')).toEqual({
+      id: 5,
+      lines: [],
+      error: 'no engine'
+    })
   })
 })
 
@@ -79,20 +83,25 @@ describe('reading text from an image', () => {
     return state
   }
 
-  beforeEach(async () => {
-    vi.useFakeTimers()
-    // readText does nothing off Windows, so pretend to be on it: these tests must not pass trivially.
-    Object.defineProperty(process, 'platform', { value: 'win32' })
-    shell = Object.assign(new EventEmitter(), {
+  const makeShell = (): FakeShell => {
+    const made: FakeShell = Object.assign(new EventEmitter(), {
       stdout: new PassThrough(),
       stdin: new PassThrough(),
       exitCode: null as number | null,
       kill: () => {},
       written: [] as { id: number }[]
     })
-    shell.stdin.on('data', (d: Buffer) => {
-      for (const l of d.toString().split('\n').filter(Boolean)) shell.written.push(JSON.parse(l))
+    made.stdin.on('data', (d: Buffer) => {
+      for (const l of d.toString().split('\n').filter(Boolean)) made.written.push(JSON.parse(l))
     })
+    return made
+  }
+
+  beforeEach(async () => {
+    vi.useFakeTimers()
+    // readText does nothing off Windows, so pretend to be on it: these tests must not pass trivially.
+    Object.defineProperty(process, 'platform', { value: 'win32' })
+    shell = makeShell()
     fake.spawnImpl = () => shell
     vi.resetModules()
     ;({ readText, shutdownOcr } = await import('../src/main/system/ocr'))
@@ -137,6 +146,32 @@ describe('reading text from an image', () => {
     await flush()
     await reply(JSON.stringify({ id: shell.written[0].id, error: 'no engine' }))
     expect(read.value).toEqual([])
+  })
+
+  it('warns once about failed reads, with the first message, per helper process', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      for (let i = 0; i < 2; i++) {
+        const read = track(readText(Buffer.from([1])))
+        await flush()
+        await reply(JSON.stringify({ id: shell.written[i].id, error: `no engine ${i}` }))
+        expect(read.value).toEqual([])
+      }
+      expect(warn).toHaveBeenCalledTimes(1)
+      expect(warn.mock.calls[0].join(' ')).toContain('no engine 0')
+
+      // A new helper process warns again, as the cause may have changed.
+      shell.exitCode = 1
+      shell.emit('exit', 1)
+      shell = makeShell()
+      const read = track(readText(Buffer.from([1])))
+      await flush()
+      await reply(JSON.stringify({ id: shell.written[0].id, error: 'still no engine' }))
+      expect(read.value).toEqual([])
+      expect(warn).toHaveBeenCalledTimes(2)
+    } finally {
+      warn.mockRestore()
+    }
   })
 
   it('keeps waiting through a garbage line, then times out with no lines', async () => {

@@ -101,13 +101,21 @@ export function ocrCommand(id: number, png: Buffer, language: string): string {
   )
 }
 
-export function parseOcrReply(line: string): { id: number; lines: OcrLine[] } | null {
+export interface OcrReply {
+  id: number
+  lines: OcrLine[]
+  // Why the read failed, when it did.
+  error?: string
+}
+
+export function parseOcrReply(line: string): OcrReply | null {
   try {
     const message = JSON.parse(line) as { id?: unknown; lines?: unknown; error?: unknown }
     if (typeof message?.id !== 'number') return null
-    if (message.error !== undefined || !Array.isArray(message.lines)) {
-      return { id: message.id, lines: [] }
+    if (message.error !== undefined) {
+      return { id: message.id, lines: [], error: String(message.error) }
     }
+    if (!Array.isArray(message.lines)) return { id: message.id, lines: [] }
     const lines = message.lines.filter(
       (l): l is OcrLine =>
         typeof l?.text === 'string' &&
@@ -135,9 +143,16 @@ function engine(): ChildProcessWithoutNullStreams | null {
     windowsHide: true
   })
   proc = child
+  // A failed read is no text found, but the reason (such as no text recognition language being
+  // installed) is logged, once per process so a failing helper doesn't fill the log.
+  let warned = false
   createInterface({ input: child.stdout }).on('line', (line) => {
     const reply = parseOcrReply(line)
     if (!reply) return
+    if (reply.error !== undefined && !warned) {
+      warned = true
+      console.warn('Text recognition could not read an image:', reply.error)
+    }
     const resolve = waiting.get(reply.id)
     waiting.delete(reply.id)
     resolve?.(reply.lines)
