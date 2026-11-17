@@ -732,6 +732,26 @@ describe('a single-player session seen through the screen', () => {
     expect(screenEvents(h, 60, ['area_entered'], { place: 'Moss Grotto' })).toHaveLength(0)
   })
 
+  it('counts a different area entered within two minutes as a new area', () => {
+    const h = harness({ game: SILKSONG })
+    expect(screenEvents(h, 0, ['area_entered'], { place: 'Moss Grotto' })).toHaveLength(1)
+    expect(screenEvents(h, 60, ['area_entered'], { place: 'The Marrow' })).toHaveLength(1)
+  })
+
+  it('does not blame the old boss for a death in the next area', async () => {
+    const h = harness({ game: SILKSONG })
+    screenEvents(h, 0, ['area_entered'], { place: 'Moss Grotto' })
+    for (let i = 0; i < 3; i++) {
+      screenEvents(h, 5 + i * 40, ['boss_encounter'], { opponent: 'Moss Mother' })
+    }
+    screenEvents(h, 100, ['area_entered'], { place: 'The Marrow' })
+    const died = screenEvents(h, 110, ['death'], { place: 'The Marrow' })
+    expect(died[0].tier).toBe('minor')
+    await h.wait(114)
+    expect(h.prompts.at(-1)).toContain('died in The Marrow')
+    expect(h.prompts.at(-1)).not.toContain('died to Moss Mother')
+  })
+
   it('forgets the session when the game changes', async () => {
     const h = harness({ game: SILKSONG })
     screenEvents(h, 0, ['boss_encounter'], { opponent: 'Moss Mother' })

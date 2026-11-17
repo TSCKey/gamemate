@@ -59,7 +59,11 @@ const SAY_IT_DIFFERENTLY =
 
 function eventKey(event: GameEvent): string {
   const counted = event.type === 'multikill' || event.type === 'kill_streak'
-  return `${event.type}:${event.opponent.toLowerCase()}${counted ? `:${event.count}` : ''}`
+  // An area is told apart by its name (it is in `place`, with no opponent), so two different
+  // areas close together are two events.
+  const named =
+    event.type === 'area_entered' ? event.place.toLowerCase() : event.opponent.toLowerCase()
+  return `${event.type}:${named}${counted ? `:${event.count}` : ''}`
 }
 
 // How big a moment this is, given the match so far.
