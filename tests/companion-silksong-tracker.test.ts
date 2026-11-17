@@ -288,21 +288,26 @@ describe('SilksongTracker boss defeated', () => {
 describe('SilksongTracker blocked capture', () => {
   const black = { brightness: 0, masks: 0 }
 
-  it('reports blocked after 8 black frames in a row, once', () => {
-    const run = new Run().frames(3).frames(7, black)
+  it('reports blocked after 40 black frames in a row, once', () => {
+    const run = new Run().frames(3).frames(39, black)
     expect(run.kinds()).not.toContain('blocked')
     run.frames(1, black).frames(10, black)
     expect(run.kinds().filter((k) => k === 'blocked')).toHaveLength(1)
   })
 
   it('does not report blocked when a bright frame interrupts the black ones', () => {
-    const run = new Run().frames(7, black).frames(1).frames(7, black)
+    const run = new Run().frames(39, black).frames(1).frames(39, black)
     expect(run.kinds()).not.toContain('blocked')
   })
 
   it('can report blocked again after a non-black frame arrives', () => {
-    const run = new Run().frames(8, black).frames(2).frames(8, black)
+    const run = new Run().frames(40, black).frames(2).frames(40, black)
     expect(run.kinds().filter((k) => k === 'blocked')).toHaveLength(2)
+  })
+
+  it('does not report blocked for a 3 s death fade, only the death', () => {
+    const run = new Run().frames(4).frames(12, black).frames(2)
+    expect(run.kinds()).toEqual(['death'])
   })
 })
 

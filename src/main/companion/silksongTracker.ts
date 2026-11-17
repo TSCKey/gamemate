@@ -27,8 +27,12 @@ const TEXT_OFF = 0.1
 const TEXT_REARM_MS = 2000
 /** A room change this long after a boss began, with no death, means it was beaten. */
 const BOSS_MIN_MS = 20000
-/** Black frames in a row, with no masks, that mean the capture is blocked. */
-const BLOCKED_FRAMES = 8
+/**
+ * Black frames in a row, with no masks, that mean the capture is blocked (10 s at 4 per second).
+ * Longer than any death fade, which is black for a few seconds at most; a blocked capture stays
+ * black for good.
+ */
+const BLOCKED_FRAMES = 40
 /** Damage this recently means the player is in a fight. */
 const FIGHTING_MS = 10000
 
