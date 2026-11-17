@@ -3,6 +3,7 @@ import type { Settings } from '../../../preload/index.d'
 import { useAppLanguage } from '../i18n'
 import { speak } from '../voice/speak'
 import { hush, say } from '../voice/natural'
+import { watchScreen } from '../screen/watch'
 
 // Transparent space around the bubble, so its shadow isn't clipped by the window edge.
 const WINDOW_PADDING = 12
@@ -20,7 +21,7 @@ function Toast(): React.JSX.Element {
   const bubbleRef = useRef<HTMLDivElement>(null)
 
   // This window is also where GameMate's natural voice speaks, for every window. It is opened
-  // when there is something to show or say, and tells GameMate once it listens.
+  // when there is something to show, say or watch, and tells GameMate once it listens.
   useEffect(() => {
     const stopShow = window.api.toast.onShow(async (comment) => {
       setText(comment)
@@ -35,11 +36,14 @@ function Toast(): React.JSX.Element {
       if (mine === latest) window.api.toast.doneSpeaking()
     })
     const stopHush = window.api.voice.onHush(hush)
+    // It also streams the game window while the companion watches the screen.
+    const stopWatch = watchScreen()
     window.api.toast.ready()
     return () => {
       stopShow()
       stopSay()
       stopHush()
+      stopWatch()
     }
   }, [])
 

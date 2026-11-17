@@ -11,7 +11,14 @@ import { hideOverlay, setOverlayHeight, takePendingScreenshot } from '../windows
 import { clearGeminiKey } from '../system/secrets'
 import { handle } from '../system/security'
 import { getSettings, resetSettings, updateSettings } from '../system/settings'
-import { hideToast, setToastHeight, toastDoneSpeaking, toastReady } from '../windows/toast'
+import {
+  hideToast,
+  isToastPage,
+  setToastHeight,
+  toastDoneSpeaking,
+  toastReady
+} from '../windows/toast'
+import { takeGrab, takeMeasure } from '../windows/screenWatch'
 import { warmUp } from '../ai/engines'
 import { clearSession, getSession, updateSession } from '../system/session'
 import { checkForUpdates, installUpdate, updateState } from '../system/updater'
@@ -79,6 +86,14 @@ export function registerAppHandlers(
   handle('toast:set-height', (_event, height: unknown) => setToastHeight(height))
   handle('toast:ready', () => toastReady())
   handle('toast:done-speaking', () => toastDoneSpeaking())
+  // The pop-up window's measurements of the game's screen, and the regions it was asked for.
+  // Only that window watches the screen; screenWatch checks what it sends.
+  handle('screen:measure', (event, m: unknown) => {
+    if (isToastPage(event.sender)) takeMeasure(m)
+  })
+  handle('screen:grabbed', (event, id: unknown, png: unknown) => {
+    if (isToastPage(event.sender)) takeGrab(id, png)
+  })
 
   handle('session:get', () => getSession())
   handle('session:update', (_event, patch: unknown) => updateSession(patch))

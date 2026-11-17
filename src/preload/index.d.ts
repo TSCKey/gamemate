@@ -12,6 +12,7 @@ import type {
   ModpackSummary,
   RunningApp,
   SayRequest,
+  ScreenStart,
   Screenshot,
   Settings,
   SpeechModelId,
@@ -22,8 +23,11 @@ import type {
   MainWindowSession
 } from '../shared/types'
 import type { LanguageCode } from '../shared/languages'
+import type { Box } from '../shared/screen/frame'
+import type { SilksongMeasure } from '../shared/screen/silksong'
 
 export type * from '../shared/types'
+export type { Box, SilksongMeasure }
 
 export interface Api {
   listModels: () => Promise<ModelInfo[]>
@@ -133,6 +137,16 @@ export interface Api {
     ready: () => Promise<void>
     // The natural voice finished (or was stopped) saying the latest sentence.
     doneSpeaking: () => Promise<void>
+  }
+  // For the pop-up window, which streams the game window and measures it for the companion.
+  screen: {
+    onStart: (callback: (start: ScreenStart) => void) => () => void
+    onStop: (callback: () => void) => () => void
+    // A full-size picture of one region is wanted; answer with grabbed(id, png).
+    onGrab: (callback: (id: number, box: Box) => void) => () => void
+    measure: (m: SilksongMeasure) => Promise<void>
+    // PNG bytes of the region, or null when there was no frame.
+    grabbed: (id: number, png: Uint8Array | null) => Promise<void>
   }
   overlay: {
     hide: () => Promise<void>

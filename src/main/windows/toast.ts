@@ -2,7 +2,7 @@
 // so the player's keyboard and mouse stay in the game. GameMate's natural voice also speaks from
 // this window. It is opened when there is something to show or say, and closed again after a few
 // quiet minutes, so its page and the voice model don't stay in memory while nothing happens.
-import { app, BrowserWindow, screen } from 'electron'
+import { app, BrowserWindow, screen, type WebContents } from 'electron'
 import { getSettings } from '../system/settings'
 import type { SayRequest } from '../../shared/types'
 import { idleTimer } from '../../shared/idle'
@@ -22,8 +22,10 @@ let ready = false
 let waiting: { say: boolean; run: (win: BrowserWindow) => void }[] = []
 let speaking = false
 let quitting = false
+// Other work that runs in this window (watching the game's screen) and keeps it open meanwhile.
+let alsoBusy: () => boolean = () => false
 
-const idle = idleTimer(IDLE_MS, closeToast, () => speaking || !!toast?.isVisible())
+const idle = idleTimer(IDLE_MS, closeToast, () => speaking || !!toast?.isVisible() || alsoBusy())
 
 // How the window is opened once it is needed.
 export function setUpToast(
@@ -81,6 +83,21 @@ function withToast(run: (win: BrowserWindow) => void, say = false): boolean {
   if (ready) run(toast)
   else waiting.push({ say, run })
   return true
+}
+
+// Sends to the window's page, opening the window (hidden) if needed.
+export function sendToToast(channel: string, ...args: unknown[]): boolean {
+  return withToast((win) => win.webContents.send(channel, ...args))
+}
+
+// Keeps the window open while `busy` says its page is still at work.
+export function keepToastOpenWhile(busy: () => boolean): void {
+  alsoBusy = busy
+}
+
+// Whether a request comes from this window's page.
+export function isToastPage(contents: WebContents): boolean {
+  return !!toast && !toast.isDestroyed() && toast.webContents === contents
 }
 
 // The window's page has loaded and listens for comments and sentences.

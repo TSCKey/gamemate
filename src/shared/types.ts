@@ -467,3 +467,13 @@ export interface AppInfo {
   voiceShortcut: string
   voiceShortcutRegistered: boolean
 }
+
+// What the comment pop-up window streams to measure the game's screen: a window or display
+// source, streamed at up to maxWidth x maxHeight, measured `fps` times a second at `width` wide.
+export interface ScreenStart {
+  sourceId: string
+  fps: number
+  width: number
+  maxWidth: number
+  maxHeight: number
+}

@@ -27,6 +27,7 @@ import {
 import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
 import { closeToast, setUpToast, showToast } from './windows/toast'
+import { screenWatchingFrom } from './windows/screenWatch'
 import { shutdownSpeech } from './voice/tts'
 import { shutdownOcr } from './system/ocr'
 import { removeOldVoice } from './voice/migrate'
@@ -224,7 +225,8 @@ function updateShortcuts(settings: Settings): void {
   }
 }
 
-// GameMate's own pages may use the microphone (for voice questions) and nothing else.
+// GameMate's own pages may use the microphone (for voice questions), and the comment pop-up may
+// stream the game window while the companion watches it. Nothing else.
 function restrictPermissions(): void {
   const ownPage = (url: string): boolean =>
     url.startsWith('file://') ||
@@ -232,11 +234,14 @@ function restrictPermissions(): void {
       !!process.env['ELECTRON_RENDERER_URL'] &&
       url.startsWith(process.env['ELECTRON_RENDERER_URL']))
   session.defaultSession.setPermissionRequestHandler((contents, permission, callback, details) => {
-    const audioOnly =
-      permission === 'media' &&
-      'mediaTypes' in details &&
-      (details.mediaTypes ?? []).every((t) => t === 'audio')
-    callback(audioOnly && ownPage(contents.getURL()) && getSettings().voiceInput)
+    const types = permission === 'media' && 'mediaTypes' in details ? details.mediaTypes : null
+    const microphone = !!types && types.length > 0 && types.every((t) => t === 'audio')
+    // Electron lists only cameras and microphones here, so a stream of a window or screen
+    // comes with an empty list.
+    const screenCapture = !!types && types.length === 0
+    const allowed =
+      (microphone && getSettings().voiceInput) || (screenCapture && screenWatchingFrom(contents))
+    callback(allowed && ownPage(contents.getURL()))
   })
   session.defaultSession.setPermissionCheckHandler(
     (_contents, permission, origin) => permission === 'media' && ownPage(origin)

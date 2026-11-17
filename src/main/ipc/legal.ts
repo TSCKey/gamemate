@@ -13,6 +13,8 @@ export const AFTER_TERMS = new Set([
   'assistant:ask',
   'capture:list-sources',
   'capture:screenshot',
+  'screen:measure',
+  'screen:grabbed',
   'overlay:take-screenshot',
   'overlay:warm-up',
   'games:scan',

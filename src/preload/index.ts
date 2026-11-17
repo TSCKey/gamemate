@@ -5,6 +5,8 @@ import type {
   LocalModelStatus,
   Settings,
   SayRequest,
+  ScreenStart,
+  Box,
   SpeechModelStatus,
   UpdateState
 } from './index.d'
@@ -115,6 +117,13 @@ const api: Api = {
     onShow: (callback) => listen<[string]>('toast:show', callback),
     ready: () => ipcRenderer.invoke('toast:ready'),
     doneSpeaking: () => ipcRenderer.invoke('toast:done-speaking')
+  },
+  screen: {
+    onStart: (callback) => listen<[ScreenStart]>('screen:start', callback),
+    onStop: (callback) => listen<[]>('screen:stop', callback),
+    onGrab: (callback) => listen<[number, Box]>('screen:grab', callback),
+    measure: (m) => ipcRenderer.invoke('screen:measure', m),
+    grabbed: (id, png) => ipcRenderer.invoke('screen:grabbed', id, png)
   },
   overlay: {
     hide: () => ipcRenderer.invoke('overlay:hide'),
