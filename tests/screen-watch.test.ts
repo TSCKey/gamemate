@@ -45,6 +45,8 @@ let sources: { id: string; name: string; display_id: string }[] = []
 let beforeQuit: () => void = () => {}
 type Rect = { left: number; top: number; right: number; bottom: number }
 let areas: { frame: Rect; client: Rect } | null = null
+// The window in front, as Windows reports it.
+let front: bigint | null = null
 
 vi.mock('electron', () => ({
   app: {
@@ -66,7 +68,8 @@ vi.mock('koffi', () => ({ default: {} }))
 vi.mock('../src/main/system/foreground', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../src/main/system/foreground')>()),
   windowAreas: () => areas,
-  windowProgram: () => null
+  windowProgram: () => null,
+  foregroundHandle: () => front
 }))
 
 const toast = await import('../src/main/windows/toast')
@@ -152,6 +155,7 @@ describe('watching the game window', () => {
       frame: { left: 100, top: 50, right: 1380, bottom: 770 },
       client: { left: 100, top: 86, right: 1380, bottom: 770 }
     }
+    front = HANDLE
     toast.setUpToast(() => {}, 'preload.js')
   })
   afterEach(() => {
@@ -197,6 +201,51 @@ describe('watching the game window', () => {
       // Still measured inside the game's client area, now as a part of the display.
       crop: { x: 100 / 1920, y: 86 / 1080, width: 1280 / 1920, height: 684 / 1080 }
     })
+  })
+
+  it('streams nothing when the display showing the game is not among the sources', async () => {
+    sources = [{ id: 'screen:1:0', name: 'Screen 2', display_id: '9' }]
+    await startWatching()
+    expect(sentOn('screen:start')).toEqual([])
+  })
+
+  it('drops measurements while another window is in front', async () => {
+    const seen: SilksongMeasure[] = []
+    await startWatching((m) => seen.push(m))
+    front = 1111n
+    watch.takeMeasure(measure)
+    front = null
+    watch.takeMeasure(measure)
+    expect(seen).toEqual([])
+    front = HANDLE
+    watch.takeMeasure(measure)
+    expect(seen).toEqual([measure])
+  })
+
+  it('keeps the stream running while another window is in front', async () => {
+    await startWatching()
+    front = 1111n
+    for (let i = 0; i < 12; i++) {
+      await vi.advanceTimersByTimeAsync(1_000)
+      watch.takeMeasure(measure)
+    }
+    expect(sentOn('screen:start')).toHaveLength(1)
+  })
+
+  it('gives no picture while another window is in front', async () => {
+    await startWatching()
+    front = 1111n
+    expect(await watch.grabRegion({ x: 0, y: 0, width: 0.5, height: 0.5 })).toBeNull()
+    expect(sentOn('screen:grab')).toEqual([])
+  })
+
+  it('gives no picture when another window came to the front before the answer', async () => {
+    await startWatching()
+    const picture = watch.grabRegion({ x: 0, y: 0, width: 0.5, height: 0.5 })
+    const [[, id]] = sentOn('screen:grab')
+    front = 1111n
+    watch.takeGrab(id, PNG)
+    expect(await picture).toBeNull()
   })
 
   it('stops the stream when asked, and is no longer watching', async () => {

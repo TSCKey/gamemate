@@ -7,7 +7,13 @@ import type { GameProfile } from '../games/catalog'
 import type { Box } from '../../shared/screen/frame'
 import { SILKSONG_LAYOUT, type SilksongMeasure } from '../../shared/screen/silksong'
 import type { ScreenStart } from '../../shared/types'
-import { handleFromSourceId, windowAreas, windowProgram, type Rect } from '../system/foreground'
+import {
+  foregroundHandle,
+  handleFromSourceId,
+  windowAreas,
+  windowProgram,
+  type Rect
+} from '../system/foreground'
 import { isToastPage, keepToastOpenWhile, sendToToast, toastOpen } from './toast'
 
 const FPS = 4
@@ -156,8 +162,10 @@ async function chooseSource(handle: bigint | null, title: string): Promise<Choic
   // inside the game's client area.
   const own = handle !== null ? windowAreas(handle) : null
   const display = displayFor(own?.frame ?? null)
-  const screens = sources.filter((s) => s.id.startsWith('screen:'))
-  const source = screens.find((s) => s.display_id === String(display.id)) ?? screens[0]
+  // Never another display than the game's: that would stream (and could read) other windows.
+  const source = sources.find(
+    (s) => s.id.startsWith('screen:') && s.display_id === String(display.id)
+  )
   if (!source) return null
   const bounds = physicalBounds(display)
   const { width, height } = sizeOf(bounds)
@@ -256,12 +264,19 @@ export function screenWatchingFrom(contents: WebContents): boolean {
   return screenWatching() && isToastPage(contents)
 }
 
+// Whether the watched game window is the one in front. While it isn't (alt-tabbed, until the
+// observer notices and stops the watch), a whole-display stream shows other programs, so nothing
+// from the stream is used then.
+const gameInFront = (w: Watch): boolean => w.handle !== null && foregroundHandle() === w.handle
+
 // The pop-up window measured a frame. Its input is checked like any page's.
 export function takeMeasure(raw: unknown): void {
   if (!watch) return
   const m = validMeasure(raw)
   if (!m) return
+  // The stream is alive either way, so it is not restarted for being dropped.
   watch.lastMeasure = Date.now()
+  if (!gameInFront(watch)) return
   watch.onMeasure(m, watch.lastMeasure)
 }
 
@@ -303,12 +318,12 @@ function validBox(box: Box): boolean {
 }
 
 /**
- * A full-size PNG of one region of the live stream (for reading text), or null when not watching
- * or when the pop-up window doesn't answer within 2 seconds. Like the measurements, the region is
+ * A full-size PNG of one region of the live stream (for reading text), or null when not watching,
+ * when the game window is not in front, or when the pop-up window doesn't answer within 2 seconds. Like the measurements, the region is
  * a part of the game's client area.
  */
 export function grabRegion(box: Box): Promise<Buffer | null> {
-  if (!watch || !validBox(box)) return Promise.resolve(null)
+  if (!watch || !validBox(box) || !gameInFront(watch)) return Promise.resolve(null)
   const id = ++lastGrab
   return new Promise((resolve) => {
     const timer = setTimeout(() => finish(null), GRAB_TIMEOUT_MS)
@@ -328,6 +343,8 @@ export function takeGrab(id: unknown, png: unknown): void {
   const finish = grabs.get(id)
   if (!finish) return
   const ok =
+    !!watch &&
+    gameInFront(watch) &&
     png instanceof Uint8Array &&
     png.byteLength <= MAX_GRAB_BYTES &&
     PNG_SIGNATURE.every((byte, i) => png[i] === byte)
