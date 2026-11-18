@@ -21,6 +21,7 @@ import {
 import { EventEngine } from '../geis/engine'
 import { CorrelationEngine } from '../geis/correlation'
 import { RULES } from '../geis/rules'
+import { pipelineTap } from '../geis/tap'
 import { MatchMemory, type MatchContext } from './matchMemory'
 import { SessionMemory } from './sessionMemory'
 import {
@@ -147,8 +148,15 @@ export class Commentator {
       checks
     )
     this.engine.record(filtered.map((f) => f.event))
+    for (const f of filtered) pipelineTap.event('filtered', f.event, this.now(), f.reason)
     report = { ...report, events: accepted }
     const { fresh, held } = this.removeRepeats(report)
+    if (pipelineTap.enabled) {
+      for (const event of accepted) {
+        const stage = fresh.includes(event) ? 'accepted' : 'duplicate'
+        pipelineTap.event(stage, event, this.now())
+      }
+    }
     const derived =
       report.source === 'screen'
         ? this.session.absorb(fresh, report.time)
@@ -161,6 +169,7 @@ export class Commentator {
     for (const event of derived) this.seen.set(eventKey(event), event.time)
 
     this.engine.stampDerived(derived)
+    for (const event of derived) pipelineTap.event('derived', event, this.now())
     const events = [...fresh, ...derived]
     this.engine.record(events)
     const context = this.memory.context(this.now())
@@ -238,7 +247,7 @@ export class Commentator {
     try {
       const text = await this.write(decision, context, options)
       if (!text || run !== this.run || !this.canSpeak()) {
-        if (run === this.run) this.director.unsaid(decision)
+        if (run === this.run) this.director.unsaid(decision, this.now())
         return null
       }
       this.deps.deliver(text, decision.events)
@@ -246,10 +255,13 @@ export class Commentator {
       console.info(`Comment spoken for ${decision.events.map((e) => e.type).join(', ')}`)
       this.memory.rememberComment(text)
       this.director.spoke(decision, this.now())
+      for (const event of decision.events) {
+        pipelineTap.event('spoken', event, this.now(), `spoken (${decision.tier})`)
+      }
       return text
     } catch (error) {
       console.error('Could not write a comment', error)
-      this.director.unsaid(decision)
+      this.director.unsaid(decision, this.now())
       return null
     } finally {
       this.writing = false

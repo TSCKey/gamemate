@@ -28,6 +28,7 @@ import type { Box } from '../../companion/hudAreas'
 import type { AdapterHost, GameAdapter } from '../adapter'
 import { gamePlace } from '../gameWindow'
 import { TICK_MS } from './visionLook'
+import { pipelineTap } from '../tap'
 
 // How sure the screen checks are, from the owner's footage: the mask count, the death sequence
 // and titles matched to a known name never invented anything there. Text read off a pickup
@@ -94,6 +95,12 @@ function playerLogLanguage(): string {
 // be checked against it afterwards. Names and the game's own text only, never a frame.
 function screenLog(message: string): void {
   console.info(`Screen: ${message}`)
+  pipelineTap.record({
+    at: Date.now(),
+    stage: 'observation',
+    adapterId: 'silksong',
+    summary: message
+  })
 }
 
 // One stretch of watching one game window. Anything still underway for an older one is dropped.

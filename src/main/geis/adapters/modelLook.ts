@@ -10,6 +10,7 @@ import type { Settings } from '../../system/settings'
 import type { GameProfile } from '../../games/catalog'
 import type { FrameReport } from '../../companion/events'
 import type { AdapterHost } from '../adapter'
+import { pipelineTap } from '../tap'
 
 export const DIFF_FRAME_WIDTH = 64
 // Even if the scene looks the same, take a fresh look this often.
@@ -114,6 +115,13 @@ export async function readLook(
     // The player turned the companion off or deleted their data while the model was reading.
     if (host.forgets() !== forgetsBefore) return
     const report = { ...read(JSON.parse(reply.content), capturedAt), adapterId: look.adapterId }
+    pipelineTap.record({
+      at: Date.now(),
+      stage: 'observation',
+      adapterId: look.adapterId,
+      summary: `the model read ${look.images.length} image(s): ${report.events.length} event(s)`,
+      latencyMs: lookTimes.lastMs
+    })
     host.observe(report, game, report.description)
     host.showCommentsOn(displayId)
     await host.speakIfDue(game, settings)

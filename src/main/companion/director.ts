@@ -11,6 +11,7 @@ import {
   type VisionGame
 } from './events'
 import type { MatchContext } from './matchMemory'
+import { pipelineTap } from '../geis/tap'
 
 const S = 1000
 
@@ -135,22 +136,32 @@ export class Director {
       if (!EVENT_RULES[event.type].narrative) continue
       for (const id of event.related) replacedBy.set(id, event.id)
     }
+    const newest = Math.max(...events.map((e) => e.time), 0)
     const waiting = [...this.pending, ...events].filter((e) => {
       const by = replacedBy.get(e.id)
       if (!by) return true
       e.commentary = 'superseded'
       e.supersededBy = by
+      pipelineTap.event('settled', e, newest, `superseded by ${by}`)
       return false
     })
     const all = waiting.sort((a, b) => a.time - b.time)
     // The oldest go when too many wait.
-    this.settle(all.slice(0, -MAX_PENDING), 'none')
+    this.settle(all.slice(0, -MAX_PENDING), 'none', newest, 'too many waiting')
     this.pending = all.slice(-MAX_PENDING)
   }
 
   // What became of events that left the pending list without a comment.
-  private settle(events: readonly GameEvent[], status: CommentaryStatus): void {
-    for (const event of events) event.commentary = status
+  private settle(
+    events: readonly GameEvent[],
+    status: CommentaryStatus,
+    at: number,
+    why: string
+  ): void {
+    for (const event of events) {
+      event.commentary = status
+      if (status !== 'spoken') pipelineTap.event('settled', event, at, why)
+    }
   }
 
   decide(input: DecideInput): Decision {
@@ -173,7 +184,7 @@ export class Director {
     }
     this.pending = this.pending.filter((e) => {
       const status = dropped(e)
-      if (status) e.commentary = status
+      if (status) this.settle([e], status, now, status === 'stale' ? 'too old' : 'not wanted now')
       return status === null
     })
     if (this.pending.length === 0) return { action: 'silent' }
@@ -218,7 +229,9 @@ export class Director {
     // What doesn't fit in the comment is not said later either.
     this.settle(
       this.pending.filter((e) => !group.includes(e)),
-      'none'
+      'none',
+      now,
+      'another moment was spoken'
     )
     this.pending = []
 
@@ -243,7 +256,7 @@ export class Director {
 
   // The comment went out: only now do the cooldowns start.
   spoke(decision: SpeakDecision, now: number): void {
-    this.settle(decision.events, 'spoken')
+    this.settle(decision.events, 'spoken', now, 'spoken')
     this.lastCommentAt = now
     this.spokenAt.push(now)
     if (decision.mood === 'negative') this.lastNegativeAt = now
@@ -254,17 +267,17 @@ export class Director {
   }
 
   // Nothing usable was written for a decision, so its events go unsaid.
-  unsaid(decision: SpeakDecision): void {
-    this.settle(decision.events, 'none')
+  unsaid(decision: SpeakDecision, now: number): void {
+    this.settle(decision.events, 'none', now, 'nothing usable was written')
   }
 
   clearPending(): void {
-    this.settle(this.pending, 'none')
+    this.settle(this.pending, 'none', 0, 'forgotten')
     this.pending = []
   }
 
   reset(): void {
-    this.settle(this.pending, 'none')
+    this.settle(this.pending, 'none', 0, 'forgotten')
     this.pending = []
     this.lastCommentAt = -Infinity
     this.lastNegativeAt = -Infinity

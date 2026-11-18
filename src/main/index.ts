@@ -27,6 +27,7 @@ import {
 import { createOverlay, toggleOverlay } from './windows/overlay'
 import { themeTitleBar } from './windows/titleBar'
 import { closeToast, setUpToast, showToast } from './windows/toast'
+import { openInspectorIfAsked } from './geis/inspector'
 import { screenWatchingFrom, stopScreenWatch } from './windows/screenWatch'
 import { shutdownSpeech } from './voice/tts'
 import { shutdownOcr } from './system/ocr'
@@ -289,6 +290,8 @@ if (!app.requestSingleInstanceLock()) {
     setUpToast(loadRenderer, preloadPath)
     createTray()
     startObserver(showToast)
+    // Development only (npm start with GAMEMATE_INSPECTOR=1): what the event pipeline does, live.
+    openInspectorIfAsked()
     startUpdater()
 
     updateShortcuts(getSettings())
