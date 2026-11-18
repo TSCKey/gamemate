@@ -244,15 +244,27 @@ export class Commentator {
 
     this.writing = true
     const run = this.run
+    const types = decision.events.map((e) => e.type).join(', ')
+    const started = this.now()
     try {
-      const text = await this.write(decision, context, options)
-      if (!text || run !== this.run || !this.canSpeak()) {
+      const { text, why } = await this.write(decision, context, options)
+      const unsaid = !text
+        ? why
+        : run !== this.run
+          ? 'what was seen was forgotten meanwhile'
+          : !this.canSpeak()
+            ? 'the player left the game or asked something meanwhile'
+            : null
+      if (unsaid) {
+        // Why, never the words, so a quiet play session can be explained from the log.
+        const seconds = ((this.now() - started) / 1000).toFixed(1)
+        console.info(`Comment not spoken for ${types}: ${unsaid} (${seconds} s)`)
         if (run === this.run) this.director.unsaid(decision, this.now())
         return null
       }
       this.deps.deliver(text, decision.events)
       // What it was about, never its words, so the log can be read against a play session.
-      console.info(`Comment spoken for ${decision.events.map((e) => e.type).join(', ')}`)
+      console.info(`Comment spoken for ${types}`)
       this.memory.rememberComment(text)
       this.director.spoke(decision, this.now())
       for (const event of decision.events) {
@@ -260,7 +272,7 @@ export class Commentator {
       }
       return text
     } catch (error) {
-      console.error('Could not write a comment', error)
+      console.error(`Could not write a comment for ${types}`, error)
       this.director.unsaid(decision, this.now())
       return null
     } finally {
@@ -272,7 +284,7 @@ export class Commentator {
     decision: SpeakDecision,
     context: MatchContext,
     options: CommentaryOptions
-  ): Promise<string> {
+  ): Promise<{ text: string; why: string }> {
     const recent = this.memory.recentComments()
     const request: ReactionRequest = {
       game: options.game,
@@ -288,17 +300,25 @@ export class Commentator {
       ...(this.lastSource === 'screen' ? { session: this.session.context(this.now()) } : {})
     }
     const prompt = reactionPrompt(request)
-    const usable = (text: string): boolean =>
-      !isRepeat(text, recent) && !claimsTooMuch(text, decision.events)
+    const problem = (text: string): string | null =>
+      !text
+        ? 'the AI gave no usable line'
+        : isRepeat(text, recent)
+          ? 'too close to a recent comment'
+          : claimsTooMuch(text, decision.events)
+            ? 'it claimed more than was seen'
+            : null
     const first = cleanReaction(await this.deps.generate(prompt), decision.tier)
-    if (!first || usable(first)) return first
+    const firstProblem = problem(first)
+    if (!firstProblem) return { text: first, why: '' }
     // Small moments don't deserve a second AI call: silence is fine.
-    if (decision.tier === 'minor') return ''
+    if (!first || decision.tier === 'minor') return { text: '', why: firstProblem }
     const second = cleanReaction(
       await this.deps.generate(prompt + SAY_IT_DIFFERENTLY),
       decision.tier
     )
-    return usable(second) ? second : ''
+    const secondProblem = problem(second)
+    return secondProblem ? { text: '', why: `${secondProblem}, twice` } : { text: second, why: '' }
   }
 
   context(): MatchContext {

@@ -184,6 +184,8 @@ export class Director {
     }
     this.pending = this.pending.filter((e) => {
       const status = dropped(e)
+      // In the log, so a quiet play session can be explained.
+      if (status === 'stale') console.info(`Moment too old to mention: ${e.type}`)
       if (status) this.settle([e], status, now, status === 'stale' ? 'too old' : 'not wanted now')
       return status === null
     })

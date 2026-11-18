@@ -366,6 +366,34 @@ describe('repetition', () => {
     expect(h.delivered).toHaveLength(0)
   })
 
+  it('notes in the log why a comment was not spoken, never its words', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    const h = harness()
+    h.replies.push('Beautifully done out there', 'Beautifully done out there', 'What a comeback')
+    await h.play(0, [{ type: 'assist' }])
+    await h.play(60, [{ type: 'assist' }])
+    await h.play(120, [{ type: 'assist' }])
+    const lines = info.mock.calls.map((call) => String(call[0]))
+    info.mockRestore()
+    expect(lines).toContainEqual(
+      expect.stringMatching(/^Comment not spoken for assist: too close to a recent comment \(/)
+    )
+    expect(lines).toContainEqual(
+      expect.stringMatching(/^Comment not spoken for assist: it claimed more than was seen \(/)
+    )
+    expect(lines.join('\n')).not.toMatch(/Beautifully|comeback/)
+  })
+
+  it('notes in the log a moment that got too old to mention', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    const h = harness()
+    h.observe(0, [{ type: 'assist' }])
+    await h.wait(600)
+    const lines = info.mock.calls.map((call) => String(call[0]))
+    info.mockRestore()
+    expect(lines).toContain('Moment too old to mention: assist')
+  })
+
   it('stays silent if the second try repeats too', async () => {
     const h = harness()
     h.replies.push(
@@ -696,7 +724,13 @@ describe('a single-player session seen through the screen', () => {
         inFight: false,
         score: null,
         description: '',
-        events: types.map((type) => makeEvent(type, at * 1000, 'screen', fields))
+        // A win here is the guessed one (left the arena alive), as the adapter marks it.
+        events: types.map((type) =>
+          makeEvent(type, at * 1000, 'screen', {
+            ...(type === 'fight_won' ? { basis: 'inferred' as const } : {}),
+            ...fields
+          })
+        )
       },
       SILKSONG
     )
