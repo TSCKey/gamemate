@@ -241,6 +241,23 @@ describe('SilksongTracker fades', () => {
     expect(run.kinds()).toEqual(['room_change'])
   })
 
+  // The owner's screenshot of a dark room measured 0.04.
+  it('notices a room change in a room as dark as 0.04', () => {
+    const run = new Run()
+      .frames(4, { brightness: 0.04 })
+      .frames(2, { brightness: 0.002, masks: 0 })
+      .frames(2, { brightness: 0.04 })
+    expect(run.kinds()).toEqual(['room_change'])
+  })
+
+  it('does not take a dim dip in a dark room for a fade', () => {
+    const run = new Run()
+      .frames(4, { brightness: 0.04 })
+      .frames(2, { brightness: 0.025 })
+      .frames(2, { brightness: 0.04 })
+    expect(run.kinds()).toEqual([])
+  })
+
   it('ignores a dip that is gone within 0.2 s', () => {
     const run = new Run()
     run.tracker.push({ ...base }, 0)
@@ -281,6 +298,18 @@ describe('SilksongTracker titles', () => {
 
   it('ignores the brief flickers of ordinary play in the title spot (up to 0.05)', () => {
     const run = new Run().seconds(3, { areaText: 0.05 })
+    expect(run.kinds()).toEqual([])
+  })
+
+  // Measured on the owner's Last Judge clip: the boss title scored 0.021-0.025 for about 5 s in
+  // its spot, where ordinary play stayed under 0.015.
+  it('reports a boss title as faint as Silksong’s (0.022)', () => {
+    const run = new Run().frames(1).frames(4, { bossText: 0.022 })
+    expect(run.signals.map((s) => s.signal)).toEqual([{ kind: 'title', title: 'boss' }])
+  })
+
+  it('ignores the faint flickers of ordinary play in the boss spot (under 0.015)', () => {
+    const run = new Run().seconds(3, { bossText: 0.014 })
     expect(run.kinds()).toEqual([])
   })
 

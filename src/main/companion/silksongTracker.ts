@@ -11,7 +11,12 @@ const RECOVERY_MS = 3000
 /** Below this brightness the frame is a fade or death screen, which reads 0 masks. */
 const FADE_BRIGHTNESS = 0.03
 /** A fade has to start from a frame at least this bright (the owner's Silksong scenes measured 0.11-0.16). */
-const BRIGHT_BEFORE_FADE = 0.08
+const BRIGHT_BEFORE_FADE = 0.035
+/**
+ * ... and be at least this many times brighter than the dark frame, so a dim dip in a dark room
+ * (the owner's screenshot of one measured 0.04) isn't taken for a fade.
+ */
+const FADE_DROP_RATIO = 3
 /** ... and get dark within this long. */
 const FADE_START_WINDOW_MS = 1000
 /** A fade at least this long can be a death. */
@@ -39,6 +44,13 @@ const TEXT_ON = 0.06
 const TEXT_HOLD_MS = 500
 /** Scores below this count as no text at all. */
 const TEXT_OFF = 0.02
+/**
+ * Boss titles are faint in their spot: the owner's Last Judge clip scored 0.021-0.025 there for
+ * about 5 s, while ordinary play stayed under 0.015. Anything else read there must still match a
+ * boss name before it counts.
+ */
+const BOSS_TEXT_ON = 0.018
+const BOSS_TEXT_OFF = 0.012
 /** After this long with no text, the next text is a new showing. */
 const TEXT_REARM_MS = 2000
 /**
@@ -68,13 +80,18 @@ export type ScreenSignal =
 
 /** Watches one text region: one signal per showing, then waits for the text to go away. */
 class TextWatch {
+  constructor(
+    private readonly on = TEXT_ON,
+    private readonly off = TEXT_OFF
+  ) {}
+
   private since: number | null = null
   private quietSince: number | null = null
   private fired = false
 
   /** True once, when the text has been held long enough. */
   update(score: number, time: number): boolean {
-    if (score > TEXT_ON) {
+    if (score > this.on) {
       this.quietSince = null
       this.since ??= time
       if (!this.fired && time - this.since >= TEXT_HOLD_MS) {
@@ -85,7 +102,7 @@ class TextWatch {
     }
     // Text that dips out breaks the hold, but only a long quiet allows a new showing.
     this.since = null
-    if (score < TEXT_OFF) {
+    if (score < this.off) {
       this.quietSince ??= time
       if (time - this.quietSince >= TEXT_REARM_MS) this.fired = false
     } else {
@@ -110,14 +127,14 @@ export class SilksongTracker {
   private goodSince: number | null = null
   private lastDamage: number | null = null
 
-  private lastBright: number | null = null
+  private lastBright: { time: number; level: number } | null = null
   private fadeStart: number | null = null
   // A fade that could have been a death, waiting for the masks to refill. `masks` is the last
   // count trusted before it; `at` is when it ended.
   private deathPending: { at: number; masks: number } | null = null
 
   private area = new TextWatch()
-  private boss = new TextWatch()
+  private boss = new TextWatch(BOSS_TEXT_ON, BOSS_TEXT_OFF)
   private pickup = new TextWatch()
 
   private bossName: string | null = null
@@ -169,7 +186,7 @@ export class SilksongTracker {
     this.fadeStart = null
     this.deathPending = null
     this.area = new TextWatch()
-    this.boss = new TextWatch()
+    this.boss = new TextWatch(BOSS_TEXT_ON, BOSS_TEXT_OFF)
     this.pickup = new TextWatch()
     this.bossName = null
     this.bossSince = null
@@ -238,10 +255,12 @@ export class SilksongTracker {
     if (this.fadeStart === null) {
       if (m.brightness < FADE_BRIGHTNESS) {
         const recentlyBright =
-          this.lastBright !== null && time - this.lastBright <= FADE_START_WINDOW_MS
+          this.lastBright !== null &&
+          time - this.lastBright.time <= FADE_START_WINDOW_MS &&
+          m.brightness * FADE_DROP_RATIO <= this.lastBright.level
         if (recentlyBright) this.fadeStart = time
       } else if (m.brightness > BRIGHT_BEFORE_FADE) {
-        this.lastBright = time
+        this.lastBright = { time, level: m.brightness }
       }
       return
     }
@@ -249,7 +268,7 @@ export class SilksongTracker {
 
     const length = time - this.fadeStart
     this.fadeStart = null
-    this.lastBright = m.brightness > BRIGHT_BEFORE_FADE ? time : null
+    this.lastBright = m.brightness > BRIGHT_BEFORE_FADE ? { time, level: m.brightness } : null
     if (length > DEATH_FADE_MAX_MS || this.blockedSent) {
       // Too long to be a death or a room change, or the capture was reported blocked meanwhile.
       return

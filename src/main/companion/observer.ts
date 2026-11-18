@@ -757,9 +757,12 @@ async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): P
   if (!text) return
   const names = await silksongNames()
   if (!current()) return
-  const name = matchName(text, kind === 'boss' ? names.bosses : names.areas)
+  // Silksong shows area names in the bottom-left spot too (the owner's recording: "BLASTED STEPS",
+  // "BONE BOTTOM"), so a title there may name a boss or an area. The centre card only names areas.
+  const boss = kind === 'boss' ? matchName(text, names.bosses) : null
+  const name = boss ?? matchName(text, names.areas)
   if (!name) return
-  if (kind === 'area') {
+  if (!boss) {
     currentArea = name
     // A new place means the fight there is over (session memory forgets the boss too), so a
     // death from here on is not put down to it.

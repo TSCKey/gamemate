@@ -221,6 +221,17 @@ describe('watching Silksong', () => {
     expect(toasts).toEqual(['There she is'])
   })
 
+  // In the owner's recording Silksong showed area names ("BLASTED STEPS", "BONE BOTTOM") in the
+  // same bottom-left spot as boss titles.
+  it('takes an area name shown in the boss title spot for the area it names', async () => {
+    readAs = async () => [{ text: 'BLASTED STEPS' }]
+    showText('bossText')
+    await settle()
+    expect(logged()).toEqual(['area_entered'])
+    const entered = observer.getObserverState().events.find((e) => e.type === 'area_entered')
+    expect(entered?.description).toContain('Blasted Steps')
+  })
+
   it('says nothing about a title it does not know', async () => {
     readAs = async () => [{ text: 'Press any button to continue' }]
     showText('bossText')

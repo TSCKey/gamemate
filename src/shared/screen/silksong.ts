@@ -30,7 +30,8 @@ export const SILKSONG_LAYOUT: SilksongLayout = {
   maskFilled: (r, g, b) => r > 200 && g > 200 && b > 200,
   // The area card's name line, measured on the owner's recording ("ACT 2" sits just above it).
   areaTitle: { x: 0.2, y: 0.47, width: 0.6, height: 0.12 },
-  bossTitle: { x: 0.3, y: 0.75, width: 0.4, height: 0.1 },
+  // The boss title, bottom left ("LAST" over "JUDGE"), measured on the owner's Last Judge clip.
+  bossTitle: { x: 0.04, y: 0.8, width: 0.36, height: 0.16 },
   pickup: { x: 0.25, y: 0.55, width: 0.5, height: 0.1 },
   textLuma: 0.6
 }
