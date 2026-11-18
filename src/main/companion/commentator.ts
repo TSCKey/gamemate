@@ -18,6 +18,7 @@ import {
   type Tier,
   type VisionGame
 } from './events'
+import { EventEngine } from '../geis/engine'
 import { MatchMemory, type MatchContext } from './matchMemory'
 import { SessionMemory } from './sessionMemory'
 import {
@@ -105,6 +106,7 @@ export class Commentator {
   private session = new SessionMemory()
   private lastSource: FrameReport['source'] = 'vision'
   private director = new Director()
+  private engine: EventEngine
   private seen = new Map<string, number>()
   private lastFrameKeys = new Set<string>()
   private newestFrame = -Infinity
@@ -120,14 +122,24 @@ export class Commentator {
   constructor(private readonly deps: CommentatorDeps) {
     this.now = deps.now ?? ((): number => Date.now())
     this.canSpeak = deps.canSpeak ?? ((): boolean => true)
+    this.engine = new EventEngine(this.now)
   }
 
-  // Takes in one look at the game and returns the new events it brought.
-  observe(report: FrameReport, game: VisionGame): GameEvent[] {
+  // Takes in one look at the game and returns the new events it brought. `checks` are the types
+  // the reporting adapter verifies itself (see EventEngine.accept).
+  observe(report: FrameReport, game: VisionGame, checks?: ReadonlySet<GameEventType>): GameEvent[] {
     if (this.gameId !== game.id) {
       if (this.gameId !== null) this.startOver()
       this.gameId = game.id
     }
+    if (this.engine.sessionId() === '') this.engine.startSession(game.id)
+    const { accepted, filtered } = this.engine.accept(
+      report.events,
+      report.adapterId || report.source,
+      checks
+    )
+    this.engine.record(filtered.map((f) => f.event))
+    report = { ...report, events: accepted }
     const { fresh, held } = this.removeRepeats(report)
     const derived =
       report.source === 'screen'
@@ -136,7 +148,9 @@ export class Commentator {
     for (const event of derived) this.seen.set(eventKey(event), event.time)
     if (report.source === 'screen' && report.fightEnded) this.session.endFight()
 
+    this.engine.stampDerived(derived)
     const events = [...fresh, ...derived]
+    this.engine.record(events)
     const context = this.memory.context(this.now())
     for (const event of events) event.tier = sizeOf(event, context, game)
     this.director.offer(events)
@@ -211,7 +225,10 @@ export class Commentator {
     const run = this.run
     try {
       const text = await this.write(decision, context, options)
-      if (!text || run !== this.run || !this.canSpeak()) return null
+      if (!text || run !== this.run || !this.canSpeak()) {
+        if (run === this.run) this.director.unsaid(decision)
+        return null
+      }
       this.deps.deliver(text, decision.events)
       // What it was about, never its words, so the log can be read against a play session.
       console.info(`Comment spoken for ${decision.events.map((e) => e.type).join(', ')}`)
@@ -220,6 +237,7 @@ export class Commentator {
       return text
     } catch (error) {
       console.error('Could not write a comment', error)
+      this.director.unsaid(decision)
       return null
     } finally {
       this.writing = false
@@ -263,12 +281,18 @@ export class Commentator {
     return this.memory.context(this.now())
   }
 
+  // This session's events, oldest first, filtered ones included.
+  history(): readonly GameEvent[] {
+    return this.engine.history()
+  }
+
   // How the last look at the game went, for deciding when to look again.
   isInFight(): boolean {
     return this.inFight
   }
 
   private startOver(): void {
+    this.engine.reset()
     this.memory.startNewMatch()
     this.session.reset()
     this.lastSource = 'vision'

@@ -143,6 +143,11 @@ function isPlayer(text: string, names: string[]): boolean {
   })
 }
 
+// The model only copies the text and code decides whose line it is: names came back right in 54
+// of 55 simulated feeds. Still a model's reading, so its basis stays 'model'.
+export const COPIED_TEXT_CONFIDENCE = 0.9
+const copied = { confidence: COPIED_TEXT_CONFIDENCE }
+
 function feedEvents(raw: unknown, time: number, names: string[]): GameEvent[] {
   if (!Array.isArray(raw)) return []
   return raw.flatMap((entry): GameEvent[] => {
@@ -153,8 +158,20 @@ function feedEvents(raw: unknown, time: number, names: string[]): GameEvent[] {
     const playerRight = isPlayer(right, names)
     if (playerLeft === playerRight) return []
     return playerLeft
-      ? [makeEvent('kill', time, 'vision', { detail: `Eliminated ${right}.`, opponent: right })]
-      : [makeEvent('death', time, 'vision', { detail: `Eliminated by ${left}.`, opponent: left })]
+      ? [
+          makeEvent('kill', time, 'vision', {
+            ...copied,
+            detail: `Eliminated ${right}.`,
+            opponent: right
+          })
+        ]
+      : [
+          makeEvent('death', time, 'vision', {
+            ...copied,
+            detail: `Eliminated by ${left}.`,
+            opponent: left
+          })
+        ]
   })
 }
 
@@ -162,16 +179,17 @@ function bannerEvents(reply: Record<string, unknown>, time: number): GameEvent[]
   const text = cleanName(reply.banner_text)
   if (!text) return []
   const result = RESULTS.get(withoutNumbers(text))
-  if (result) return [makeEvent(result, time, 'vision', { detail: text, importance: 9 })]
+  if (result) return [makeEvent(result, time, 'vision', { ...copied, detail: text, importance: 9 })]
 
   const kind = BANNER_KINDS.find((k) => k === reply.banner_kind) ?? 'none'
   if (kind === 'none') return []
   const name = cleanName(reply.banner_name)
   // A name has to really be in the banner.
   const opponent = /\p{L}/u.test(name) && plainWords(text).includes(plainWords(name)) ? name : ''
-  if (kind === 'killed_by') return [makeEvent('death', time, 'vision', { detail: text, opponent })]
+  if (kind === 'killed_by')
+    return [makeEvent('death', time, 'vision', { ...copied, detail: text, opponent })]
   // A nameless kill can't be told from the same banner read again on the next look.
-  return opponent ? [makeEvent('kill', time, 'vision', { detail: text, opponent })] : []
+  return opponent ? [makeEvent('kill', time, 'vision', { ...copied, detail: text, opponent })] : []
 }
 
 export function readAreas(raw: unknown, capturedAt: number, names: string[]): FrameReport {

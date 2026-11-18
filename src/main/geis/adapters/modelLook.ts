@@ -79,6 +79,7 @@ export async function watchWithModel(
 }
 
 export interface Look {
+  adapterId: string
   displayId: number
   capturedAt: number
   images: NativeImage[]
@@ -112,7 +113,7 @@ export async function readLook(
     lookTimes.lastMs = Date.now() - capturedAt
     // The player turned the companion off or deleted their data while the model was reading.
     if (host.forgets() !== forgetsBefore) return
-    const report = read(JSON.parse(reply.content), capturedAt)
+    const report = { ...read(JSON.parse(reply.content), capturedAt), adapterId: look.adapterId }
     host.observe(report, game, report.description)
     host.showCommentsOn(displayId)
     await host.speakIfDue(game, settings)

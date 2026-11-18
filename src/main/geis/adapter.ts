@@ -8,7 +8,7 @@
 import type { GameProfile } from '../games/catalog'
 import type { Settings } from '../system/settings'
 import type { CompanionState, CompanionStatus, ObservedEvent } from '../../shared/types'
-import type { FrameReport, GameEvent, VisionGame } from '../companion/events'
+import type { FrameReport, GameEvent, GameEventType, VisionGame } from '../companion/events'
 
 // What the observer gives every adapter. It is the only way back into the pipeline.
 export interface AdapterHost {
@@ -35,6 +35,9 @@ export interface GameAdapter {
   matches(game: GameProfile): number
   // How often the observer comes back while this adapter watches.
   tickMs: number
+  // The event types it recognizes with deterministic checks or the game's own data. Where it
+  // does, a vision model's reading of the same type can't make the event on its own.
+  checks?: readonly GameEventType[]
   // Called on every tick while the game is the window in front and the companion watches.
   watch(settings: Settings, game: GameProfile, handle: bigint): Promise<void>
   // Leaving the game, pausing, forgetting or turning the companion off. Must be quick and safe

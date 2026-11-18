@@ -135,6 +135,7 @@ export function createVisionLook(host: AdapterHost): GameAdapter {
     await readLook(
       host,
       {
+        adapterId: 'vision-look',
         displayId,
         capturedAt,
         images: [image],

@@ -29,6 +29,16 @@ import type { AdapterHost, GameAdapter } from '../adapter'
 import { gamePlace } from '../gameWindow'
 import { TICK_MS } from './visionLook'
 
+// How sure the screen checks are, from the owner's footage: the mask count, the death sequence
+// and titles matched to a known name never invented anything there. Text read off a pickup
+// spot has no list to match against.
+const CHECK_CONFIDENCE = 0.9
+const NAME_MATCH_CONFIDENCE = 0.9
+const PICKUP_TEXT_CONFIDENCE = 0.6
+// Leaving a boss arena alive is not seeing the boss beaten: worked out, and switched off.
+const GUESSED_WIN_CONFIDENCE = 0.5
+const checked = { confidence: CHECK_CONFIDENCE }
+
 // A pickup's name is short; longer text is a description or a misread.
 const PICKUP_MAX_LENGTH = 40
 // The same pickup text this soon again is the same pickup shown again.
@@ -156,11 +166,14 @@ export function createSilksong(host: AdapterHost): GameAdapter {
     for (const signal of tracker.push(m, time)) {
       switch (signal.kind) {
         case 'close_call':
-          events.push(makeEvent('low_health', time, 'screen', { detail: 'down to the last mask' }))
+          events.push(
+            makeEvent('low_health', time, 'screen', { ...checked, detail: 'down to the last mask' })
+          )
           break
         case 'recovered':
           events.push(
             makeEvent('recovery', time, 'screen', {
+              ...checked,
               detail: 'back above one mask after a close call'
             })
           )
@@ -170,6 +183,7 @@ export function createSilksong(host: AdapterHost): GameAdapter {
           // attempt it was. Either way the fight is over.
           events.push(
             makeEvent('death', signal.at, 'screen', {
+              ...checked,
               place: currentArea,
               opponent: currentBoss,
               detail: currentArea ? `died in ${currentArea}` : 'died'
@@ -181,6 +195,8 @@ export function createSilksong(host: AdapterHost): GameAdapter {
           // Worked out, never seen: the player left the arena alive after a long enough fight.
           events.push(
             makeEvent('fight_won', time, 'screen', {
+              basis: 'inferred',
+              confidence: GUESSED_WIN_CONFIDENCE,
               opponent: currentBoss,
               detail: currentBoss
                 ? `left the arena of ${currentBoss} alive after 20+ s, likely beaten`
@@ -228,6 +244,7 @@ export function createSilksong(host: AdapterHost): GameAdapter {
     const report: FrameReport = {
       time,
       source: 'screen',
+      adapterId: 'silksong',
       phase: 'playing',
       inFight: tracker.fighting(),
       score: null,
@@ -299,6 +316,7 @@ export function createSilksong(host: AdapterHost): GameAdapter {
         tracker.setBoss(null)
       }
       const entered = makeEvent('area_entered', time, 'screen', {
+        confidence: NAME_MATCH_CONFIDENCE,
         place: name,
         detail: `entered ${name}`
       })
@@ -312,6 +330,7 @@ export function createSilksong(host: AdapterHost): GameAdapter {
     currentBoss = name
     tracker.setBoss(name)
     const encounter = makeEvent('boss_encounter', time, 'screen', {
+      confidence: NAME_MATCH_CONFIDENCE,
       opponent: name,
       detail: `facing ${name}`
     })
@@ -328,12 +347,19 @@ export function createSilksong(host: AdapterHost): GameAdapter {
     const key = text.toLowerCase()
     if (pickupsSeen.has(key)) return
     pickupsSeen.set(key, time)
-    deliverScreen(run, [makeEvent('milestone', time, 'screen', { detail: text })], time)
+    deliverScreen(
+      run,
+      [
+        makeEvent('milestone', time, 'screen', { confidence: PICKUP_TEXT_CONFIDENCE, detail: text })
+      ],
+      time
+    )
   }
 
   return {
     id: 'silksong',
     matches: (game) => (screenPack(game) === 'silksong' ? 3 : 0),
+    checks: ['low_health', 'recovery', 'death', 'area_entered', 'boss_encounter'],
     // The stream brings moments as they happen; the tick only keeps the status and lets a
     // waiting comment out.
     tickMs: TICK_MS,

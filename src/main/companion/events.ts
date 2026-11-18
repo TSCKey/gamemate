@@ -1,7 +1,6 @@
-// The companion's one internal event format, and how a source's raw report becomes it. Today the
-// only source is the vision model reading screenshots. Another source (a game's official local
-// data feed, say) only has to produce GameEvents with its own `source`; everything after this
-// file works the same.
+// The companion's one internal event format, and how a source's raw report becomes it. Each game
+// adapter (src/main/geis/adapters) produces GameEvents; everything after that works the same for
+// every game.
 import { EVENT_TYPES } from '../../shared/types'
 import type { CommentaryCategory, EventType } from '../../shared/types'
 
@@ -10,6 +9,39 @@ export type Tier = 'minor' | 'significant' | 'exceptional'
 export type Mood = 'positive' | 'negative' | 'tense' | 'neutral'
 export type EventSource = 'vision' | 'memory' | 'screen'
 export type Phase = 'playing' | 'intermission' | 'menu'
+
+// What kind of evidence an event rests on. It is fixed by where the event comes from and never
+// changes; how sure that source is about one reading is `confidence`, a separate number. Neither
+// is ever worked out from the other.
+export type EvidenceBasis =
+  // The game itself said so (an official local data feed, a game log line).
+  | 'telemetry'
+  // Local checks on the screen, tuned on real footage, with names matched to a known list.
+  | 'verified'
+  // A vision model's reading of the screen. Never shown or kept as verified.
+  | 'model'
+  // Worked out from other events (memory, sequence rules), never seen directly.
+  | 'inferred'
+
+export const EVIDENCE_BASES: readonly EvidenceBasis[] = [
+  'telemetry',
+  'verified',
+  'model',
+  'inferred'
+]
+
+// Whether the event got a comment. Only the Director changes it, and nothing else about an
+// event changes once it is accepted.
+export type CommentaryStatus =
+  | 'none'
+  | 'pending'
+  | 'spoken'
+  // Said together with the moment the comment was mainly about.
+  | 'grouped'
+  // A bigger moment it is part of (a sequence rule's event) was offered for it.
+  | 'superseded'
+  | 'stale'
+  | 'filtered'
 
 export interface GameEvent {
   id: string
@@ -27,12 +59,30 @@ export interface GameEvent {
   opponent: string
   place: string
   count: number
+  basis: EvidenceBasis
+  // 0-1: how sure the source is about this reading.
+  confidence: number
+  // Filled in when the event enters the pipeline: one session is one stretch of play of one game.
+  sessionId: string
+  gameId: string
+  adapterId: string
+  // Accepted events are commented on and remembered; filtered ones are only kept in history.
+  status: 'accepted' | 'filtered'
+  commentary: CommentaryStatus
+  // The bigger moment that was commented on instead of this one.
+  supersededBy?: string
+  // The events this one follows from (for events worked out from others), oldest first.
+  related: string[]
+  // A few game-specific facts, flat and small.
+  data?: Record<string, string | number | boolean>
 }
 
 // What one look at the game produced.
 export interface FrameReport {
   time: number
   source: EventSource
+  // The adapter it came from ('' when not said).
+  adapterId?: string
   phase: Phase
   inFight: boolean
   score: { own: number; enemy: number } | null
@@ -494,11 +544,34 @@ const clamp = (value: unknown, min: number, max: number, fallback: number): numb
 
 let nextId = 0
 
+// What a source's events rest on unless it says otherwise: the vision model reads, the screen
+// checks verify, memory works things out.
+const SOURCE_BASIS: Record<EventSource, EvidenceBasis> = {
+  vision: 'model',
+  screen: 'verified',
+  memory: 'inferred'
+}
+
+export type EventFields = Partial<
+  Pick<
+    GameEvent,
+    | 'importance'
+    | 'detail'
+    | 'opponent'
+    | 'place'
+    | 'count'
+    | 'basis'
+    | 'confidence'
+    | 'related'
+    | 'data'
+  >
+>
+
 export function makeEvent(
   type: GameEventType,
   time: number,
   source: EventSource,
-  fields: Partial<Pick<GameEvent, 'importance' | 'detail' | 'opponent' | 'place' | 'count'>> = {}
+  fields: EventFields = {}
 ): GameEvent {
   const rule = EVENT_RULES[type]
   return {
@@ -514,6 +587,14 @@ export function makeEvent(
     opponent: '',
     place: '',
     count: 1,
+    basis: SOURCE_BASIS[source],
+    confidence: 1,
+    sessionId: '',
+    gameId: '',
+    adapterId: '',
+    status: 'accepted',
+    commentary: 'none',
+    related: [],
     ...fields
   }
 }
@@ -534,6 +615,10 @@ function fixKillOrDeath(type: GameEventType, detail: string, opponent: string): 
   return type
 }
 
+// The model said it was sure, but on the whole screen it has invented things (creepers and
+// diamonds on the owner's Minecraft shots), so its sure readings are far from certain.
+export const SURE_LOOK_CONFIDENCE = 0.7
+
 function visionEvent(raw: unknown, time: number): GameEvent | null {
   if (!isRecord(raw) || raw.sure !== true) return null
   const type = EVENT_TYPES.find((t) => t === raw.type)
@@ -541,6 +626,7 @@ function visionEvent(raw: unknown, time: number): GameEvent | null {
   const detail = line(raw.detail, MAX_DETAIL)
   const opponent = cleanName(raw.opponent)
   return makeEvent(fixKillOrDeath(type, detail, opponent), time, 'vision', {
+    confidence: SURE_LOOK_CONFIDENCE,
     importance: clamp(raw.importance, 0, 10, 0),
     detail,
     opponent,

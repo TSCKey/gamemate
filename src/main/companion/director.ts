@@ -3,6 +3,7 @@
 import type { CommentaryCategories, CommentaryFrequency } from '../../shared/types'
 import {
   EVENT_RULES,
+  type CommentaryStatus,
   type GameEvent,
   type Mood,
   type Phase,
@@ -126,7 +127,16 @@ export class Director {
   private spokenAt: number[] = []
 
   offer(events: GameEvent[]): void {
-    this.pending = [...this.pending, ...events].sort((a, b) => a.time - b.time).slice(-MAX_PENDING)
+    for (const event of events) event.commentary = 'pending'
+    const all = [...this.pending, ...events].sort((a, b) => a.time - b.time)
+    // The oldest go when too many wait.
+    this.settle(all.slice(0, -MAX_PENDING), 'none')
+    this.pending = all.slice(-MAX_PENDING)
+  }
+
+  // What became of events that left the pending list without a comment.
+  private settle(events: readonly GameEvent[], status: CommentaryStatus): void {
+    for (const event of events) event.commentary = status
   }
 
   decide(input: DecideInput): Decision {
@@ -135,17 +145,22 @@ export class Director {
     // Outside competitive games, dying is always worth a word.
     const always = (e: GameEvent): boolean => e.type === 'death' && !game.competitive
 
-    this.pending = this.pending.filter((e) => {
-      if (now - e.time > EVENT_RULES[e.type].staleMs) return false
-      if (!categories[e.category]) return false
-      if (pacing.gapMs[e.tier] === null && !always(e)) return false
-      if (e.category === 'world' && e.importance < pacing.worldMinImportance) return false
+    const dropped = (e: GameEvent): CommentaryStatus | null => {
+      if (now - e.time > EVENT_RULES[e.type].staleMs) return 'stale'
+      if (!categories[e.category]) return 'filtered'
+      if (pacing.gapMs[e.tier] === null && !always(e)) return 'filtered'
+      if (e.category === 'world' && e.importance < pacing.worldMinImportance) return 'filtered'
       if (e.mood === 'negative' && e.tier !== 'exceptional' && !always(e)) {
         // Don't pile on: one kind word at a time, and small setbacks pass in a hard match.
-        if (now - this.lastNegativeAt < pacing.negativeGapMs) return false
-        if (context.form === 'hard' && e.tier === 'minor') return false
+        if (now - this.lastNegativeAt < pacing.negativeGapMs) return 'filtered'
+        if (context.form === 'hard' && e.tier === 'minor') return 'filtered'
       }
-      return true
+      return null
+    }
+    this.pending = this.pending.filter((e) => {
+      const status = dropped(e)
+      if (status) e.commentary = status
+      return status === null
     })
     if (this.pending.length === 0) return { action: 'silent' }
 
@@ -186,6 +201,11 @@ export class Director {
     ]
       .slice(0, MAX_GROUP)
       .sort((a, b) => a.time - b.time)
+    // What doesn't fit in the comment is not said later either.
+    this.settle(
+      this.pending.filter((e) => !group.includes(e)),
+      'none'
+    )
     this.pending = []
 
     const positives = group.filter((e) => e.mood === 'positive').length
@@ -209,6 +229,7 @@ export class Director {
 
   // The comment went out: only now do the cooldowns start.
   spoke(decision: SpeakDecision, now: number): void {
+    this.settle(decision.events, 'spoken')
     this.lastCommentAt = now
     this.spokenAt.push(now)
     if (decision.mood === 'negative') this.lastNegativeAt = now
@@ -218,11 +239,18 @@ export class Director {
     }
   }
 
+  // Nothing usable was written for a decision, so its events go unsaid.
+  unsaid(decision: SpeakDecision): void {
+    this.settle(decision.events, 'none')
+  }
+
   clearPending(): void {
+    this.settle(this.pending, 'none')
     this.pending = []
   }
 
   reset(): void {
+    this.settle(this.pending, 'none')
     this.pending = []
     this.lastCommentAt = -Infinity
     this.lastNegativeAt = -Infinity

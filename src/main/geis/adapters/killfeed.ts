@@ -99,6 +99,7 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
     await readLook(
       host,
       {
+        adapterId: 'killfeed',
         displayId: display.id,
         capturedAt,
         images: crops,

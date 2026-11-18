@@ -124,7 +124,8 @@ function logEvents(events: GameEvent[], fallback: string): void {
 // The pipeline as the adapters see it.
 const host: AdapterHost = {
   observe: (report, game, fallback) => {
-    const fresh = commentator.observe(report, visionGame(game))
+    const adapter = adapters.find((a) => a.id === report.adapterId)
+    const fresh = commentator.observe(report, visionGame(game), new Set(adapter?.checks))
     logEvents(fresh, fallback)
     return fresh
   },
