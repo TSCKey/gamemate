@@ -51,15 +51,27 @@ export interface SilksongMeasure {
  */
 const MASK_FILLED_SHARE = 0.1
 
+/**
+ * Filled masks always run from the left, and lost ones are on the right, so the count stops at
+ * the first empty box. With the HUD hidden (a cutscene in the owner's recording), bright scenery
+ * in the empty 9th and 10th boxes once read as 1 or 2 masks and gave a false close call.
+ */
+function leadingMasks(frame: Frame, layout: SilksongLayout): number {
+  let count = 0
+  for (const box of layout.masks) {
+    if (colourShare(frame, box, layout.maskFilled) < MASK_FILLED_SHARE) break
+    count++
+  }
+  return count
+}
+
 export function measureSilksong(
   frame: Frame,
   layout: SilksongLayout = SILKSONG_LAYOUT
 ): SilksongMeasure {
   return {
     brightness: meanBrightness(frame),
-    masks: layout.masks.filter(
-      (box) => colourShare(frame, box, layout.maskFilled) >= MASK_FILLED_SHARE
-    ).length,
+    masks: leadingMasks(frame, layout),
     areaText: brightTextScore(frame, layout.areaTitle, layout.textLuma),
     bossText: brightTextScore(frame, layout.bossTitle, layout.textLuma),
     pickupText: brightTextScore(frame, layout.pickup, layout.textLuma)

@@ -61,9 +61,9 @@ const MOOD_GUIDE: Record<Mood, string> = {
     'This is a bad moment, and it is fine to sound disappointed, the way a friend would. Do not praise them, call them strong or pretend it went well. Never blame, mock or insult them, and do not dwell on it.'
 }
 
-// A boss win read off the screen is worked out from the player leaving the arena alive.
+// A boss win worked out from the player leaving the arena alive, not seen.
 const inferredWin = (event: GameEvent): boolean =>
-  event.type === 'fight_won' && event.source === 'screen'
+  event.type === 'fight_won' && event.source === 'screen' && event.basis === 'inferred'
 
 // Below this, a model's reading or a worked-out moment is worded as likely, never as fact.
 export const CERTAIN_CONFIDENCE = 0.85

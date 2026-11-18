@@ -308,6 +308,7 @@ describe('the reaction prompt for a single-player session', () => {
 describe('the reaction prompt for a boss win worked out from the screen', () => {
   const SILKSONG = { name: 'Hollow Knight: Silksong', competitive: false }
   const inferred = makeEvent('fight_won', 1000, 'screen', {
+    basis: 'inferred',
     opponent: 'Lace',
     count: 3,
     detail: 'left the arena of Lace alive on attempt 3, likely beaten'

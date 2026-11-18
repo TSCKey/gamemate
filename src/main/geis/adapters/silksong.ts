@@ -36,6 +36,8 @@ import { pipelineTap } from '../tap'
 const CHECK_CONFIDENCE = 0.9
 const NAME_MATCH_CONFIDENCE = 0.9
 const PICKUP_TEXT_CONFIDENCE = 0.6
+// The boss's death flash and glow, measured on one recorded kill so far.
+const BOSS_KILL_CONFIDENCE = 0.75
 // Leaving a boss arena alive is not seeing the boss beaten: worked out, and switched off.
 const GUESSED_WIN_CONFIDENCE = 0.5
 const checked = { confidence: CHECK_CONFIDENCE }
@@ -212,6 +214,16 @@ export function createSilksong(host: AdapterHost): GameAdapter {
           )
           currentBoss = ''
           break
+        case 'boss_beaten':
+          events.push(
+            makeEvent('fight_won', time, 'screen', {
+              confidence: BOSS_KILL_CONFIDENCE,
+              opponent: currentBoss,
+              detail: currentBoss ? `beat ${currentBoss}` : 'beat the boss'
+            })
+          )
+          currentBoss = ''
+          break
         case 'room_change':
           leftRoom = true
           break
@@ -366,7 +378,7 @@ export function createSilksong(host: AdapterHost): GameAdapter {
   return {
     id: 'silksong',
     matches: (game) => (screenPack(game) === 'silksong' ? 3 : 0),
-    checks: ['low_health', 'recovery', 'death', 'area_entered', 'boss_encounter'],
+    checks: ['low_health', 'recovery', 'death', 'area_entered', 'boss_encounter', 'fight_won'],
     // The stream brings moments as they happen; the tick only keeps the status and lets a
     // waiting comment out.
     tickMs: TICK_MS,

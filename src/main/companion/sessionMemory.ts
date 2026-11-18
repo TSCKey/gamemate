@@ -105,19 +105,23 @@ export class SessionMemory {
     this.note(boss ? `died to ${boss.name}` : name ? `died in ${name}` : 'died')
   }
 
-  // A win off the screen is worked out (the player left the arena alive), never seen, so it is
-  // only ever worded as likely.
+  // A win off the screen is either seen (the boss's death flash) or worked out (the player left
+  // the arena alive), and only the worked-out one is worded as likely.
   private win(event: GameEvent): void {
     // The attempts at the boss named on the win; the current boss only when it names none.
     const id = event.opponent ? key(event.opponent) : this.boss
     const boss = id ? this.bosses.get(id) : undefined
     const name = event.opponent || boss?.name || ''
     const attempts = boss?.attempts ?? 0
+    const guessed = event.basis === 'inferred'
     if (attempts > 0) {
       event.count = attempts
-      event.detail = `left the arena of ${name || 'the boss'} alive on attempt ${attempts}, likely beaten`
+      event.detail = guessed
+        ? `left the arena of ${name || 'the boss'} alive on attempt ${attempts}, likely beaten`
+        : `beat ${name || 'the boss'} on attempt ${attempts}`
     }
-    this.note(name ? `likely beat ${name}` : 'likely won a hard fight')
+    if (guessed) this.note(name ? `likely beat ${name}` : 'likely won a hard fight')
+    else this.note(name ? `beat ${name}` : 'won a hard fight')
     this.boss = null
   }
 

@@ -76,6 +76,19 @@ const BOSS_MIN_MS = 20000
 const BLOCKED_FRAMES = 120
 /** Damage this recently means the player is in a fight. */
 const FIGHTING_MS = 10000
+/**
+ * Silksong's boss kill, measured on the owner's Skull Tyrant clip (2026-11-18): with the HUD up,
+ * the screen jumps from dim (0.08) to a white flash (0.57), then stays bright (0.27-0.39) for
+ * about 4 s before the room comes back. In 14 minutes of the owner's ordinary play with the HUD
+ * up, nothing came close: at most 0.41, and never 2 s bright in a row. Only counted during a
+ * boss fight whose title was read. One recorded kill so far, so the adapter gives it a lower
+ * confidence than the other checks.
+ */
+const BOSS_FLASH_BRIGHTNESS = 0.45
+const BOSS_FLASH_JUMP = 0.3
+const BOSS_GLOW_BRIGHTNESS = 0.25
+const BOSS_GLOW_FRAMES = 12
+const BOSS_GLOW_WINDOW_MS = 6000
 
 export type ScreenSignal =
   | { kind: 'damage'; masks: number }
@@ -86,6 +99,8 @@ export type ScreenSignal =
   | { kind: 'title'; title: 'area' | 'boss' }
   | { kind: 'pickup' }
   | { kind: 'boss_defeated' }
+  // Seen: the boss's death flash and glow, with the player's HUD still up.
+  | { kind: 'boss_beaten' }
   | { kind: 'blocked' }
 
 /** Watches one text region: one signal per showing, then waits for the text to go away. */
@@ -152,6 +167,8 @@ export class SilksongTracker {
 
   private bossName: string | null = null
   private bossSince: number | null = null
+  private previousBrightness: number | null = null
+  private killFlash: { at: number; glow: number } | null = null
 
   private blackFrames = 0
   private blockedSent = false
@@ -167,6 +184,7 @@ export class SilksongTracker {
 
     if (this.deathPending && time - this.deathPending.at > DEATH_REFILL_MS) this.deathPending = null
     this.trackDeathBurst(m, time, out)
+    this.trackBossKill(m, time, out)
     // The fade first, so a frame that ends a death fade is never also read as a recovery.
     this.trackFade(m, time, out)
     this.trackMasks(m, time, out)
@@ -207,6 +225,8 @@ export class SilksongTracker {
     this.pickup = new TextWatch()
     this.bossName = null
     this.bossSince = null
+    this.previousBrightness = null
+    this.killFlash = null
     this.blackFrames = 0
     this.blockedSent = false
     this.seen = false
@@ -346,6 +366,33 @@ export class SilksongTracker {
       this.closeCallArmed = true
       this.death(time, out)
     }
+  }
+
+  private trackBossKill(m: SilksongMeasure, time: number, out: ScreenSignal[]): void {
+    const before = this.previousBrightness
+    this.previousBrightness = m.brightness
+    // The player's HUD going means their own death (or a cutscene), never the boss's.
+    if (this.bossName === null || m.masks === 0) {
+      this.killFlash = null
+      return
+    }
+    const flash = this.killFlash
+    if (flash === null) {
+      const jumped = before !== null && m.brightness - before >= BOSS_FLASH_JUMP
+      if (m.brightness >= BOSS_FLASH_BRIGHTNESS && jumped) this.killFlash = { at: time, glow: 1 }
+      return
+    }
+    if (time - flash.at > BOSS_GLOW_WINDOW_MS) {
+      this.killFlash = null
+      return
+    }
+    if (m.brightness >= BOSS_GLOW_BRIGHTNESS) flash.glow++
+    if (flash.glow < BOSS_GLOW_FRAMES) return
+    this.killFlash = null
+    // The fight is over and won: a later room change is not read as anything.
+    this.bossName = null
+    this.bossSince = null
+    out.push({ kind: 'boss_beaten' })
   }
 
   private death(at: number, out: ScreenSignal[]): void {

@@ -6,7 +6,12 @@ const screen = (
   type: GameEventType,
   time: number,
   fields: { opponent?: string; place?: string } = {}
-): ReturnType<typeof makeEvent> => makeEvent(type, time * 1000, 'screen', fields)
+): ReturnType<typeof makeEvent> =>
+  // A win here is the guessed one (left the arena alive), as the adapter marks it.
+  makeEvent(type, time * 1000, 'screen', {
+    ...(type === 'fight_won' ? { basis: 'inferred' as const } : {}),
+    ...fields
+  })
 
 const boss = (time: number, name = 'Moss Mother'): ReturnType<typeof makeEvent> =>
   screen('boss_encounter', time, { opponent: name })
@@ -56,6 +61,16 @@ describe('session memory', () => {
     memory.absorb([won], 30_000)
     expect(won.detail).toBe('left the arena of Moss Mother alive on attempt 1, likely beaten')
     expect(memory.context(31_000).timeline.at(-1)).toBe('likely beat Moss Mother')
+  })
+
+  it('words a boss win seen on screen as fact', () => {
+    const memory = new SessionMemory()
+    memory.absorb([boss(0)], 0)
+    memory.absorb([boss(60)], 60_000)
+    const won = makeEvent('fight_won', 90_000, 'screen', { opponent: 'Moss Mother' })
+    memory.absorb([won], 90_000)
+    expect(won.detail).toBe('beat Moss Mother on attempt 2')
+    expect(memory.context(91_000).timeline.at(-1)).toBe('beat Moss Mother')
   })
 
   it('credits a death to the boss named on it, then forgets that fight', () => {
