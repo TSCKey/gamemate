@@ -174,6 +174,12 @@ describe('watching a match in Commentary mode', () => {
     expect(observer.recentObservations().join()).toContain('VICTORY')
   })
 
+  it('gives answers a kill-feed reading as fact: the model only copied the text', async () => {
+    lookReply = sawVictory
+    await nextLook()
+    expect(observer.recentObservations().join()).not.toContain('likely')
+  })
+
   it('survives a reply that is not JSON', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     lookReply = 'not json at all'

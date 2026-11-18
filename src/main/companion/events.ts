@@ -111,6 +111,9 @@ export interface EventRule {
   namedDedupe?: boolean
   // Time-sensitive: worth saying even mid-fight.
   urgent?: boolean
+  // A bigger moment made of other events: when it is offered, its parts that are still waiting
+  // are not commented on separately.
+  narrative?: boolean
   // What this event means, for writing the reaction.
   meaning: string
   // How the model spots it on screen. Events without one are only worked out by match memory.
@@ -425,6 +428,31 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     staleMs: 20 * S,
     dedupeMs: 120 * S,
     meaning: 'The player entered a new area.'
+  },
+  // Worked out by sequence rules from verified screen checks only (src/main/geis/rules).
+  close_call_survived: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 78,
+    cooldownMs: 120 * S,
+    staleMs: 20 * S,
+    dedupeMs: 60 * S,
+    narrative: true,
+    meaning:
+      'In a boss fight, the player was down to their last bit of health and is back above it, still alive and still fighting. How is not known: do not mention dodging, healing or anything else that is not listed.'
+  },
+  new_area_after_deaths: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 65,
+    cooldownMs: 180 * S,
+    staleMs: 30 * S,
+    dedupeMs: 120 * S,
+    narrative: true,
+    meaning:
+      'The player died several times in one area and has now reached an area they had not been to before. It is not known whether they beat anything: do not say they did.'
   },
   low_health: {
     category: 'world',

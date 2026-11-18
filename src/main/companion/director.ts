@@ -128,7 +128,21 @@ export class Director {
 
   offer(events: GameEvent[]): void {
     for (const event of events) event.commentary = 'pending'
-    const all = [...this.pending, ...events].sort((a, b) => a.time - b.time)
+    // A bigger moment speaks for its parts that are still waiting: one comment, not several.
+    // The parts stay as they were, apart from saying what spoke for them.
+    const replacedBy = new Map<string, string>()
+    for (const event of events) {
+      if (!EVENT_RULES[event.type].narrative) continue
+      for (const id of event.related) replacedBy.set(id, event.id)
+    }
+    const waiting = [...this.pending, ...events].filter((e) => {
+      const by = replacedBy.get(e.id)
+      if (!by) return true
+      e.commentary = 'superseded'
+      e.supersededBy = by
+      return false
+    })
+    const all = waiting.sort((a, b) => a.time - b.time)
     // The oldest go when too many wait.
     this.settle(all.slice(0, -MAX_PENDING), 'none')
     this.pending = all.slice(-MAX_PENDING)

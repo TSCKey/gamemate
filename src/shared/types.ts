@@ -429,7 +429,9 @@ export const EVENT_TYPES = [
   'defeat',
   'milestone',
   'boss_encounter',
-  'area_entered'
+  'area_entered',
+  'close_call_survived',
+  'new_area_after_deaths'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 

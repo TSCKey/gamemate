@@ -65,12 +65,36 @@ const MOOD_GUIDE: Record<Mood, string> = {
 const inferredWin = (event: GameEvent): boolean =>
   event.type === 'fight_won' && event.source === 'screen'
 
+// Below this, a model's reading or a worked-out moment is worded as likely, never as fact.
+export const CERTAIN_CONFIDENCE = 0.85
+
+// Whether a moment may be stated as fact. The game's own data and verified checks may; a model's
+// reading or a worked-out moment only when sure enough and, for a worked-out one, when nothing
+// it came from was a model's reading.
+export function certainty(event: GameEvent): 'certain' | 'likely' {
+  if (inferredWin(event)) return 'likely'
+  switch (event.basis) {
+    case 'telemetry':
+    case 'verified':
+      return 'certain'
+    case 'model':
+      return event.confidence >= CERTAIN_CONFIDENCE ? 'certain' : 'likely'
+    case 'inferred':
+      return event.confidence >= CERTAIN_CONFIDENCE && event.data?.weakestBasis !== 'model'
+        ? 'certain'
+        : 'likely'
+  }
+}
+
 function fact(event: GameEvent): string {
   const parts = [
     inferredWin(event)
       ? 'The player probably beat a boss: they left its arena alive, but the win itself was not seen.'
       : EVENT_RULES[event.type].meaning
   ]
+  if (!inferredWin(event) && certainty(event) === 'likely') {
+    parts.push('(Likely, not certain: it was read off the screen and may be wrong.)')
+  }
   if (event.detail) parts.push(`Seen: "${event.detail}".`)
   if (event.opponent) parts.push(`The enemy involved is "${event.opponent}" (not the player).`)
   if (event.place) parts.push(`Place: "${event.place}".`)
@@ -168,7 +192,11 @@ export function reactionPrompt(request: ReactionRequest): string {
       ? [
           '- The boss win was worked out, not seen: do not say for certain that they beat it. Words like "looks like" or "seems" fit.'
         ]
-      : []),
+      : events.some((e) => certainty(e) === 'likely')
+        ? [
+            '- Something above is marked likely: do not say for certain that it happened. Words like "looks like" or "seems" fit.'
+          ]
+        : []),
     '- Use game terms like clutch, ace or comeback only if the list above says so.',
     '- You do not know their name: never call the player by a name.',
     '- If a number comes from what you remember, say "at least" or avoid the exact number.',
@@ -250,10 +278,21 @@ const CLAIMS: { words: RegExp; backedBy: GameEventType[] }[] = [
   { words: /\baced?\b/i, backedBy: ['team_wipe', 'clutch'] }
 ]
 
+// What a bigger moment worked out from the screen can't back up: the light checks see the mask
+// count and area titles, never how the player did it or whether anything was beaten.
+const NARRATIVE_LIMITS: { type: GameEventType; words: RegExp }[] = [
+  { type: 'close_call_survived', words: /\bdodg|\bheal|\bdefeat|\bbeat (?:it|them|him|her)\b/i },
+  { type: 'new_area_after_deaths', words: /\bdefeat|\bconquer|\bbeat (?:it|them|him|her)\b/i }
+]
+
 // A small model may reach for a big word that the facts don't support. Only checks English: for
 // other languages the instructions have to do the work.
 export function claimsTooMuch(text: string, events: GameEvent[]): boolean {
-  return CLAIMS.some(
+  const unbacked = CLAIMS.some(
     ({ words, backedBy }) => words.test(text) && !events.some((e) => backedBy.includes(e.type))
   )
+  const tooFar = NARRATIVE_LIMITS.some(
+    ({ type, words }) => events.some((e) => e.type === type) && words.test(text)
+  )
+  return unbacked || tooFar
 }

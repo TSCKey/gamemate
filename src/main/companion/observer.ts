@@ -16,7 +16,8 @@ import { getSettings, onSettingsChanged, termsAccepted, type Settings } from '..
 import { EVENT_TYPES } from '../../shared/types'
 import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../../shared/types'
 import { Commentator, type CommentaryOptions } from './commentator'
-import type { GameEvent } from './events'
+import { EVENT_RULES, type GameEvent } from './events'
+import { certainty } from './reaction'
 import { hudAreas } from './hudAreas'
 import type { MatchContext } from './matchMemory'
 import { adapterFor, visionGame, type AdapterHost, type GameAdapter } from '../geis/adapter'
@@ -250,11 +251,18 @@ export function onObserverState(listener: (state: ObserverState) => void): void 
   stateListeners.push(listener)
 }
 
-// Recent observations for answering the player's questions, newest last.
+// Recent moments for answering the player's questions, newest last: from this session's
+// history, bigger moments included, with anything not seen for certain marked as such.
 export function recentObservations(maxAgeMs = 10 * 60_000): string[] {
   const now = Date.now()
-  return state.events
-    .filter((e) => now - e.time <= maxAgeMs)
+  const shown = new Map(state.events.map((e) => [e.id, e.description]))
+  return commentator
+    .history()
+    .filter((e) => e.status === 'accepted' && now - e.time <= maxAgeMs)
     .slice(-5)
-    .map((e) => `${Math.max(1, Math.round((now - e.time) / 60_000))} min ago: ${e.description}`)
+    .map((e) => {
+      const text = e.detail || shown.get(e.id) || EVENT_RULES[e.type].meaning
+      const likely = certainty(e) === 'likely' ? ' (likely, not certain)' : ''
+      return `${Math.max(1, Math.round((now - e.time) / 60_000))} min ago: ${text}${likely}`
+    })
 }
