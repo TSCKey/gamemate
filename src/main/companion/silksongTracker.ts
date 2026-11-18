@@ -38,6 +38,16 @@ const DEATH_MAX_MASKS = 2
 const DEATH_REFILL_MS = 10000
 /** A fade at least this long, but shorter than a death, is a room change. */
 const ROOM_FADE_MIN_MS = 200
+/**
+ * Silksong's own death, measured on the owner's Last Judge clip: at 1-2 masks the HUD goes with
+ * the last hit, a bright grey-brown burst fills the screen (about 0.24) for about 2 s, then black.
+ * The burst must last this many frames, and the black come within this long of the HUD going.
+ */
+const DEATH_BURST_BRIGHTNESS = 0.18
+const DEATH_BURST_FRAMES = 3
+const DEATH_BURST_WINDOW_MS = 6000
+/** After a death seen this way, the fade that follows it is not counted again. */
+const AFTER_DEATH_MS = 60000
 /** Text scores above this count as text on screen (Silksong's area card measured 0.08-0.12; ordinary play peaked at 0.05). */
 const TEXT_ON = 0.06
 /** Text must stay on this long before it counts as a title or pickup. */
@@ -132,6 +142,9 @@ export class SilksongTracker {
   // A fade that could have been a death, waiting for the masks to refill. `masks` is the last
   // count trusted before it; `at` is when it ended.
   private deathPending: { at: number; masks: number } | null = null
+  private hudGoneSince: number | null = null
+  private burstFrames = 0
+  private lastDeath: number | null = null
 
   private area = new TextWatch()
   private boss = new TextWatch(BOSS_TEXT_ON, BOSS_TEXT_OFF)
@@ -153,6 +166,7 @@ export class SilksongTracker {
     const out: ScreenSignal[] = []
 
     if (this.deathPending && time - this.deathPending.at > DEATH_REFILL_MS) this.deathPending = null
+    this.trackDeathBurst(m, time, out)
     // The fade first, so a frame that ends a death fade is never also read as a recovery.
     this.trackFade(m, time, out)
     this.trackMasks(m, time, out)
@@ -185,6 +199,9 @@ export class SilksongTracker {
     this.lastBright = null
     this.fadeStart = null
     this.deathPending = null
+    this.hudGoneSince = null
+    this.burstFrames = 0
+    this.lastDeath = null
     this.area = new TextWatch()
     this.boss = new TextWatch(BOSS_TEXT_ON, BOSS_TEXT_OFF)
     this.pickup = new TextWatch()
@@ -275,7 +292,8 @@ export class SilksongTracker {
     }
     if (length >= DEATH_FADE_MS) {
       // Only a possible death: it counts once the masks refill, and is dated to now.
-      if (this.masks !== null && this.masks <= DEATH_MAX_MASKS) {
+      const justDied = this.lastDeath !== null && time - this.lastDeath <= AFTER_DEATH_MS
+      if (!justDied && this.masks !== null && this.masks <= DEATH_MAX_MASKS) {
         this.deathPending = { at: time, masks: this.masks }
         // Frames from before the fade must not count toward the first count after it.
         this.candidate = null
@@ -299,8 +317,40 @@ export class SilksongTracker {
     }
   }
 
+  private trackDeathBurst(m: SilksongMeasure, time: number, out: ScreenSignal[]): void {
+    if (m.masks > 0) {
+      this.hudGoneSince = null
+      this.burstFrames = 0
+      return
+    }
+    if (this.hudGoneSince === null) {
+      // The HUD went while the player was down to their last masks, and not into a fade.
+      if (this.masks !== null && this.masks <= DEATH_MAX_MASKS && m.brightness >= FADE_BRIGHTNESS) {
+        this.hudGoneSince = time
+        this.burstFrames = 0
+      }
+      return
+    }
+    if (time - this.hudGoneSince > DEATH_BURST_WINDOW_MS) {
+      this.hudGoneSince = null
+      this.burstFrames = 0
+      return
+    }
+    if (m.brightness >= DEATH_BURST_BRIGHTNESS) this.burstFrames++
+    else if (m.brightness < FADE_BRIGHTNESS && this.burstFrames >= DEATH_BURST_FRAMES) {
+      this.hudGoneSince = null
+      this.burstFrames = 0
+      // The masks are read afresh after the respawn, so the refill is no change to report.
+      this.masks = null
+      this.candidate = null
+      this.closeCallArmed = true
+      this.death(time, out)
+    }
+  }
+
   private death(at: number, out: ScreenSignal[]): void {
     // Dying ends the fight and any close call; the boss is not beaten.
+    this.lastDeath = at
     this.bossName = null
     this.bossSince = null
     this.recoveryPending = false

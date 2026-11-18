@@ -453,6 +453,58 @@ describe('SilksongTracker boss defeated', () => {
   })
 })
 
+// Measured on the owner's Last Judge clip, where Hornet is killed: down to 1 mask, the HUD goes
+// at the last hit, a bright grey-brown burst fills the screen for about 2 s, then black.
+describe('SilksongTracker death as Silksong shows it', () => {
+  const killed = (): Run =>
+    new Run()
+      .frames(4, { masks: 3, brightness: 0.09 })
+      .frames(8, { masks: 1, brightness: 0.07 })
+      .frames(4, { masks: 0, brightness: 0.11 })
+      .frames(6, { masks: 0, brightness: 0.24 })
+      .frames(1, { masks: 0, brightness: 0.003 })
+
+  it('recognises the death from the HUD going, the burst and the black', () => {
+    expect(
+      killed()
+        .kinds()
+        .filter((k) => k === 'death')
+    ).toHaveLength(1)
+  })
+
+  it('counts it once, whatever the respawn looks like afterwards', () => {
+    const run = killed()
+      .seconds(3, { masks: 0, brightness: 0 })
+      .frames(4, { masks: 5, brightness: 0.1 })
+    expect(run.kinds().filter((k) => k === 'death')).toHaveLength(1)
+  })
+
+  it('is no death when the HUD goes at 1 mask for a dim pause menu', () => {
+    const run = new Run()
+      .frames(8, { masks: 1, brightness: 0.07 })
+      .seconds(10, { masks: 0, brightness: 0.05 })
+      .frames(4, { masks: 1, brightness: 0.07 })
+    expect(run.kinds()).not.toContain('death')
+  })
+
+  it('is no death when a bright scene with no HUD never goes black', () => {
+    const run = new Run()
+      .frames(8, { masks: 1, brightness: 0.07 })
+      .seconds(8, { masks: 0, brightness: 0.24 })
+      .frames(4, { masks: 1, brightness: 0.07 })
+    expect(run.kinds()).not.toContain('death')
+  })
+
+  it('is no death with plenty of masks left', () => {
+    const run = new Run()
+      .frames(8, { masks: 4, brightness: 0.07 })
+      .frames(4, { masks: 0, brightness: 0.11 })
+      .frames(6, { masks: 0, brightness: 0.24 })
+      .frames(4, { masks: 0, brightness: 0.003 })
+    expect(run.kinds()).not.toContain('death')
+  })
+})
+
 describe('SilksongTracker blocked capture', () => {
   const black = { brightness: 0, masks: 0 }
 
