@@ -1,13 +1,13 @@
 // Short-term memory of a single-player session read off the screen: which boss the player keeps
 // trying, where they keep dying, close calls and a short timeline, so a reaction can tell a
 // story. Small, in memory only, and it only counts what was seen, so every number is a lower bound.
-import { makeEvent, type GameEvent } from './events'
+// What follows from the events as a sequence (the fifth try at a boss) is worked out by the
+// sequence rules in src/main/geis/rules; this memory keeps the facts.
+import type { GameEvent } from './events'
 
 const MAX_BOSSES = 20
 const MAX_AREAS = 40
 const MAX_TIMELINE = 10
-// Attempt numbers worth a moment of their own.
-const ATTEMPT_MILESTONES = [5, 10, 20]
 
 export interface SessionContext {
   boss: { name: string; attempt: number } | null
@@ -30,12 +30,14 @@ export class SessionMemory {
   private timeline: string[] = []
 
   // Takes in what the screen showed (repeats already removed) and returns what follows from it.
+  // `time` is unused today; it keeps the same shape as match memory's absorb.
   absorb(events: GameEvent[], time: number): GameEvent[] {
+    void time
     const derived: GameEvent[] = []
     for (const event of events) {
       switch (event.type) {
         case 'boss_encounter':
-          derived.push(...this.encounter(event, time))
+          this.encounter(event)
           break
         case 'area_entered':
           this.enter(event)
@@ -55,9 +57,9 @@ export class SessionMemory {
     return derived
   }
 
-  private encounter(event: GameEvent, time: number): GameEvent[] {
+  private encounter(event: GameEvent): void {
     const name = event.opponent
-    if (!name) return []
+    if (!name) return
     const id = key(name)
     const attempts = (this.bosses.get(id)?.attempts ?? 0) + 1
     // Seen again: it counts as the newest, so the oldest is what gets dropped.
@@ -66,15 +68,6 @@ export class SessionMemory {
     this.drop(this.bosses, MAX_BOSSES)
     this.boss = id
     this.note(`attempt ${attempts} at ${name}`)
-    if (!ATTEMPT_MILESTONES.includes(attempts)) return []
-    return [
-      makeEvent('milestone', time, 'memory', {
-        importance: 8,
-        count: attempts,
-        opponent: name,
-        detail: `attempt ${attempts} at ${name}`
-      })
-    ]
   }
 
   private enter(event: GameEvent): void {

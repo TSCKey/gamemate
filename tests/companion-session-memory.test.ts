@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { makeEvent, type GameEvent, type GameEventType } from '../src/main/companion/events'
+import { makeEvent, type GameEventType } from '../src/main/companion/events'
 import { SessionMemory } from '../src/main/companion/sessionMemory'
 
 const screen = (
@@ -16,26 +16,6 @@ describe('session memory', () => {
     const memory = new SessionMemory()
     for (let i = 0; i < 3; i++) memory.absorb([boss(i * 100)], i * 100_000)
     expect(memory.context(400_000).boss).toEqual({ name: 'Moss Mother', attempt: 3 })
-  })
-
-  it('announces a milestone once, at attempt 5', () => {
-    const memory = new SessionMemory()
-    const derived: GameEvent[] = []
-    for (let i = 0; i < 7; i++) derived.push(...memory.absorb([boss(i * 100)], i * 100_000))
-    const milestones = derived.filter((e) => e.type === 'milestone')
-    expect(milestones).toHaveLength(1)
-    expect(milestones[0].detail).toBe('attempt 5 at Moss Mother')
-  })
-
-  it('announces milestones at 10 and 20 as well', () => {
-    const memory = new SessionMemory()
-    const derived: GameEvent[] = []
-    for (let i = 0; i < 20; i++) derived.push(...memory.absorb([boss(i * 100)], i * 100_000))
-    expect(derived.map((e) => e.detail)).toEqual([
-      'attempt 5 at Moss Mother',
-      'attempt 10 at Moss Mother',
-      'attempt 20 at Moss Mother'
-    ])
   })
 
   it('counts deaths per area and starts again on entering another area', () => {

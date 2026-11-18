@@ -19,6 +19,8 @@ import {
   type VisionGame
 } from './events'
 import { EventEngine } from '../geis/engine'
+import { CorrelationEngine } from '../geis/correlation'
+import { RULES } from '../geis/rules'
 import { MatchMemory, type MatchContext } from './matchMemory'
 import { SessionMemory } from './sessionMemory'
 import {
@@ -107,6 +109,8 @@ export class Commentator {
   private lastSource: FrameReport['source'] = 'vision'
   private director = new Director()
   private engine: EventEngine
+  private rules: CorrelationEngine
+  private competitive = false
   private seen = new Map<string, number>()
   private lastFrameKeys = new Set<string>()
   private newestFrame = -Infinity
@@ -123,6 +127,9 @@ export class Commentator {
     this.now = deps.now ?? ((): number => Date.now())
     this.canSpeak = deps.canSpeak ?? ((): boolean => true)
     this.engine = new EventEngine(this.now)
+    this.rules = new CorrelationEngine(RULES, () =>
+      this.competitive ? 'competitive' : 'single-player'
+    )
   }
 
   // Takes in one look at the game and returns the new events it brought. `checks` are the types
@@ -131,6 +138,7 @@ export class Commentator {
     if (this.gameId !== game.id) {
       if (this.gameId !== null) this.startOver()
       this.gameId = game.id
+      this.competitive = game.competitive
     }
     if (this.engine.sessionId() === '') this.engine.startSession(game.id)
     const { accepted, filtered } = this.engine.accept(
@@ -145,8 +153,12 @@ export class Commentator {
       report.source === 'screen'
         ? this.session.absorb(fresh, report.time)
         : this.memory.absorb({ ...report, events: fresh }, held)
+    derived.push(...this.rules.absorb([...fresh, ...derived], report.time))
+    if (report.source === 'screen' && report.fightEnded) {
+      this.session.endFight()
+      derived.push(...this.rules.endFight(report.time))
+    }
     for (const event of derived) this.seen.set(eventKey(event), event.time)
-    if (report.source === 'screen' && report.fightEnded) this.session.endFight()
 
     this.engine.stampDerived(derived)
     const events = [...fresh, ...derived]
@@ -293,6 +305,7 @@ export class Commentator {
 
   private startOver(): void {
     this.engine.reset()
+    this.rules.reset()
     this.memory.startNewMatch()
     this.session.reset()
     this.lastSource = 'vision'
