@@ -597,10 +597,17 @@ async function followScreen(settings: Settings, game: GameProfile, handle: bigin
   await commentator.speakIfDue(commentaryOptions(settings, game))
 }
 
+// GameMate's log file (on this PC only) notes what the screen watch saw, so a play session can
+// be checked against it afterwards. Names and the game's own text only, never a frame.
+function screenLog(message: string): void {
+  console.info(`Screen: ${message}`)
+}
+
 function startScreen(game: GameProfile, handle: bigint): void {
   endScreenWatch()
   const run: ScreenRun = { game, handle, language: playerLogLanguage() }
   screenRun = run
+  screenLog(`watching ${game.name}`)
   // Started now, so the first title read later is quick.
   readText(BLANK_PNG, run.language).catch(() => {})
   silksongNames().catch(() => {})
@@ -614,6 +621,7 @@ function startScreen(game: GameProfile, handle: bigint): void {
 function endScreenWatch(): void {
   if (!screenRun) return
   screenRun = null
+  screenLog('stopped watching')
   stopScreenWatch()
   tracker.reset()
   blocked = false
@@ -626,6 +634,7 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
   if (screenRun !== run) return
   if (blocked && !isBlackFrame(m)) {
     blocked = false
+    screenLog('the capture shows the game again')
     setState({ status: 'watching' })
   }
   const events: GameEvent[] = []
@@ -681,6 +690,7 @@ function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void
         break
       case 'blocked':
         blocked = true
+        screenLog('the capture is black')
         setState({ status: 'blocked-by-fullscreen' })
         break
       // Damage only tells the tracker a fight is on.
@@ -712,6 +722,7 @@ function deliverScreen(
     fightEnded
   }
   const fresh = commentator.observe(report, visionGame(run.game))
+  for (const event of fresh) screenLog(`${event.type}: ${event.detail}`)
   logEvents(fresh, '')
   commentator
     .speakIfDue(commentaryOptions(getSettings(), run.game))
@@ -754,13 +765,18 @@ async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): P
   const current = stillCurrent(run)
   const box = kind === 'boss' ? SILKSONG_LAYOUT.bossTitle : SILKSONG_LAYOUT.areaTitle
   const text = await readRegion(run, box, current)
-  if (!text) return
+  if (!text) {
+    if (current()) screenLog(`${kind} title showed, no text read`)
+    return
+  }
   const names = await silksongNames()
   if (!current()) return
   // Silksong shows area names in the bottom-left spot too (the owner's recording: "BLASTED STEPS",
   // "BONE BOTTOM"), so a title there may name a boss or an area. The centre card only names areas.
   const boss = kind === 'boss' ? matchName(text, names.bosses) : null
   const name = boss ?? matchName(text, names.areas)
+  // The game's own text, cut short: enough to see what the recognition made of it.
+  screenLog(`${kind} title read as "${text.slice(0, 60)}", ${name ?? 'no known name'}`)
   if (!name) return
   if (!boss) {
     currentArea = name

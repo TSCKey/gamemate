@@ -213,6 +213,8 @@ export class Commentator {
       const text = await this.write(decision, context, options)
       if (!text || run !== this.run || !this.canSpeak()) return null
       this.deps.deliver(text, decision.events)
+      // What it was about, never its words, so the log can be read against a play session.
+      console.info(`Comment spoken for ${decision.events.map((e) => e.type).join(', ')}`)
       this.memory.rememberComment(text)
       this.director.spoke(decision, this.now())
       return text

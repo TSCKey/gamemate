@@ -486,6 +486,77 @@ describe('watching Silksong', () => {
   })
 })
 
+// GameMate's log file shows what the screen watch saw, so a play session can be checked
+// against it afterwards.
+describe('the log of what the screen watch saw', () => {
+  let lines: string[] = []
+  const logLines = (): string[] => lines.filter((l) => l.startsWith('Screen:'))
+  beforeEach(() => {
+    lines = []
+    vi.spyOn(console, 'info').mockImplementation((...args: unknown[]) => {
+      lines.push(args.join(' '))
+    })
+  })
+  afterEach(() => vi.mocked(console.info).mockRestore())
+
+  it('notes when the watch starts and stops', async () => {
+    observer.clearEvents()
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(logLines()).toContain('Screen: watching Hollow Knight: Silksong')
+    observer.setPaused(true)
+    expect(logLines()).toContain('Screen: stopped watching')
+  })
+
+  it('notes each event with what it says', async () => {
+    readAs = async () => [{ text: 'Moss Grotto' }]
+    showText('areaText')
+    await settle()
+    die()
+    await settle()
+    expect(logLines()).toContain('Screen: area_entered: entered Moss Grotto')
+    expect(logLines()).toContain('Screen: death: died in Moss Grotto')
+  })
+
+  it('notes a title it read but did not know, with the text read', async () => {
+    readAs = async () => [{ text: 'Press any button to continue' }]
+    showText('bossText')
+    await settle()
+    expect(logLines()).toContain(
+      'Screen: boss title read as "Press any button to continue", no known name'
+    )
+    // The spot clears before the next title.
+    feed({}, 8)
+    readAs = async () => [{ text: 'MOSS MOTHER' }]
+    showText('bossText')
+    await settle()
+    expect(logLines()).toContain('Screen: boss title read as "MOSS MOTHER", Moss Mother')
+  })
+
+  it('notes a title spot that showed text but held none to read', async () => {
+    readAs = async () => []
+    showText('areaText')
+    await settle()
+    expect(logLines()).toContain('Screen: area title showed, no text read')
+  })
+
+  it('notes when the capture goes black and comes back', () => {
+    feed({ brightness: 0, masks: 0 }, 120)
+    expect(logLines()).toContain('Screen: the capture is black')
+    feed({}, 1)
+    expect(logLines()).toContain('Screen: the capture shows the game again')
+  })
+
+  it('notes which events a comment was spoken for, never its words', async () => {
+    readAs = async () => [{ text: 'Moss Mother' }]
+    showText('bossText')
+    await settle()
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(toasts).toEqual(['There she is'])
+    expect(lines).toContain('Comment spoken for boss_encounter')
+    expect(lines.some((l) => l.includes('There she is'))).toBe(false)
+  })
+})
+
 describe('the game language in Player.log', () => {
   it('is the newest saved language, in lower case', () => {
     expect(
