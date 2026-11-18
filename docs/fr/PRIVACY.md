@@ -50,7 +50,7 @@ GameMate lit les listes de jeux de Steam, Epic Games, Battle.net et Riot sur vot
 
 ### Recherches en ligne (Paramètres → IA et en ligne)
 
-Lorsqu'une question porte sur un élément d'un jeu, GameMate envoie **le sujet** (par exemple « Ender Dragon ») au wiki de ce jeu (comme minecraft.wiki, un wiki Fandom ou un wiki wiki.gg) et, pour les mods Minecraft, le nom du mod à Modrinth, puis télécharge le texte de la page et les images qu'il vous montre. Votre question elle-même n'est pas envoyée. Pour Hollow Knight: Silksong, GameMate interroge aussi le wiki du jeu pour obtenir ses listes de boss et de zones, afin de reconnaître leurs noms sur votre écran ; rien sur vous n'est envoyé.
+Lorsqu'une question porte sur un élément d'un jeu, GameMate envoie **le sujet** (par exemple « Ender Dragon ») au wiki de ce jeu (comme minecraft.wiki, un wiki Fandom ou un wiki wiki.gg) et, pour les mods Minecraft, le nom du mod à Modrinth, puis télécharge le texte de la page et les images qu'il vous montre. Votre question elle-même n'est pas envoyée. Pour Hollow Knight: Silksong, GameMate interroge aussi le wiki du jeu pour obtenir ses listes de boss et de zones, afin de reconnaître leurs noms sur votre écran ; aucune information vous concernant n'est envoyée.
 
 ### Recherche sur le web (Paramètres → IA et en ligne)
 

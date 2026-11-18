@@ -36,7 +36,7 @@ Deine Unterhaltungen, Screenshots, Sprachaufnahmen und das, was der Begleiter be
 ## 4. Was GameMate auf deinem PC tut
 
 - **Dein Bildschirm** wird nur aufgenommen, wenn du eine Frage mit Screenshot sendest, das Spiel-Tastenkürzel mit eingeschalteten Screenshots drückst oder während der Begleiter dein Spiel beobachten soll. Das wählst du in der App; der Begleiter ist anfangs aus.
-- **Text auf dem Bildschirm deines Spiels:** Bei Hollow Knight: Silksong liest der Begleiter die Namen von Bossen und Gebieten mit der eigenen Texterkennung von Windows von deinem Bildschirm ab und liest die Spracheinstellung des Spiels aus der eigenen Logdatei des Spiels. Beides geschieht nur auf deinem PC, und die Bildschirmaufnahmen bleiben wie oben beschrieben im Arbeitsspeicher.
+- **Text auf dem Bildschirm deines Spiels:** Bei Hollow Knight: Silksong liest der Begleiter mit der in Windows eingebauten Texterkennung die Namen von Bossen und Gebieten von deinem Bildschirm ab, und die Spracheinstellung des Spiels aus dessen eigener Logdatei. Beides geschieht nur auf deinem PC, und die Bildschirmaufnahmen bleiben wie oben beschrieben im Arbeitsspeicher.
 - **Dein Mikrofon** wird nur genutzt, solange die Spracheingabe an ist und du das Sprach-Tastenkürzel oder 🎤 drückst. Deine Sprache wird auf deinem PC in Text umgewandelt.
 - **Das KI-Modell**, das auf deinem PC läuft (die eigene Engine von GameMate oder Ollama, wenn du es nutzt), erhält deine Fragen und Screenshots nur auf deinem PC.
 

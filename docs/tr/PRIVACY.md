@@ -36,7 +36,7 @@ Konuşmaların, ekran görüntülerin, ses kayıtların ve yol arkadaşının fa
 ## 4. GameMate bilgisayarında ne yapar
 
 - **Ekranın** yalnızca ekran görüntüsüyle bir soru gönderdiğinde, ekran görüntüleri açıkken oyun içi kısayola bastığında veya yol arkadaşı oyununu izlemeye ayarlıyken yakalanır. Bunu uygulamada sen seçersin; yol arkadaşı varsayılan olarak kapalıdır.
-- **Oyununun ekranındaki yazı:** Hollow Knight: Silksong için yol arkadaşı, patron ve bölge adlarını Windows'un kendi metin tanıma özelliğiyle ekranından okur ve oyunun dil ayarını oyunun kendi günlük dosyasından okur. İkisi de yalnızca bilgisayarında gerçekleşir ve ekran görüntüleri yukarıda anlatıldığı gibi bellekte kalır.
+- **Oyununun ekranındaki yazı:** Hollow Knight: Silksong için yol arkadaşı, patron ve bölge adlarını Windows'un kendi metin tanıma özelliğiyle ekranından okur, oyunun dil ayarını da oyunun kendi günlük dosyasından alır. İkisi de yalnızca bilgisayarında gerçekleşir ve ekran görüntüleri yukarıda anlatıldığı gibi bellekte kalır.
 - **Mikrofonun** yalnızca sesli giriş açıkken ve ses kısayoluna veya 🎤'ye bastığında kullanılır. Konuşman bilgisayarında metne dönüştürülür.
 - Bilgisayarında çalışan **yapay zekâ modeli** (GameMate'in kendi motoru ya da kullanıyorsan Ollama), sorularını ve ekran görüntülerini yalnızca bilgisayarında alır.
 

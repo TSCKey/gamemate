@@ -36,7 +36,7 @@ Suas conversas, capturas de tela, gravações de voz e o que o companheiro perce
 ## 4. O que o GameMate faz no seu PC
 
 - **Sua tela** só é capturada quando você envia uma pergunta com captura de tela, pressiona o atalho do jogo com as capturas ativadas ou enquanto o companheiro estiver configurado para observar seu jogo. Você escolhe isso no aplicativo; o companheiro vem desativado.
-- **O texto na tela do seu jogo:** no Hollow Knight: Silksong, o companheiro lê os nomes de chefes e de áreas na sua tela com o reconhecimento de texto do próprio Windows e lê a configuração de idioma do jogo no arquivo de registro do próprio jogo. Ambos acontecem somente no seu PC, e as capturas de tela ficam na memória, como descrito acima.
+- **O texto na tela do seu jogo:** no Hollow Knight: Silksong, o companheiro lê os nomes de chefes e de áreas na sua tela com o reconhecimento de texto do próprio Windows e lê a configuração de idioma do jogo no arquivo de registro do próprio jogo. Ambas as coisas acontecem somente no seu PC, e as capturas de tela ficam na memória, como descrito acima.
 - **Seu microfone** só é usado enquanto a entrada de voz está ativada e você pressiona o atalho de voz ou 🎤. Sua fala é transformada em texto no seu PC.
 - **O modelo de IA** que roda no seu PC (o mecanismo do próprio GameMate, ou o Ollama, se você usá-lo) recebe suas perguntas e capturas de tela somente no seu PC.
 
@@ -50,7 +50,7 @@ O GameMate lê as listas de jogos do Steam, Epic Games, Battle.net e Riot no seu
 
 ### Consultas on-line (Configurações → IA e on-line)
 
-Quando uma pergunta é sobre algo em um jogo, o GameMate envia **o tema** (por exemplo, "Ender Dragon") à wiki desse jogo (como minecraft.wiki, uma wiki do Fandom ou uma wiki do wiki.gg) e, para mods de Minecraft, o nome do mod ao Modrinth, e baixa o texto da página e as imagens que mostra a você. A sua pergunta em si não é enviada. No Hollow Knight: Silksong, o GameMate também consulta a wiki do jogo para obter suas listas de chefes e áreas, para poder reconhecer os nomes na sua tela; nada sobre você é enviado.
+Quando uma pergunta é sobre algo em um jogo, o GameMate envia **o tema** (por exemplo, "Ender Dragon") à wiki desse jogo (como minecraft.wiki, uma wiki do Fandom ou uma wiki do wiki.gg) e, para mods de Minecraft, o nome do mod ao Modrinth, e baixa o texto da página e as imagens que mostra a você. A sua pergunta em si não é enviada. No Hollow Knight: Silksong, o GameMate também consulta a wiki do jogo para obter suas listas de chefes e áreas, a fim de reconhecer os nomes na sua tela; nada sobre você é enviado.
 
 ### Pesquisa na web (Configurações → IA e on-line)
 

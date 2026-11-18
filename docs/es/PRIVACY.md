@@ -36,7 +36,7 @@ Tus conversaciones, capturas de pantalla, grabaciones de voz y lo que el compañ
 ## 4. Qué hace GameMate en tu PC
 
 - **Tu pantalla** solo se captura cuando envías una pregunta con una captura de pantalla, pulsas el atajo del juego con las capturas activadas, o mientras el compañero está configurado para observar tu juego. Tú lo eliges en la aplicación; el compañero está desactivado por defecto.
-- **Texto en la pantalla de tu juego:** en Hollow Knight: Silksong, el compañero lee los nombres de jefes y zonas de tu pantalla con el reconocimiento de texto propio de Windows, y lee el idioma del juego en el archivo de registro del propio juego. Ambas cosas ocurren solo en tu PC, y las capturas de pantalla permanecen en la memoria, como se describe arriba.
+- **Texto en la pantalla de tu juego:** en Hollow Knight: Silksong, el compañero lee en tu pantalla los nombres de jefes y zonas con el reconocimiento de texto propio de Windows, y lee el idioma del juego en el archivo de registro del propio juego. Ambas cosas ocurren solo en tu PC, y las capturas de pantalla permanecen en la memoria, como se describe arriba.
 - **Tu micrófono** solo se usa mientras la entrada de voz está activada y pulsas el atajo de voz o 🎤. Tu voz se convierte en texto en tu PC.
 - **El modelo de IA** que se ejecuta en tu PC (el motor propio de GameMate, u Ollama si lo usas) recibe tus preguntas y capturas solo en tu PC.
 
