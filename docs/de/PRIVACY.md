@@ -2,7 +2,7 @@
 
 Dies ist eine Übersetzung zu deiner Bequemlichkeit. Verbindlich ist die [englische Fassung](../PRIVACY.md).
 
-Version 2 · Zuletzt aktualisiert: 15. November 2026
+Version 2 · Zuletzt aktualisiert: 18. November 2026
 
 Diese Erklärung beschreibt, was mit deinen personenbezogenen Daten geschieht, wenn du GameMate nutzt. Sie ist so geschrieben, dass sie der EU-Datenschutz-Grundverordnung (DSGVO), dem deutschen Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz (TDDDG) und dem Gesetz zum Schutz personenbezogener Daten des Königreichs Saudi-Arabien (PDPL) entspricht.
 
@@ -36,6 +36,7 @@ Deine Unterhaltungen, Screenshots, Sprachaufnahmen und das, was der Begleiter be
 ## 4. Was GameMate auf deinem PC tut
 
 - **Dein Bildschirm** wird nur aufgenommen, wenn du eine Frage mit Screenshot sendest, das Spiel-Tastenkürzel mit eingeschalteten Screenshots drückst oder während der Begleiter dein Spiel beobachten soll. Das wählst du in der App; der Begleiter ist anfangs aus.
+- **Text auf dem Bildschirm deines Spiels:** Bei Hollow Knight: Silksong liest der Begleiter die Namen von Bossen und Gebieten mit der eigenen Texterkennung von Windows von deinem Bildschirm ab und liest die Spracheinstellung des Spiels aus der eigenen Logdatei des Spiels. Beides geschieht nur auf deinem PC, und die Bildschirmaufnahmen bleiben wie oben beschrieben im Arbeitsspeicher.
 - **Dein Mikrofon** wird nur genutzt, solange die Spracheingabe an ist und du das Sprach-Tastenkürzel oder 🎤 drückst. Deine Sprache wird auf deinem PC in Text umgewandelt.
 - **Das KI-Modell**, das auf deinem PC läuft (die eigene Engine von GameMate oder Ollama, wenn du es nutzt), erhält deine Fragen und Screenshots nur auf deinem PC.
 
@@ -49,7 +50,7 @@ GameMate liest die Spielelisten von Steam, Epic Games, Battle.net und Riot auf d
 
 ### Online-Nachschlagen (Einstellungen → KI & Online)
 
-Wenn eine Frage etwas in einem Spiel betrifft, sendet GameMate **das Thema** (zum Beispiel „Ender Dragon“) an das Wiki dieses Spiels (etwa minecraft.wiki, ein Fandom-Wiki oder ein wiki.gg-Wiki), bei Minecraft-Mods den Namen des Mods an Modrinth, und lädt den Seitentext und die Bilder herunter, die es dir zeigt. Deine Frage selbst wird nicht gesendet.
+Wenn eine Frage etwas in einem Spiel betrifft, sendet GameMate **das Thema** (zum Beispiel „Ender Dragon“) an das Wiki dieses Spiels (etwa minecraft.wiki, ein Fandom-Wiki oder ein wiki.gg-Wiki), bei Minecraft-Mods den Namen des Mods an Modrinth, und lädt den Seitentext und die Bilder herunter, die es dir zeigt. Deine Frage selbst wird nicht gesendet. Bei Hollow Knight: Silksong fragt GameMate außerdem das Wiki des Spiels nach seinen Listen der Bosse und Gebiete, damit es deren Namen auf deinem Bildschirm erkennen kann; über dich wird nichts gesendet.
 
 ### Websuche (Einstellungen → KI & Online)
 

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Version 2 · Last updated: 15 November 2026
+Version 2 · Last updated: 18 November 2026
 
 This policy explains what happens to your personal data when you use GameMate. It is written to meet the EU General Data Protection Regulation (GDPR), the German Telecommunications Digital Services Data Protection Act (TDDDG) and the Personal Data Protection Law of the Kingdom of Saudi Arabia (PDPL).
 
@@ -34,6 +34,7 @@ Your conversations, screenshots, voice recordings and what the companion noticed
 ## 4. What GameMate does on your PC
 
 - **Your screen** is captured only when you send a question with a screenshot, press the in-game shortcut with screenshots turned on, or while the companion is set to watch your game. You choose this in the app; the companion is off by default.
+- **Text on your game's screen:** for Hollow Knight: Silksong, the companion reads boss and area names off your screen with Windows' own text recognition, and reads the game's language setting from the game's own log file. Both happen on your PC only, and the screen captures stay in memory as described above.
 - **Your microphone** is used only while voice input is on and you press the voice shortcut or 🎤. Your speech is turned into text on your PC.
 - **The AI model** that runs on your PC (GameMate's own engine, or Ollama if you use it) receives your questions and screenshots on your PC only.
 
@@ -47,7 +48,7 @@ GameMate reads the game lists of Steam, Epic Games, Battle.net and Riot on your 
 
 ### Online lookups (Settings → AI & online)
 
-When a question is about something in a game, GameMate sends **the topic** (for example "Ender Dragon") to that game's wiki (such as minecraft.wiki, a Fandom wiki or a wiki.gg wiki), and for Minecraft mods the mod's name to Modrinth, and downloads the page text and pictures it shows you. Your question itself is not sent.
+When a question is about something in a game, GameMate sends **the topic** (for example "Ender Dragon") to that game's wiki (such as minecraft.wiki, a Fandom wiki or a wiki.gg wiki), and for Minecraft mods the mod's name to Modrinth, and downloads the page text and pictures it shows you. Your question itself is not sent. For Hollow Knight: Silksong, GameMate also asks the game's wiki for its lists of bosses and areas, so it can recognize their names on your screen; nothing about you is sent.
 
 ### Web search (Settings → AI & online)
 

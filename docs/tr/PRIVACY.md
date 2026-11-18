@@ -2,7 +2,7 @@
 
 Bu çeviri kolaylık olsun diye sunulmuştur. Bağlayıcı olan [İngilizce sürümdür](../PRIVACY.md).
 
-Sürüm 2 · Son güncelleme: 15 Kasım 2026
+Sürüm 2 · Son güncelleme: 18 Kasım 2026
 
 Bu politika, GameMate'i kullandığında kişisel verilerine ne olduğunu açıklar. AB Genel Veri Koruma Tüzüğü'ne (GDPR), Almanya'nın Telekomünikasyon ve Dijital Hizmetlerde Veri Koruma Kanunu'na (TDDDG) ve Suudi Arabistan Krallığı'nın Kişisel Verilerin Korunması Kanunu'na (PDPL) uygun olacak şekilde yazılmıştır.
 
@@ -36,6 +36,7 @@ Konuşmaların, ekran görüntülerin, ses kayıtların ve yol arkadaşının fa
 ## 4. GameMate bilgisayarında ne yapar
 
 - **Ekranın** yalnızca ekran görüntüsüyle bir soru gönderdiğinde, ekran görüntüleri açıkken oyun içi kısayola bastığında veya yol arkadaşı oyununu izlemeye ayarlıyken yakalanır. Bunu uygulamada sen seçersin; yol arkadaşı varsayılan olarak kapalıdır.
+- **Oyununun ekranındaki yazı:** Hollow Knight: Silksong için yol arkadaşı, patron ve bölge adlarını Windows'un kendi metin tanıma özelliğiyle ekranından okur ve oyunun dil ayarını oyunun kendi günlük dosyasından okur. İkisi de yalnızca bilgisayarında gerçekleşir ve ekran görüntüleri yukarıda anlatıldığı gibi bellekte kalır.
 - **Mikrofonun** yalnızca sesli giriş açıkken ve ses kısayoluna veya 🎤'ye bastığında kullanılır. Konuşman bilgisayarında metne dönüştürülür.
 - Bilgisayarında çalışan **yapay zekâ modeli** (GameMate'in kendi motoru ya da kullanıyorsan Ollama), sorularını ve ekran görüntülerini yalnızca bilgisayarında alır.
 
@@ -49,7 +50,7 @@ GameMate bilgisayarındaki Steam, Epic Games, Battle.net ve Riot oyun listelerin
 
 ### Çevrim içi arama (Ayarlar → Yapay zekâ ve çevrim içi)
 
-Bir soru bir oyundaki bir şeyle ilgiliyse GameMate **konuyu** (örneğin "Ender Dragon") o oyunun wiki'sine (minecraft.wiki, bir Fandom wiki'si veya bir wiki.gg wiki'si gibi), Minecraft modları için de modun adını Modrinth'e gönderir ve sana gösterdiği sayfa metnini ve resimleri indirir. Sorunun kendisi gönderilmez.
+Bir soru bir oyundaki bir şeyle ilgiliyse GameMate **konuyu** (örneğin "Ender Dragon") o oyunun wiki'sine (minecraft.wiki, bir Fandom wiki'si veya bir wiki.gg wiki'si gibi), Minecraft modları için de modun adını Modrinth'e gönderir ve sana gösterdiği sayfa metnini ve resimleri indirir. Sorunun kendisi gönderilmez. Hollow Knight: Silksong için GameMate, adları ekranında tanıyabilmek amacıyla oyunun wiki'sinden patron ve bölge listelerini de ister; senin hakkında hiçbir şey gönderilmez.
 
 ### Web araması (Ayarlar → Yapay zekâ ve çevrim içi)
 
