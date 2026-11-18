@@ -43,8 +43,15 @@ export function matchName(text: string, names: string[], minSimilarity = 0.8): s
     const extra = words.length - size
     if (extra < 0 || extra > (size <= 2 ? 1 : 2)) continue
     const exact = target.length <= 6 || size === 1
+    const joined = target.replace(/ /g, '')
     for (let i = 0; i <= extra; i++) {
-      const score = similarity(words.slice(i, i + size).join(' '), target)
+      // A misread can split a word ("SKULL TYRVA'NT"), so the run is also compared without its
+      // spaces, taking in one more word.
+      const split = words.slice(i, i + size + 1).join('')
+      const score = Math.max(
+        similarity(words.slice(i, i + size).join(' '), target),
+        i + size < words.length ? similarity(split, joined) : 0
+      )
       if (score < minSimilarity || (exact && score < 1)) continue
       const better =
         score > bestScore ||

@@ -52,6 +52,15 @@ describe('matching text to known names', () => {
     expect(names.matchName('Moss Gr0tto', areas)).toBe('Moss Grotto')
   })
 
+  it('finds a name whose word a misread split in two', async () => {
+    // Read off the owner's screen on 2026-11-18.
+    const { names } = await load({})
+    const bosses = ['Skull Tyrant', 'Last Judge', 'Lace']
+    expect(names.matchName("SKULL TYRVA'NT", bosses)).toBe('Skull Tyrant')
+    expect(names.matchName('A Crafting Kit Expanded', bosses)).toBeNull()
+    expect(names.matchName('Heavy Rosary Necklace', bosses)).toBeNull()
+  })
+
   it('rejects text that is too different', async () => {
     const { names } = await load({})
     expect(names.matchName('Mossy Grot', areas)).toBeNull()
