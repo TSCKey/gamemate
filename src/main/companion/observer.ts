@@ -1,28 +1,14 @@
-// Always-on companion: watches the game in the background and notices what happens with the
-// vision model. What that model reports goes through the commentary pipeline (commentator.ts),
-// which decides whether to say something and writes it.
+// Always-on companion: watches the game in front in the background. How a game is followed is
+// up to its adapter (src/main/geis/adapters): light screen checks for Silksong, the vision model
+// on the kill feed for games with a known layout, the vision model on the whole screen for the
+// rest. What an adapter reports goes through the commentary pipeline (commentator.ts), which
+// decides whether to say something and writes it.
 //
-// To keep the GPU free for the game, the model is only asked about the screen when a cheap
-// check on a tiny frame suggests something changed, and never more often than MIN_ANALYSIS_GAP_MS.
-//
-// Silksong is followed without the vision model, which invented events there: a live stream of
-// the game window is measured a few times a second (screenWatch.ts), the measurements become
-// moments (silksongTracker.ts), and only titles and pickups are read as text, offline.
-import { closeSync, fstatSync, openSync, readSync } from 'fs'
-import { join } from 'path'
-import { app, BrowserWindow, screen, type Display, type NativeImage } from 'electron'
-import { captureDisplayImage, toScreenshot } from '../windows/capture'
-import {
-  grabRegion,
-  screenWatching,
-  startScreenWatch,
-  stopScreenWatch
-} from '../windows/screenWatch'
-import { windowRect } from '../system/foreground'
-import { readText } from '../system/ocr'
+// This file only schedules: it checks the player's settings and consent, finds the game in
+// front, starts the adapter that serves it and stops the others.
+import { BrowserWindow } from 'electron'
 import { followForegroundGame } from '../games/current'
-import { screenPack, type GameProfile } from '../games/catalog'
-import { isBlackFrame, SILKSONG_LAYOUT, type SilksongMeasure } from '../../shared/screen/silksong'
+import type { GameProfile } from '../games/catalog'
 import { complete } from '../ai/llm'
 import { engineFor, engineReady } from '../ai/engines'
 import { isAsking } from '../ai/assistant'
@@ -30,101 +16,27 @@ import { getSettings, onSettingsChanged, termsAccepted, type Settings } from '..
 import { EVENT_TYPES } from '../../shared/types'
 import type { CompanionState, CompanionStatus, EventType, ObservedEvent } from '../../shared/types'
 import { Commentator, type CommentaryOptions } from './commentator'
-import { analysisGapMs, areaLookGapMs } from './director'
-import {
-  EVENT_RULES,
-  makeEvent,
-  normalizeVisionReport,
-  visionEventTypes,
-  type FrameReport,
-  type GameEvent,
-  type VisionGame
-} from './events'
-import { matchName } from './names'
-import { silksongNames } from './silksongNames'
-import { SilksongTracker } from './silksongTracker'
-import { READ_PICKUPS } from './silksongSwitches'
-import { BANNER_KINDS, parsePlayerNames, readAreas } from './areaReading'
-import { cropBox, gameFrame, hudAreas, type Area, type Box } from './hudAreas'
+import type { GameEvent } from './events'
+import { hudAreas } from './hudAreas'
 import type { MatchContext } from './matchMemory'
+import { adapterFor, visionGame, type AdapterHost, type GameAdapter } from '../geis/adapter'
+import { createAdapters } from '../geis/adapters'
+import { TICK_MS, analysisPrompt as visionPrompt } from '../geis/adapters/visionLook'
+export { analysisSchema } from '../geis/adapters/visionLook'
+export { areaPrompt, areaSchema } from '../geis/adapters/killfeed'
+export { silksongLanguage } from '../geis/adapters/silksong'
 export { EVENT_TYPES }
 export type { EventType, ObservedEvent }
 
-const TICK_MS = 4_000
-// Feed lines fade after a few seconds, so games with a known feed are checked more often.
-const AREA_TICK_MS = 2_000
-// Something urgent (a red flash: damage or death) may be checked sooner.
-const URGENT_ANALYSIS_GAP_MS = 5_000
-// Even if the scene looks the same, take a fresh look this often.
-const MAX_ANALYSIS_GAP_MS = 60_000
-// Mean per-pixel brightness change (0-1) that counts as a new scene.
-const SCENE_CHANGE_THRESHOLD = 0.08
-const DIFF_FRAME_WIDTH = 64
-const COMMENTARY_WIDTH = 768
-// Feed text is small: the parts that get cut out need the capture at full size.
-const AREA_CAPTURE_WIDTH = 1920
-// A new feed line changes this much of those parts; a screen that stands still, almost none.
-const AREA_CHANGE_THRESHOLD = 0.004
 const MAX_EVENTS = 30
-const MAX_EVENTS_PER_LOOK = 3
 
 export type ObserverState = CompanionState
 export type ObserverStatus = CompanionStatus
 
-interface FrameStats {
-  pixels: Float32Array
-  brightness: number
-  redness: number
-}
-
-const visionGame = (game: GameProfile): VisionGame => ({
-  id: game.id,
-  name: game.name,
-  competitive: Boolean(game.competitive)
-})
-
-// What the model must reply with: the facts of one look, in the shape normalizeVisionReport reads.
-export function analysisSchema(game: GameProfile): object {
-  const text = (maxLength: number): object => ({ type: 'string', maxLength })
-  const score = { type: 'integer', minimum: -1, maximum: 999 }
-  return {
-    type: 'object',
-    properties: {
-      phase: { type: 'string', enum: ['playing', 'intermission', 'menu'] },
-      in_fight: { type: 'boolean' },
-      own_score: score,
-      enemy_score: score,
-      description: text(160),
-      events: {
-        type: 'array',
-        maxItems: MAX_EVENTS_PER_LOOK,
-        items: {
-          type: 'object',
-          properties: {
-            type: { type: 'string', enum: visionEventTypes(visionGame(game)) },
-            sure: { type: 'boolean' },
-            importance: { type: 'integer', minimum: 0, maximum: 10 },
-            detail: text(120),
-            opponent: text(32),
-            place: text(32),
-            count: { type: 'integer', minimum: 1, maximum: 10 }
-          },
-          required: ['type', 'sure', 'importance', 'detail', 'opponent', 'place', 'count']
-        }
-      }
-    },
-    required: ['phase', 'in_fight', 'own_score', 'enemy_score', 'description', 'events']
-  }
-}
-
 let state: ObserverState = { status: 'off', game: null, paused: false, events: [] }
 let timer: NodeJS.Timeout | null = null
-let lastFrame: FrameStats | null = null
-let lastAreas: FrameStats[] | null = null
-let watchingAreas = false
-let lastAnalysisAt = 0
-let lastAnalysisMs = 0
-let lookingNow = false
+// How often the loop comes back: the adapter watching last says.
+let tickMs = TICK_MS
 // Goes up whenever what GameMate saw must be forgotten, so a look still underway can tell.
 let forgetCount = 0
 let commentDisplay = 0
@@ -167,128 +79,9 @@ function setState(patch: Partial<ObserverState>): void {
   for (const listener of stateListeners) listener(state)
 }
 
-// Tiny grayscale frame plus overall brightness and how red the screen is
-// (Minecraft flashes red when you take damage and the death screen is red).
-function frameStats(image: NativeImage): FrameStats {
-  // Already captured this small; only an odd-sized capture is scaled.
-  const small =
-    image.getSize().width === DIFF_FRAME_WIDTH
-      ? image
-      : image.resize({ width: DIFF_FRAME_WIDTH, quality: 'good' })
-  const bitmap = small.toBitmap() // BGRA
-  const count = bitmap.length / 4
-  const pixels = new Float32Array(count)
-  let brightness = 0
-  let red = 0
-  let other = 0
-  for (let i = 0; i < count; i++) {
-    const b = bitmap[i * 4] / 255
-    const g = bitmap[i * 4 + 1] / 255
-    const r = bitmap[i * 4 + 2] / 255
-    pixels[i] = 0.299 * r + 0.587 * g + 0.114 * b
-    brightness += pixels[i]
-    red += r
-    other += (g + b) / 2
-  }
-  return { pixels, brightness: brightness / count, redness: red / Math.max(other, 1e-6) }
-}
-
-function sceneChange(a: FrameStats, b: FrameStats): number {
-  if (a.pixels.length !== b.pixels.length) return 1
-  let diff = 0
-  for (let i = 0; i < a.pixels.length; i++) diff += Math.abs(a.pixels[i] - b.pixels[i])
-  return diff / a.pixels.length
-}
-
-// Why the model should look now, or null to skip this tick.
-function analysisReason(frame: FrameStats, now: number, minGapMs: number): string | null {
-  const since = now - lastAnalysisAt
-  if (frame.redness > 1.8 && since >= URGENT_ANALYSIS_GAP_MS) {
-    return 'The screen just turned red, which can mean the player took damage or died.'
-  }
-  if (since < minGapMs) return null
-  if (lastFrame && frame.brightness < 0.12 && lastFrame.brightness >= 0.2) {
-    return 'The screen just got much darker.'
-  }
-  if (!lastFrame || sceneChange(frame, lastFrame) > SCENE_CHANGE_THRESHOLD) {
-    return 'The scene changed.'
-  }
-  if (since >= MAX_ANALYSIS_GAP_MS) return 'Routine check.'
-  return null
-}
-
-// The instructions for one look at the screen. It only collects facts, in English; the reaction
-// is written later, and only if the companion decides to say something.
+// The instructions for one whole-screen look, with what was already noticed.
 export function analysisPrompt(reason: string, game: GameProfile): string {
-  const recent = state.events
-    .slice(-3)
-    .map((e) => `- ${Math.round((Date.now() - e.time) / 1000)}s ago: ${e.description}`)
-    .join('\n')
-  const types = visionEventTypes(visionGame(game))
-    .map((type) => `- ${type}: ${EVENT_RULES[type].seen}`)
-    .join('\n')
-  return `You are the eyes of GameMate, a companion watching someone play ${game.name}. The player is the person whose view this is. Report only what is visible in this screenshot right now.
-Event types:
-${types}
-In ${game.name}, watch especially for: ${game.watchFor}.
-Rules:
-- Report at most ${MAX_EVENTS_PER_LOOK} events, most important first. If nothing happened, use an empty list: normal gameplay is not an event.
-- Never report something because it is likely. A kill-feed line between other players is not the player's kill.
-- Badges, icons and numbers on a kill-feed line belong to whoever made that kill, often a teammate: never report them as the player's.
-- Read banners carefully: "ELIMINATED <name>" or "KILLED <name>" means the player eliminated that enemy (kill). "KILLED BY <name>", "ELIMINATED BY <name>" or "YOU DIED" means the player was eliminated (death), and only then.
-- A result screen (VICTORY, DEFEAT, ROUND WON, ROUND LOST) is always an event.
-- "sure": true only if text or an icon on screen clearly shows it.
-- "importance": 0-10, how much a player would care.
-- "detail": one short factual note in English, quoting the on-screen text if there is any.
-- "opponent": the enemy's name exactly as printed on screen for this event, otherwise "".
-- "place": a location name printed on screen, otherwise "".
-- "count": how many eliminations a banner states, otherwise 1.
-- "phase": "playing"; "intermission" between rounds or on a result screen; "menu" for menus, loading screens or anything that is not ${game.name}.
-- "in_fight": true if the player is fighting right now.
-- "own_score" and "enemy_score": rounds or goals won as shown on the screen, -1 if not visible or if you can't tell which side is the player's.
-- "description": one short factual sentence in English about what is visible.
-Why you are looking now: ${reason}
-${recent ? `Already noticed recently (don't report the same thing again):\n${recent}` : ''}`
-}
-
-const AREA_NAMES: Record<Area['kind'], string> = {
-  feed: "the game's kill feed, listing eliminations",
-  banner: 'where the game shows banners, such as round results and eliminations'
-}
-
-// The instructions for one look at just the parts of the screen that say what happened. The
-// model only copies text; areaReading.ts works out what it means.
-export function areaPrompt(areas: Area[]): string {
-  const images = areas.map((area, i) => `Image ${i + 1}: ${AREA_NAMES[area.kind]}.`).join('\n')
-  return `You read text off parts of a game's screen. Copy only what is written. Never guess.
-${images}
-In the kill feed, each line has a name on the left, then a name on the right.
-- "feed_lines": one entry per feed line, top to bottom, with the two names exactly as written. Empty list if there are no lines.
-- "banner_text": the big banner text exactly as written, "" if there is no banner.
-- "banner_kind": "eliminated_enemy" if the banner says the player eliminated someone, "killed_by" if it says the player was eliminated, otherwise "none". Round and match results are "none" too.
-- "banner_name": the name in that banner, "" if it has none.`
-}
-
-export function areaSchema(): object {
-  const text = (maxLength: number): object => ({ type: 'string', maxLength })
-  return {
-    type: 'object',
-    properties: {
-      feed_lines: {
-        type: 'array',
-        maxItems: 6,
-        items: {
-          type: 'object',
-          properties: { left: text(32), right: text(32) },
-          required: ['left', 'right']
-        }
-      },
-      banner_text: text(60),
-      banner_kind: { type: 'string', enum: BANNER_KINDS },
-      banner_name: text(32)
-    },
-    required: ['feed_lines', 'banner_text', 'banner_kind', 'banner_name']
-  }
+  return visionPrompt(reason, game, state.events)
 }
 
 export function commentaryOptions(settings: Settings, game: GameProfile): CommentaryOptions {
@@ -328,78 +121,45 @@ function logEvents(events: GameEvent[], fallback: string): void {
   setState({ events: [...state.events, ...logged].slice(-MAX_EVENTS) })
 }
 
-async function analyze(
-  displayId: number,
-  reason: string,
-  settings: Settings,
-  game: GameProfile
-): Promise<void> {
-  // When it happened on screen, not when the model finished reading it.
-  const capturedAt = Date.now()
-  // Smaller than a screenshot sent with a question: enough to see what is happening, and the
-  // model reads it much faster.
-  const image = await captureDisplayImage(displayId, COMMENTARY_WIDTH)
-  if (!image) return
-  await readLook(
-    {
-      displayId,
-      capturedAt,
-      images: [image],
-      prompt: analysisPrompt(reason, game),
-      schema: analysisSchema(game),
-      read: (reply, time) => normalizeVisionReport(reply, time)
-    },
-    settings,
-    game
-  )
-}
-
-interface Look {
-  displayId: number
-  capturedAt: number
-  images: NativeImage[]
-  prompt: string
-  schema: object
-  read: (reply: unknown, capturedAt: number) => FrameReport
-}
-
-async function readLook(look: Look, settings: Settings, game: GameProfile): Promise<void> {
-  const { displayId, capturedAt, images, prompt, schema, read } = look
-  const forgetsBefore = forgetCount
-  setState({ status: 'analyzing' })
-  try {
-    const reply = await complete(
-      engineFor('commentary'),
-      [
-        {
-          role: 'user',
-          content: prompt,
-          images: images.map((image) => toScreenshot(image).base64)
-        }
-      ],
-      // Thinking would make each look take several times longer.
-      { jsonSchema: schema, fast: true }
-    )
-    lastAnalysisMs = Date.now() - capturedAt
-    // The player turned the companion off or deleted their data while the model was reading.
-    if (forgetCount !== forgetsBefore) return
-    const report = read(JSON.parse(reply.content), capturedAt)
-    logEvents(commentator.observe(report, visionGame(game)), report.description)
-    commentDisplay = displayId
+// The pipeline as the adapters see it.
+const host: AdapterHost = {
+  observe: (report, game, fallback) => {
+    const fresh = commentator.observe(report, visionGame(game))
+    logEvents(fresh, fallback)
+    return fresh
+  },
+  speakIfDue: async (game, settings = getSettings()) => {
     await commentator.speakIfDue(commentaryOptions(settings, game))
-  } catch (error) {
-    console.error('Observation failed', error)
-  } finally {
-    if (state.status === 'analyzing') setState({ status: 'watching' })
+  },
+  showCommentsOn: (displayId) => {
+    commentDisplay = displayId
+  },
+  setState,
+  status: () => state.status,
+  recentEvents: () => state.events,
+  inFight: () => commentator.isInFight(),
+  forgets: () => forgetCount
+}
+
+const adapters: GameAdapter[] = createAdapters(host)
+
+// Whenever the companion is not watching a game, no adapter watches either.
+function stopAdapters(except?: GameAdapter): void {
+  for (const adapter of adapters) {
+    if (adapter === except) continue
+    try {
+      adapter.stop()
+    } catch (error) {
+      console.error(`Adapter ${adapter.id} could not stop`, error)
+    }
   }
 }
 
 async function tick(): Promise<void> {
-  watchingAreas = false
+  tickMs = TICK_MS
   const settings = getSettings()
-  // Whenever the companion is not watching a game, nothing streams the screen either.
   const stop = (patch: Partial<ObserverState>): void => {
-    endScreenWatch()
+    stopAdapters()
     setState(patch)
   }
   if (!observes(settings)) return stop({ status: 'off', game: null })
@@ -411,415 +171,17 @@ async function tick(): Promise<void> {
   if (!settings.deviceConsent) return stop({ status: 'needs-consent', game: null })
   const found = followForegroundGame()
   if (!found) {
-    lastFrame = null
-    lastAreas = null
+    for (const adapter of adapters) adapter.gameGone?.()
     return stop({ status: 'waiting-for-game', game: null })
   }
   const { game, program } = found
-  if (screenPack(game)) return followScreen(settings, game, program.handle)
-  endScreenWatch()
-  watchingAreas = hudAreas(game.name) !== null
-  setState({ status: 'watching', game: game.name })
-  // The player asked something: their question gets the GPU first.
-  if (isAsking() || lookingNow) return
-  lookingNow = true
-  try {
-    await lookAtGame(settings, game, program.handle)
-  } finally {
-    lookingNow = false
-  }
+  const adapter = adapterFor(adapters, game)
+  stopAdapters(adapter)
+  tickMs = adapter.tickMs
+  await adapter.watch(settings, game, program.handle)
 }
 
-// The game window's place on screen (null when Windows won't say) and the display showing it.
-function gamePlace(handle: Parameters<typeof windowRect>[0]): {
-  gameWindow: Box | null
-  display: Display
-} {
-  const rect = windowRect(handle)
-  const gameWindow = rect
-    ? screen.screenToDipRect(null, {
-        x: rect.left,
-        y: rect.top,
-        width: rect.right - rect.left,
-        height: rect.bottom - rect.top
-      })
-    : null
-  const display = gameWindow ? screen.getDisplayMatching(gameWindow) : screen.getPrimaryDisplay()
-  return { gameWindow, display }
-}
-
-async function lookAtGame(
-  settings: Settings,
-  game: GameProfile,
-  handle: Parameters<typeof windowRect>[0]
-): Promise<void> {
-  // A comment that was waiting for a fight to end or for a cooldown may be due now.
-  await commentator.speakIfDue(commentaryOptions(settings, game))
-
-  const { gameWindow, display } = gamePlace(handle)
-  const areas = hudAreas(game.name)
-  if (areas) return lookAtAreas(settings, game, display, gameWindow, areas)
-
-  const small = await captureDisplayImage(display.id, DIFF_FRAME_WIDTH)
-  if (!small) return
-  const frame = frameStats(small)
-  const now = Date.now()
-  const minGapMs = analysisGapMs(
-    settings.commentaryFrequency,
-    commentator.isInFight(),
-    lastAnalysisMs
-  )
-  const reason = analysisReason(frame, now, minGapMs)
-  if (!reason) return
-
-  lastAnalysisAt = now
-  lastFrame = frame
-  await analyze(display.id, reason, settings, game)
-}
-
-// Looks at only the parts of the screen that say what happened in the match.
-async function lookAtAreas(
-  settings: Settings,
-  game: GameProfile,
-  display: Display,
-  gameWindow: Box | null,
-  areas: Area[]
-): Promise<void> {
-  const capturedAt = Date.now()
-  const since = capturedAt - lastAnalysisAt
-  if (since < areaLookGapMs(settings.commentaryFrequency, lastAnalysisMs)) return
-  const image = await captureDisplayImage(display.id, AREA_CAPTURE_WIDTH)
-  if (!image) return
-  const size = image.getSize()
-  const frame = gameFrame(gameWindow, display.bounds, size)
-  const crops = areas.map((area) => image.crop(cropBox(area, frame, size)))
-
-  // Not worth the GPU while nothing in them moves, such as in a menu or a paused game.
-  const stats = crops.map(frameStats)
-  const previous = lastAreas
-  const changed =
-    !previous || stats.some((s, i) => sceneChange(s, previous[i]) > AREA_CHANGE_THRESHOLD)
-  if (!changed && since < MAX_ANALYSIS_GAP_MS) return
-
-  lastAreas = stats
-  lastAnalysisAt = capturedAt
-  await readLook(
-    {
-      displayId: display.id,
-      capturedAt,
-      images: crops,
-      prompt: areaPrompt(areas),
-      schema: areaSchema(),
-      read: (reply, time) =>
-        readAreas(reply, time, parsePlayerNames(settings.commentaryPlayerNames))
-    },
-    settings,
-    game
-  )
-}
-
-// ---- Silksong: light checks on a live stream of the game window ----
-
-// A pickup's name is short; longer text is a description or a misread.
-const PICKUP_MAX_LENGTH = 40
-// The same pickup text this soon again is the same pickup shown again.
-const PICKUP_REPEAT_MS = 5 * 60_000
-// Player.log is written anew at every start of the game and stays small; only its end is read,
-// and never more than this.
-const MAX_LOG_BYTES = 1024 * 1024
-// A 1x1 picture, read once when watching starts so the first real read doesn't wait for the
-// text recognition helper to start (about half a second).
-const BLANK_PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
-  'base64'
-)
-
-// One stretch of watching one game window. Anything still underway for an older one is dropped.
-interface ScreenRun {
-  game: GameProfile
-  handle: bigint
-  // What the game's text is written in, for reading it.
-  language: string
-}
-
-const tracker = new SilksongTracker()
-let screenRun: ScreenRun | null = null
-// The capture shows only black (exclusive fullscreen): the player is told until a frame shows.
-let blocked = false
-// Where the player is and which boss they face, as last read off the screen.
-let currentArea = ''
-let currentBoss = ''
-const pickupsSeen = new Map<string, number>()
-
-/** The language Silksong is set to, from the newest line of its Player.log that names one. */
-export function silksongLanguage(log: string): string {
-  let code: string | null = null
-  for (const match of log.matchAll(
-    /Loaded saved language code '([A-Za-z]{2,3}(?:[-_][A-Za-z0-9]{2,8})*)'/g
-  )) {
-    code = match[1]
-  }
-  return code ? code.replace(/_/g, '-').toLowerCase() : 'en'
-}
-
-// Only this one log file is read, and only its end: never the game's other files or its process.
-function playerLogLanguage(): string {
-  const path = join(
-    app.getPath('home'),
-    'AppData',
-    'LocalLow',
-    'Team Cherry',
-    'Hollow Knight Silksong',
-    'Player.log'
-  )
-  let fd: number | null = null
-  try {
-    fd = openSync(path, 'r')
-    const size = fstatSync(fd).size
-    const length = Math.min(size, MAX_LOG_BYTES)
-    const tail = Buffer.alloc(length)
-    readSync(fd, tail, 0, length, size - length)
-    return silksongLanguage(tail.toString('utf8'))
-  } catch {
-    // No log yet (the game never ran here) or it can't be read.
-    return 'en'
-  } finally {
-    if (fd !== null) closeSync(fd)
-  }
-}
-
-async function followScreen(settings: Settings, game: GameProfile, handle: bigint): Promise<void> {
-  const same = screenRun?.game.id === game.id && screenRun.handle === handle
-  if (!same || !screenWatching()) startScreen(game, handle)
-  setState({ status: blocked ? 'blocked-by-fullscreen' : 'watching', game: game.name })
-  commentDisplay = gamePlace(handle).display.id
-  // A comment that was waiting for a fight to end or for a cooldown may be due now.
-  await commentator.speakIfDue(commentaryOptions(settings, game))
-}
-
-// GameMate's log file (on this PC only) notes what the screen watch saw, so a play session can
-// be checked against it afterwards. Names and the game's own text only, never a frame.
-function screenLog(message: string): void {
-  console.info(`Screen: ${message}`)
-}
-
-function startScreen(game: GameProfile, handle: bigint): void {
-  endScreenWatch()
-  const run: ScreenRun = { game, handle, language: playerLogLanguage() }
-  screenRun = run
-  screenLog(`watching ${game.name}`)
-  // Started now, so the first title read later is quick.
-  readText(BLANK_PNG, run.language).catch(() => {})
-  silksongNames().catch(() => {})
-  startScreenWatch(game, handle, (m, time) => onScreenMeasure(run, m, time)).catch((error) =>
-    console.error('Could not watch the game window', error)
-  )
-}
-
-// Leaving the game, pausing, forgetting or turning the companion off ends the stream, and what
-// the checks had built up starts over.
-function endScreenWatch(): void {
-  if (!screenRun) return
-  screenRun = null
-  screenLog('stopped watching')
-  stopScreenWatch()
-  tracker.reset()
-  blocked = false
-  currentArea = ''
-  currentBoss = ''
-  pickupsSeen.clear()
-}
-
-function onScreenMeasure(run: ScreenRun, m: SilksongMeasure, time: number): void {
-  if (screenRun !== run) return
-  if (blocked && !isBlackFrame(m)) {
-    blocked = false
-    screenLog('the capture shows the game again')
-    setState({ status: 'watching' })
-  }
-  const events: GameEvent[] = []
-  let leftRoom = false
-  for (const signal of tracker.push(m, time)) {
-    switch (signal.kind) {
-      case 'close_call':
-        events.push(makeEvent('low_health', time, 'screen', { detail: 'down to the last mask' }))
-        break
-      case 'recovered':
-        events.push(
-          makeEvent('recovery', time, 'screen', {
-            detail: 'back above one mask after a close call'
-          })
-        )
-        break
-      case 'death':
-        // A death while a boss fight is on is put down to that boss; session memory adds which
-        // attempt it was. Either way the fight is over.
-        events.push(
-          makeEvent('death', signal.at, 'screen', {
-            place: currentArea,
-            opponent: currentBoss,
-            detail: currentArea ? `died in ${currentArea}` : 'died'
-          })
-        )
-        currentBoss = ''
-        break
-      case 'boss_defeated':
-        // Worked out, never seen: the player left the arena alive after a long enough fight.
-        events.push(
-          makeEvent('fight_won', time, 'screen', {
-            opponent: currentBoss,
-            detail: currentBoss
-              ? `left the arena of ${currentBoss} alive after 20+ s, likely beaten`
-              : 'left the boss arena alive after 20+ s, likely beaten'
-          })
-        )
-        currentBoss = ''
-        break
-      case 'room_change':
-        leftRoom = true
-        break
-      case 'title':
-        readTitle(run, signal.title, time).catch((error) =>
-          console.error('Could not read a title', error)
-        )
-        break
-      case 'pickup':
-        // Switched off until the region is known to hold only pickup names.
-        if (!READ_PICKUPS) break
-        readPickup(run, time).catch((error) => console.error('Could not read a pickup', error))
-        break
-      case 'blocked':
-        blocked = true
-        screenLog('the capture is black')
-        setState({ status: 'blocked-by-fullscreen' })
-        break
-      // Damage only tells the tracker a fight is on.
-    }
-  }
-  // Leaving the room ended the fight as the tracker sees it, won or not, so the boss's title
-  // shown again later is a new encounter.
-  if (leftRoom) currentBoss = ''
-  deliverScreen(run, events, time, leftRoom)
-}
-
-// Events from the screen go through the same pipeline as the model's; returns what was new.
-// `fightEnded` tells session memory a room change ended any boss fight, even with no events.
-function deliverScreen(
-  run: ScreenRun,
-  events: GameEvent[],
-  time: number,
-  fightEnded = false
-): GameEvent[] {
-  if ((events.length === 0 && !fightEnded) || screenRun !== run) return []
-  const report: FrameReport = {
-    time,
-    source: 'screen',
-    phase: 'playing',
-    inFight: tracker.fighting(),
-    score: null,
-    description: '',
-    events,
-    fightEnded
-  }
-  const fresh = commentator.observe(report, visionGame(run.game))
-  for (const event of fresh) screenLog(`${event.type}: ${event.detail}`)
-  logEvents(fresh, '')
-  commentator
-    .speakIfDue(commentaryOptions(getSettings(), run.game))
-    .catch((error) => console.error('Could not comment', error))
-  return fresh
-}
-
-// Whether something read for this run may still be used: not once the log was cleared, the
-// companion turned off or paused, or the player left the game meanwhile.
-function stillCurrent(run: ScreenRun): () => boolean {
-  const forgetsBefore = forgetCount
-  return () => screenRun === run && forgetCount === forgetsBefore
-}
-
-// The text in one region of the game window, or null when there is none or it came too late.
-async function readRegion(
-  run: ScreenRun,
-  box: Box,
-  current: () => boolean
-): Promise<string | null> {
-  try {
-    const png = await grabRegion(box)
-    if (!png || !current()) return null
-    const lines = await readText(png, run.language)
-    if (!current()) return null
-    const text = lines
-      .map((l) => l.text)
-      .join(' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-    return text || null
-  } catch (error) {
-    console.error('Could not read text off the screen', error)
-    return null
-  }
-}
-
-// A title is only ever a known boss or area name: text that matches none is never commented on.
-async function readTitle(run: ScreenRun, kind: 'area' | 'boss', time: number): Promise<void> {
-  const current = stillCurrent(run)
-  const box = kind === 'boss' ? SILKSONG_LAYOUT.bossTitle : SILKSONG_LAYOUT.areaTitle
-  const text = await readRegion(run, box, current)
-  if (!text) {
-    if (current()) screenLog(`${kind} title showed, no text read`)
-    return
-  }
-  const names = await silksongNames()
-  if (!current()) return
-  // Silksong shows area names in the bottom-left spot too (the owner's recording: "BLASTED STEPS",
-  // "BONE BOTTOM"), so a title there may name a boss or an area. The centre card only names areas.
-  const boss = kind === 'boss' ? matchName(text, names.bosses) : null
-  const name = boss ?? matchName(text, names.areas)
-  // The game's own text, cut short: enough to see what the recognition made of it.
-  screenLog(`${kind} title read as "${text.slice(0, 60)}", ${name ?? 'no known name'}`)
-  if (!name) return
-  if (!boss) {
-    currentArea = name
-    // A new place means the fight there is over (session memory forgets the boss too), so a
-    // death from here on is not put down to it.
-    if (currentBoss) {
-      currentBoss = ''
-      tracker.setBoss(null)
-    }
-    const entered = makeEvent('area_entered', time, 'screen', {
-      place: name,
-      detail: `entered ${name}`
-    })
-    deliverScreen(run, [entered], time)
-    return
-  }
-  // A title shown again in the same fight (no death or win since) is no new attempt: it gives
-  // no event and leaves the fight's clock running. A new boss, or one whose fight a death or a
-  // win ended, is a new encounter, and its clock starts now.
-  if (currentBoss === name) return
-  currentBoss = name
-  tracker.setBoss(name)
-  const encounter = makeEvent('boss_encounter', time, 'screen', {
-    opponent: name,
-    detail: `facing ${name}`
-  })
-  deliverScreen(run, [encounter], time)
-}
-
-async function readPickup(run: ScreenRun, time: number): Promise<void> {
-  const current = stillCurrent(run)
-  const text = await readRegion(run, SILKSONG_LAYOUT.pickup, current)
-  if (!text || !/\p{L}/u.test(text) || text.length > PICKUP_MAX_LENGTH) return
-  for (const [seen, at] of pickupsSeen) {
-    if (time - at >= PICKUP_REPEAT_MS) pickupsSeen.delete(seen)
-  }
-  const key = text.toLowerCase()
-  if (pickupsSeen.has(key)) return
-  pickupsSeen.set(key, time)
-  deliverScreen(run, [makeEvent('milestone', time, 'screen', { detail: text })], time)
-}
-
-const nextTickMs = (): number => (watchingAreas ? AREA_TICK_MS : TICK_MS)
+const nextTickMs = (): number => tickMs
 
 function loop(): void {
   if (timer) clearTimeout(timer)
@@ -852,7 +214,7 @@ export function startObserver(onComment: (text: string, displayId: number) => vo
 export function stopObserver(): void {
   if (timer) clearTimeout(timer)
   timer = null
-  endScreenWatch()
+  stopAdapters()
 }
 
 export function getObserverState(): ObserverState {
@@ -860,7 +222,7 @@ export function getObserverState(): ObserverState {
 }
 
 export function setPaused(paused: boolean): void {
-  if (paused) endScreenWatch()
+  if (paused) stopAdapters()
   setState({
     paused,
     status: paused ? 'paused' : state.status === 'paused' ? 'waiting-for-game' : state.status
@@ -869,7 +231,7 @@ export function setPaused(paused: boolean): void {
 
 function forget(): void {
   forgetCount++
-  endScreenWatch()
+  stopAdapters()
   commentator.reset()
   if (state.events.length > 0) setState({ events: [] })
 }
