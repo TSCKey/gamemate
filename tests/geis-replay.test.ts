@@ -180,11 +180,13 @@ describe("replaying the owner's Silksong recordings", () => {
     // With the HUD hidden in a cutscene at 346-353 s, bright scenery in the empty 9th and 10th
     // mask boxes once read as 1-2 masks: a close call that never happened.
     const result = await play('silksong-4')
+    // Citadel of Song came up on the big centre card; the others only as the small name in the
+    // corner, which the game shows for places the player has been before.
     expect(result.events).toEqual([
       '378s area_entered: entered Citadel of Song',
-      '402s area_entered: entered Blasted Steps',
-      '657s area_entered: entered Bone Bottom',
-      '690s area_entered: entered Marrow'
+      '402s area_entered: back in Blasted Steps',
+      '657s area_entered: back in Bone Bottom',
+      '690s area_entered: back in Marrow'
     ])
   })
 

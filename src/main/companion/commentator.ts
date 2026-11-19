@@ -70,11 +70,33 @@ function eventKey(event: GameEvent): string {
   return `${event.type}:${named}${counted ? `:${event.count}` : ''}`
 }
 
-// How big a moment this is, given the match so far.
-function sizeOf(event: GameEvent, context: MatchContext, game: VisionGame): Tier {
+// Moments read off the screen that GameMate remembers, for later comments, but doesn't speak
+// about on their own; null for the rest.
+function quietReason(event: GameEvent): string | null {
+  if (event.source !== 'screen') return null
+  if (event.type === 'area_entered' && event.data?.revisit === true) {
+    return 'back somewhere they had been before'
+  }
+  // In a boss fight, a close call survived (a sequence rule) says it better; elsewhere it came
+  // right after a "last mask" comment and only repeated it.
+  if (event.type === 'recovery') return 'back above the last mask'
+  return null
+}
+
+// How big a moment this is, given the match so far. `bossFight`: a screen-read game's player is
+// fighting a boss.
+function sizeOf(
+  event: GameEvent,
+  context: MatchContext,
+  game: VisionGame,
+  bossFight: boolean
+): Tier {
   switch (event.type) {
     case 'boss_encounter':
       return 'significant'
+    case 'low_health':
+      // Down to the last mask is a big moment against a boss, and an everyday one exploring.
+      return event.source === 'screen' && !bossFight ? 'minor' : event.tier
     case 'fight_won':
       // Memory put the number of attempts in `count`.
       return event.source === 'screen' && event.count >= HARD_BOSS_ATTEMPTS
@@ -173,8 +195,19 @@ export class Commentator {
     const events = [...fresh, ...derived]
     this.engine.record(events)
     const context = this.memory.context(this.now())
-    for (const event of events) event.tier = sizeOf(event, context, game)
-    this.director.offer(events)
+    const bossFight = report.source === 'screen' && this.session.context(report.time).boss !== null
+    for (const event of events) event.tier = sizeOf(event, context, game, bossFight)
+    // Parts of a bigger moment are left to it, so they show what spoke for them.
+    const parts = new Set(
+      events.filter((event) => EVENT_RULES[event.type].narrative).flatMap((e) => e.related)
+    )
+    const quiet = events.filter((event) => !parts.has(event.id) && quietReason(event) !== null)
+    for (const event of quiet) {
+      event.commentary = 'filtered'
+      pipelineTap.event('settled', event, this.now(), quietReason(event) ?? '')
+    }
+    const offered = events.filter((event) => !quiet.includes(event))
+    if (offered.length) this.director.offer(offered)
 
     if (report.time >= this.newestFrame) {
       this.newestFrame = report.time

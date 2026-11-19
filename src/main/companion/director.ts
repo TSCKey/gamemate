@@ -194,7 +194,12 @@ export class Director {
     const ready = this.pending.filter((e) => {
       const last = this.lastByType.get(e.type)
       if (!last || always(e) || RANK[e.tier] > RANK[last.tier]) return true
-      return now - last.at >= EVENT_RULES[e.type].cooldownMs * pacing.cooldownScale
+      const rule = EVENT_RULES[e.type]
+      const cooldown = Math.max(
+        rule.cooldownMs * pacing.cooldownScale,
+        e.tier === 'minor' ? (rule.minorCooldownMs ?? 0) : 0
+      )
+      return now - last.at >= cooldown
     })
     if (ready.length === 0) return { action: 'wait' }
     const top = [...ready].sort(

@@ -80,7 +80,7 @@ export class SessionMemory {
     this.area = id
     // A new place means the fight there is over.
     this.boss = null
-    this.note(`entered ${event.place}`)
+    this.note(event.data?.revisit === true ? `back in ${event.place}` : `entered ${event.place}`)
   }
 
   private die(event: GameEvent): void {

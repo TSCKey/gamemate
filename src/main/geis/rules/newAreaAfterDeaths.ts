@@ -32,7 +32,9 @@ export const newAreaAfterDeaths: CorrelationRule<Progress> = {
     }
     const place = event.place
     if (!place || same(place, state.area)) return { state }
-    const known = state.visited.some((v) => same(v, place))
+    // The game itself says when the player is back somewhere they had been (before this session
+    // too): that is no getting through either.
+    const known = event.data?.revisit === true || state.visited.some((v) => same(v, place))
     const visited = (known ? state.visited : [...state.visited, place]).slice(-MAX_AREAS)
     const next: Progress = { area: place, deaths: [], visited }
     if (known || state.deaths.length < MIN_DEATHS || !state.area) return { state: next }

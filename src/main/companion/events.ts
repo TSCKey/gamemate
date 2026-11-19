@@ -101,6 +101,8 @@ export interface EventRule {
   priority: number
   // Before the same kind of event gets another comment (scaled by the frequency setting).
   cooldownMs: number
+  // At least this long between comments on small ones of this kind, at any frequency.
+  minorCooldownMs?: number
   // Too old to react to after this long.
   staleMs: number
   // Sightings of the same event closer together than this are one event.
@@ -460,6 +462,9 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     mood: 'tense',
     priority: 85,
     cooldownMs: 180 * S,
+    // Outside a boss fight a close call is small (see the commentator), and in the owner's play
+    // test five of nine comments were the same "last mask" in 13 minutes.
+    minorCooldownMs: 300 * S,
     staleMs: 12 * S,
     dedupeMs: 8 * S,
     sticky: true,

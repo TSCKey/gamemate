@@ -277,6 +277,8 @@ describe('watching Silksong', () => {
     expect(logged()).toEqual(['area_entered'])
     const entered = observer.getObserverState().events.find((e) => e.type === 'area_entered')
     expect(entered?.description).toContain('Blasted Steps')
+    // The corner name is the game's way of saying the player has been there before.
+    expect(entered?.description).toContain('back in Blasted Steps')
   })
 
   it('says nothing about a title it does not know', async () => {

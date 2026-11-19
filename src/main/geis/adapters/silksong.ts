@@ -334,10 +334,15 @@ export function createSilksong(host: AdapterHost): GameAdapter {
         currentBoss = ''
         tracker.setBoss(null)
       }
+      // Like Hollow Knight, Silksong shows the big centre card when an area is found and only
+      // the small name in the corner when the player comes back to it (the owner's play test:
+      // "THE MARROW" and "BONE BOTTOM", both visited before, showed only there).
+      const revisit = kind === 'boss'
       const entered = makeEvent('area_entered', time, 'screen', {
         confidence: NAME_MATCH_CONFIDENCE,
         place: name,
-        detail: `entered ${name}`
+        detail: revisit ? `back in ${name}` : `entered ${name}`,
+        ...(revisit ? { data: { revisit: true } } : {})
       })
       deliverScreen(run, [entered], time)
       return
