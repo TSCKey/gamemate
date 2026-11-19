@@ -232,6 +232,22 @@ async function send(
   }
 }
 
+// One short line from a model with its own sampling (the fine-tuned comment writer).
+export async function writeLine(
+  server: EngineServer,
+  messages: LlmMessage[],
+  sampling: object,
+  maxTokens: number
+): Promise<string> {
+  const reply = await send(server, {
+    messages: toOpenAiMessages(messages),
+    stream: false,
+    max_tokens: maxTokens,
+    ...sampling
+  })
+  return reply.content
+}
+
 export async function chatCompletion(
   server: EngineServer,
   messages: LlmMessage[],

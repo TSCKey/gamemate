@@ -235,7 +235,15 @@
     "smarterAnswersAndBetterScreen": "Smarter answers and better screen understanding, with your own Google API key.",
     "setUp": "Set up",
     "modelDetails": "{{description}} {{size}}. Can see screenshots.",
-    "download": "Download"
+    "download": "Download",
+    "commentaryWriter": "Comment writer",
+    "commentaryWriterIntro": "A small AI model GameMate trained to write the companion's comments. It writes one in under a second and needs about 1 GB of memory, so comments come quicker and more often. Your main model still watches the screen and answers your questions.",
+    "commentaryDetails": "{{description}} {{size}}. Writes comments only, in English.",
+    "useCommentaryModel": "Write comments with it",
+    "useCommentaryModelHelp": "Comments in other languages, and any it can't write, come from your main model.",
+    "commentaryGemini": "Gemini writes your comments right now, so this model isn't used.",
+    "commentaryEnglishOnly": "It only writes in English for now, so your main model writes the comments in GameMate's language.",
+    "commentaryLicense": "LFM2.5 is made by Liquid AI and used under the <license>LFM Open License v1.0</license>, which doesn't cover commercial use by organizations with US$10 million or more in yearly revenue."
   },
   "pictures": {
     "openOnThe": "Open on the {{wiki}}"
@@ -631,7 +639,9 @@
       "smart": "Smart",
       "4b": "Better answers. Best with 6 GB or more of graphics memory.",
       "best": "Best",
-      "9b": "The best answers on this PC. Best with 10 GB or more of graphics memory."
+      "9b": "The best answers on this PC. Best with 10 GB or more of graphics memory.",
+      "commentary": "Comments",
+      "commentaryHelp": "Liquid AI's LFM2.5, trained further by GameMate to write comments."
     }
   },
   "tray": {

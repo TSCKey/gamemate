@@ -232,7 +232,15 @@
     "smarterAnswersAndBetterScreen": "使用你自己的 Google API 密钥,获得更聪明的回答和更好的画面理解。",
     "setUp": "设置",
     "modelDetails": "{{description}} {{size}}。能看截图。",
-    "download": "下载"
+    "download": "下载",
+    "commentaryWriter": "评论生成器",
+    "commentaryWriterIntro": "GameMate 专门训练来写陪玩评论的小型 AI 模型。它不到一秒就能写出一条评论，只需约 1 GB 内存，所以评论来得更快、更频繁。你的主模型仍然负责看屏幕和回答问题。",
+    "commentaryDetails": "{{description}} {{size}}。只写评论，使用英语。",
+    "useCommentaryModel": "用它来写评论",
+    "useCommentaryModelHelp": "其他语言的评论，以及它写不出来的评论，由你的主模型来写。",
+    "commentaryGemini": "目前由 Gemini 写你的评论，所以不会用到这个模型。",
+    "commentaryEnglishOnly": "它目前只会写英语，所以 GameMate 所用语言的评论由你的主模型来写。",
+    "commentaryLicense": "LFM2.5 由 Liquid AI 开发，依据 <license>LFM Open License v1.0</license> 使用。该许可不适用于年收入达到或超过 1000 万美元的组织的商业用途。"
   },
   "pictures": {
     "openOnThe": "在 {{wiki}} 中打开"
@@ -628,7 +636,9 @@
       "smart": "聪明",
       "4b": "回答更好。最好有 6 GB 或以上显存。",
       "best": "最佳",
-      "9b": "这台电脑上最好的回答。最好有 10 GB 或以上显存。"
+      "9b": "这台电脑上最好的回答。最好有 10 GB 或以上显存。",
+      "commentary": "评论",
+      "commentaryHelp": "Liquid AI 的 LFM2.5，经 GameMate 进一步训练用于写评论。"
     }
   },
   "tray": {

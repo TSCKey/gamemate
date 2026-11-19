@@ -1,11 +1,12 @@
 // The built-in engine's models and the player's Gemini key.
-import { primeModel } from '../ai/engines'
+import { primeCommentaryModel, primeModel } from '../ai/engines'
 import { listGeminiModels } from '../ai/gemini'
-import { runningModel, stopEngine } from '../ai/llamaEngine'
+import { runningModel, stopCommentaryEngine, stopMainEngine } from '../ai/llamaEngine'
 import {
   cancelLocalModel,
+  COMMENTARY_MODEL_ID,
   downloadLocalModel,
-  isLocalModelId,
+  isCatalogModelId,
   isLocalModelInstalled,
   localModelStatuses,
   removeLocalModel
@@ -18,8 +19,16 @@ import { t } from '../system/i18n'
 export function registerModelHandlers(): void {
   handle('local-models:list', () => localModelStatuses())
   handle('local-models:download', async (_event, id: unknown) => {
-    if (!isLocalModelId(id)) throw new Error('Unknown model.')
+    if (!isCatalogModelId(id)) throw new Error('Unknown model.')
     const done = await downloadLocalModel(id)
+    // Downloading the comment writer means wanting it to write the comments.
+    if (id === COMMENTARY_MODEL_ID) {
+      if (done) {
+        updateSettings({ commentaryModel: true })
+        primeCommentaryModel(id)
+      }
+      return
+    }
     // A freshly downloaded model is used if the chosen one isn't there yet.
     if (done && !isLocalModelInstalled(getSettings().builtinModel)) {
       updateSettings({ builtinModel: id })
@@ -28,11 +37,12 @@ export function registerModelHandlers(): void {
     if (done && settings.localBackend === 'builtin' && settings.builtinModel === id) primeModel(id)
   })
   handle('local-models:cancel', async (_event, id: unknown) => {
-    if (isLocalModelId(id)) await cancelLocalModel(id)
+    if (isCatalogModelId(id)) await cancelLocalModel(id)
   })
   handle('local-models:remove', async (_event, id: unknown) => {
-    if (!isLocalModelId(id)) return
-    if (runningModel() === id) await stopEngine()
+    if (!isCatalogModelId(id)) return
+    if (id === COMMENTARY_MODEL_ID) await stopCommentaryEngine()
+    else if (runningModel() === id) await stopMainEngine()
     await removeLocalModel(id)
   })
   handle('gemini:status', () => ({ hasKey: hasGeminiKey() }))

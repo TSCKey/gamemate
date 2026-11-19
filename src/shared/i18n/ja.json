@@ -232,7 +232,15 @@
     "smarterAnswersAndBetterScreen": "自分の Google API キーで、より賢い回答と画面のより良い理解を。",
     "setUp": "設定",
     "modelDetails": "{{description}} {{size}}。スクリーンショットを認識できます。",
-    "download": "ダウンロード"
+    "download": "ダウンロード",
+    "commentaryWriter": "コメント担当",
+    "commentaryWriterIntro": "GameMate がコンパニオンのコメントを書くために学習させた小さな AI モデルです。1 秒未満でコメントを書き、必要なメモリは約 1 GB なので、コメントがより早く、より頻繁に届きます。画面の確認と質問への回答は、引き続きメインのモデルが行います。",
+    "commentaryDetails": "{{description}} {{size}}。コメントのみ、英語で書きます。",
+    "useCommentaryModel": "このモデルでコメントを書く",
+    "useCommentaryModelHelp": "ほかの言語のコメントや、このモデルが書けなかったコメントは、メインのモデルが書きます。",
+    "commentaryGemini": "現在は Gemini がコメントを書いているため、このモデルは使われません。",
+    "commentaryEnglishOnly": "今のところ英語しか書けないため、GameMate の言語でのコメントはメインのモデルが書きます。",
+    "commentaryLicense": "LFM2.5 は Liquid AI が開発したモデルで、<license>LFM Open License v1.0</license> のもとで使用しています。このライセンスは、年間売上高が 1,000 万米ドル以上の組織による商用利用には適用されません。"
   },
   "pictures": {
     "openOnThe": "{{wiki}} で開く"
@@ -628,7 +636,9 @@
       "smart": "賢い",
       "4b": "より良い回答。グラフィックメモリ 6 GB 以上で最適です。",
       "best": "最高",
-      "9b": "この PC で最高の回答。グラフィックメモリ 10 GB 以上で最適です。"
+      "9b": "この PC で最高の回答。グラフィックメモリ 10 GB 以上で最適です。",
+      "commentary": "コメント",
+      "commentaryHelp": "Liquid AI の LFM2.5 を、GameMate がコメント用に追加学習したものです。"
     }
   },
   "tray": {

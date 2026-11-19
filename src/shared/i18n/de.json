@@ -235,7 +235,15 @@
     "smarterAnswersAndBetterScreen": "Klügere Antworten und besseres Bildschirmverständnis, mit deinem eigenen Google-API-Schlüssel.",
     "setUp": "Einrichten",
     "modelDetails": "{{description}} {{size}}. Sieht Screenshots.",
-    "download": "Herunterladen"
+    "download": "Herunterladen",
+    "commentaryWriter": "Kommentar-Schreiber",
+    "commentaryWriterIntro": "Ein kleines KI-Modell, das GameMate darauf trainiert hat, die Kommentare des Begleiters zu schreiben. Es schreibt einen in weniger als einer Sekunde und braucht etwa 1 GB Speicher, daher kommen Kommentare schneller und häufiger. Dein Hauptmodell beobachtet weiterhin den Bildschirm und beantwortet deine Fragen.",
+    "commentaryDetails": "{{description}} {{size}}. Schreibt nur Kommentare, auf Englisch.",
+    "useCommentaryModel": "Kommentare damit schreiben",
+    "useCommentaryModelHelp": "Kommentare in anderen Sprachen und solche, die es nicht schreiben kann, kommen von deinem Hauptmodell.",
+    "commentaryGemini": "Gemini schreibt deine Kommentare gerade, daher wird dieses Modell nicht verwendet.",
+    "commentaryEnglishOnly": "Es schreibt vorerst nur auf Englisch, daher schreibt dein Hauptmodell die Kommentare in der Sprache von GameMate.",
+    "commentaryLicense": "LFM2.5 stammt von Liquid AI und wird unter der <license>LFM Open License v1.0</license> verwendet. Sie deckt keine kommerzielle Nutzung durch Organisationen mit einem Jahresumsatz von 10 Millionen US-Dollar oder mehr ab."
   },
   "pictures": {
     "openOnThe": "Im {{wiki}} öffnen"
@@ -631,7 +639,9 @@
       "smart": "Klug",
       "4b": "Bessere Antworten. Am besten mit 6 GB Grafikspeicher oder mehr.",
       "best": "Am besten",
-      "9b": "Die besten Antworten auf diesem PC. Am besten mit 10 GB Grafikspeicher oder mehr."
+      "9b": "Die besten Antworten auf diesem PC. Am besten mit 10 GB Grafikspeicher oder mehr.",
+      "commentary": "Kommentare",
+      "commentaryHelp": "LFM2.5 von Liquid AI, von GameMate weiter trainiert, um Kommentare zu schreiben."
     }
   },
   "tray": {

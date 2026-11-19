@@ -112,6 +112,8 @@ Open **⚙ Settings → Models** to choose the AI that runs on your PC:
 - **Use my Ollama models:** turn this on to use models from your own Ollama install instead. Ollama must be running.
 - Cloud models (Gemini) are set up in **⚙ Settings → AI & online**, see below.
 
+**Comment writer:** a small extra model (LFM2.5 1.2B, 0.8 GB) that GameMate trained to write the companion's comments. It writes a comment in under a second and needs about 1 GB of memory, so comments come quicker and more often. Your main model still watches the screen and answers your questions. Download it under **Comment writer** in **⚙ Settings → Models**; **Write comments with it** turns it on or off. It writes in English only for now: in other languages, your main model writes the comments. With **Leave more graphics memory for games** on, it runs on your PC's second graphics chip or the processor instead of the graphics card.
+
 ### Gemini, Auto and wiki lookup
 
 Click the AI name under the question box (for example **Qwen3.5 2B ▾**) to switch between **Auto**, a model on your PC and a Gemini model. **⚙ Settings → AI & online** has all the options:
@@ -272,6 +274,7 @@ GameMate is an assistant, not a bot. It never plays games for you, controls your
 
 - GameMate's built-in AI engine is [llama.cpp](https://github.com/ggml-org/llama.cpp) (MIT License).
 - The built-in models are [Qwen3.5](https://huggingface.co/Qwen) by the Qwen team (Apache 2.0), in versions prepared by [Unsloth](https://huggingface.co/unsloth).
+- The comment writer is [LFM2.5 1.2B](https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct) by Liquid AI, with GameMate's own fine-tuning, under the [LFM Open License v1.0](https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/LICENSE). That license doesn't cover commercial use by organizations with US$10 million or more in yearly revenue.
 - Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
 - The natural voice is [Supertonic 3](https://huggingface.co/Supertone/supertonic-3) by Supertone (OpenRAIL-M license), run with [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) (MIT) following Supertone's [sample code](https://github.com/supertone-oss-archive/supertonic) (MIT).
 - Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Pictures come from the same wikis, are credited with the wiki's name and link to their page there. Mod descriptions come from [Modrinth](https://modrinth.com).

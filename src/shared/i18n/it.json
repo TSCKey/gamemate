@@ -238,7 +238,15 @@
     "smarterAnswersAndBetterScreen": "Risposte più intelligenti e una migliore comprensione dello schermo, con la tua chiave API di Google.",
     "setUp": "Configura",
     "modelDetails": "{{description}} {{size}}. Vede gli screenshot.",
-    "download": "Scarica"
+    "download": "Scarica",
+    "commentaryWriter": "Autore dei commenti",
+    "commentaryWriterIntro": "Un piccolo modello di IA che GameMate ha addestrato a scrivere i commenti del compagno. Ne scrive uno in meno di un secondo e richiede circa 1 GB di memoria, quindi i commenti arrivano prima e più spesso. Il tuo modello principale continua a guardare lo schermo e a rispondere alle tue domande.",
+    "commentaryDetails": "{{description}} {{size}}. Scrive solo commenti, in inglese.",
+    "useCommentaryModel": "Scrivi i commenti con questo modello",
+    "useCommentaryModelHelp": "I commenti in altre lingue, e quelli che non riesce a scrivere, arrivano dal tuo modello principale.",
+    "commentaryGemini": "Al momento i tuoi commenti li scrive Gemini, quindi questo modello non viene usato.",
+    "commentaryEnglishOnly": "Per ora scrive solo in inglese, quindi i commenti nella lingua di GameMate li scrive il tuo modello principale.",
+    "commentaryLicense": "LFM2.5 è creato da Liquid AI e usato secondo la <license>LFM Open License v1.0</license>, che non copre l'uso commerciale da parte di organizzazioni con un fatturato annuo di 10 milioni di dollari statunitensi o più."
   },
   "pictures": {
     "openOnThe": "Apri su {{wiki}}"
@@ -634,7 +642,9 @@
       "smart": "Intelligente",
       "4b": "Risposte migliori. Ideale con almeno 6 GB di memoria grafica.",
       "best": "Il migliore",
-      "9b": "Le migliori risposte su questo PC. Ideale con almeno 10 GB di memoria grafica."
+      "9b": "Le migliori risposte su questo PC. Ideale con almeno 10 GB di memoria grafica.",
+      "commentary": "Commenti",
+      "commentaryHelp": "LFM2.5 di Liquid AI, addestrato ulteriormente da GameMate per scrivere commenti."
     }
   },
   "tray": {

@@ -238,7 +238,15 @@
     "smarterAnswersAndBetterScreen": "Respuestas más inteligentes y mejor comprensión de la pantalla, con tu propia clave de API de Google.",
     "setUp": "Configurar",
     "modelDetails": "{{description}} {{size}}. Ve capturas de pantalla.",
-    "download": "Descargar"
+    "download": "Descargar",
+    "commentaryWriter": "Escritor de comentarios",
+    "commentaryWriterIntro": "Un modelo de IA pequeño que GameMate entrenó para escribir los comentarios del compañero. Escribe uno en menos de un segundo y necesita alrededor de 1 GB de memoria, así que los comentarios llegan antes y más a menudo. Tu modelo principal sigue mirando la pantalla y respondiendo tus preguntas.",
+    "commentaryDetails": "{{description}} {{size}}. Solo escribe comentarios, en inglés.",
+    "useCommentaryModel": "Escribir los comentarios con él",
+    "useCommentaryModelHelp": "Los comentarios en otros idiomas, y los que no pueda escribir, los escribe tu modelo principal.",
+    "commentaryGemini": "Ahora mismo Gemini escribe tus comentarios, así que este modelo no se usa.",
+    "commentaryEnglishOnly": "Por ahora solo escribe en inglés, así que tu modelo principal escribe los comentarios en el idioma de GameMate.",
+    "commentaryLicense": "LFM2.5 es de Liquid AI y se usa bajo la <license>LFM Open License v1.0</license>, que no cubre el uso comercial por parte de organizaciones con ingresos anuales de 10 millones de dólares estadounidenses o más."
   },
   "pictures": {
     "openOnThe": "Abrir en {{wiki}}"
@@ -634,7 +642,9 @@
       "smart": "Listo",
       "4b": "Mejores respuestas. Ideal con 6 GB o más de memoria gráfica.",
       "best": "El mejor",
-      "9b": "Las mejores respuestas en este PC. Ideal con 10 GB o más de memoria gráfica."
+      "9b": "Las mejores respuestas en este PC. Ideal con 10 GB o más de memoria gráfica.",
+      "commentary": "Comentarios",
+      "commentaryHelp": "LFM2.5 de Liquid AI, entrenado además por GameMate para escribir comentarios."
     }
   },
   "tray": {

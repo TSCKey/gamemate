@@ -10,7 +10,7 @@ import { BrowserWindow } from 'electron'
 import { followForegroundGame } from '../games/current'
 import type { GameProfile } from '../games/catalog'
 import { complete } from '../ai/llm'
-import { engineFor, engineReady } from '../ai/engines'
+import { commentaryWriterFor, engineFor, engineReady, writeComment } from '../ai/engines'
 import { isAsking } from '../ai/assistant'
 import { getSettings, onSettingsChanged, termsAccepted, type Settings } from '../system/settings'
 import { EVENT_TYPES } from '../../shared/types'
@@ -45,9 +45,20 @@ let showComment: (text: string, displayId: number) => void = () => {}
 const stateListeners: ((state: ObserverState) => void)[] = []
 
 const commentator = new Commentator({
-  generate: async (prompt) =>
-    (await complete(engineFor('commentary'), [{ role: 'user', content: prompt }], { fast: true }))
-      .content,
+  generate: async (prompt) => {
+    const writer = commentaryWriterFor(getSettings())
+    if (writer) {
+      try {
+        return await writeComment(writer, prompt)
+      } catch (error) {
+        // The main model writes this one instead.
+        console.warn('The comment writer could not write a comment:', error)
+      }
+    }
+    return (
+      await complete(engineFor('commentary'), [{ role: 'user', content: prompt }], { fast: true })
+    ).content
+  },
   deliver: deliverComment,
   // The player's question gets the GPU first, and nothing is said once they have left the game.
   canSpeak: () =>

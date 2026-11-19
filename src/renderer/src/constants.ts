@@ -16,7 +16,8 @@ export const LINKS = {
   geminiTerms: 'https://ai.google.dev/gemini-api/terms',
   googlePrivacy: 'https://policies.google.com/privacy',
   geminiKey: 'https://aistudio.google.com/apikey',
-  wikiDisclaimer: 'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer'
+  wikiDisclaimer: 'https://minecraft.wiki/w/Minecraft_Wiki:General_disclaimer',
+  lfmLicense: 'https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/LICENSE'
 }
 
 // Labels are read when shown, so they follow the language setting.

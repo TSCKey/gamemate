@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
-import { formatSize } from '../hooks/useLocalModels'
-import { Field, Section, Toggle } from './ui'
+import { Trans } from 'react-i18next'
+import { formatSize, useCommentaryModel } from '../hooks/useLocalModels'
+import { LINKS } from '../constants'
+import { ExternalLink, Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
 
 export function Progress({ value }: { value: number }): React.JSX.Element {
@@ -15,6 +17,105 @@ export function Progress({ value }: { value: number }): React.JSX.Element {
     >
       <div className="progress-bar" style={{ width: `${Math.round(value * 100)}%` }} />
     </div>
+  )
+}
+
+// The fine-tuned model that writes the companion's comments, beside the main model.
+function CommentaryWriter({
+  model,
+  settings,
+  update,
+  confirmDelete,
+  setConfirmDelete
+}: {
+  model: LocalModelStatus
+  settings: Settings
+  update: (patch: Partial<Settings>) => void
+  confirmDelete: boolean
+  setConfirmDelete: (on: boolean) => void
+}): React.JSX.Element {
+  // Why it isn't writing right now, when it is turned on.
+  const notNow =
+    settings.commentaryEngine !== 'local'
+      ? t('modelsPanel.commentaryGemini')
+      : (settings.language || 'en') !== 'en'
+        ? t('modelsPanel.commentaryEnglishOnly')
+        : null
+  return (
+    <Section
+      title={t('modelsPanel.commentaryWriter')}
+      description={t('modelsPanel.commentaryWriterIntro')}
+    >
+      <div className="model-row">
+        <div className="model-info">
+          <div className="field-label">
+            {model.name} <span className="badge">{model.label}</span>
+          </div>
+          <div className="field-help">
+            {t('modelsPanel.commentaryDetails', {
+              description: model.description,
+              size: formatSize(model.sizeMb)
+            })}
+          </div>
+          {model.progress !== null && <Progress value={model.progress} />}
+          {model.error && <div className="error-text">{model.error}</div>}
+        </div>
+        <div className="model-actions">
+          {model.progress !== null ? (
+            <>
+              <span className="field-help">{Math.round(model.progress * 100)}%</span>
+              <button type="button" onClick={() => window.api.localModels.cancel(model.id)}>
+                {t('modelsPanel.cancel')}
+              </button>
+            </>
+          ) : confirmDelete ? (
+            <>
+              <button
+                type="button"
+                className="danger"
+                onClick={() => {
+                  setConfirmDelete(false)
+                  window.api.localModels.remove(model.id)
+                }}
+              >
+                {t('modelsPanel.delete', { size: formatSize(model.sizeMb) })}
+              </button>
+              <button type="button" onClick={() => setConfirmDelete(false)}>
+                {t('modelsPanel.keep')}
+              </button>
+            </>
+          ) : model.installed ? (
+            <button type="button" onClick={() => setConfirmDelete(true)}>
+              {t('modelsPanel.delete', { size: formatSize(model.sizeMb) })}
+            </button>
+          ) : (
+            <button type="button" onClick={() => window.api.localModels.download(model.id)}>
+              {model.error ? t('modelsPanel.tryAgain') : t('modelsPanel.download')}
+            </button>
+          )}
+        </div>
+      </div>
+      {model.installed && (
+        <Field
+          label={t('modelsPanel.useCommentaryModel')}
+          help={
+            settings.commentaryModel && notNow ? notNow : t('modelsPanel.useCommentaryModelHelp')
+          }
+        >
+          <Toggle
+            label={t('modelsPanel.useCommentaryModel')}
+            checked={settings.commentaryModel}
+            onChange={(on) => update({ commentaryModel: on })}
+          />
+        </Field>
+      )}
+      <p className="field-help">
+        <Trans
+          i18nKey="modelsPanel.commentaryLicense"
+          components={{ license: <ExternalLink href={LINKS.lfmLicense} /> }}
+        />
+      </p>
+    </Section>
   )
 }
 
@@ -37,6 +138,7 @@ function ModelsPanel({
 }): React.JSX.Element {
   // Deleting means downloading again, so it takes a second click.
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+  const commentaryModel = useCommentaryModel()
 
   const inUse = (id: string): boolean =>
     settings.localBackend === 'builtin' && settings.builtinModel === id
@@ -130,6 +232,16 @@ function ModelsPanel({
           />
         </Field>
       </Section>
+
+      {commentaryModel && (
+        <CommentaryWriter
+          model={commentaryModel}
+          settings={settings}
+          update={update}
+          confirmDelete={confirmDelete === commentaryModel.id}
+          setConfirmDelete={(on) => setConfirmDelete(on ? commentaryModel.id : null)}
+        />
+      )}
 
       <Section title="Ollama" description={t('modelsPanel.alreadyUseOllamaGamemateCan')}>
         <Field

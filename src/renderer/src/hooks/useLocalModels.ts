@@ -2,14 +2,24 @@ import { useEffect, useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
 import { t } from '../i18n'
 
-// Built-in engine models and their download progress, kept in sync with the main process.
-export function useLocalModels(): LocalModelStatus[] {
+function useCatalog(): LocalModelStatus[] {
   const [models, setModels] = useState<LocalModelStatus[]>([])
   useEffect(() => {
     window.api.localModels.list().then(setModels)
     return window.api.localModels.onChange(setModels)
   }, [])
   return models
+}
+
+// The built-in engine's main models and their download progress, kept in sync with the main
+// process.
+export function useLocalModels(): LocalModelStatus[] {
+  return useCatalog().filter((m) => m.job === 'all')
+}
+
+// The comment writer, once the main process has said how it is.
+export function useCommentaryModel(): LocalModelStatus | null {
+  return useCatalog().find((m) => m.job === 'commentary') ?? null
 }
 
 // What "On this PC" means right now: a built-in model or an Ollama one.

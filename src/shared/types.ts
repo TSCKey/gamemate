@@ -124,6 +124,9 @@ export interface Settings {
   // the local model or Gemini (opt-in).
   answersEngine: AnswerEngine
   commentaryEngine: Engine
+  // Write the companion's comments with the fine-tuned comment writer (localModels.ts) when it is
+  // downloaded and comments are in English; the main model still watches the screen.
+  commentaryModel: boolean
   // Gemini model id, e.g. from the list GameMate fetches with the player's key.
   geminiModel: string
   // Let the AI look things up on game wikis and Modrinth.
@@ -332,6 +335,8 @@ export interface LocalModelStatus {
   // Short tier name, e.g. "Fast".
   label: string
   description: string
+  // 'all': the main model (answers, screenshots, comments). 'commentary': the comment writer.
+  job: 'all' | 'commentary'
   sizeMb: number
   installed: boolean
   // 0-1 while downloading, otherwise null.

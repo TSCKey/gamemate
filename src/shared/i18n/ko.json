@@ -232,7 +232,15 @@
     "smarterAnswersAndBetterScreen": "내 Google API 키로 더 똑똑한 답변과 더 나은 화면 이해를 제공합니다.",
     "setUp": "설정",
     "modelDetails": "{{description}} {{size}}. 스크린샷을 인식합니다.",
-    "download": "다운로드"
+    "download": "다운로드",
+    "commentaryWriter": "코멘트 작성기",
+    "commentaryWriterIntro": "GameMate가 동반자의 코멘트를 쓰도록 학습시킨 작은 AI 모델입니다. 코멘트 하나를 1초 안에 쓰고 메모리는 약 1GB만 필요해서, 코멘트가 더 빠르고 자주 나옵니다. 화면 보기와 질문 답변은 계속 기본 모델이 맡습니다.",
+    "commentaryDetails": "{{description}} {{size}}. 코멘트만 영어로 씁니다.",
+    "useCommentaryModel": "이 모델로 코멘트 쓰기",
+    "useCommentaryModelHelp": "다른 언어의 코멘트와 이 모델이 쓰지 못한 코멘트는 기본 모델이 씁니다.",
+    "commentaryGemini": "지금은 Gemini가 코멘트를 쓰고 있어서 이 모델은 사용되지 않습니다.",
+    "commentaryEnglishOnly": "아직은 영어로만 쓸 수 있어서, GameMate 언어로 된 코멘트는 기본 모델이 씁니다.",
+    "commentaryLicense": "LFM2.5는 Liquid AI가 만든 모델로 <license>LFM Open License v1.0</license>에 따라 사용됩니다. 이 라이선스는 연 매출이 1천만 미국 달러 이상인 조직의 상업적 사용에는 적용되지 않습니다."
   },
   "pictures": {
     "openOnThe": "{{wiki}}에서 열기"
@@ -628,7 +636,9 @@
       "smart": "똑똑함",
       "4b": "더 나은 답변. 그래픽 메모리 6 GB 이상에서 가장 좋습니다.",
       "best": "최고",
-      "9b": "이 PC에서 가장 좋은 답변. 그래픽 메모리 10 GB 이상에서 가장 좋습니다."
+      "9b": "이 PC에서 가장 좋은 답변. 그래픽 메모리 10 GB 이상에서 가장 좋습니다.",
+      "commentary": "코멘트",
+      "commentaryHelp": "Liquid AI의 LFM2.5를 GameMate가 코멘트용으로 추가 학습시킨 모델입니다."
     }
   },
   "tray": {

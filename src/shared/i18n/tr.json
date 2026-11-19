@@ -235,7 +235,15 @@
     "smarterAnswersAndBetterScreen": "Kendi Google API anahtarınla daha akıllı cevaplar ve ekranı daha iyi anlama.",
     "setUp": "Kur",
     "modelDetails": "{{description}} {{size}}. Ekran görüntülerini görür.",
-    "download": "İndir"
+    "download": "İndir",
+    "commentaryWriter": "Yorum yazarı",
+    "commentaryWriterIntro": "GameMate'in yol arkadaşının yorumlarını yazması için eğittiği küçük bir yapay zekâ modeli. Bir yorumu bir saniyeden kısa sürede yazar ve yaklaşık 1 GB bellek kullanır, böylece yorumlar daha hızlı ve daha sık gelir. Ana modelin ekranı izlemeye ve sorularını yanıtlamaya devam eder.",
+    "commentaryDetails": "{{description}} {{size}}. Yalnızca İngilizce yorum yazar.",
+    "useCommentaryModel": "Yorumları bununla yaz",
+    "useCommentaryModelHelp": "Başka dillerdeki yorumları ve yazamadıklarını ana modelin yazar.",
+    "commentaryGemini": "Şu anda yorumlarını Gemini yazıyor, bu yüzden bu model kullanılmıyor.",
+    "commentaryEnglishOnly": "Şimdilik yalnızca İngilizce yazıyor, bu yüzden GameMate'in dilindeki yorumları ana modelin yazıyor.",
+    "commentaryLicense": "LFM2.5, Liquid AI tarafından geliştirilmiştir ve <license>LFM Open License v1.0</license> kapsamında kullanılır. Bu lisans, yıllık geliri 10 milyon ABD doları veya daha fazla olan kuruluşların ticari kullanımını kapsamaz."
   },
   "pictures": {
     "openOnThe": "{{wiki}} üzerinde aç"
@@ -631,7 +639,9 @@
       "smart": "Akıllı",
       "4b": "Daha iyi cevaplar. En iyisi 6 GB veya daha fazla ekran kartı belleğiyle.",
       "best": "En iyi",
-      "9b": "Bu bilgisayardaki en iyi cevaplar. En iyisi 10 GB veya daha fazla ekran kartı belleğiyle."
+      "9b": "Bu bilgisayardaki en iyi cevaplar. En iyisi 10 GB veya daha fazla ekran kartı belleğiyle.",
+      "commentary": "Yorumlar",
+      "commentaryHelp": "Liquid AI'ın LFM2.5 modeli, GameMate tarafından yorum yazmak için ayrıca eğitildi."
     }
   },
   "tray": {

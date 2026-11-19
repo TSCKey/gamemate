@@ -91,6 +91,8 @@ const DEFAULTS: Settings = {
   // Everything stays local until the player chooses otherwise.
   answersEngine: 'local',
   commentaryEngine: 'local',
+  // Turned on when the player downloads the comment writer.
+  commentaryModel: false,
   geminiModel: '',
   webLookup: false,
   webSearch: false,
@@ -225,6 +227,7 @@ export function updateSettings(patch: unknown): Settings {
   if (ENGINES.includes(p.commentaryEngine as Engine)) {
     next.commentaryEngine = p.commentaryEngine as Engine
   }
+  if (typeof p.commentaryModel === 'boolean') next.commentaryModel = p.commentaryModel
   if (typeof p.geminiModel === 'string' && /^[\w.-]{0,100}$/.test(p.geminiModel)) {
     next.geminiModel = p.geminiModel
   }

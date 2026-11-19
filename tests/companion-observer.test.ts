@@ -36,7 +36,9 @@ vi.mock('../src/main/system/foreground', () => ({ windowRect: () => null }))
 vi.mock('../src/main/ai/assistant', () => ({ isAsking: () => false }))
 vi.mock('../src/main/ai/engines', () => ({
   engineFor: () => ({ provider: 'builtin', model: 'test' }),
-  engineReady: () => true
+  engineReady: () => true,
+  commentaryWriterFor: () => null,
+  writeComment: async () => ''
 }))
 const game = {
   id: 'valorant',

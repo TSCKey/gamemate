@@ -33,9 +33,18 @@ vi.mock('../src/main/windows/capture', () => ({
 }))
 vi.mock('../src/main/system/foreground', () => ({ windowRect: () => null }))
 vi.mock('../src/main/ai/assistant', () => ({ isAsking: () => false }))
+// The fine-tuned comment writer, when a test turns it on ('fails': it can't write).
+let writer: 'off' | 'writes' | 'fails' = 'off'
+const writerPrompts: string[] = []
 vi.mock('../src/main/ai/engines', () => ({
   engineFor: () => ({ provider: 'builtin', model: 'test' }),
-  engineReady: () => true
+  engineReady: () => true,
+  commentaryWriterFor: () => (writer === 'off' ? null : 'writer'),
+  writeComment: async (_model: string, prompt: string) => {
+    writerPrompts.push(prompt)
+    if (writer === 'fails') throw new Error('engine stopped')
+    return 'Moss Mother, at last'
+  }
 }))
 
 const silksong = {
@@ -219,6 +228,44 @@ describe('watching Silksong', () => {
     expect(writes[0].content).toContain('attempt 1')
     expect(writes[0].content).toContain('Moss Mother')
     expect(toasts).toEqual(['There she is'])
+  })
+
+  it('lets the comment writer write the reaction when it is set up', async () => {
+    writer = 'writes'
+    writerPrompts.length = 0
+    try {
+      readAs = async () => [{ text: 'MOSS MOTHER' }]
+      showText('bossText')
+      await settle()
+      await vi.advanceTimersByTimeAsync(4_000)
+      // It gets GameMate's usual instructions, and the main model is not asked.
+      expect(writerPrompts).toHaveLength(1)
+      expect(writerPrompts[0]).toContain('Moss Mother')
+      expect(writes).toHaveLength(0)
+      expect(toasts).toEqual(['Moss Mother, at last'])
+    } finally {
+      writer = 'off'
+    }
+  })
+
+  it('has the main model write the reaction when the comment writer can not', async () => {
+    writer = 'fails'
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      readAs = async () => [{ text: 'MOSS MOTHER' }]
+      showText('bossText')
+      await settle()
+      await vi.advanceTimersByTimeAsync(4_000)
+      expect(writes).toHaveLength(1)
+      expect(toasts).toEqual(['There she is'])
+      expect(warn).toHaveBeenCalledWith(
+        'The comment writer could not write a comment:',
+        expect.any(Error)
+      )
+    } finally {
+      writer = 'off'
+      warn.mockRestore()
+    }
   })
 
   // In the owner's recording Silksong showed area names ("BLASTED STEPS", "BONE BOTTOM") in the

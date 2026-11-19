@@ -13,7 +13,9 @@ const EXTERNAL_LINKS = [
   'mailto:TSCKey1@outlook.com',
   'https://www.edpb.europa.eu/about-edpb/about-edpb/members_en',
   'https://sdaia.gov.sa',
-  'https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE'
+  'https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE',
+  // The comment writer's license, in the models settings.
+  'https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/LICENSE'
 ]
 
 // Wikis of other games the player asked about (found by name while answering).

@@ -31,9 +31,16 @@ interface CatalogModel {
   name: string
   label: string
   description: string
-  // GGUF weights, then the vision projector that lets the model read screenshots.
+  // 'all': answers, screenshots and comments. 'commentary': only writes the companion's comments.
+  job: 'all' | 'commentary'
+  // GGUF weights.
   model: ModelFile
-  mmproj: ModelFile
+  // The vision projector that lets the model read screenshots.
+  mmproj?: ModelFile
+  // GameMate's fine-tuning on top of the weights (a LoRA adapter).
+  adapter?: ModelFile
+  // The model's license, kept next to it as its license asks.
+  license?: ModelFile
 }
 
 const hf = (repo: string, revision: string, name: string): string =>
@@ -44,10 +51,11 @@ const qwen = (
   revision: string,
   model: [number, string],
   mmproj: [number, string]
-): Pick<CatalogModel, 'model' | 'mmproj'> => {
+): Pick<CatalogModel, 'job' | 'model' | 'mmproj'> => {
   const repo = `unsloth/Qwen3.5-${size}-GGUF`
   const modelName = `Qwen3.5-${size}-Q4_K_M.gguf`
   return {
+    job: 'all',
     model: {
       name: modelName,
       url: hf(repo, revision, modelName),
@@ -115,6 +123,48 @@ export const LOCAL_MODELS: CatalogModel[] = [
   }
 ]
 
+// The comment writer: Liquid AI's LFM2.5 1.2B (LFM Open License 1.0) with GameMate's own
+// fine-tuning, trained on hand-written comments for game moments. It writes a comment in about
+// a quarter of a second and needs about 1 GB of memory, so it can stay loaded while GameMate
+// watches. Text only, and trained in English: other languages keep using the main model.
+export const COMMENTARY_MODEL_ID = 'lfm2.5-1.2b-commentary'
+const LFM = {
+  repo: 'LiquidAI/LFM2.5-1.2B-Instruct-GGUF',
+  revision: '8ed288026e23958ad9dfa92d53ed773a8eee7125'
+}
+const COMMENTARY_ADAPTER_VERSION = 1
+export const COMMENTARY_MODEL: CatalogModel = {
+  id: COMMENTARY_MODEL_ID,
+  name: 'LFM2.5 1.2B',
+  get label(): string {
+    return t('models.local.commentary')
+  },
+  get description(): string {
+    return t('models.local.commentaryHelp')
+  },
+  job: 'commentary',
+  model: {
+    name: 'LFM2.5-1.2B-Instruct-Q4_K_M.gguf',
+    url: hf(LFM.repo, LFM.revision, 'LFM2.5-1.2B-Instruct-Q4_K_M.gguf'),
+    size: 730895168,
+    sha256: 'b1b3de114215d9507409a662a501a631095a479a419584e8a2ded6304b19b4f5'
+  },
+  adapter: {
+    name: `gamemate-commentary-v${COMMENTARY_ADAPTER_VERSION}.gguf`,
+    url: `https://github.com/TSCKey/gamemate/releases/download/commentary-v${COMMENTARY_ADAPTER_VERSION}/gamemate-commentary-v${COMMENTARY_ADAPTER_VERSION}.gguf`,
+    size: 22230560,
+    sha256: 'fd52631e0dcb7666a62110991e61c4f850b0704f53bbc50c26a5c363e2983c86'
+  },
+  license: {
+    name: 'LICENSE',
+    url: hf(LFM.repo, LFM.revision, 'LICENSE'),
+    size: 10596,
+    sha256: '5188f2b355da20647257a3156db5834c794e5fb5e6d8dc4d4cdbb3180e75b85b'
+  }
+}
+
+const CATALOG: CatalogModel[] = [...LOCAL_MODELS, COMMENTARY_MODEL]
+
 const engineRoot = (): string => join(app.getPath('userData'), 'engine')
 export const engineDir = (): string => join(engineRoot(), ENGINE.build)
 export const engineExe = (): string => join(engineDir(), 'llama-server.exe')
@@ -127,17 +177,28 @@ const downloads = new Map<
 >()
 
 function find(id: string): CatalogModel | undefined {
-  return LOCAL_MODELS.find((m) => m.id === id)
+  return CATALOG.find((m) => m.id === id)
 }
 
+// A model that can be GameMate's main model (answers, screenshots and comments).
 export function isLocalModelId(value: unknown): value is string {
+  return typeof value === 'string' && find(value)?.job === 'all'
+}
+
+// Any model in the catalog, the comment writer included (downloads and deletes).
+export function isCatalogModelId(value: unknown): value is string {
   return typeof value === 'string' && find(value) !== undefined
 }
+
+const filesOf = (model: CatalogModel): ModelFile[] =>
+  [model.model, model.mmproj, model.adapter, model.license].filter(
+    (f): f is ModelFile => f !== undefined
+  )
 
 const engineInstalled = (): boolean => existsSync(engineExe())
 
 function filesInstalled(model: CatalogModel): boolean {
-  return [model.model, model.mmproj].every((f) => existsSync(join(modelDir(model.id), f.name)))
+  return filesOf(model).every((f) => existsSync(join(modelDir(model.id), f.name)))
 }
 
 export function isLocalModelInstalled(id: string): boolean {
@@ -146,15 +207,24 @@ export function isLocalModelInstalled(id: string): boolean {
   return !!model && !busy && engineInstalled() && filesInstalled(model)
 }
 
+export interface ModelPaths {
+  model: string
+  mmproj?: string
+  adapter?: string
+}
+
 // Paths the engine needs to run a model; throws when it isn't downloaded.
-export function localModelFiles(id: string): { model: string; mmproj: string } {
+export function localModelFiles(id: string): ModelPaths {
   const model = find(id)
   if (!model || !isLocalModelInstalled(id)) {
     throw new Error(t('errors.ai.noLocalModel'))
   }
+  const path = (f: ModelFile | undefined): string | undefined =>
+    f ? join(modelDir(id), f.name) : undefined
   return {
     model: join(modelDir(id), model.model.name),
-    mmproj: join(modelDir(id), model.mmproj.name)
+    ...(model.mmproj ? { mmproj: path(model.mmproj) } : {}),
+    ...(model.adapter ? { adapter: path(model.adapter) } : {})
   }
 }
 
@@ -165,7 +235,8 @@ function status(model: CatalogModel): LocalModelStatus {
     name: model.name,
     label: model.label,
     description: model.description,
-    sizeMb: Math.round((model.model.size + model.mmproj.size) / 1_000_000),
+    job: model.job,
+    sizeMb: Math.round(filesOf(model).reduce((sum, f) => sum + f.size, 0) / 1_000_000),
     installed: isLocalModelInstalled(model.id),
     progress: dl && !dl.error ? dl.progress : null,
     error: dl?.error ?? null
@@ -173,7 +244,7 @@ function status(model: CatalogModel): LocalModelStatus {
 }
 
 export function localModelStatuses(): LocalModelStatus[] {
-  return LOCAL_MODELS.map(status)
+  return CATALOG.map(status)
 }
 
 function broadcast(): void {
@@ -244,9 +315,7 @@ export async function downloadLocalModel(id: string): Promise<boolean> {
   broadcast()
 
   try {
-    const missing = [model.model, model.mmproj].filter(
-      (f) => !existsSync(join(modelDir(id), f.name))
-    )
+    const missing = filesOf(model).filter((f) => !existsSync(join(modelDir(id), f.name)))
     const needEngine = !engineInstalled()
     const total = (needEngine ? ENGINE.size : 0) + missing.reduce((sum, f) => sum + f.size, 0) || 1
     await ensureDiskSpace(total)
@@ -291,9 +360,7 @@ export async function cancelLocalModel(id: string): Promise<void> {
   dl.controller.abort()
   downloads.delete(id)
   await Promise.all(
-    [model.model, model.mmproj].map((f) =>
-      rm(partialPath(join(modelDir(id), f.name)), { force: true })
-    )
+    filesOf(model).map((f) => rm(partialPath(join(modelDir(id), f.name)), { force: true }))
   )
   broadcast()
 }
@@ -308,7 +375,7 @@ export async function removeLocalModel(id: string): Promise<void> {
 
 // "Delete my data": every model and the engine.
 export async function removeAllLocalModels(): Promise<void> {
-  for (const model of LOCAL_MODELS) await cancelLocalModel(model.id)
+  for (const model of CATALOG) await cancelLocalModel(model.id)
   downloads.clear()
   await rm(modelsRoot(), { recursive: true, force: true })
   await rm(engineRoot(), { recursive: true, force: true })

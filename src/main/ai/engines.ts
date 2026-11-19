@@ -2,14 +2,20 @@
 // per question whether the local model or Gemini should answer.
 import { latestRecipeVersion } from '../games/current'
 import { findMentionedItems } from '../games/minecraft'
-import { chatCompletion } from './llamaClient'
-import { withEngine } from './llamaEngine'
+import { chatCompletion, writeLine } from './llamaClient'
+import { withCommentaryEngine, withEngine } from './llamaEngine'
+import {
+  COMMENTARY_MAX_TOKENS,
+  COMMENTARY_RETRY_SAMPLING,
+  COMMENTARY_SAMPLING,
+  commentaryMessages
+} from '../companion/commentaryFormat'
 import type { LlmEngine } from './llm'
-import { isLocalModelInstalled } from './localModels'
+import { COMMENTARY_MODEL_ID, isLocalModelInstalled } from './localModels'
 import { preloadModel } from './ollamaClient'
 import { decide } from './router'
 import { getGeminiKey } from '../system/secrets'
-import { getSettings } from '../system/settings'
+import { getSettings, type Settings } from '../system/settings'
 import { t } from '../system/i18n'
 import { UnreachableError } from './errors'
 
@@ -90,6 +96,40 @@ export function engineFor(job: Job): LlmEngine {
 
 export function engineReady(job: Job): boolean {
   return available(() => engineFor(job)) !== null
+}
+
+// The fine-tuned comment writer writes the comments when the player turned it on, it is
+// downloaded, comments are written on this PC, and they are in English (the only language it was
+// trained in). Everything else, and any comment it can't write, stays with the main model.
+export function commentaryWriterFor(
+  settings: Pick<Settings, 'commentaryModel' | 'commentaryEngine' | 'language'>,
+  installed: (id: string) => boolean = isLocalModelInstalled
+): string | null {
+  if (!settings.commentaryModel || settings.commentaryEngine !== 'local') return null
+  if ((settings.language || 'en') !== 'en') return null
+  return installed(COMMENTARY_MODEL_ID) ? COMMENTARY_MODEL_ID : null
+}
+
+// One comment from the comment writer, called the way it was trained (commentaryFormat.ts).
+export function writeComment(modelId: string, prompt: string): Promise<string> {
+  const { system, user, retry } = commentaryMessages(prompt)
+  return withCommentaryEngine(modelId, (server) =>
+    writeLine(
+      server,
+      [
+        { role: 'system', content: system },
+        { role: 'user', content: user }
+      ],
+      retry ? COMMENTARY_RETRY_SAMPLING : COMMENTARY_SAMPLING,
+      COMMENTARY_MAX_TOKENS
+    )
+  )
+}
+
+// Starts the comment writer once right after it is downloaded, for the same reason as
+// primeModel: the first start prepares the graphics driver's programs.
+export function primeCommentaryModel(modelId: string): void {
+  withCommentaryEngine(modelId, async () => {}).catch(() => undefined)
 }
 
 export interface Route {

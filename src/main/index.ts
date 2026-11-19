@@ -3,8 +3,15 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { unloadModels } from './ai/ollamaClient'
-import { warmUp } from './ai/engines'
-import { engineUpToDate, runningModel, stopEngine } from './ai/llamaEngine'
+import { commentaryWriterFor, warmUp } from './ai/engines'
+import {
+  commentaryEngineUpToDate,
+  engineUpToDate,
+  runningModel,
+  stopCommentaryEngine,
+  stopEngine,
+  stopMainEngine
+} from './ai/llamaEngine'
 import { startUpdater } from './system/updater'
 import { clearGeminiKey } from './system/secrets'
 import { followForegroundGame } from './games/current'
@@ -307,10 +314,14 @@ if (!app.requestSingleInstanceLock()) {
     onSettingsChanged((settings) => {
       const running = runningModel()
       if (running && (settings.localBackend !== 'builtin' || settings.builtinModel !== running)) {
-        void stopEngine()
+        void stopMainEngine()
       }
       // A different place for reading screenshots takes a restart; the next question starts it.
-      if (!engineUpToDate(settings)) void stopEngine()
+      if (!engineUpToDate(settings)) void stopMainEngine()
+      // The same for the comment writer, which also stops when it won't be writing.
+      if (!commentaryEngineUpToDate(settings) || !commentaryWriterFor(settings)) {
+        void stopCommentaryEngine()
+      }
     })
     // Withdrawing consent for Gemini also forgets the key.
     let geminiConsent = getSettings().geminiConsent
