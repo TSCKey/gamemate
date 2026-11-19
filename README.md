@@ -112,7 +112,7 @@ Open **⚙ Settings → Models** to choose the AI that runs on your PC:
 - **Use my Ollama models:** turn this on to use models from your own Ollama install instead. Ollama must be running.
 - Cloud models (Gemini) are set up in **⚙ Settings → AI & online**, see below.
 
-**Comment writer:** a small extra model (LFM2.5 1.2B, 0.8 GB) that GameMate trained to write the companion's comments. It writes a comment in under a second and needs about 1 GB of memory, so comments come quicker and more often. Your main model still watches the screen and answers your questions. Download it under **Comment writer** in **⚙ Settings → Models**; **Write comments with it** turns it on or off. It writes in English only for now: in other languages, your main model writes the comments. With **Leave more graphics memory for games** on, it runs on your PC's second graphics chip or the processor instead of the graphics card.
+**Comment writer:** a small extra model (LFM2.5 1.2B, a 0.7 GB download) that GameMate trained to write the companion's comments. It writes a comment in under a second and needs about 1 GB of memory, so comments come quicker and more often. Your main model still watches the screen and answers your questions. Download it under **Comment writer** in **⚙ Settings → Models**; **Write comments with it** turns it on or off. It writes in English only for now: in other languages, your main model writes the comments. With **Leave more graphics memory for games** on, it runs on your PC's second graphics chip or the processor instead of the graphics card.
 
 ### Gemini, Auto and wiki lookup
 

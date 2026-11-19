@@ -1,5 +1,7 @@
 // The fine-tuned comment writer: called exactly the way it was trained, used only where it can
 // write, and run beside the main model without taking its place.
+import { createHash } from 'crypto'
+import { readFileSync, statSync } from 'fs'
 import { tmpdir } from 'os'
 import { join } from 'path'
 import { describe, expect, it, vi } from 'vitest'
@@ -20,8 +22,15 @@ vi.mock('koffi', () => ({ default: {} }))
 const { updateSettings } = await import('../src/main/system/settings')
 const { commentaryArgs } = await import('../src/main/ai/llamaEngine')
 const { commentaryWriterFor } = await import('../src/main/ai/engines')
-const { COMMENTARY_MODEL_ID, isCatalogModelId, isLocalModelId, localModelStatuses } =
-  await import('../src/main/ai/localModels')
+const {
+  bundledDir,
+  COMMENTARY_MODEL,
+  COMMENTARY_MODEL_ID,
+  isCatalogModelId,
+  isLocalModelId,
+  localModelStatuses,
+  unpacked
+} = await import('../src/main/ai/localModels')
 
 const context: MatchContext = {
   minutes: 5,
@@ -167,12 +176,27 @@ describe('the comment writer in the model list', () => {
     expect(updateSettings({ builtinModel: COMMENTARY_MODEL_ID }).builtinModel).toBe(before)
   })
 
-  it('counts its fine-tuning and license in its size', () => {
+  it('downloads only the weights: GameMate brings its fine-tuning', () => {
     const writer = localModelStatuses().find((m) => m.id === COMMENTARY_MODEL_ID)
     expect(writer?.job).toBe('commentary')
-    // 731 MB of weights, 22 MB of fine-tuning, the license.
-    expect(writer?.sizeMb).toBe(753)
+    expect(writer?.sizeMb).toBe(731)
     expect(localModelStatuses().filter((m) => m.job === 'all')).toHaveLength(3)
+  })
+
+  it('ships the fine-tuning the catalog names, with the model’s license', () => {
+    const adapter = COMMENTARY_MODEL.adapter
+    const file = join(bundledDir(), adapter?.name ?? '')
+    expect(statSync(file).size).toBe(adapter?.size)
+    expect(createHash('sha256').update(readFileSync(file)).digest('hex')).toBe(adapter?.sha256)
+    expect(readFileSync(join(bundledDir(), 'LICENSE'), 'utf8')).toContain('LFM Open License v1.0')
+  })
+
+  it('finds its fine-tuning outside the app archive, where the engine can read it', () => {
+    expect(unpacked('C:\\GameMate\\resources\\app.asar\\resources\\commentary')).toBe(
+      'C:\\GameMate\\resources\\app.asar.unpacked\\resources\\commentary'
+    )
+    // Not packed (npm start): unchanged.
+    expect(unpacked('C:/gamemate/resources/commentary')).toBe('C:/gamemate/resources/commentary')
   })
 
   it('is a setting the player can turn on and off', () => {

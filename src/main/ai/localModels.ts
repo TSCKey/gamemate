@@ -37,10 +37,15 @@ interface CatalogModel {
   model: ModelFile
   // The vision projector that lets the model read screenshots.
   mmproj?: ModelFile
-  // GameMate's fine-tuning on top of the weights (a LoRA adapter).
-  adapter?: ModelFile
-  // The model's license, kept next to it as its license asks.
-  license?: ModelFile
+  // GameMate's fine-tuning on top of the weights (a LoRA adapter), shipped with GameMate in
+  // resources/commentary next to the model's license, so only the weights are downloaded.
+  adapter?: BundledFile
+}
+
+interface BundledFile {
+  name: string
+  size: number
+  sha256: string
 }
 
 const hf = (repo: string, revision: string, name: string): string =>
@@ -123,8 +128,8 @@ export const LOCAL_MODELS: CatalogModel[] = [
   }
 ]
 
-// The comment writer: Liquid AI's LFM2.5 1.2B (LFM Open License 1.0) with GameMate's own
-// fine-tuning, trained on hand-written comments for game moments. It writes a comment in about
+// The comment writer: Liquid AI's LFM2.5 1.2B (LFM Open License 1.0, in resources/commentary)
+// with GameMate's own fine-tuning, trained on hand-written comments for game moments. It writes a comment in about
 // a quarter of a second and needs about 1 GB of memory, so it can stay loaded while GameMate
 // watches. Text only, and trained in English: other languages keep using the main model.
 export const COMMENTARY_MODEL_ID = 'lfm2.5-1.2b-commentary'
@@ -151,15 +156,8 @@ export const COMMENTARY_MODEL: CatalogModel = {
   },
   adapter: {
     name: `gamemate-commentary-v${COMMENTARY_ADAPTER_VERSION}.gguf`,
-    url: `https://github.com/TSCKey/gamemate/releases/download/commentary-v${COMMENTARY_ADAPTER_VERSION}/gamemate-commentary-v${COMMENTARY_ADAPTER_VERSION}.gguf`,
     size: 22230560,
     sha256: 'fd52631e0dcb7666a62110991e61c4f850b0704f53bbc50c26a5c363e2983c86'
-  },
-  license: {
-    name: 'LICENSE',
-    url: hf(LFM.repo, LFM.revision, 'LICENSE'),
-    size: 10596,
-    sha256: '5188f2b355da20647257a3156db5834c794e5fb5e6d8dc4d4cdbb3180e75b85b'
   }
 }
 
@@ -170,6 +168,11 @@ export const engineDir = (): string => join(engineRoot(), ENGINE.build)
 export const engineExe = (): string => join(engineDir(), 'llama-server.exe')
 const modelsRoot = (): string => join(app.getPath('userData'), 'llm')
 const modelDir = (id: string): string => join(modelsRoot(), id)
+// Files shipped with GameMate. electron-builder unpacks resources/ from the app archive, so the
+// engine (a separate program) can read them from disk.
+export const unpacked = (path: string): string =>
+  path.replace(/app\.asar(?=[\\/]|$)/, 'app.asar.unpacked')
+export const bundledDir = (): string => unpacked(join(app.getAppPath(), 'resources', 'commentary'))
 
 const downloads = new Map<
   string,
@@ -190,15 +193,17 @@ export function isCatalogModelId(value: unknown): value is string {
   return typeof value === 'string' && find(value) !== undefined
 }
 
+// The files to download.
 const filesOf = (model: CatalogModel): ModelFile[] =>
-  [model.model, model.mmproj, model.adapter, model.license].filter(
-    (f): f is ModelFile => f !== undefined
-  )
+  [model.model, model.mmproj].filter((f): f is ModelFile => f !== undefined)
 
 const engineInstalled = (): boolean => existsSync(engineExe())
 
 function filesInstalled(model: CatalogModel): boolean {
-  return filesOf(model).every((f) => existsSync(join(modelDir(model.id), f.name)))
+  return (
+    filesOf(model).every((f) => existsSync(join(modelDir(model.id), f.name))) &&
+    (!model.adapter || existsSync(join(bundledDir(), model.adapter.name)))
+  )
 }
 
 export function isLocalModelInstalled(id: string): boolean {
@@ -219,12 +224,10 @@ export function localModelFiles(id: string): ModelPaths {
   if (!model || !isLocalModelInstalled(id)) {
     throw new Error(t('errors.ai.noLocalModel'))
   }
-  const path = (f: ModelFile | undefined): string | undefined =>
-    f ? join(modelDir(id), f.name) : undefined
   return {
     model: join(modelDir(id), model.model.name),
-    ...(model.mmproj ? { mmproj: path(model.mmproj) } : {}),
-    ...(model.adapter ? { adapter: path(model.adapter) } : {})
+    ...(model.mmproj ? { mmproj: join(modelDir(id), model.mmproj.name) } : {}),
+    ...(model.adapter ? { adapter: join(bundledDir(), model.adapter.name) } : {})
   }
 }
 
