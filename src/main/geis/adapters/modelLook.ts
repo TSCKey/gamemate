@@ -87,6 +87,10 @@ export interface Look {
   prompt: string
   schema: object
   read: (reply: unknown, capturedAt: number) => FrameReport
+  // Reads the images without the vision model, giving the same reply it would (a text reader).
+  readWithout?: (images: NativeImage[]) => Promise<unknown>
+  // Who read them, for the pipeline inspector.
+  reader?: string
 }
 
 export async function readLook(
@@ -99,27 +103,33 @@ export async function readLook(
   const forgetsBefore = host.forgets()
   host.setState({ status: 'analyzing' })
   try {
-    const reply = await complete(
-      engineFor('commentary'),
-      [
-        {
-          role: 'user',
-          content: prompt,
-          images: images.map((image) => toScreenshot(image).base64)
-        }
-      ],
-      // Thinking would make each look take several times longer.
-      { jsonSchema: schema, fast: true }
-    )
+    const reply = look.readWithout
+      ? await look.readWithout(images)
+      : JSON.parse(
+          (
+            await complete(
+              engineFor('commentary'),
+              [
+                {
+                  role: 'user',
+                  content: prompt,
+                  images: images.map((image) => toScreenshot(image).base64)
+                }
+              ],
+              // Thinking would make each look take several times longer.
+              { jsonSchema: schema, fast: true }
+            )
+          ).content
+        )
     lookTimes.lastMs = Date.now() - capturedAt
     // The player turned the companion off or deleted their data while the model was reading.
     if (host.forgets() !== forgetsBefore) return
-    const report = { ...read(JSON.parse(reply.content), capturedAt), adapterId: look.adapterId }
+    const report = { ...read(reply, capturedAt), adapterId: look.adapterId }
     pipelineTap.record({
       at: Date.now(),
       stage: 'observation',
       adapterId: look.adapterId,
-      summary: `the model read ${look.images.length} image(s): ${report.events.length} event(s)`,
+      summary: `${look.reader ?? 'the model'} read ${look.images.length} image(s): ${report.events.length} event(s)`,
       latencyMs: lookTimes.lastMs
     })
     host.observe(report, game, report.description)

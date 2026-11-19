@@ -32,11 +32,14 @@ interface CatalogModel {
   label: string
   description: string
   // 'all': answers, screenshots and comments. 'commentary': only writes the companion's comments.
-  job: 'all' | 'commentary'
+  // 'killfeed': reads shooters' kill feeds (text recognition, no AI engine needed).
+  job: LocalModelStatus['job']
   // GGUF weights.
   model: ModelFile
   // The vision projector that lets the model read screenshots.
   mmproj?: ModelFile
+  // Other files the model needs, such as a second network or its settings.
+  extra?: ModelFile[]
   // GameMate's fine-tuning on top of the weights (a LoRA adapter), shipped with GameMate in
   // resources/commentary next to the model's license, so only the weights are downloaded.
   adapter?: BundledFile
@@ -161,7 +164,56 @@ export const COMMENTARY_MODEL: CatalogModel = {
   }
 }
 
-const CATALOG: CatalogModel[] = [...LOCAL_MODELS, COMMENTARY_MODEL]
+// The kill-feed reader: PaddleOCR's PP-OCRv6 small text detection and recognition (Apache 2.0),
+// PaddlePaddle's own ONNX files, run on the processor by GameMate's text reader (src/main/ocr).
+export const KILLFEED_OCR_ID = 'pp-ocrv6-small'
+const PADDLE = {
+  detect: {
+    repo: 'PaddlePaddle/PP-OCRv6_small_det_onnx',
+    revision: '28fe5895c24fd108c19eb3e8479f4ab385fbfc62'
+  },
+  recognize: {
+    repo: 'PaddlePaddle/PP-OCRv6_small_rec_onnx',
+    revision: 'b8f84f0b80c529de40b4fbb3544b84fa7233a513'
+  }
+}
+export const KILLFEED_OCR: CatalogModel = {
+  id: KILLFEED_OCR_ID,
+  name: 'PP-OCRv6',
+  get label(): string {
+    return t('models.local.killfeed')
+  },
+  get description(): string {
+    return t('models.local.killfeedHelp')
+  },
+  job: 'killfeed',
+  model: {
+    name: 'detect.onnx',
+    url: hf(PADDLE.detect.repo, PADDLE.detect.revision, 'inference.onnx'),
+    size: 9880512,
+    sha256: 'd73e0058b7a8086bbd57f3d10b8bcd4ff95363f67e06e2762b5e814fe9c9410e'
+  },
+  extra: [
+    {
+      name: 'recognize.onnx',
+      url: hf(PADDLE.recognize.repo, PADDLE.recognize.revision, 'inference.onnx'),
+      size: 21159378,
+      sha256: '5435fd747c9e0efe15a96d0b378d5bd157e9492ed8fd80edf08f30d02fa24634'
+    },
+    {
+      // The recognition model's settings, with its list of characters.
+      name: 'recognize.yml',
+      url: hf(PADDLE.recognize.repo, PADDLE.recognize.revision, 'inference.yml'),
+      size: 150579,
+      sha256: 'ab078671bb49f06228eadccd34f1bb501e157f7a047095ffb943ba81512c77d1'
+    }
+  ]
+}
+
+const CATALOG: CatalogModel[] = [...LOCAL_MODELS, COMMENTARY_MODEL, KILLFEED_OCR]
+
+// Text recognition runs without the AI engine.
+const needsEngine = (model: CatalogModel): boolean => model.job !== 'killfeed'
 
 const engineRoot = (): string => join(app.getPath('userData'), 'engine')
 export const engineDir = (): string => join(engineRoot(), ENGINE.build)
@@ -195,7 +247,7 @@ export function isCatalogModelId(value: unknown): value is string {
 
 // The files to download.
 const filesOf = (model: CatalogModel): ModelFile[] =>
-  [model.model, model.mmproj].filter((f): f is ModelFile => f !== undefined)
+  [model.model, model.mmproj, ...(model.extra ?? [])].filter((f): f is ModelFile => f !== undefined)
 
 const engineInstalled = (): boolean => existsSync(engineExe())
 
@@ -209,7 +261,7 @@ function filesInstalled(model: CatalogModel): boolean {
 export function isLocalModelInstalled(id: string): boolean {
   const model = find(id)
   const busy = downloads.has(id) && !downloads.get(id)?.error
-  return !!model && !busy && engineInstalled() && filesInstalled(model)
+  return !!model && !busy && (!needsEngine(model) || engineInstalled()) && filesInstalled(model)
 }
 
 export interface ModelPaths {
@@ -228,6 +280,17 @@ export function localModelFiles(id: string): ModelPaths {
     model: join(modelDir(id), model.model.name),
     ...(model.mmproj ? { mmproj: join(modelDir(id), model.mmproj.name) } : {}),
     ...(model.adapter ? { adapter: join(bundledDir(), model.adapter.name) } : {})
+  }
+}
+
+// The kill-feed reader's files, by what they are; throws when they aren't downloaded.
+export function killfeedOcrFiles(): { detect: string; recognize: string; characters: string } {
+  if (!isLocalModelInstalled(KILLFEED_OCR_ID)) throw new Error(t('errors.ai.noLocalModel'))
+  const file = (name: string): string => join(modelDir(KILLFEED_OCR_ID), name)
+  return {
+    detect: file('detect.onnx'),
+    recognize: file('recognize.onnx'),
+    characters: file('recognize.yml')
   }
 }
 
@@ -319,7 +382,7 @@ export async function downloadLocalModel(id: string): Promise<boolean> {
 
   try {
     const missing = filesOf(model).filter((f) => !existsSync(join(modelDir(id), f.name)))
-    const needEngine = !engineInstalled()
+    const needEngine = needsEngine(model) && !engineInstalled()
     const total = (needEngine ? ENGINE.size : 0) + missing.reduce((sum, f) => sum + f.size, 0) || 1
     await ensureDiskSpace(total)
 

@@ -246,7 +246,10 @@
     "useCommentaryModelHelp": "Comentários em outros idiomas, e os que ele não conseguir escrever, vêm do seu modelo principal.",
     "commentaryGemini": "O Gemini está escrevendo seus comentários agora, então este modelo não é usado.",
     "commentaryEnglishOnly": "Por enquanto ele só escreve em inglês, então seu modelo principal escreve os comentários no idioma do GameMate.",
-    "commentaryLicense": "O LFM2.5 é da Liquid AI e é usado sob a <license>LFM Open License v1.0</license>, que não cobre o uso comercial por organizações com receita anual de 10 milhões de dólares americanos ou mais."
+    "commentaryLicense": "O LFM2.5 é da Liquid AI e é usado sob a <license>LFM Open License v1.0</license>, que não cobre o uso comercial por organizações com receita anual de 10 milhões de dólares americanos ou mais.",
+    "killfeedReader": "Leitor do feed de abates",
+    "killfeedReaderIntro": "Lê os nomes no feed de abates de um jogo de tiro com o seu processador, para deixar a placa de vídeo livre para o jogo. Por enquanto para VALORANT; sem ele, seu modelo principal lê o feed a partir de capturas de tela.",
+    "killfeedDetails": "{{description}} {{size}}. Roda no processador."
   },
   "pictures": {
     "openOnThe": "Abrir em {{wiki}}"
@@ -644,7 +647,9 @@
       "best": "O melhor",
       "9b": "As melhores respostas neste PC. Ideal com 10 GB ou mais de memória de vídeo.",
       "commentary": "Comentários",
-      "commentaryHelp": "LFM2.5 da Liquid AI, treinado a mais pelo GameMate para escrever comentários."
+      "commentaryHelp": "LFM2.5 da Liquid AI, treinado a mais pelo GameMate para escrever comentários.",
+      "killfeed": "Feed de abates",
+      "killfeedHelp": "Reconhecimento de texto PaddleOCR da PaddlePaddle (Apache 2.0)."
     }
   },
   "tray": {

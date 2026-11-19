@@ -17,9 +17,10 @@ export function useLocalModels(): LocalModelStatus[] {
   return useCatalog().filter((m) => m.job === 'all')
 }
 
-// The comment writer, once the main process has said how it is.
-export function useCommentaryModel(): LocalModelStatus | null {
-  return useCatalog().find((m) => m.job === 'commentary') ?? null
+// A model with one job beside the main model (the comment writer, the kill-feed reader), once the
+// main process has said how it is.
+export function useHelperModel(job: 'commentary' | 'killfeed'): LocalModelStatus | null {
+  return useCatalog().find((m) => m.job === job) ?? null
 }
 
 // What "On this PC" means right now: a built-in model or an Ollama one.

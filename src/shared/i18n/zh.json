@@ -240,7 +240,10 @@
     "useCommentaryModelHelp": "其他语言的评论，以及它写不出来的评论，由你的主模型来写。",
     "commentaryGemini": "目前由 Gemini 写你的评论，所以不会用到这个模型。",
     "commentaryEnglishOnly": "它目前只会写英语，所以 GameMate 所用语言的评论由你的主模型来写。",
-    "commentaryLicense": "LFM2.5 由 Liquid AI 开发，依据 <license>LFM Open License v1.0</license> 使用。该许可不适用于年收入达到或超过 1000 万美元的组织的商业用途。"
+    "commentaryLicense": "LFM2.5 由 Liquid AI 开发，依据 <license>LFM Open License v1.0</license> 使用。该许可不适用于年收入达到或超过 1000 万美元的组织的商业用途。",
+    "killfeedReader": "击杀信息读取器",
+    "killfeedReaderIntro": "用处理器读取射击游戏击杀信息中的名字，让显卡专心运行游戏。目前支持 VALORANT；没有它时，由主模型从截图中读取击杀信息。",
+    "killfeedDetails": "{{description}} {{size}}。在处理器上运行。"
   },
   "pictures": {
     "openOnThe": "在 {{wiki}} 中打开"
@@ -638,7 +641,9 @@
       "best": "最佳",
       "9b": "这台电脑上最好的回答。最好有 10 GB 或以上显存。",
       "commentary": "评论",
-      "commentaryHelp": "Liquid AI 的 LFM2.5，经 GameMate 进一步训练用于写评论。"
+      "commentaryHelp": "Liquid AI 的 LFM2.5，经 GameMate 进一步训练用于写评论。",
+      "killfeed": "击杀信息",
+      "killfeedHelp": "PaddlePaddle 的 PaddleOCR 文字识别（Apache 2.0）。"
     }
   },
   "tray": {

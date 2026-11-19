@@ -246,7 +246,10 @@
     "useCommentaryModelHelp": "I commenti in altre lingue, e quelli che non riesce a scrivere, arrivano dal tuo modello principale.",
     "commentaryGemini": "Al momento i tuoi commenti li scrive Gemini, quindi questo modello non viene usato.",
     "commentaryEnglishOnly": "Per ora scrive solo in inglese, quindi i commenti nella lingua di GameMate li scrive il tuo modello principale.",
-    "commentaryLicense": "LFM2.5 è creato da Liquid AI e usato secondo la <license>LFM Open License v1.0</license>, che non copre l'uso commerciale da parte di organizzazioni con un fatturato annuo di 10 milioni di dollari statunitensi o più."
+    "commentaryLicense": "LFM2.5 è creato da Liquid AI e usato secondo la <license>LFM Open License v1.0</license>, che non copre l'uso commerciale da parte di organizzazioni con un fatturato annuo di 10 milioni di dollari statunitensi o più.",
+    "killfeedReader": "Lettore del feed delle uccisioni",
+    "killfeedReaderIntro": "Legge i nomi nel feed delle uccisioni di uno sparatutto con il processore, così la scheda grafica resta libera per il gioco. Per ora per VALORANT; senza, il tuo modello principale legge il feed dagli screenshot.",
+    "killfeedDetails": "{{description}} {{size}}. Funziona sul processore."
   },
   "pictures": {
     "openOnThe": "Apri su {{wiki}}"
@@ -644,7 +647,9 @@
       "best": "Il migliore",
       "9b": "Le migliori risposte su questo PC. Ideale con almeno 10 GB di memoria grafica.",
       "commentary": "Commenti",
-      "commentaryHelp": "LFM2.5 di Liquid AI, addestrato ulteriormente da GameMate per scrivere commenti."
+      "commentaryHelp": "LFM2.5 di Liquid AI, addestrato ulteriormente da GameMate per scrivere commenti.",
+      "killfeed": "Feed uccisioni",
+      "killfeedHelp": "Riconoscimento del testo PaddleOCR di PaddlePaddle (Apache 2.0)."
     }
   },
   "tray": {

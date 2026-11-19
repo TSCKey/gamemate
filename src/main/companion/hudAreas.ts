@@ -31,8 +31,11 @@ const LEAGUE_BANNER: Area = { kind: 'banner', x: 0.25, y: 0.1, width: 0.5, heigh
 // "Eliminated <name>" and similar, shown below the crosshair.
 const LOW_BANNER: Area = { kind: 'banner', x: 0.25, y: 0.62, width: 0.5, height: 0.16 }
 
-const LAYOUTS: { name: RegExp; areas: Area[] }[] = [
-  { name: /^valorant$/i, areas: [feed(0.7, 0.06, 0.3, 0.32), TOP_BANNER] },
+// `readText`: the kill feed's lines read "name, weapon, name" and were checked with the text
+// reader (src/main/ocr) on the owner's recordings, so its text can be read without the vision
+// model. Only VALORANT so far: 12 clips, 97% of 279 names read exactly.
+const LAYOUTS: { name: RegExp; areas: Area[]; readText?: true }[] = [
+  { name: /^valorant$/i, areas: [feed(0.7, 0.06, 0.3, 0.32), TOP_BANNER], readText: true },
   { name: /^overwatch/i, areas: [feed(0.68, 0.02, 0.32, 0.3), TOP_BANNER, LOW_BANNER] },
   { name: /^marvel rivals$/i, areas: [feed(0.7, 0.05, 0.3, 0.3), TOP_BANNER, LOW_BANNER] },
   { name: /^counter-strike/i, areas: [feed(0.72, 0.05, 0.28, 0.3), TOP_BANNER] },
@@ -50,6 +53,11 @@ const LAYOUTS: { name: RegExp; areas: Area[] }[] = [
 // The parts to watch in this game, or null to look at the whole screen as usual.
 export function hudAreas(gameName: string): Area[] | null {
   return LAYOUTS.find((layout) => layout.name.test(gameName))?.areas ?? null
+}
+
+// Whether this game's feed and banners can be read by the text reader instead of the vision model.
+export function readsText(gameName: string): boolean {
+  return LAYOUTS.find((layout) => layout.name.test(gameName))?.readText === true
 }
 
 // Where the game's window is inside a capture of its display, in the capture's own pixels.

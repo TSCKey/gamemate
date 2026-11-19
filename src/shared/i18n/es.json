@@ -246,7 +246,10 @@
     "useCommentaryModelHelp": "Los comentarios en otros idiomas, y los que no pueda escribir, los escribe tu modelo principal.",
     "commentaryGemini": "Ahora mismo Gemini escribe tus comentarios, así que este modelo no se usa.",
     "commentaryEnglishOnly": "Por ahora solo escribe en inglés, así que tu modelo principal escribe los comentarios en el idioma de GameMate.",
-    "commentaryLicense": "LFM2.5 es de Liquid AI y se usa bajo la <license>LFM Open License v1.0</license>, que no cubre el uso comercial por parte de organizaciones con ingresos anuales de 10 millones de dólares estadounidenses o más."
+    "commentaryLicense": "LFM2.5 es de Liquid AI y se usa bajo la <license>LFM Open License v1.0</license>, que no cubre el uso comercial por parte de organizaciones con ingresos anuales de 10 millones de dólares estadounidenses o más.",
+    "killfeedReader": "Lector del registro de bajas",
+    "killfeedReaderIntro": "Lee los nombres del registro de bajas de un shooter con tu procesador, para que tu tarjeta gráfica quede libre para el juego. Por ahora para VALORANT; sin él, tu modelo principal lee el registro a partir de capturas.",
+    "killfeedDetails": "{{description}} {{size}}. Funciona en el procesador."
   },
   "pictures": {
     "openOnThe": "Abrir en {{wiki}}"
@@ -644,7 +647,9 @@
       "best": "El mejor",
       "9b": "Las mejores respuestas en este PC. Ideal con 10 GB o más de memoria gráfica.",
       "commentary": "Comentarios",
-      "commentaryHelp": "LFM2.5 de Liquid AI, entrenado además por GameMate para escribir comentarios."
+      "commentaryHelp": "LFM2.5 de Liquid AI, entrenado además por GameMate para escribir comentarios.",
+      "killfeed": "Registro de bajas",
+      "killfeedHelp": "Reconocimiento de texto PaddleOCR de PaddlePaddle (Apache 2.0)."
     }
   },
   "tray": {

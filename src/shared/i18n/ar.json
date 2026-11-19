@@ -255,7 +255,10 @@
     "useCommentaryModelHelp": "التعليقات بلغات أخرى، وما لا يستطيع كتابته، يكتبها نموذجك الرئيسي.",
     "commentaryGemini": "يكتب Gemini تعليقاتك الآن، لذلك لا يُستخدم هذا النموذج.",
     "commentaryEnglishOnly": "يكتب بالإنجليزية فقط حاليًا، لذلك يكتب نموذجك الرئيسي التعليقات بلغة GameMate.",
-    "commentaryLicense": "LFM2.5 من إنتاج Liquid AI ويُستخدم بموجب <license>LFM Open License v1.0</license>، التي لا تشمل الاستخدام التجاري من قبل المؤسسات التي تبلغ إيراداتها السنوية 10 ملايين دولار أمريكي أو أكثر."
+    "commentaryLicense": "LFM2.5 من إنتاج Liquid AI ويُستخدم بموجب <license>LFM Open License v1.0</license>، التي لا تشمل الاستخدام التجاري من قبل المؤسسات التي تبلغ إيراداتها السنوية 10 ملايين دولار أمريكي أو أكثر.",
+    "killfeedReader": "قارئ سجل القتل",
+    "killfeedReaderIntro": "يقرأ الأسماء في سجل القتل في ألعاب التصويب باستخدام المعالج، لتبقى بطاقة الرسومات متفرغة للعبة. لـ VALORANT حاليًا؛ ومن دونه يقرأ نموذجك الرئيسي السجل من لقطات الشاشة.",
+    "killfeedDetails": "{{description}} {{size}}. يعمل على المعالج."
   },
   "pictures": {
     "openOnThe": "فتح في {{wiki}}"
@@ -653,7 +656,9 @@
       "best": "الأفضل",
       "9b": "أفضل الإجابات على هذا الحاسوب. الأنسب مع 10 غيغابايت أو أكثر من ذاكرة الرسوميات.",
       "commentary": "التعليقات",
-      "commentaryHelp": "نموذج LFM2.5 من Liquid AI، درّبه GameMate إضافيًا على كتابة التعليقات."
+      "commentaryHelp": "نموذج LFM2.5 من Liquid AI، درّبه GameMate إضافيًا على كتابة التعليقات.",
+      "killfeed": "سجل القتل",
+      "killfeedHelp": "التعرّف على النصوص PaddleOCR من PaddlePaddle (Apache 2.0)."
     }
   },
   "tray": {

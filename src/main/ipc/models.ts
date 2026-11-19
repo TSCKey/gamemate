@@ -2,12 +2,14 @@
 import { primeCommentaryModel, primeModel } from '../ai/engines'
 import { listGeminiModels } from '../ai/gemini'
 import { runningModel, stopCommentaryEngine, stopMainEngine } from '../ai/llamaEngine'
+import { stopPaddle } from '../ocr/paddle'
 import {
   cancelLocalModel,
   COMMENTARY_MODEL_ID,
   downloadLocalModel,
   isCatalogModelId,
   isLocalModelInstalled,
+  KILLFEED_OCR_ID,
   localModelStatuses,
   removeLocalModel
 } from '../ai/localModels'
@@ -29,6 +31,8 @@ export function registerModelHandlers(): void {
       }
       return
     }
+    // The kill-feed reader is used as soon as it is there.
+    if (id === KILLFEED_OCR_ID) return
     // A freshly downloaded model is used if the chosen one isn't there yet.
     if (done && !isLocalModelInstalled(getSettings().builtinModel)) {
       updateSettings({ builtinModel: id })
@@ -42,6 +46,7 @@ export function registerModelHandlers(): void {
   handle('local-models:remove', async (_event, id: unknown) => {
     if (!isCatalogModelId(id)) return
     if (id === COMMENTARY_MODEL_ID) await stopCommentaryEngine()
+    else if (id === KILLFEED_OCR_ID) await stopPaddle()
     else if (runningModel() === id) await stopMainEngine()
     await removeLocalModel(id)
   })

@@ -3,6 +3,7 @@ import { BrowserWindow, shell, type IpcMainInvokeEvent } from 'electron'
 import type { AppInfo } from '../../shared/types'
 import { captureSource, listSources } from '../windows/capture'
 import { stopEngine } from '../ai/llamaEngine'
+import { stopPaddle } from '../ocr/paddle'
 import { removeAllLocalModels } from '../ai/localModels'
 import { allowedLink } from '../system/links'
 import { deleteLogs, logFolder } from '../system/log'
@@ -53,7 +54,7 @@ export function registerAppHandlers(
     clearGeminiKey()
     clearEvents()
     clearSession()
-    await stopEngine()
+    await Promise.all([stopEngine(), stopPaddle()])
     await Promise.all([
       ...speechModelStatuses().map((m) => removeSpeechModel(m.id)),
       removeAllLocalModels()

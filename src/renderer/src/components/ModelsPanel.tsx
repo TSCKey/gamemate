@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { LocalModelStatus, ModelInfo, Settings } from '../../../preload/index.d'
 import { Trans } from 'react-i18next'
-import { formatSize, useCommentaryModel } from '../hooks/useLocalModels'
+import { formatSize, useHelperModel } from '../hooks/useLocalModels'
 import { LINKS } from '../constants'
 import { ExternalLink, Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
@@ -17,6 +17,95 @@ export function Progress({ value }: { value: number }): React.JSX.Element {
     >
       <div className="progress-bar" style={{ width: `${Math.round(value * 100)}%` }} />
     </div>
+  )
+}
+
+// A model with one job beside the main model: its download, progress and delete buttons.
+function HelperModelRow({
+  model,
+  details,
+  confirmDelete,
+  setConfirmDelete
+}: {
+  model: LocalModelStatus
+  details: string
+  confirmDelete: boolean
+  setConfirmDelete: (on: boolean) => void
+}): React.JSX.Element {
+  return (
+    <div className="model-row">
+      <div className="model-info">
+        <div className="field-label">
+          {model.name} <span className="badge">{model.label}</span>
+        </div>
+        <div className="field-help">{details}</div>
+        {model.progress !== null && <Progress value={model.progress} />}
+        {model.error && <div className="error-text">{model.error}</div>}
+      </div>
+      <div className="model-actions">
+        {model.progress !== null ? (
+          <>
+            <span className="field-help">{Math.round(model.progress * 100)}%</span>
+            <button type="button" onClick={() => window.api.localModels.cancel(model.id)}>
+              {t('modelsPanel.cancel')}
+            </button>
+          </>
+        ) : confirmDelete ? (
+          <>
+            <button
+              type="button"
+              className="danger"
+              onClick={() => {
+                setConfirmDelete(false)
+                window.api.localModels.remove(model.id)
+              }}
+            >
+              {t('modelsPanel.delete', { size: formatSize(model.sizeMb) })}
+            </button>
+            <button type="button" onClick={() => setConfirmDelete(false)}>
+              {t('modelsPanel.keep')}
+            </button>
+          </>
+        ) : model.installed ? (
+          <button type="button" onClick={() => setConfirmDelete(true)}>
+            {t('modelsPanel.delete', { size: formatSize(model.sizeMb) })}
+          </button>
+        ) : (
+          <button type="button" onClick={() => window.api.localModels.download(model.id)}>
+            {model.error ? t('modelsPanel.tryAgain') : t('modelsPanel.download')}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// The text reader for shooters' kill feeds: with it, games whose feed it was checked on are read
+// without the vision model.
+function KillfeedReader({
+  model,
+  confirmDelete,
+  setConfirmDelete
+}: {
+  model: LocalModelStatus
+  confirmDelete: boolean
+  setConfirmDelete: (on: boolean) => void
+}): React.JSX.Element {
+  return (
+    <Section
+      title={t('modelsPanel.killfeedReader')}
+      description={t('modelsPanel.killfeedReaderIntro')}
+    >
+      <HelperModelRow
+        model={model}
+        details={t('modelsPanel.killfeedDetails', {
+          description: model.description,
+          size: formatSize(model.sizeMb)
+        })}
+        confirmDelete={confirmDelete}
+        setConfirmDelete={setConfirmDelete}
+      />
+    </Section>
   )
 }
 
@@ -46,55 +135,15 @@ function CommentaryWriter({
       title={t('modelsPanel.commentaryWriter')}
       description={t('modelsPanel.commentaryWriterIntro')}
     >
-      <div className="model-row">
-        <div className="model-info">
-          <div className="field-label">
-            {model.name} <span className="badge">{model.label}</span>
-          </div>
-          <div className="field-help">
-            {t('modelsPanel.commentaryDetails', {
-              description: model.description,
-              size: formatSize(model.sizeMb)
-            })}
-          </div>
-          {model.progress !== null && <Progress value={model.progress} />}
-          {model.error && <div className="error-text">{model.error}</div>}
-        </div>
-        <div className="model-actions">
-          {model.progress !== null ? (
-            <>
-              <span className="field-help">{Math.round(model.progress * 100)}%</span>
-              <button type="button" onClick={() => window.api.localModels.cancel(model.id)}>
-                {t('modelsPanel.cancel')}
-              </button>
-            </>
-          ) : confirmDelete ? (
-            <>
-              <button
-                type="button"
-                className="danger"
-                onClick={() => {
-                  setConfirmDelete(false)
-                  window.api.localModels.remove(model.id)
-                }}
-              >
-                {t('modelsPanel.delete', { size: formatSize(model.sizeMb) })}
-              </button>
-              <button type="button" onClick={() => setConfirmDelete(false)}>
-                {t('modelsPanel.keep')}
-              </button>
-            </>
-          ) : model.installed ? (
-            <button type="button" onClick={() => setConfirmDelete(true)}>
-              {t('modelsPanel.delete', { size: formatSize(model.sizeMb) })}
-            </button>
-          ) : (
-            <button type="button" onClick={() => window.api.localModels.download(model.id)}>
-              {model.error ? t('modelsPanel.tryAgain') : t('modelsPanel.download')}
-            </button>
-          )}
-        </div>
-      </div>
+      <HelperModelRow
+        model={model}
+        details={t('modelsPanel.commentaryDetails', {
+          description: model.description,
+          size: formatSize(model.sizeMb)
+        })}
+        confirmDelete={confirmDelete}
+        setConfirmDelete={setConfirmDelete}
+      />
       {model.installed && (
         <Field
           label={t('modelsPanel.useCommentaryModel')}
@@ -138,7 +187,8 @@ function ModelsPanel({
 }): React.JSX.Element {
   // Deleting means downloading again, so it takes a second click.
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
-  const commentaryModel = useCommentaryModel()
+  const commentaryModel = useHelperModel('commentary')
+  const killfeedModel = useHelperModel('killfeed')
 
   const inUse = (id: string): boolean =>
     settings.localBackend === 'builtin' && settings.builtinModel === id
@@ -240,6 +290,14 @@ function ModelsPanel({
           update={update}
           confirmDelete={confirmDelete === commentaryModel.id}
           setConfirmDelete={(on) => setConfirmDelete(on ? commentaryModel.id : null)}
+        />
+      )}
+
+      {killfeedModel && (
+        <KillfeedReader
+          model={killfeedModel}
+          confirmDelete={confirmDelete === killfeedModel.id}
+          setConfirmDelete={(on) => setConfirmDelete(on ? killfeedModel.id : null)}
         />
       )}
 

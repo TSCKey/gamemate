@@ -2,6 +2,7 @@
 // player accepts, GameMate doesn't go online, look at the PC or take screenshots.
 import { app } from 'electron'
 import { stopEngine } from '../ai/llamaEngine'
+import { stopPaddle } from '../ocr/paddle'
 import { gateChannels, handle } from '../system/security'
 import { applyFeatureChoices } from '../system/featureChoices'
 import { acceptTerms, termsAccepted, withdrawTerms } from '../system/settings'
@@ -47,7 +48,7 @@ export function registerLegalHandlers(): void {
     const settings = withdrawTerms()
     hideOverlay()
     // Nothing keeps working in the background until the player accepts again.
-    await stopEngine()
+    await Promise.all([stopEngine(), stopPaddle()])
     return settings
   })
   handle('features:apply', (_event, choices: unknown) => applyFeatureChoices(choices))

@@ -16,6 +16,14 @@ files:
 # GameMate's interface is in English, so Chromium's other languages aren't needed.
 electronLanguages:
   - en-US
+# ONNX Runtime's WebAssembly engine for the kill-feed text reader (src/main/ocr/paddle.ts), next
+# to the app instead of inside its archive. The rest of onnxruntime-web is bundled where it's used.
+extraResources:
+  - from: node_modules/onnxruntime-web/dist
+    to: ort
+    filter:
+      - ort-wasm-simd-threaded.mjs
+      - ort-wasm-simd-threaded.wasm
 asarUnpack:
   - resources/**
   # koffi's native binaries can't be loaded from inside the asar archive.

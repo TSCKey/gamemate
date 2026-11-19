@@ -336,7 +336,8 @@ export interface LocalModelStatus {
   label: string
   description: string
   // 'all': the main model (answers, screenshots, comments). 'commentary': the comment writer.
-  job: 'all' | 'commentary'
+  // 'killfeed': the text reader for shooters' kill feeds.
+  job: 'all' | 'commentary' | 'killfeed'
   sizeMb: number
   installed: boolean
   // 0-1 while downloading, otherwise null.

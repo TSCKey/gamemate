@@ -240,7 +240,10 @@
     "useCommentaryModelHelp": "다른 언어의 코멘트와 이 모델이 쓰지 못한 코멘트는 기본 모델이 씁니다.",
     "commentaryGemini": "지금은 Gemini가 코멘트를 쓰고 있어서 이 모델은 사용되지 않습니다.",
     "commentaryEnglishOnly": "아직은 영어로만 쓸 수 있어서, GameMate 언어로 된 코멘트는 기본 모델이 씁니다.",
-    "commentaryLicense": "LFM2.5는 Liquid AI가 만든 모델로 <license>LFM Open License v1.0</license>에 따라 사용됩니다. 이 라이선스는 연 매출이 1천만 미국 달러 이상인 조직의 상업적 사용에는 적용되지 않습니다."
+    "commentaryLicense": "LFM2.5는 Liquid AI가 만든 모델로 <license>LFM Open License v1.0</license>에 따라 사용됩니다. 이 라이선스는 연 매출이 1천만 미국 달러 이상인 조직의 상업적 사용에는 적용되지 않습니다.",
+    "killfeedReader": "킬 피드 판독기",
+    "killfeedReaderIntro": "슈팅 게임의 킬 피드에 나오는 이름을 프로세서로 읽어서, 그래픽 카드는 게임에 쓸 수 있습니다. 지금은 VALORANT만 지원하며, 없으면 기본 모델이 스크린샷에서 킬 피드를 읽습니다.",
+    "killfeedDetails": "{{description}} {{size}}. 프로세서에서 실행됩니다."
   },
   "pictures": {
     "openOnThe": "{{wiki}}에서 열기"
@@ -638,7 +641,9 @@
       "best": "최고",
       "9b": "이 PC에서 가장 좋은 답변. 그래픽 메모리 10 GB 이상에서 가장 좋습니다.",
       "commentary": "코멘트",
-      "commentaryHelp": "Liquid AI의 LFM2.5를 GameMate가 코멘트용으로 추가 학습시킨 모델입니다."
+      "commentaryHelp": "Liquid AI의 LFM2.5를 GameMate가 코멘트용으로 추가 학습시킨 모델입니다.",
+      "killfeed": "킬 피드",
+      "killfeedHelp": "PaddlePaddle의 PaddleOCR 텍스트 인식(Apache 2.0)."
     }
   },
   "tray": {

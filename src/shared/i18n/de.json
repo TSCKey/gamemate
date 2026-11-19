@@ -243,7 +243,10 @@
     "useCommentaryModelHelp": "Kommentare in anderen Sprachen und solche, die es nicht schreiben kann, kommen von deinem Hauptmodell.",
     "commentaryGemini": "Gemini schreibt deine Kommentare gerade, daher wird dieses Modell nicht verwendet.",
     "commentaryEnglishOnly": "Es schreibt vorerst nur auf Englisch, daher schreibt dein Hauptmodell die Kommentare in der Sprache von GameMate.",
-    "commentaryLicense": "LFM2.5 stammt von Liquid AI und wird unter der <license>LFM Open License v1.0</license> verwendet. Sie deckt keine kommerzielle Nutzung durch Organisationen mit einem Jahresumsatz von 10 Millionen US-Dollar oder mehr ab."
+    "commentaryLicense": "LFM2.5 stammt von Liquid AI und wird unter der <license>LFM Open License v1.0</license> verwendet. Sie deckt keine kommerzielle Nutzung durch Organisationen mit einem Jahresumsatz von 10 Millionen US-Dollar oder mehr ab.",
+    "killfeedReader": "Killfeed-Leser",
+    "killfeedReaderIntro": "Liest die Namen im Killfeed eines Shooters mit deinem Prozessor, damit deine Grafikkarte frei für das Spiel bleibt. Vorerst für VALORANT; ohne ihn liest dein Hauptmodell den Feed aus Screenshots.",
+    "killfeedDetails": "{{description}} {{size}}. Läuft auf dem Prozessor."
   },
   "pictures": {
     "openOnThe": "Im {{wiki}} öffnen"
@@ -641,7 +644,9 @@
       "best": "Am besten",
       "9b": "Die besten Antworten auf diesem PC. Am besten mit 10 GB Grafikspeicher oder mehr.",
       "commentary": "Kommentare",
-      "commentaryHelp": "LFM2.5 von Liquid AI, von GameMate weiter trainiert, um Kommentare zu schreiben."
+      "commentaryHelp": "LFM2.5 von Liquid AI, von GameMate weiter trainiert, um Kommentare zu schreiben.",
+      "killfeed": "Killfeed",
+      "killfeedHelp": "PaddleOCR-Texterkennung von PaddlePaddle (Apache 2.0)."
     }
   },
   "tray": {

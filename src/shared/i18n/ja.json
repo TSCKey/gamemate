@@ -240,7 +240,10 @@
     "useCommentaryModelHelp": "ほかの言語のコメントや、このモデルが書けなかったコメントは、メインのモデルが書きます。",
     "commentaryGemini": "現在は Gemini がコメントを書いているため、このモデルは使われません。",
     "commentaryEnglishOnly": "今のところ英語しか書けないため、GameMate の言語でのコメントはメインのモデルが書きます。",
-    "commentaryLicense": "LFM2.5 は Liquid AI が開発したモデルで、<license>LFM Open License v1.0</license> のもとで使用しています。このライセンスは、年間売上高が 1,000 万米ドル以上の組織による商用利用には適用されません。"
+    "commentaryLicense": "LFM2.5 は Liquid AI が開発したモデルで、<license>LFM Open License v1.0</license> のもとで使用しています。このライセンスは、年間売上高が 1,000 万米ドル以上の組織による商用利用には適用されません。",
+    "killfeedReader": "キルログ読み取り",
+    "killfeedReaderIntro": "シューターのキルログに表示される名前をプロセッサーで読み取るので、グラフィックカードはゲームに使えます。今のところ VALORANT のみ対応。これがない場合は、メインのモデルがスクリーンショットからキルログを読み取ります。",
+    "killfeedDetails": "{{description}} {{size}}。プロセッサーで動作します。"
   },
   "pictures": {
     "openOnThe": "{{wiki}} で開く"
@@ -638,7 +641,9 @@
       "best": "最高",
       "9b": "この PC で最高の回答。グラフィックメモリ 10 GB 以上で最適です。",
       "commentary": "コメント",
-      "commentaryHelp": "Liquid AI の LFM2.5 を、GameMate がコメント用に追加学習したものです。"
+      "commentaryHelp": "Liquid AI の LFM2.5 を、GameMate がコメント用に追加学習したものです。",
+      "killfeed": "キルログ",
+      "killfeedHelp": "PaddlePaddle の PaddleOCR 文字認識（Apache 2.0）。"
     }
   },
   "tray": {

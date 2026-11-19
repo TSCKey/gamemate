@@ -1,13 +1,23 @@
 // Games with a known HUD layout: the vision model only copies the text in the parts of the
 // screen that say what happened (the kill feed and the banner), and areaReading.ts works out
 // what it means. The parts are only read when something in them moved.
-import type { Display } from 'electron'
+import type { Display, NativeImage } from 'electron'
+import type { OcrSegment } from '../../ocr/paddleOcr'
 import { captureDisplayImage } from '../../windows/capture'
 import type { GameProfile } from '../../games/catalog'
 import type { Settings } from '../../system/settings'
 import { areaLookGapMs } from '../../companion/director'
 import { BANNER_KINDS, parsePlayerNames, readAreas } from '../../companion/areaReading'
-import { cropBox, gameFrame, hudAreas, type Area, type Box } from '../../companion/hudAreas'
+import {
+  cropBox,
+  gameFrame,
+  hudAreas,
+  readsText,
+  type Area,
+  type Box
+} from '../../companion/hudAreas'
+import { paddleReady, readWithPaddle } from '../../ocr/paddle'
+import { bannerText, feedLines } from '../../ocr/feedText'
 import type { AdapterHost, GameAdapter } from '../adapter'
 import { gamePlace } from '../gameWindow'
 import {
@@ -67,6 +77,24 @@ export function areaSchema(): object {
   }
 }
 
+// What the text reader found in the feed and banner, in the vision model's reply shape. Who was
+// eliminated by whom isn't read from a banner, only from the feed.
+export async function readAreasText(
+  areas: Area[],
+  images: NativeImage[],
+  read: (image: NativeImage) => Promise<OcrSegment[]> = readWithPaddle
+): Promise<unknown> {
+  const found = await Promise.all(images.map(read))
+  const of = (kind: Area['kind']): OcrSegment[] =>
+    found.flatMap((segments, i) => (areas[i].kind === kind ? segments : []))
+  return {
+    feed_lines: feedLines(of('feed')),
+    banner_text: bannerText(of('banner')),
+    banner_kind: 'none',
+    banner_name: ''
+  }
+}
+
 export function createKillfeed(host: AdapterHost): GameAdapter {
   let lastAreas: FrameStats[] | null = null
 
@@ -106,7 +134,12 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
         prompt: areaPrompt(areas),
         schema: areaSchema(),
         read: (reply, time) =>
-          readAreas(reply, time, parsePlayerNames(settings.commentaryPlayerNames))
+          readAreas(reply, time, parsePlayerNames(settings.commentaryPlayerNames)),
+        // With the text reader downloaded, a game whose feed it was checked on needs no vision
+        // model: it reads the names, and the banner's words decide round results as before.
+        ...(readsText(game.name) && paddleReady()
+          ? { readWithout: (images) => readAreasText(areas, images), reader: 'the text reader' }
+          : {})
       },
       settings,
       game

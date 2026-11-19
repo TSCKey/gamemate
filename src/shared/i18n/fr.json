@@ -246,7 +246,10 @@
     "useCommentaryModelHelp": "Les commentaires dans d'autres langues, et ceux qu'il ne peut pas écrire, viennent de ton modèle principal.",
     "commentaryGemini": "Gemini écrit tes commentaires en ce moment, donc ce modèle n'est pas utilisé.",
     "commentaryEnglishOnly": "Pour l'instant il n'écrit qu'en anglais, donc ton modèle principal écrit les commentaires dans la langue de GameMate.",
-    "commentaryLicense": "LFM2.5 est créé par Liquid AI et utilisé sous la <license>LFM Open License v1.0</license>, qui ne couvre pas l'usage commercial par des organisations dont le chiffre d'affaires annuel atteint 10 millions de dollars américains ou plus."
+    "commentaryLicense": "LFM2.5 est créé par Liquid AI et utilisé sous la <license>LFM Open License v1.0</license>, qui ne couvre pas l'usage commercial par des organisations dont le chiffre d'affaires annuel atteint 10 millions de dollars américains ou plus.",
+    "killfeedReader": "Lecteur du fil des éliminations",
+    "killfeedReaderIntro": "Lit les noms du fil des éliminations d'un jeu de tir avec ton processeur, pour laisser ta carte graphique au jeu. Pour VALORANT pour l'instant ; sans lui, ton modèle principal lit le fil à partir de captures d'écran.",
+    "killfeedDetails": "{{description}} {{size}}. Fonctionne sur le processeur."
   },
   "pictures": {
     "openOnThe": "Ouvrir sur {{wiki}}"
@@ -644,7 +647,9 @@
       "best": "Le meilleur",
       "9b": "Les meilleures réponses sur ce PC. Idéal avec 10 Go de mémoire graphique ou plus.",
       "commentary": "Commentaires",
-      "commentaryHelp": "LFM2.5 de Liquid AI, entraîné en plus par GameMate pour écrire des commentaires."
+      "commentaryHelp": "LFM2.5 de Liquid AI, entraîné en plus par GameMate pour écrire des commentaires.",
+      "killfeed": "Fil des éliminations",
+      "killfeedHelp": "Reconnaissance de texte PaddleOCR de PaddlePaddle (Apache 2.0)."
     }
   },
   "tray": {

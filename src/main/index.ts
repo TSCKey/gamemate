@@ -12,6 +12,7 @@ import {
   stopEngine,
   stopMainEngine
 } from './ai/llamaEngine'
+import { stopPaddle } from './ocr/paddle'
 import { startUpdater } from './system/updater'
 import { clearGeminiKey } from './system/secrets'
 import { followForegroundGame } from './games/current'
@@ -357,7 +358,7 @@ app.on('will-quit', (event) => {
   shutdownOcr()
   flushSettings()
   globalShortcut.unregisterAll()
-  Promise.allSettled([unloadModels(), stopEngine()]).finally(() => {
+  Promise.allSettled([unloadModels(), stopEngine(), stopPaddle()]).finally(() => {
     // Quit again once Electron has finished with this quit: when there was nothing to clean up
     // the cleanup ends at once, and a quit asked for during this event is ignored, which left
     // GameMate running in the background. (app.exit would skip installing a downloaded update.)
