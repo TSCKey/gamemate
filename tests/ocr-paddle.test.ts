@@ -15,7 +15,7 @@ import {
   type OcrModel,
   type OcrSegment
 } from '../src/main/ocr/paddleOcr'
-import { bannerText, feedLines } from '../src/main/ocr/feedText'
+import { bannerParts, feedLines } from '../src/main/ocr/feedText'
 import { readAreas } from '../src/main/companion/areaReading'
 import { hudAreas, readsText } from '../src/main/companion/hudAreas'
 
@@ -156,8 +156,22 @@ describe('kill-feed lines from what was read', () => {
     ).toEqual([])
   })
 
-  it('reads a banner as one line of text', () => {
-    expect(bannerText([seg('GEWONNEN', 200, 40), seg('RUNDE', 80, 41)])).toBe('RUNDE GEWONNEN')
+  it('reads a banner’s big words apart from the line under them', () => {
+    expect(bannerParts([seg('GEWONNEN', 200, 40), seg('RUNDE', 80, 41)])).toEqual({
+      headline: 'RUNDE GEWONNEN',
+      below: ''
+    })
+    // As in the owner's clips.
+    expect(
+      bannerParts([
+        seg('GEWONNEN', 319, 0, 322, 64),
+        seg('GEGNERISCHES TEAM ELIMINIERT', 328, 83, 305, 18)
+      ])
+    ).toEqual({ headline: 'GEWONNEN', below: 'GEGNERISCHES TEAM ELIMINIERT' })
+    expect(bannerParts([seg('KNAPP', 373, 0, 206, 90), seg('TSCKey', 445, 129, 69, 23)])).toEqual({
+      headline: 'KNAPP',
+      below: 'TSCKey'
+    })
   })
 })
 
@@ -187,6 +201,32 @@ describe('the text reader in place of the vision model', () => {
       ['round_won', ''],
       ['kill', 'angy323'],
       ['death', 'Jett']
+    ])
+  })
+
+  it('knows VALORANT’s round banner, and its clutch and ace banners over the player’s name', async () => {
+    const banner = async (...pieces: OcrSegment[]): Promise<string[]> => {
+      const reply = await readAreasText(areas, [{}, {}] as never, fake([[], pieces]))
+      return readAreas(reply, 1000, ['TSCKey']).events.map((e) => e.type)
+    }
+    expect(
+      await banner(
+        seg('GEWONNEN', 319, 0, 322, 64),
+        seg('GEGNERISCHES TEAM ELIMINIERT', 328, 83, 305, 18)
+      )
+    ).toEqual(['round_won'])
+    expect(await banner(seg('VERLOREN', 319, 0, 322, 64))).toEqual(['round_lost'])
+    expect(await banner(seg('KNAPP', 373, 0, 206, 90), seg('TSCKey', 445, 129, 69, 23))).toEqual([
+      'clutch',
+      'round_won'
+    ])
+    expect(await banner(seg('ASS', 333, 0, 216, 96), seg('TSCKey', 443, 127, 72, 28))).toEqual([
+      'ace',
+      'round_won'
+    ])
+    // A teammate's clutch is still the team's round.
+    expect(await banner(seg('KNAPP', 373, 0, 206, 90), seg('Jett', 445, 129, 69, 23))).toEqual([
+      'round_won'
     ])
   })
 

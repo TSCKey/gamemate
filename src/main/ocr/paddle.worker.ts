@@ -4,7 +4,14 @@ import { readFileSync } from 'fs'
 import { pathToFileURL } from 'url'
 import { parentPort, workerData } from 'worker_threads'
 import * as ort from 'onnxruntime-web'
-import { ctcTable, readImage, yamlCharacters, type OcrModel } from './paddleOcr'
+import {
+  ctcTable,
+  PADDLE_BANNER_DETECT,
+  PADDLE_DETECT,
+  readImage,
+  yamlCharacters,
+  type OcrModel
+} from './paddleOcr'
 
 export interface PaddleSetup {
   detect: string
@@ -20,6 +27,8 @@ export interface PaddleRequest {
   width: number
   height: number
   data: ArrayBuffer
+  // Big text, such as a banner: read at its own size instead of scaled up.
+  large: boolean
 }
 
 const setup = workerData as PaddleSetup
@@ -56,7 +65,8 @@ parentPort?.on('message', async (request: PaddleRequest) => {
       height: request.height,
       data: new Uint8Array(request.data)
     }
-    const segments = await readImage(image, await models)
+    const settings = request.large ? PADDLE_BANNER_DETECT : PADDLE_DETECT
+    const segments = await readImage(image, await models, settings)
     parentPort?.postMessage({ id: request.id, segments })
   } catch (error) {
     parentPort?.postMessage({

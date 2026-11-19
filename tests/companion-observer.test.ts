@@ -24,6 +24,8 @@ const image = {
     cuts.push(box)
     return image
   },
+  // The top bar's health bars: none to be seen.
+  toBitmap: () => Buffer.alloc(1920 * 1080 * 4),
   resize: () => ({
     toBitmap: () => Buffer.alloc(64 * 4, frozen ? shade : (shade = (shade + 90) % 250))
   })

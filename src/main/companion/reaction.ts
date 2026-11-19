@@ -275,7 +275,7 @@ const CLAIMS: { words: RegExp; backedBy: GameEventType[] }[] = [
   { words: /\bclutch/i, backedBy: ['clutch'] },
   { words: /\bcome-?back\b|\bcame back\b/i, backedBy: ['comeback'] },
   { words: /\bhead-?shot/i, backedBy: ['headshot'] },
-  { words: /\baced?\b/i, backedBy: ['team_wipe', 'clutch'] }
+  { words: /\baced?\b/i, backedBy: ['team_wipe', 'clutch', 'ace'] }
 ]
 
 // What a bigger moment worked out from the screen can't back up: the light checks see the mask

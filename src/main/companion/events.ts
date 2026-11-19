@@ -170,6 +170,8 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     cooldownMs: 20 * S,
     staleMs: 30 * S,
     dedupeMs: 20 * S,
+    // Worked out by match memory from the player's kills, it speaks for them.
+    narrative: true,
     meaning: 'The player eliminated several opponents in quick succession.',
     seen: 'a double/triple/multi-kill banner in the middle of the screen, never a badge on a kill-feed line; put the number in "count"'
   },
@@ -218,6 +220,44 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     dedupeMs: 20 * S,
     meaning: 'The player won a round or fight alone against the odds.',
     seen: 'a banner or medal says the player clutched'
+  },
+  ace: {
+    category: 'skill',
+    tier: 'exceptional',
+    mood: 'positive',
+    priority: 95,
+    cooldownMs: 30 * S,
+    staleMs: 30 * S,
+    dedupeMs: 30 * S,
+    // Only from the game's own banner over the player's name (src/main/companion/areaReading.ts).
+    meaning:
+      'The game announced an ace: the player alone eliminated the whole enemy team this round.'
+  },
+  // Worked out from the alive count in VALORANT's top bar (src/main/companion/lastAlive.ts).
+  last_alive: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'tense',
+    priority: 80,
+    cooldownMs: 60 * S,
+    // Only worth saying while it is still on.
+    staleMs: 10 * S,
+    dedupeMs: 60 * S,
+    urgent: true,
+    meaning:
+      'The rest of the team is down: the player is the last one alive on their team, and the round is still on.'
+  },
+  clutch_lost: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'negative',
+    priority: 75,
+    cooldownMs: 60 * S,
+    staleMs: 25 * S,
+    dedupeMs: 60 * S,
+    narrative: true,
+    meaning:
+      'The player was the last one alive on their team, alone against the rest, and was eliminated.'
   },
   recovery: {
     category: 'skill',

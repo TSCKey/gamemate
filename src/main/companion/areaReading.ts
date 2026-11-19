@@ -61,6 +61,9 @@ const RESULT_WORDS: [GameEventType, string[]][] = [
     [
       'round won',
       'round win',
+      // VALORANT's round banner says only this, over why the round ended.
+      'won',
+      'gewonnen',
       'runde gewonnen',
       'manche gagnee',
       'ronda ganada',
@@ -79,6 +82,8 @@ const RESULT_WORDS: [GameEventType, string[]][] = [
     [
       'round lost',
       'round loss',
+      'lost',
+      'verloren',
       'runde verloren',
       'manche perdue',
       'ronda perdida',
@@ -110,10 +115,21 @@ const withoutNumbers = (text: string): string =>
     .filter((word) => !/^\p{N}+$/u.test(word))
     .join(' ')
 
+// Banners VALORANT shows instead of the round-won one, over the name of the player who did it.
+// English and German, as seen in the owner's clips.
+const AWARD_WORDS: [GameEventType, string[]][] = [
+  ['clutch', ['clutch', 'knapp']],
+  ['ace', ['ace', 'ass']]
+]
+
 const RESULTS = new Map<string, GameEventType>(
   RESULT_WORDS.flatMap(([type, words]) =>
     words.map((word): [string, GameEventType] => [withoutNumbers(word), type])
   )
+)
+
+const AWARDS = new Map<string, GameEventType>(
+  AWARD_WORDS.flatMap(([type, words]) => words.map((word): [string, GameEventType] => [word, type]))
 )
 
 const MAX_EVENTS = 4
@@ -175,11 +191,25 @@ function feedEvents(raw: unknown, time: number, names: string[]): GameEvent[] {
   })
 }
 
-function bannerEvents(reply: Record<string, unknown>, time: number): GameEvent[] {
+function bannerEvents(reply: Record<string, unknown>, time: number, names: string[]): GameEvent[] {
   const text = cleanName(reply.banner_text)
   if (!text) return []
   const result = RESULTS.get(withoutNumbers(text))
   if (result) return [makeEvent(result, time, 'vision', { ...copied, detail: text, importance: 9 })]
+  // A clutch or ace banner means the round was won; it is the player's only under their name.
+  const award = AWARDS.get(withoutNumbers(text))
+  if (award) {
+    const by = cleanName(reply.banner_name)
+    // Without a name it may be another game's word for something else (the model once called a
+    // bare "CLUTCH" a victory).
+    if (!by) return []
+    const won = makeEvent('round_won', time, 'vision', { ...copied, detail: text, importance: 9 })
+    if (!isPlayer(by, names)) return [won]
+    return [
+      makeEvent(award, time, 'vision', { ...copied, detail: `${text} ${by}`, importance: 10 }),
+      won
+    ]
+  }
 
   const kind = BANNER_KINDS.find((k) => k === reply.banner_kind) ?? 'none'
   if (kind === 'none') return []
@@ -196,7 +226,7 @@ export function readAreas(raw: unknown, capturedAt: number, names: string[]): Fr
   const reply = isRecord(raw) ? raw : {}
   const seen = new Set<string>()
   const events = [
-    ...bannerEvents(reply, capturedAt),
+    ...bannerEvents(reply, capturedAt, names),
     ...feedEvents(reply.feed_lines, capturedAt, names)
   ]
     .filter((event) => {

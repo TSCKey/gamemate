@@ -72,8 +72,8 @@ async function start(): Promise<Worker> {
   return started
 }
 
-// All the text in an image, with where it is.
-export async function readWithPaddle(image: NativeImage): Promise<OcrSegment[]> {
+// All the text in an image, with where it is. `large`: the text is big, as in a banner.
+export async function readWithPaddle(image: NativeImage, large = false): Promise<OcrSegment[]> {
   if (idleTimer) clearTimeout(idleTimer)
   idleTimer = setTimeout(() => void stopPaddle(), IDLE_MS)
   idleTimer.unref()
@@ -87,7 +87,7 @@ export async function readWithPaddle(image: NativeImage): Promise<OcrSegment[]> 
   const bitmap = image.toBitmap()
   const data = bitmap.buffer.slice(bitmap.byteOffset, bitmap.byteOffset + bitmap.byteLength)
   const id = nextId++
-  const request: PaddleRequest = { id, width, height, data: data as ArrayBuffer }
+  const request: PaddleRequest = { id, width, height, data: data as ArrayBuffer, large }
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
       waiting.delete(id)

@@ -20,6 +20,9 @@ const STREAK_MARKS = [3, 5, 7, 10]
 const ROUND_RUN_MARKS = [3, 5, 7]
 const LOSS_RUN_MARK = 3
 const KILL_MILESTONES = [10, 20, 30]
+// The player's kills this close together, with no death between, are one multi-kill ("double
+// kill"). A feed is read every few seconds, so this is measured between the looks that saw them.
+const MULTIKILL_GAP_MS = 7_000
 const COMEBACK_DEFICIT = 3
 const MAX_SCORE_STEP = 2
 
@@ -68,6 +71,7 @@ const combatTypes = new Set<GameEventType>([
   'multikill',
   'death',
   'clutch',
+  'ace',
   'team_wipe',
   'teammate_saved',
   'objective_won',
@@ -101,6 +105,13 @@ export class MatchMemory {
   private endedAt: number | null = null
   private startedAt: number | null = null
   private lastFrameAt: number | null = null
+  // The player's latest kills in quick succession, and how many of them were already said.
+  private burst: {
+    parts: { id: string; name: string; time: number }[]
+    kills: number
+    lastAt: number
+    said: number
+  } | null = null
 
   // Takes in one look at the game (repeats already removed) and returns what follows from it.
   // `held` lists events still on screen that were already counted.
@@ -109,10 +120,11 @@ export class MatchMemory {
     this.startedAt ??= report.time
     this.lastFrameAt = Math.max(this.lastFrameAt ?? report.time, report.time)
 
-    this.countKills(report)
+    const kills = this.countKills(report)
     for (const event of report.events) this.count(event)
 
     const derived = [
+      ...this.checkMultikill(report, kills),
       ...this.readScore(report),
       ...this.checkStreak(report.time, report),
       ...this.checkRecovery(report, held)
@@ -139,7 +151,7 @@ export class MatchMemory {
     if (longBreak || playingAgain || scoreRestarted) this.startNewMatch()
   }
 
-  private countKills(report: FrameReport): void {
+  private countKills(report: FrameReport): number {
     const shots = report.events.filter((e) => e.type === 'kill' || e.type === 'headshot')
     const named = new Set(shots.filter((e) => e.opponent).map((e) => key(e.opponent)))
     const nameless = (type: GameEventType): number =>
@@ -159,6 +171,39 @@ export class MatchMemory {
       this.kills += total
       this.addEntry({ time: report.time, type: 'kill', mood: 'positive', kills: total })
     }
+    return total
+  }
+
+  // Kills seen one after the other, a few seconds apart, from the player's own feed lines. A
+  // multi-kill banner the model read says it already.
+  private checkMultikill(report: FrameReport, kills: number): GameEvent[] {
+    const events: GameEvent[] = []
+    if (kills > 0 && !report.events.some((e) => e.type === 'multikill')) {
+      const burst = this.burst
+      const goesOn = burst !== null && Math.abs(report.time - burst.lastAt) <= MULTIKILL_GAP_MS
+      const next = goesOn ? burst : { parts: [], kills: 0, lastAt: report.time, said: 1 }
+      for (const kill of report.events.filter((e) => e.type === 'kill')) {
+        next.parts.push({ id: kill.id, name: kill.opponent, time: kill.time })
+      }
+      // Looks can come back out of order: kept in the order they happened.
+      next.parts.sort((a, b) => a.time - b.time)
+      next.kills += kills
+      next.lastAt = Math.max(next.lastAt, report.time)
+      this.burst = next
+      if (next.kills >= 2 && next.kills > next.said) {
+        next.said = next.kills
+        const names = next.parts.map((p) => p.name).filter((name) => name !== '')
+        events.push(
+          makeEvent('multikill', next.lastAt, 'memory', {
+            count: next.kills,
+            detail: `${next.kills} eliminations within a few seconds${names.length ? `: ${names.map((n) => `"${n}"`).join(', ')}` : ''}.`,
+            related: next.parts.map((p) => p.id)
+          })
+        )
+      }
+    }
+    if (report.events.some((e) => e.type === 'death')) this.burst = null
+    return events
   }
 
   private count(event: GameEvent): void {
@@ -494,6 +539,7 @@ export class MatchMemory {
     this.endedAt = null
     this.startedAt = null
     this.lastFrameAt = null
+    this.burst = null
   }
 
   reset(): void {

@@ -45,10 +45,28 @@ export function feedLines(segments: OcrSegment[]): FeedLine[] {
   })
 }
 
-// All the banner's text in reading order, as one line.
-export function bannerText(segments: OcrSegment[]): string {
-  return lines(segments)
-    .map((row) => row.map((s) => s.text.trim()).join(' '))
-    .join(' ')
-    .trim()
+export interface Banner {
+  // The big words, such as "GEWONNEN" or "KNAPP".
+  headline: string
+  // The smaller line under them: why the round ended, or whose clutch or ace it was.
+  below: string
+}
+
+// A banner's headline is its tallest text. In the owner's clips VALORANT's round banners read
+// "GEWONNEN" over "GEGNERISCHES TEAM ELIMINIERT", or "KNAPP" (clutch) or "ASS" (ace) over the
+// player's name.
+export function bannerParts(segments: OcrSegment[]): Banner {
+  const rows = lines(segments)
+  if (rows.length === 0) return { headline: '', below: '' }
+  const tallest = (row: OcrSegment[]): number => Math.max(...row.map((s) => s.height))
+  const top = rows.reduce((best, row) => (tallest(row) > tallest(best) ? row : best))
+  const text = (row: OcrSegment[]): string => row.map((s) => s.text.trim()).join(' ')
+  return {
+    headline: text(top).trim(),
+    below: rows
+      .slice(rows.indexOf(top) + 1)
+      .map(text)
+      .join(' ')
+      .trim()
+  }
 }

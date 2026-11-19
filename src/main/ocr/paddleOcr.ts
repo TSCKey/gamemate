@@ -53,6 +53,15 @@ export const PADDLE_DETECT: DetectSettings = {
   unclipRatio: 1.4
 }
 
+// Banners: big letters in a wide, short strip. Scaled up like the feed, a 1080p banner strip was
+// read at about 4080 x 736 pixels, which kept a processor core busy through the owner's live
+// match; the letters need no scaling at all.
+export const PADDLE_BANNER_DETECT: DetectSettings = {
+  ...PADDLE_DETECT,
+  limitSide: 960,
+  limitType: 'max'
+}
+
 const DET_MAX_CANDIDATES = 1000
 const DET_MIN_SIZE = 3
 const REC_HEIGHT = 48

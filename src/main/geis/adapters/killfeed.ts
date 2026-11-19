@@ -12,12 +12,16 @@ import {
   cropBox,
   gameFrame,
   hudAreas,
+  readsTeamBar,
   readsText,
   type Area,
   type Box
 } from '../../companion/hudAreas'
+import { LastAliveWatch } from '../../companion/lastAlive'
+import type { FrameReport } from '../../companion/events'
+import { teamBarBox, teammatesAlive } from './teamBar'
 import { paddleReady, readWithPaddle } from '../../ocr/paddle'
-import { bannerText, feedLines } from '../../ocr/feedText'
+import { bannerParts, feedLines } from '../../ocr/feedText'
 import type { AdapterHost, GameAdapter } from '../adapter'
 import { gamePlace } from '../gameWindow'
 import {
@@ -82,21 +86,31 @@ export function areaSchema(): object {
 export async function readAreasText(
   areas: Area[],
   images: NativeImage[],
-  read: (image: NativeImage) => Promise<OcrSegment[]> = readWithPaddle
+  read: (image: NativeImage, large: boolean) => Promise<OcrSegment[]> = readWithPaddle
 ): Promise<unknown> {
-  const found = await Promise.all(images.map(read))
+  const found = await Promise.all(images.map((image, i) => read(image, areas[i].kind === 'banner')))
   const of = (kind: Area['kind']): OcrSegment[] =>
     found.flatMap((segments, i) => (areas[i].kind === kind ? segments : []))
+  const banner = bannerParts(of('banner'))
   return {
     feed_lines: feedLines(of('feed')),
-    banner_text: bannerText(of('banner')),
+    banner_text: banner.headline,
     banner_kind: 'none',
-    banner_name: ''
+    // Under a clutch or ace banner, the name of who did it.
+    banner_name: banner.below
   }
+}
+
+// How many of the player's team are alive, read off the capture's top bar.
+function teamCount(image: NativeImage, frame: Box): number | null {
+  const bar = image.crop(teamBarBox(frame))
+  const { width, height } = bar.getSize()
+  return teammatesAlive({ width, height, data: bar.toBitmap() })
 }
 
 export function createKillfeed(host: AdapterHost): GameAdapter {
   let lastAreas: FrameStats[] | null = null
+  const lastAlive = new LastAliveWatch()
 
   // Looks at only the parts of the screen that say what happened in the match.
   async function lookAtAreas(
@@ -114,13 +128,33 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
     const size = image.getSize()
     const frame = gameFrame(gameWindow, display.bounds, size)
     const crops = areas.map((area) => image.crop(cropBox(area, frame, size)))
+    // Read on every look: it is a few pixels, and a count needs two looks in a row to change.
+    const team = readsTeamBar(game.name) ? teamCount(image, frame) : null
 
     // Not worth the GPU while nothing in them moves, such as in a menu or a paused game.
     const stats = crops.map(frameStats)
     const previous = lastAreas
     const changed =
       !previous || stats.some((s, i) => sceneChange(s, previous[i]) > AREA_CHANGE_THRESHOLD)
-    if (!changed && since < MAX_ANALYSIS_GAP_MS) return
+    if (!changed && since < MAX_ANALYSIS_GAP_MS) {
+      const moments = team === null ? [] : lastAlive.absorb(capturedAt, team, [])
+      if (moments.length > 0) {
+        const report: FrameReport = {
+          time: capturedAt,
+          source: 'vision',
+          adapterId: 'killfeed',
+          phase: 'playing',
+          inFight: false,
+          score: null,
+          description: '',
+          events: moments
+        }
+        host.observe(report, game, '')
+        host.showCommentsOn(display.id)
+        await host.speakIfDue(game, settings)
+      }
+      return
+    }
 
     lastAreas = stats
     lookTimes.lastAt = capturedAt
@@ -133,8 +167,14 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
         images: crops,
         prompt: areaPrompt(areas),
         schema: areaSchema(),
-        read: (reply, time) =>
-          readAreas(reply, time, parsePlayerNames(settings.commentaryPlayerNames)),
+        read: (reply, time) => {
+          const report = readAreas(reply, time, parsePlayerNames(settings.commentaryPlayerNames))
+          if (!readsTeamBar(game.name)) return report
+          return {
+            ...report,
+            events: [...report.events, ...lastAlive.absorb(time, team, report.events)]
+          }
+        },
         // With the text reader downloaded, a game whose feed it was checked on needs no vision
         // model: it reads the names, and the banner's words decide round results as before.
         ...(readsText(game.name) && paddleReady()
@@ -160,6 +200,7 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
     stop: () => {},
     gameGone: () => {
       lastAreas = null
+      lastAlive.reset()
     }
   }
 }
