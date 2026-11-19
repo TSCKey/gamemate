@@ -256,7 +256,9 @@ class EngineSlot {
       }
     })
     const started = Date.now()
-    console.info(`${this.kind.name} starting ${modelId} on ${found.main ?? 'the default device'}`)
+    const device = args.includes('-dev') ? args[args.indexOf('-dev') + 1] : null
+    const where = device === 'none' ? 'the processor' : (device ?? 'the default device')
+    console.info(`${this.kind.name} starting ${modelId} on ${where}`)
     try {
       await waitUntilReady(run)
     } catch (error) {
