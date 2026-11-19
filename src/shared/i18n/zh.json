@@ -82,6 +82,8 @@
     "nothingYetStartPlayingAnd": "暂无内容。开始游戏后,GameMate 会记录发生的事情。",
     "reactionIntensity": "反应强度",
     "humorLevel": "幽默程度",
+    "hideInFullscreen": "全屏时隐藏文字",
+    "hideInFullscreenHelp": "游戏占满整个屏幕时，评论只会朗读出来，弹窗不会显示在游戏上方。",
     "tacticalComments": "战术提示",
     "tacticalCommentsHelp": "偶尔补充一句友好而有用的观察。在只查看比赛信息流的游戏中不会提示；在其他竞技游戏中只在回合之间提示。",
     "playerNames": "你的游戏内名称",

@@ -82,6 +82,8 @@
     "nothingYetStartPlayingAnd": "まだ何もありません。プレイを始めると、GameMate が起きたことを記録します。",
     "reactionIntensity": "リアクションの強さ",
     "humorLevel": "ユーモアの度合い",
+    "hideInFullscreen": "全画面では文字を隠す",
+    "hideInFullscreenHelp": "ゲームが画面全体に表示されている間は、コメントは読み上げのみになり、ポップアップはゲームの上に表示されません。",
     "tacticalComments": "戦術的なひとこと",
     "tacticalCommentsHelp": "ときどき、やさしく役立つ気づきを添えます。試合のフィードだけを見るゲームでは行いません。その他の対戦型ゲームではラウンドの合間だけです。",
     "playerNames": "ゲーム内の名前",

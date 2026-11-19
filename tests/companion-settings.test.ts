@@ -28,6 +28,7 @@ describe('companion settings', () => {
       commentaryEngine: 'local',
       speakComments: false,
       showComments: true,
+      hideCommentsInFullscreen: false,
       commentaryIntensity: 'normal',
       commentaryHumor: 'light',
       commentaryTactics: true,
@@ -110,6 +111,13 @@ describe('companion settings', () => {
       speakComments: true,
       showComments: false
     })
+  })
+
+  it('can keep the pop-up off a fullscreen game', async () => {
+    const { updateSettings } = await load()
+    expect(updateSettings({ hideCommentsInFullscreen: true }).hideCommentsInFullscreen).toBe(true)
+    expect(updateSettings({ hideCommentsInFullscreen: 'yes' }).hideCommentsInFullscreen).toBe(true)
+    expect(updateSettings({ hideCommentsInFullscreen: false }).hideCommentsInFullscreen).toBe(false)
   })
 
   it('never leave comments with no way of reaching the player', async () => {

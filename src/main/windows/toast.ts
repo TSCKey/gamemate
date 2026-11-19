@@ -6,6 +6,7 @@ import { app, BrowserWindow, screen, type WebContents } from 'electron'
 import { getSettings } from '../system/settings'
 import type { SayRequest } from '../../shared/types'
 import { idleTimer } from '../../shared/idle'
+import { foregroundFillsDisplay } from './fullscreen'
 
 const WIDTH = 400
 const MIN_HEIGHT = 60
@@ -128,7 +129,12 @@ export function showToast(text: string, displayId: number): void {
     win.setPosition(Math.round(x + width - WIDTH - MARGIN), Math.round(y + MARGIN))
     win.webContents.send('toast:show', text)
     // This window also reads comments aloud, so it gets the text even when the pop-up stays hidden.
-    if (!getSettings().showComments) return
+    const settings = getSettings()
+    if (!settings.showComments) return
+    // Over a fullscreen game only if the player wants it there; the comment is still said aloud.
+    if (settings.hideCommentsInFullscreen && settings.speakComments && foregroundFillsDisplay()) {
+      return
+    }
     win.showInactive()
     if (hideTimer) clearTimeout(hideTimer)
     hideTimer = setTimeout(hideToast, VISIBLE_MS)

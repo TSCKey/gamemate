@@ -105,6 +105,9 @@ export interface Settings {
   commentaryPlayerNames: string
   // Show comments as a pop-up. Always on unless they are read aloud (speakComments).
   showComments: boolean
+  // Leave the pop-up out while a game fills the screen (fullscreen or borderless). Only when
+  // comments are also read aloud, so they still reach the player.
+  hideCommentsInFullscreen: boolean
   // Talk to GameMate with the microphone (needs a downloaded speech model).
   voiceInput: boolean
   speechModel: ListenModelId

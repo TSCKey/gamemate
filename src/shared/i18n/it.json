@@ -82,6 +82,8 @@
     "nothingYetStartPlayingAnd": "Ancora niente. Inizia a giocare e GameMate annoterà quello che succede.",
     "reactionIntensity": "Intensità delle reazioni",
     "humorLevel": "Livello di umorismo",
+    "hideInFullscreen": "Nascondi il testo a schermo intero",
+    "hideInFullscreenHelp": "Quando un gioco occupa tutto lo schermo, i commenti vengono solo pronunciati: il pop-up non copre il gioco.",
     "tacticalComments": "Osservazioni tattiche",
     "tacticalCommentsHelp": "Ogni tanto aggiunge un’osservazione utile e gentile. Mai nei giochi in cui si osserva solo il feed della partita; negli altri giochi competitivi, solo tra un round e l’altro.",
     "playerNames": "Il tuo nome di gioco",

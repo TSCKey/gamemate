@@ -174,6 +174,18 @@ function CompanionPanel({
                 ))}
               </select>
             </Field>
+            {deliveryOf(settings) === 'both' && (
+              <Field
+                label={t('companionPanel.hideInFullscreen')}
+                help={t('companionPanel.hideInFullscreenHelp')}
+              >
+                <Toggle
+                  label={t('companionPanel.hideInFullscreen')}
+                  checked={settings.hideCommentsInFullscreen}
+                  onChange={(hideCommentsInFullscreen) => update({ hideCommentsInFullscreen })}
+                />
+              </Field>
+            )}
             <Field
               label={t('companionPanel.tacticalComments')}
               help={t('companionPanel.tacticalCommentsHelp')}

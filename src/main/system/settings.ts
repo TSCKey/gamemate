@@ -79,6 +79,7 @@ const DEFAULTS: Settings = {
   commentaryTactics: true,
   commentaryPlayerNames: '',
   showComments: true,
+  hideCommentsInFullscreen: false,
   voiceInput: false,
   speechModel: 'accurate',
   speakAnswers: 'voice',
@@ -203,6 +204,9 @@ export function updateSettings(patch: unknown): Settings {
       .slice(0, MAX_PLAYER_NAMES)
   }
   if (typeof p.showComments === 'boolean') next.showComments = p.showComments
+  if (typeof p.hideCommentsInFullscreen === 'boolean') {
+    next.hideCommentsInFullscreen = p.hideCommentsInFullscreen
+  }
   if (typeof p.voiceInput === 'boolean') next.voiceInput = p.voiceInput
   if (isListenModelId(p.speechModel)) next.speechModel = p.speechModel
   if (SPEAK_ANSWERS.includes(p.speakAnswers as SpeakAnswers)) {

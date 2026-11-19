@@ -82,6 +82,8 @@
     "nothingYetStartPlayingAnd": "Henüz bir şey yok. Oynamaya başla, GameMate olanları kaydetsin.",
     "reactionIntensity": "Tepki yoğunluğu",
     "humorLevel": "Mizah düzeyi",
+    "hideInFullscreen": "Tam ekranda metni gizle",
+    "hideInFullscreenHelp": "Bir oyun tüm ekranı kapladığında yorumlar yalnızca sesli söylenir: açılır pencere oyunun üzerinde görünmez.",
     "tacticalComments": "Taktik gözlemler",
     "tacticalCommentsHelp": "Arada sırada nazik ve faydalı bir gözlem ekler. Yalnızca maç akışının izlendiği oyunlarda asla; diğer rekabetçi oyunlarda yalnızca turlar arasında.",
     "playerNames": "Oyun içi adın",
