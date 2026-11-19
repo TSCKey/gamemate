@@ -19,7 +19,8 @@ import {
 } from '../../companion/hudAreas'
 import { LastAliveWatch } from '../../companion/lastAlive'
 import type { FrameReport } from '../../companion/events'
-import { teamBarBox, teammatesAlive } from './teamBar'
+import { scoreBox, scoreFrom, teamBarBox, teammatesAlive } from './teamBar'
+import type { TextKind } from '../../ocr/paddleOcr'
 import { paddleReady, readWithPaddle } from '../../ocr/paddle'
 import { bannerParts, feedLines } from '../../ocr/feedText'
 import type { AdapterHost, GameAdapter } from '../adapter'
@@ -81,14 +82,19 @@ export function areaSchema(): object {
   }
 }
 
-// What the text reader found in the feed and banner, in the vision model's reply shape. Who was
-// eliminated by whom isn't read from a banner, only from the feed.
+// What the text reader found in the feed and banner, in the vision model's reply shape, with the
+// round score when the score strip was given. Who was eliminated by whom isn't read from a
+// banner, only from the feed.
 export async function readAreasText(
   areas: Area[],
   images: NativeImage[],
-  read: (image: NativeImage, large: boolean) => Promise<OcrSegment[]> = readWithPaddle
+  read: (image: NativeImage, kind: TextKind) => Promise<OcrSegment[]> = readWithPaddle,
+  scoreStrip?: NativeImage
 ): Promise<unknown> {
-  const found = await Promise.all(images.map((image, i) => read(image, areas[i].kind === 'banner')))
+  const reads = images.map((image, i) => read(image, areas[i].kind))
+  const scoreRead = scoreStrip ? read(scoreStrip, 'score') : Promise.resolve(null)
+  const [found, scoreText] = await Promise.all([Promise.all(reads), scoreRead])
+  const score = scoreText && scoreStrip ? scoreFrom(scoreText, scoreStrip.getSize().width) : null
   const of = (kind: Area['kind']): OcrSegment[] =>
     found.flatMap((segments, i) => (areas[i].kind === kind ? segments : []))
   const banner = bannerParts(of('banner'))
@@ -97,7 +103,8 @@ export async function readAreasText(
     banner_text: banner.headline,
     banner_kind: 'none',
     // Under a clutch or ace banner, the name of who did it.
-    banner_name: banner.below
+    banner_name: banner.below,
+    ...(score ? { own_score: score.own, enemy_score: score.enemy } : {})
   }
 }
 
@@ -129,7 +136,8 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
     const frame = gameFrame(gameWindow, display.bounds, size)
     const crops = areas.map((area) => image.crop(cropBox(area, frame, size)))
     // Read on every look: it is a few pixels, and a count needs two looks in a row to change.
-    const team = readsTeamBar(game.name) ? teamCount(image, frame) : null
+    const topBar = readsTeamBar(game.name)
+    const team = topBar ? teamCount(image, frame) : null
 
     // Not worth the GPU while nothing in them moves, such as in a menu or a paused game.
     const stats = crops.map(frameStats)
@@ -137,7 +145,7 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
     const changed =
       !previous || stats.some((s, i) => sceneChange(s, previous[i]) > AREA_CHANGE_THRESHOLD)
     if (!changed && since < MAX_ANALYSIS_GAP_MS) {
-      const moments = team === null ? [] : lastAlive.absorb(capturedAt, team, [])
+      const moments = team === null ? [] : lastAlive.absorb(capturedAt, team, [], null)
       if (moments.length > 0) {
         const report: FrameReport = {
           time: capturedAt,
@@ -172,13 +180,24 @@ export function createKillfeed(host: AdapterHost): GameAdapter {
           if (!readsTeamBar(game.name)) return report
           return {
             ...report,
-            events: [...report.events, ...lastAlive.absorb(time, team, report.events)]
+            events: [...report.events, ...lastAlive.absorb(time, team, report.events, report.score)]
           }
         },
         // With the text reader downloaded, a game whose feed it was checked on needs no vision
         // model: it reads the names, and the banner's words decide round results as before.
         ...(readsText(game.name) && paddleReady()
-          ? { readWithout: (images) => readAreasText(areas, images), reader: 'the text reader' }
+          ? {
+              // The score is read too where the top bar is known: unlike a round banner, which
+              // is up for a few seconds, it is still there on the next look.
+              readWithout: (images) =>
+                readAreasText(
+                  areas,
+                  images,
+                  readWithPaddle,
+                  topBar ? image.crop(scoreBox(frame)) : undefined
+                ),
+              reader: 'the text reader'
+            }
           : {})
       },
       settings,

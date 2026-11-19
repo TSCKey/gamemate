@@ -38,6 +38,40 @@ const LEFT_END = 6
 const FILLED = 0.5
 const SURROUNDED = 0.3
 
+// The two teams' round scores, either side of the round timer: at 1080p a strip 440 x 70 pixels
+// from 220 left of the middle and 15 down, the player's team's score centred about 137 left of
+// the middle and the other team's about 137 right.
+const SCORE_STRIP = { left: 220, top: 15, width: 440, height: 70 }
+const SCORE_SIDE = 0.35
+
+export function scoreBox(frame: Box): Box {
+  const scale = frame.height / 1080
+  const middle = frame.x + frame.width / 2
+  return {
+    x: Math.max(0, Math.round(middle - SCORE_STRIP.left * scale)),
+    y: Math.max(0, Math.round(frame.y + SCORE_STRIP.top * scale)),
+    width: Math.max(1, Math.round(SCORE_STRIP.width * scale)),
+    height: Math.max(1, Math.round(SCORE_STRIP.height * scale))
+  }
+}
+
+// The score from what was read in the strip: a number on each side of the timer, or null when
+// either side wasn't read as one.
+export function scoreFrom(
+  segments: readonly { text: string; x: number; width: number }[],
+  stripWidth: number
+): { own: number; enemy: number } | null {
+  const side = (inSide: (centre: number) => boolean): number | null => {
+    const numbers = segments.filter(
+      (s) => /^\d{1,2}$/.test(s.text.trim()) && inSide((s.x + s.width / 2) / stripWidth)
+    )
+    return numbers.length === 1 ? Number(numbers[0].text.trim()) : null
+  }
+  const own = side((c) => c < SCORE_SIDE)
+  const enemy = side((c) => c > 1 - SCORE_SIDE)
+  return own === null || enemy === null ? null : { own, enemy }
+}
+
 // Where to cut the bar out of a capture, given where the game's picture is in it.
 export function teamBarBox(frame: Box): Box {
   const scale = frame.height / 1080

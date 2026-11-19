@@ -6,11 +6,11 @@ import { parentPort, workerData } from 'worker_threads'
 import * as ort from 'onnxruntime-web'
 import {
   ctcTable,
-  PADDLE_BANNER_DETECT,
-  PADDLE_DETECT,
+  DETECT_FOR,
   readImage,
   yamlCharacters,
-  type OcrModel
+  type OcrModel,
+  type TextKind
 } from './paddleOcr'
 
 export interface PaddleSetup {
@@ -27,8 +27,8 @@ export interface PaddleRequest {
   width: number
   height: number
   data: ArrayBuffer
-  // Big text, such as a banner: read at its own size instead of scaled up.
-  large: boolean
+  // What kind of text it is, which sets how much the image is scaled before reading.
+  kind: TextKind
 }
 
 const setup = workerData as PaddleSetup
@@ -65,8 +65,7 @@ parentPort?.on('message', async (request: PaddleRequest) => {
       height: request.height,
       data: new Uint8Array(request.data)
     }
-    const settings = request.large ? PADDLE_BANNER_DETECT : PADDLE_DETECT
-    const segments = await readImage(image, await models, settings)
+    const segments = await readImage(image, await models, DETECT_FOR[request.kind])
     parentPort?.postMessage({ id: request.id, segments })
   } catch (error) {
     parentPort?.postMessage({

@@ -222,6 +222,14 @@ function bannerEvents(reply: Record<string, unknown>, time: number, names: strin
   return opponent ? [makeEvent('kill', time, 'vision', { ...copied, detail: text, opponent })] : []
 }
 
+// The round score, when the text reader read it off the top of the screen.
+function scoreOf(reply: Record<string, unknown>): FrameReport['score'] {
+  const own = reply.own_score
+  const enemy = reply.enemy_score
+  const fine = (n: unknown): n is number => typeof n === 'number' && Number.isInteger(n) && n >= 0
+  return fine(own) && fine(enemy) ? { own, enemy } : null
+}
+
 export function readAreas(raw: unknown, capturedAt: number, names: string[]): FrameReport {
   const reply = isRecord(raw) ? raw : {}
   const seen = new Set<string>()
@@ -241,7 +249,7 @@ export function readAreas(raw: unknown, capturedAt: number, names: string[]): Fr
     source: 'vision',
     phase: events.some((e) => e.category === 'match') ? 'intermission' : 'playing',
     inFight: false,
-    score: null,
+    score: scoreOf(reply),
     description: cleanName(reply.banner_text),
     events
   }

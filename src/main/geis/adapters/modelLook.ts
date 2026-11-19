@@ -129,7 +129,8 @@ export async function readLook(
       at: Date.now(),
       stage: 'observation',
       adapterId: look.adapterId,
-      summary: `${look.reader ?? 'the model'} read ${look.images.length} image(s): ${report.events.length} event(s)`,
+      // The banner's words and the score too, so a round result that wasn't noticed can be traced.
+      summary: `${look.reader ?? 'the model'} read ${look.images.length} image(s): ${report.events.length} event(s)${report.description ? `; banner "${report.description}"` : ''}${report.score ? `; score ${report.score.own}-${report.score.enemy}` : ''}`,
       latencyMs: lookTimes.lastMs
     })
     host.observe(report, game, report.description)

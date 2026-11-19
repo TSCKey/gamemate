@@ -18,6 +18,7 @@ import {
 import { bannerParts, feedLines } from '../src/main/ocr/feedText'
 import { readAreas } from '../src/main/companion/areaReading'
 import { hudAreas, readsText } from '../src/main/companion/hudAreas'
+import { scoreBox, scoreFrom } from '../src/main/geis/adapters/teamBar'
 
 vi.mock('electron', () => ({
   app: { getPath: () => tmpdir(), getAppPath: () => join(__dirname, '..') },
@@ -228,6 +229,34 @@ describe('the text reader in place of the vision model', () => {
     expect(await banner(seg('KNAPP', 373, 0, 206, 90), seg('Jett', 445, 129, 69, 23))).toEqual([
       'round_won'
     ])
+  })
+
+  it('reads the round score either side of the timer, as in the owner’s clips', async () => {
+    // Read off a 1080p strip 440 pixels wide: the player's team's score, the timer, the other's.
+    const strip = [
+      seg('6', 74, 30, 18, 25),
+      seg('0:58', 190, 30, 60, 25),
+      seg('5', 349, 30, 18, 25)
+    ]
+    expect(scoreFrom(strip, 440)).toEqual({ own: 6, enemy: 5 })
+    // A side read as nothing, or as more than one number, is no score.
+    expect(scoreFrom(strip.slice(1), 440)).toBeNull()
+    expect(scoreFrom([...strip, seg('3', 340, 30, 18, 25)], 440)).toBeNull()
+    expect(scoreFrom([seg('-3', 345, 30, 18, 25), ...strip.slice(0, 2)], 440)).toBeNull()
+
+    const reply = await readAreasText(
+      areas,
+      [{}, {}] as never,
+      async (_image, kind) => (kind === 'score' ? strip : []),
+      { getSize: () => ({ width: 440, height: 70 }) } as never
+    )
+    expect(readAreas(reply, 1000, ['TSCKey']).score).toEqual({ own: 6, enemy: 5 })
+    expect(scoreBox({ x: 0, y: 0, width: 1920, height: 1080 })).toEqual({
+      x: 740,
+      y: 15,
+      width: 440,
+      height: 70
+    })
   })
 
   it('is used only for VALORANT, the feed it was checked on', () => {

@@ -31,9 +31,16 @@ export class LastAliveWatch {
   // one still showing after the round.
   private sawTeam = false
 
-  // One look at the game: the alive count read (null when it couldn't be), and the events read on
-  // the same look. Returns the moments that follow.
-  absorb(time: number, count: number | null, events: readonly GameEvent[]): GameEvent[] {
+  private score: { own: number; enemy: number } | null = null
+
+  // One look at the game: the alive count read (null when it couldn't be), the events read on the
+  // same look and the round score if it was read. Returns the moments that follow.
+  absorb(
+    time: number,
+    count: number | null,
+    events: readonly GameEvent[],
+    score: { own: number; enemy: number } | null = null
+  ): GameEvent[] {
     if (time - this.readAt > FORGET_MS) this.reset()
     if (this.overAt !== null && time - this.overAt > ROUND_BREAK_MS) this.newRound()
     if (count !== null) {
@@ -55,7 +62,12 @@ export class LastAliveWatch {
     const out: GameEvent[] = []
     const over = this.overAt !== null
     const death = events.find((e) => e.type === 'death')
-    const won = events.find((e) => ROUND_WINS.has(e.type))
+    // A round banner is up for a few seconds and can be missed; the score stays. One more round
+    // for one side is a round result; any other change is a misread or a new match.
+    const scored = this.scoreStep(score)
+    const won =
+      events.find((e) => ROUND_WINS.has(e.type)) ??
+      (scored === 'won' ? makeEvent('round_won', time, 'memory') : undefined)
     if (death && !this.died) {
       this.died = true
       if (this.lastAlive && !over) {
@@ -79,7 +91,7 @@ export class LastAliveWatch {
         })
       )
     }
-    if (!over && events.some((e) => ROUND_ENDS.has(e.type))) {
+    if (!over && (scored !== null || events.some((e) => ROUND_ENDS.has(e.type)))) {
       this.overAt = time
       this.lastAlive = null
     }
@@ -99,6 +111,16 @@ export class LastAliveWatch {
     return out
   }
 
+  private scoreStep(score: { own: number; enemy: number } | null): 'won' | 'lost' | null {
+    if (!score) return null
+    const last = this.score
+    this.score = score
+    if (!last) return null
+    if (score.own === last.own + 1 && score.enemy === last.enemy) return 'won'
+    if (score.enemy === last.enemy + 1 && score.own === last.own) return 'lost'
+    return null
+  }
+
   private newRound(): void {
     this.died = false
     this.overAt = null
@@ -111,6 +133,7 @@ export class LastAliveWatch {
     this.alive = null
     this.candidate = null
     this.readAt = -Infinity
+    this.score = null
     this.newRound()
   }
 }

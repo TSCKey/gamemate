@@ -62,6 +62,22 @@ export const PADDLE_BANNER_DETECT: DetectSettings = {
   limitType: 'max'
 }
 
+// The score strip at the top: 70 pixels high at 1080p, scaled to about twice that. The owner's
+// clips read right this way at about 0.14 s a read.
+export const PADDLE_SCORE_DETECT: DetectSettings = {
+  ...PADDLE_DETECT,
+  limitSide: 96
+}
+
+// What is being read: small kill-feed text, a banner's big letters, or the score strip.
+export type TextKind = 'feed' | 'banner' | 'score'
+
+export const DETECT_FOR: Record<TextKind, DetectSettings> = {
+  feed: PADDLE_DETECT,
+  banner: PADDLE_BANNER_DETECT,
+  score: PADDLE_SCORE_DETECT
+}
+
 const DET_MAX_CANDIDATES = 1000
 const DET_MIN_SIZE = 3
 const REC_HEIGHT = 48

@@ -120,6 +120,32 @@ describe('the last one alive', () => {
     expect(out[1].related).toContain(death.id)
   })
 
+  it('takes the score going up by one as the round won, a banner or not', () => {
+    const watch = new LastAliveWatch()
+    const looks: [number, { own: number; enemy: number }][] = [
+      [3, { own: 6, enemy: 5 }],
+      [3, { own: 6, enemy: 5 }],
+      [1, { own: 6, enemy: 5 }],
+      [1, { own: 6, enemy: 5 }],
+      [1, { own: 7, enemy: 5 }]
+    ]
+    const out = looks.flatMap(([count, score], i) => watch.absorb(i * 3000, count, [], score))
+    expect(out.map((e) => e.type)).toEqual(['last_alive', 'clutch'])
+  })
+
+  it('takes neither a misread score nor the other team scoring for a clutch', () => {
+    const watch = new LastAliveWatch()
+    const looks: [number, { own: number; enemy: number }][] = [
+      [3, { own: 6, enemy: 5 }],
+      [3, { own: 6, enemy: 5 }],
+      [1, { own: 6, enemy: 5 }],
+      [1, { own: 8, enemy: 5 }],
+      [1, { own: 8, enemy: 6 }]
+    ]
+    const out = looks.flatMap(([count, s], i) => watch.absorb(i * 3000, count, [], s))
+    expect(out.map((e) => e.type)).toEqual(['last_alive'])
+  })
+
   it('starts over each round: the team coming back, or a while after the round result', () => {
     const watch = new LastAliveWatch()
     const lost = seen('round_lost', 12_000)
