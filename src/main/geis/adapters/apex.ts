@@ -65,15 +65,16 @@ const PARTS: Record<Part, PartSpec> = {
     kind: 'banner',
     due: (since, look) => look.noticeShowing && since >= 1_500
   },
-  // "Knockdown Shield", only there when the player's bars are gone.
+  // "Knockdown Shield", and "CHAMPION" as a match is won: only there when the player's bars are
+  // gone.
   bottom: {
     box: { x: 0.333, y: 0.796, width: 0.333, height: 0.14 },
     kind: 'banner',
     due: (since, look) => look.barsGone && since >= 4_000
   },
-  // "CHAMPION SQUAD", and the summary screens.
+  // The summary screens' headings ("CHAMPIONS" sits 17% down).
   top: {
-    box: { x: 0.3, y: 0, width: 0.4, height: 0.075 },
+    box: { x: 0.3, y: 0, width: 0.4, height: 0.2 },
     kind: 'banner',
     due: (since, look) => since >= 15_000 || (look.barsGone && since >= 5_000)
   },

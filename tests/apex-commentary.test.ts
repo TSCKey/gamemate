@@ -259,14 +259,43 @@ describe('the player, the squad and the match', () => {
     expect(kinds(events)).toEqual(['kill_leader6'])
   })
 
-  it('tells a win once, and the squad being out', () => {
+  it('tells a win once, from "CHAMPION" as it ends or the summary, never the intro', () => {
     const won = play(new ApexWatch(), [
-      [0, { top: [seg('CHAMPION SQUAD', 143, 46, 300, 34)] }],
-      [3, { top: [seg('CHAMPION SQUAD', 143, 46, 300, 34)] }]
+      [0, { bottom: [seg('CHAMPION', 300, 40, 200, 34)] }],
+      [3, { bottom: [seg('CHAMPION', 300, 40, 200, 34)] }],
+      [12, { top: [seg('SUMMARY', 300, 20, 120, 20), seg('CHAMPIONS', 300, 180, 200, 34)] }]
     ])
     expect(kinds(won)).toEqual(['victory'])
+    // At the start of a match Apex introduces last match's top squad.
+    const intro = play(new ApexWatch(), [
+      [0, { top: [seg('CHAMPION SQUAD', 143, 46, 300, 34)] }],
+      [3, { feed: [text('Champion Slayer bonus', 0)] }]
+    ])
+    expect(kinds(intro)).toEqual([])
     const out = play(new ApexWatch(), [[0, { feed: [seg('Requeue Party of 3', 0, 10, 200)] }]])
     expect(kinds(out)).toEqual(['defeat'])
+  })
+
+  it('takes no misread squad count for a new match near the end of one', () => {
+    const watch = new ApexWatch()
+    const endgame = play(
+      watch,
+      [5, 5, 3, 3, 30, 30, 3].map((n, i): [number, Partial<ApexRead>] => [
+        i * 5,
+        { feed: [squads(n)] }
+      ])
+    )
+    expect(kinds(endgame)).toEqual(['final_squads3'])
+    // A real new match: the count stays up.
+    const next = play(
+      watch,
+      [20, 20, 20, 20, 19, 19].map((n, i): [number, Partial<ApexRead>] => [
+        100 + i * 10,
+        { feed: [squads(n)] }
+      ])
+    )
+    expect(kinds(next)).toEqual([])
+    expect(watch.state(160_000).squadsLeft).toBe(19)
   })
 })
 

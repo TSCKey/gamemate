@@ -280,6 +280,9 @@ export class ApexWatch {
     requeue: -Infinity
   }
   private killLeaderSaid = 0
+  // A squads-left count above the last one, until it is believed (see readSquads).
+  private rise: { count: number; firstAt: number; reads: number } | null = null
+  private matchEndedAt = -Infinity
   // The player's bars: the last reading, the last few seconds of health and shield together,
   // whether health is critical, and when the shield last broke.
   private bars: PlayerBars | null = null
@@ -337,7 +340,10 @@ export class ApexWatch {
     this.checkThirdParty(time, add)
 
     const ended = events.some((e) => e.type === 'victory' || e.type === 'defeat')
-    if (ended) this.endMatch()
+    if (ended) {
+      this.endMatch()
+      this.matchEndedAt = time
+    }
     return {
       time,
       source: 'vision',
@@ -775,7 +781,12 @@ export class ApexWatch {
       if (this.teammatesDown.size < this.roster.length && !this.teammatesDown.has(label))
         this.teammatesDown.set(label, time)
     }
-    if (appears('champion', has(read.top, /champion/i))) {
+    // The word alone: "CHAMPION" at the bottom as the match ends, "CHAMPIONS" over the summary.
+    // Never "CHAMPION SQUAD", the match-start introduction of last match's top squad, nor
+    // "Champion Slayer".
+    const champion = (segments: OcrSegment[] | null): boolean =>
+      !!segments && segments.some((s) => /^\s*champions?\s*$/i.test(s.text))
+    if (appears('champion', champion(read.bottom) || champion(read.top) || champion(read.center))) {
       add(makeEvent('victory', time, 'vision', { detail: 'Champion squad.', importance: 10 }))
     }
     if (appears('requeue', has(read.feed, /requeue\s*party/i))) {
@@ -809,10 +820,23 @@ export class ApexWatch {
     this.squadsLeft = count
     if (last === null) return
     if (count > last) {
+      // Squads only come back with a new match: after this one ended, or once three looks over
+      // twenty seconds agree. In the owner's live match a misread "30" near the end of a match
+      // reset it, and the win went unsaid.
+      const rise = this.rise?.count === count ? this.rise : { count, firstAt: time, reads: 0 }
+      rise.reads++
+      this.rise = rise
+      const ended = time - this.matchEndedAt < 300_000
+      if (!ended && (rise.reads < 3 || time - rise.firstAt < 20_000)) {
+        this.squadsLeft = last
+        return
+      }
+      this.rise = null
       this.endMatch()
       this.squadsLeft = count
       return
     }
+    this.rise = null
     if (last - count <= 3 && time - this.lastSquadElimination <= WIPE_MS) {
       this.lastSquadElimination = -Infinity
       add(
