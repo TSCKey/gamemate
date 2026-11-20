@@ -455,7 +455,13 @@ export const EVENT_TYPES = [
   'ring_closing',
   'final_squads',
   'kill_leader',
-  'chaotic_fight_victory'
+  'chaotic_fight_victory',
+  'player_shield_broken',
+  'heavy_damage',
+  'shields_restored',
+  'teammate_revived',
+  'teammate_respawned',
+  'successful_escape'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 

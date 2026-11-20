@@ -66,6 +66,12 @@ const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   final_squads: '❗',
   kill_leader: '👑',
   chaotic_fight_victory: '💥',
+  player_shield_broken: '💔',
+  heavy_damage: '🩸',
+  shields_restored: '🔋',
+  teammate_revived: '🙌',
+  teammate_respawned: '🔁',
+  successful_escape: '🏃',
   defeat: '🫡',
   milestone: '🎉'
 }

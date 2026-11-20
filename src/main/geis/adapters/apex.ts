@@ -17,6 +17,8 @@ import { cropBox, gameFrame, type Area } from '../../companion/hudAreas'
 import { paddleReady, readWithPaddle } from '../../ocr/paddle'
 import type { OcrSegment, TextKind } from '../../ocr/paddleOcr'
 import type { AdapterHost, GameAdapter } from '../adapter'
+import { pipelineTap } from '../tap'
+import { apexHudBox, readPlayerBars, readTeammates } from './apexBars'
 import { gamePlace } from '../gameWindow'
 import {
   frameStats,
@@ -27,7 +29,7 @@ import {
   type FrameStats
 } from './modelLook'
 
-type Part = keyof ApexRead
+type Part = Exclude<keyof ApexRead, 'bars'>
 
 interface PartSpec {
   box: Omit<Area, 'kind'>
@@ -92,6 +94,16 @@ const AREA_CHANGE_THRESHOLD = 0.004
 
 export const isApex = (game: GameProfile): boolean => /^apex legends$/i.test(game.name)
 
+// One line for the developer inspector: what the bars and cards show and which parts were read.
+function describe(state: ReturnType<ApexWatch['state']>, read: string[]): string {
+  const bars =
+    state.health === null
+      ? 'bars not on screen'
+      : `health ${state.health}%, shield ${state.shield} (${state.armour ?? 'none'})`
+  const squad = state.teammates.map((t) => `${t.name || '?'} ${t.state ?? '?'}`).join(', ')
+  return `apex: ${bars}; squad: ${squad || 'unknown'}; squads left ${state.squadsLeft ?? '?'}${state.inFight ? '; in a fight' : ''}; read ${read.join(', ') || 'nothing'}`
+}
+
 export function createApex(host: AdapterHost): GameAdapter {
   const watch = new ApexWatch()
   let last: Partial<Record<Part, { stats: FrameStats; at: number; read: OcrSegment[] }>> = {}
@@ -115,7 +127,14 @@ export function createApex(host: AdapterHost): GameAdapter {
       ])
     ) as Record<Part, NativeImage>
 
-    // Which parts to read this time: those that moved, or are due.
+    // The health and shield bars and the squad's cards: a few thousand pixels, every look.
+    const hud = image.crop(apexHudBox(frame))
+    const hudSize = hud.getSize()
+    const hudImage = { width: hudSize.width, height: hudSize.height, data: hud.toBitmap() }
+    const bars = { player: readPlayerBars(hudImage), teammates: readTeammates(hudImage) }
+
+    // Which parts to read this time: those that moved, or are due. With none, the bars are still
+    // followed, and nothing is read.
     const due = PART_NAMES.filter((part) => {
       const spec = PARTS[part]
       const before = last[part]
@@ -125,7 +144,6 @@ export function createApex(host: AdapterHost): GameAdapter {
       if (spec.everyMs && since >= spec.everyMs) return true
       return sceneChange(frameStats(crops[part]), before.stats) > AREA_CHANGE_THRESHOLD
     })
-    if (due.length === 0) return
     lookTimes.lastAt = capturedAt
     const images = due.map((part) => crops[part])
     await readLook(
@@ -152,11 +170,23 @@ export function createApex(host: AdapterHost): GameAdapter {
             bottom: of('bottom'),
             top: of('top'),
             team: due.includes('team') ? of('team') : null,
-            ring: due.includes('ring') ? of('ring') : null
+            ring: due.includes('ring') ? of('ring') : null,
+            bars
           } satisfies ApexRead
         },
-        read: (reply, time) =>
-          watch.absorb(reply as ApexRead, time, parsePlayerNames(settings.commentaryPlayerNames)),
+        read: (reply, time) => {
+          const names = parsePlayerNames(settings.commentaryPlayerNames)
+          const report = watch.absorb(reply as ApexRead, time, names)
+          if (pipelineTap.enabled) {
+            pipelineTap.record({
+              at: Date.now(),
+              stage: 'observation',
+              adapterId: 'apex',
+              summary: describe(watch.state(time), due)
+            })
+          }
+          return report
+        },
         reader: 'the text reader'
       },
       settings,

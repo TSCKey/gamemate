@@ -612,6 +612,74 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     meaning:
       'The game announced the player as the new kill leader (their kill count is the number given).'
   },
+  // Apex Legends' health and shield bars and the squad's cards (src/main/geis/adapters/apexBars.ts).
+  player_shield_broken: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'tense',
+    priority: 45,
+    cooldownMs: 45 * S,
+    staleMs: 6 * S,
+    dedupeMs: 10 * S,
+    meaning: "The player's shield is gone: hits now go straight to their health."
+  },
+  heavy_damage: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'tense',
+    priority: 40,
+    cooldownMs: 60 * S,
+    staleMs: 8 * S,
+    dedupeMs: 20 * S,
+    meaning:
+      'The player lost a lot of shield and health within a few seconds. How much exactly is not known: give no numbers.'
+  },
+  shields_restored: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 20,
+    cooldownMs: 120 * S,
+    staleMs: 10 * S,
+    dedupeMs: 60 * S,
+    meaning: "The player's shield is full again after being broken."
+  },
+  teammate_revived: {
+    category: 'teamwork',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 58,
+    cooldownMs: 45 * S,
+    staleMs: 15 * S,
+    dedupeMs: 30 * S,
+    namedDedupe: true,
+    meaning:
+      'A knocked teammate is back on their feet: someone revived them. Who did it is not known: never say the player did.'
+  },
+  teammate_respawned: {
+    category: 'teamwork',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 60,
+    cooldownMs: 45 * S,
+    staleMs: 20 * S,
+    dedupeMs: 60 * S,
+    namedDedupe: true,
+    meaning:
+      'An eliminated teammate is back in the match, respawned at a beacon (not revived). Who brought them back is not known.'
+  },
+  successful_escape: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 74,
+    cooldownMs: 90 * S,
+    staleMs: 30 * S,
+    dedupeMs: 90 * S,
+    narrative: true,
+    meaning:
+      'The player was critically low during a fight and is still alive now that it has calmed down. How they got out is not known.'
+  },
   chaotic_fight_victory: {
     category: 'skill',
     tier: 'significant',

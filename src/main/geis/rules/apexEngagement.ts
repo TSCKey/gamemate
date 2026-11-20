@@ -3,8 +3,10 @@
 // is wiped) and only when it is worth more than its parts:
 // - a clutch: the player knocked or eliminated someone with the rest of the squad down, and the
 //   fight ended with an elimination and the player alive;
-// - a chaotic fight won: eliminations or a squad wiped despite setbacks (the player knocked, a
-//   teammate down, another squad joining), with enough going on.
+// - a chaotic fight won: eliminations or a squad wiped despite setbacks (the player knocked or
+//   critically low, a teammate down, another squad joining), with enough going on;
+// - an escape: the player was critically low, nothing was won, and the fight went quiet with the
+//   player alive. How they got out isn't known, and isn't said.
 // The player's death ends a fight with nothing to add: the death says it. Its parts stay in the
 // log, pointed at by `related`.
 import type { CorrelationRule, Derived } from '../correlation'
@@ -19,6 +21,9 @@ interface Fight {
   playerKnocked: boolean
   teammatesDown: number
   thirdParty: boolean
+  // The player's health was critical (the bars), and teammates were revived during the fight.
+  critical: boolean
+  revives: number
   // The player knocked or eliminated someone with the rest of the squad down.
   aloneHit: boolean
 }
@@ -29,7 +34,17 @@ const BUSY = 3
 
 function told(fight: Fight): Derived[] {
   const won = fight.kills > 0 || fight.wiped
-  if (!won) return []
+  if (!won) {
+    if (!fight.critical) return []
+    return [
+      {
+        type: 'successful_escape',
+        detail: 'Critically low during the fight, and still alive now that it has gone quiet.',
+        related: fight.ids,
+        importance: 8
+      }
+    ]
+  }
   if (fight.aloneHit) {
     return [
       {
@@ -43,16 +58,19 @@ function told(fight: Fight): Derived[] {
   }
   const setbacks = [
     fight.playerKnocked && 'the player was knocked and got back up',
+    fight.critical && !fight.playerKnocked && 'the player was critically low',
     fight.teammatesDown > 0 &&
       `${fight.teammatesDown === 1 ? 'a teammate' : `${fight.teammatesDown} teammates`} went down`,
     fight.thirdParty && 'another squad joined'
   ].filter((s): s is string => typeof s === 'string')
   const action = fight.shields + fight.knocks + fight.kills
   if (setbacks.length === 0 || action < BUSY) return []
+  const revived =
+    fight.revives > 0 ? `, ${fight.revives === 1 ? 'a teammate' : 'teammates'} revived` : ''
   return [
     {
       type: 'chaotic_fight_victory',
-      detail: `Came out on top of a messy fight: ${setbacks.join(', ')}; ${fight.knocks} knock(s), ${fight.kills} elimination(s)${fight.wiped ? ', a squad wiped' : ''}.`,
+      detail: `Came out on top of a messy fight: ${setbacks.join(', ')}; ${fight.knocks} knock(s), ${fight.kills} elimination(s)${fight.wiped ? ', a squad wiped' : ''}${revived}.`,
       related: fight.ids,
       count: fight.kills,
       importance: 9
@@ -73,6 +91,10 @@ export const apexEngagement: CorrelationRule<Fight> = {
     'teammate_down',
     'player_knocked',
     'third_party',
+    'low_health',
+    'player_shield_broken',
+    'heavy_damage',
+    'teammate_revived',
     'death'
   ],
   // The text reader's readings are copied text, not checks of the game's data.
@@ -87,6 +109,8 @@ export const apexEngagement: CorrelationRule<Fight> = {
     playerKnocked: false,
     teammatesDown: 0,
     thirdParty: false,
+    critical: false,
+    revives: 0,
     aloneHit: false
   }),
   step(state, event) {
@@ -114,6 +138,12 @@ export const apexEngagement: CorrelationRule<Fight> = {
         break
       case 'third_party':
         fight.thirdParty = true
+        break
+      case 'low_health':
+        fight.critical = true
+        break
+      case 'teammate_revived':
+        fight.revives++
         break
       case 'team_wipe':
         fight.wiped = true

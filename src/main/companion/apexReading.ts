@@ -16,6 +16,7 @@
 import { lines } from '../ocr/feedText'
 import type { OcrSegment } from '../ocr/paddleOcr'
 import { makeEvent, type FrameReport, type GameEvent } from './events'
+import { ARMOUR_SHIELD, type PlayerBars, type TeammateState } from '../geis/adapters/apexBars'
 
 export interface ApexRead {
   feed: OcrSegment[]
@@ -25,7 +26,35 @@ export interface ApexRead {
   // Read less often: null when this look didn't read it.
   team: OcrSegment[] | null
   ring: OcrSegment[] | null
+  // The health and shield bars and the teammates' cards, by their colours, read on every look:
+  // the player's bars (null when not on screen), and the teammates' states, nearest card first.
+  bars?: { player: PlayerBars | null; teammates: (TeammateState | null)[] }
 }
+
+// What the reader knows right now, for the developer inspector.
+export interface ApexState {
+  health: number | null
+  shield: number | null
+  armour: string | null
+  teammates: { name: string; state: TeammateState | null }[]
+  squadsLeft: number | null
+  inFight: boolean
+}
+
+// The player's health at or under this share, with no shield left, is critical.
+const CRITICAL_HEALTH = 30
+const CRITICAL_SHIELD = 5
+// Back up to this share of health after a critical moment is a recovery.
+const RECOVERED_HEALTH = 70
+// Health and shield together lost within the window: heavy damage.
+const HEAVY_DAMAGE = 100
+const HEAVY_DAMAGE_MS = 8_000
+// A shield back to full this long after it broke is worth a word.
+const SHIELD_MEMORY_MS = 120_000
+// After a death recap, summary or spectating screen, the squad's cards aren't the squad's.
+const SCREEN_MS = 6_000
+// A teammate seen down in the feed this recently is the same as their card going down.
+const FEED_DOWN_MS = 10_000
 
 // A line read on one look is still up for several more.
 const LINE_MEMORY_MS = 40_000
@@ -251,6 +280,17 @@ export class ApexWatch {
     requeue: -Infinity
   }
   private killLeaderSaid = 0
+  // The player's bars: the last reading, the last few seconds of health and shield together,
+  // whether health is critical, and when the shield last broke.
+  private bars: PlayerBars | null = null
+  private recentHealth: { at: number; effective: number }[] = []
+  private critical = false
+  private shieldBrokenAt = -Infinity
+  private heavyAt = -Infinity
+  // The teammates' cards, nearest the player's first.
+  private cards: { state: TeammateState | null; candidate: TeammateState | null }[] = []
+  private feedDownAt = -Infinity
+  private screenAt = -Infinity
   // Who last knocked or eliminated the player, and when the player last died.
   private downedBy: { name: string; at: number } | null = null
   private diedAt = -Infinity
@@ -280,6 +320,16 @@ export class ApexWatch {
     this.readScreens(read, time, add)
     this.readSquads(read.feed, time, add)
     if (read.ring) this.readRing(read.ring, time, add)
+    // The bars and cards only count while the player's own HUD is up: not over a death recap, a
+    // summary or while spectating after being eliminated.
+    const screen =
+      read.feed.some((s) => /killer|requeue|awaiting/i.test(s.text)) ||
+      read.top.some((s) => /summary|spectate/i.test(s.text))
+    if (screen) this.screenAt = time
+    if (read.bars && time - this.screenAt > SCREEN_MS) {
+      this.readPlayerBars(read.bars.player, time, add)
+      this.readTeammates(read.bars.teammates, time, add)
+    }
 
     const combat = events.some((e) => COMBAT.has(e.type))
     if (combat) this.lastCombat = time
@@ -300,9 +350,156 @@ export class ApexWatch {
     }
   }
 
-  // Teammates down in this fight, by name (or by their banner showing in the squad panel).
+  // The rest of the squad is down: every teammate's card shows them knocked or eliminated, or
+  // (without their cards) every teammate was seen going down in this fight.
   private alone(): boolean {
+    const cards = this.cards.filter((c) => c.state !== null)
+    if (cards.length > 0) return cards.every((c) => c.state !== 'alive')
     return this.roster.length > 0 && this.teammatesDown.size >= this.roster.length
+  }
+
+  // What the reader knows right now, for the developer inspector.
+  state(time: number): ApexState {
+    const bars = this.bars
+    return {
+      health: bars?.health ?? null,
+      shield: bars?.shield ?? null,
+      armour: bars?.armour ?? null,
+      teammates: this.cards.map((card, slot) => ({ name: this.slotName(slot), state: card.state })),
+      squadsLeft: this.squadsLeft,
+      inFight: time - this.lastCombat < FIGHT_MS
+    }
+  }
+
+  // Cards are nearest the player's first; the squad panel lists names top to bottom.
+  private slotName(slot: number): string {
+    return this.roster[this.roster.length - 1 - slot] ?? ''
+  }
+
+  private readPlayerBars(
+    bars: PlayerBars | null,
+    time: number,
+    add: (event: GameEvent) => void
+  ): void {
+    if (!bars) return
+    const before = this.bars
+    this.bars = bars
+    const effective = bars.health + bars.shield
+    this.recentHealth = this.recentHealth.filter((h) => time - h.at <= HEAVY_DAMAGE_MS)
+    const peak = Math.max(effective, ...this.recentHealth.map((h) => h.effective))
+    this.recentHealth.push({ at: time, effective })
+
+    const critical = bars.health <= CRITICAL_HEALTH && bars.shield <= CRITICAL_SHIELD
+    if (critical && !this.critical) {
+      this.critical = true
+      this.engage(time)
+      add(
+        makeEvent('low_health', time, 'screen', {
+          detail: 'Health is critical and the shield is gone.',
+          confidence: 0.9
+        })
+      )
+    } else if (before && before.shield >= 15 && bars.shield === 0 && bars.health > 0) {
+      this.engage(time)
+      add(makeEvent('player_shield_broken', time, 'screen', { confidence: 0.9 }))
+    }
+    if (this.critical && bars.health >= RECOVERED_HEALTH) {
+      this.critical = false
+      add(
+        makeEvent('recovery', time, 'screen', {
+          detail: 'Back to most of their health after being critical.',
+          confidence: 0.9
+        })
+      )
+    }
+    if (
+      peak - effective >= HEAVY_DAMAGE &&
+      !critical &&
+      time - this.heavyAt > HEAVY_DAMAGE_MS * 2
+    ) {
+      this.heavyAt = time
+      this.engage(time)
+      add(makeEvent('heavy_damage', time, 'screen', { confidence: 0.8 }))
+    }
+    if (bars.shield === 0) this.shieldBrokenAt = time
+    const full = bars.armour ? ARMOUR_SHIELD[bars.armour] : Infinity
+    if (
+      time - this.shieldBrokenAt < SHIELD_MEMORY_MS &&
+      bars.shield >= full * 0.95 &&
+      before !== null &&
+      before.shield < full * 0.95
+    ) {
+      this.shieldBrokenAt = -Infinity
+      add(makeEvent('shields_restored', time, 'screen', { confidence: 0.9 }))
+    }
+  }
+
+  // Each card's state changes once two looks in a row agree, and only its changes are told:
+  // knocked, back up (revived), eliminated, back in the match (respawned).
+  private readTeammates(
+    states: (TeammateState | null)[],
+    time: number,
+    add: (event: GameEvent) => void
+  ): void {
+    states.forEach((seen, slot) => {
+      const card = (this.cards[slot] ??= { state: null, candidate: null })
+      if (seen === null || seen === card.state) {
+        card.candidate = null
+        return
+      }
+      if (seen !== card.candidate) {
+        card.candidate = seen
+        return
+      }
+      card.candidate = null
+      const was = card.state
+      card.state = seen
+      if (was === null) return
+      const name = this.slotName(slot)
+      const who = name ? `Teammate ${name}` : 'A teammate'
+      const fromFeed = time - this.feedDownAt < FEED_DOWN_MS
+      const fields = { opponent: name, confidence: 0.9 }
+      if (seen === 'knocked' && was === 'alive') {
+        this.engage(time)
+        if (name) this.teammatesDown.set(plain(name), time)
+        if (!fromFeed) {
+          add(
+            makeEvent('teammate_down', time, 'screen', {
+              ...fields,
+              detail: `${who} was knocked down.`,
+              data: { state: 'knocked', alone: this.alone() }
+            })
+          )
+        }
+      } else if (seen === 'eliminated') {
+        if (name) this.teammatesDown.set(plain(name), time)
+        if (!fromFeed && was === 'alive') {
+          add(
+            makeEvent('teammate_down', time, 'screen', {
+              ...fields,
+              detail: `${who} was eliminated.`,
+              data: { state: 'eliminated', alone: this.alone() }
+            })
+          )
+        }
+      } else if (seen === 'alive' && was === 'knocked') {
+        if (name) this.teammatesDown.delete(plain(name))
+        add(
+          makeEvent('teammate_revived', time, 'screen', {
+            ...fields,
+            detail: `${who} was revived.`
+          })
+        )
+      } else if (seen === 'alive' && was === 'eliminated') {
+        if (name) this.teammatesDown.delete(plain(name))
+        add(
+          makeEvent('teammate_respawned', time, 'screen', {
+            ...fields,
+            detail: `${who} is back in the match.`
+          })
+        )
+      }
+    })
   }
 
   private engage(time: number): Engagement {
@@ -423,6 +620,7 @@ export class ApexWatch {
       )
     } else if (victim === 'team') {
       this.teammatesDown.set(plain(line.victim), time)
+      this.feedDownAt = time
       add(
         makeEvent('teammate_down', time, 'vision', {
           opponent: line.victim,
@@ -672,6 +870,11 @@ export class ApexWatch {
     this.teammatesDown.clear()
     this.lastRing = null
     this.burst = null
+    this.bars = null
+    this.recentHealth = []
+    this.critical = false
+    this.shieldBrokenAt = -Infinity
+    this.cards = []
   }
 }
 
@@ -683,5 +886,8 @@ const COMBAT = new Set<GameEvent['type']>([
   'teammate_down',
   'player_knocked',
   'team_wipe',
-  'third_party'
+  'third_party',
+  'low_health',
+  'player_shield_broken',
+  'heavy_damage'
 ])
