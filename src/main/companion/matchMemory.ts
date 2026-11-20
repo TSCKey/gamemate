@@ -222,7 +222,8 @@ export class MatchMemory {
         if (event.place) this.tally(this.places, event.place, event.time)
         break
       case 'low_health':
-        this.lowHealthAt = event.time
+        // Screen checks tell their own recoveries (an Apex escape says it better).
+        if (event.source !== 'screen') this.lowHealthAt = event.time
         break
       case 'round_won':
       case 'round_lost':

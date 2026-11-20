@@ -21,8 +21,8 @@ export interface BgraImage {
 export interface PlayerBars {
   // 0-100: share of full health.
   health: number
-  // 0-125: shield points, from the bar's length on the shared scale.
-  shield: number
+  // 0-125: shield points, from the bar's length on the shared scale; null when it couldn't be read.
+  shield: number | null
   // The armour's colour, which says how much shield it holds when full.
   armour: Armour | null
 }
@@ -132,10 +132,15 @@ export function readPlayerBars(image: BgraImage): PlayerBars | null {
   const shield = armour
     ? px.run(PLAYER.left, PLAYER.right, PLAYER.shield, (rgb) => armourOf(rgb) === armour)
     : 0
+  const points = Math.round(Math.min(1, shield) * ARMOUR_SHIELD.red)
+  // More shield than the armour holds, or a sliver of its colour, is a misreading (the owner's
+  // live 1080p game read "98" for a blue armour and "1" for a full purple one): no shield
+  // reading then, rather than a wrong one.
+  const readable = !armour || (points <= ARMOUR_SHIELD[armour] + 5 && points >= 3)
   return {
     health: Math.round(Math.min(1, health) * 100),
-    shield: Math.round(Math.min(1, shield) * ARMOUR_SHIELD.red),
-    armour
+    shield: readable ? (armour ? points : 0) : null,
+    armour: readable ? armour : null
   }
 }
 

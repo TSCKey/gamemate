@@ -4,8 +4,8 @@
 // the other shooters (killfeed.ts).
 //
 // The parts, as fractions of the game's picture, measured on the owner's 720p clips at 1080p.
-// Each is only read again when something in it moved; the squad panel and the ring line, which
-// rarely change, at most every few seconds.
+// Each is only read when there is a reason to (see PARTS): the game moves behind all of them, so
+// "something changed" would mean reading every part on every look.
 import type { NativeImage } from 'electron'
 import { captureDisplayImage } from '../../windows/capture'
 import type { GameProfile } from '../../games/catalog'
@@ -31,13 +31,23 @@ import {
 
 type Part = Exclude<keyof ApexRead, 'bars'>
 
+// What one look shows, which decides which parts are worth reading.
+interface LookSignals {
+  // The kill feed's lines moved (not the counters or a performance overlay above them).
+  linesMoved: boolean
+  // Bright text where the "KNOCKED DOWN" notice shows.
+  noticeShowing: boolean
+  // The player's bars are gone: knocked, eliminated, a menu or an end screen.
+  barsGone: boolean
+}
+
 interface PartSpec {
   box: Omit<Area, 'kind'>
   kind: TextKind
-  // Read again at least this often even when nothing seems to move (0: only on a change).
-  everyMs: number
-  // At most this often (0: whenever it changes).
-  atMostMs: number
+  // Whether to read it this look, `since` milliseconds after it was last read. In the owner's
+  // first live match every part was read on every look (the game moves behind all of them), a
+  // look took 3 s and looks came 10-14 s apart, too few for the knock notices.
+  due: (since: number, look: LookSignals) => boolean
 }
 
 const PARTS: Record<Part, PartSpec> = {
@@ -47,44 +57,59 @@ const PARTS: Record<Part, PartSpec> = {
   feed: {
     box: { x: 0.7, y: 0, width: 0.3, height: 0.36 },
     kind: 'banner',
-    everyMs: 0,
-    atMostMs: 0
+    due: (since, look) => look.linesMoved || since >= 15_000
   },
   // "KNOCKED DOWN <name> +150".
   center: {
     box: { x: 0.25, y: 0.62, width: 0.5, height: 0.16 },
     kind: 'banner',
-    everyMs: 0,
-    atMostMs: 0
+    due: (since, look) => look.noticeShowing && since >= 1_500
   },
-  // "Knockdown Shield".
+  // "Knockdown Shield", only there when the player's bars are gone.
   bottom: {
     box: { x: 0.333, y: 0.796, width: 0.333, height: 0.14 },
     kind: 'banner',
-    everyMs: 0,
-    atMostMs: 0
+    due: (since, look) => look.barsGone && since >= 4_000
   },
-  // "CHAMPION SQUAD".
+  // "CHAMPION SQUAD", and the summary screens.
   top: {
     box: { x: 0.3, y: 0, width: 0.4, height: 0.075 },
     kind: 'banner',
-    everyMs: 0,
-    atMostMs: 0
+    due: (since, look) => since >= 15_000 || (look.barsGone && since >= 5_000)
   },
   // The squad panel: teammates' names, "DELIVER TO BEACON", "DEATHBOX RECOVERY".
   team: {
     box: { x: 0.052, y: 0.685, width: 0.167, height: 0.24 },
     kind: 'feed',
-    everyMs: 30_000,
-    atMostMs: 5_000
+    due: (since) => since >= 30_000
   },
   // "ROUND 1 - CLOSING 2:56" under the minimap.
   ring: {
     box: { x: 0.016, y: 0.268, width: 0.156, height: 0.083 },
     kind: 'hud',
-    everyMs: 20_000,
-    atMostMs: 10_000
+    due: (since) => since >= 20_000
   }
+}
+
+// The feed's lines, below the counters and any performance overlay, as a share of the screen.
+const FEED_LINES = { x: 0.7, y: 0.15, width: 0.3, height: 0.21 }
+// Where the knock notice's text shows, and how much of it bright text covers when it does.
+const NOTICE = { x: 0.375, y: 0.705, width: 0.25, height: 0.05 }
+const NOTICE_BRIGHT = 0.01
+
+// Parts whose text is a moment (a notice, a screen): only this look's reading counts, never one
+// left over from an earlier look.
+const MOMENTS: Part[] = ['center', 'bottom', 'top']
+
+// The share of near-white pixels, on a small copy.
+function brightShare(image: NativeImage): number {
+  const small = image.resize({ width: 120 })
+  const bitmap = small.toBitmap()
+  let bright = 0
+  for (let i = 0; i < bitmap.length; i += 4) {
+    if (Math.min(bitmap[i], bitmap[i + 1], bitmap[i + 2]) > 225) bright++
+  }
+  return bright / (bitmap.length / 4 || 1)
 }
 
 const PART_NAMES = Object.keys(PARTS) as Part[]
@@ -106,7 +131,8 @@ function describe(state: ReturnType<ApexWatch['state']>, read: string[]): string
 
 export function createApex(host: AdapterHost): GameAdapter {
   const watch = new ApexWatch()
-  let last: Partial<Record<Part, { stats: FrameStats; at: number; read: OcrSegment[] }>> = {}
+  let last: Partial<Record<Part, { at: number; read: OcrSegment[] }>> = {}
+  let lastLines: FrameStats | null = null
 
   async function look(settings: Settings, game: GameProfile, handle: bigint): Promise<void> {
     const capturedAt = Date.now()
@@ -133,17 +159,18 @@ export function createApex(host: AdapterHost): GameAdapter {
     const hudImage = { width: hudSize.width, height: hudSize.height, data: hud.toBitmap() }
     const bars = { player: readPlayerBars(hudImage), teammates: readTeammates(hudImage) }
 
-    // Which parts to read this time: those that moved, or are due. With none, the bars are still
-    // followed, and nothing is read.
-    const due = PART_NAMES.filter((part) => {
-      const spec = PARTS[part]
-      const before = last[part]
-      if (!before) return true
-      const since = capturedAt - before.at
-      if (spec.atMostMs && since < spec.atMostMs) return false
-      if (spec.everyMs && since >= spec.everyMs) return true
-      return sceneChange(frameStats(crops[part]), before.stats) > AREA_CHANGE_THRESHOLD
-    })
+    // Which parts to read this time. With none, the bars are still followed and nothing is read.
+    const lines = frameStats(image.crop(cropBox({ kind: 'feed', ...FEED_LINES }, frame, size)))
+    const signals: LookSignals = {
+      linesMoved: !lastLines || sceneChange(lines, lastLines) > AREA_CHANGE_THRESHOLD,
+      noticeShowing:
+        brightShare(image.crop(cropBox({ kind: 'feed', ...NOTICE }, frame, size))) >= NOTICE_BRIGHT,
+      barsGone: bars.player === null
+    }
+    lastLines = lines
+    const due = PART_NAMES.filter((part) =>
+      PARTS[part].due(capturedAt - (last[part]?.at ?? -Infinity), signals)
+    )
     lookTimes.lastAt = capturedAt
     const images = due.map((part) => crops[part])
     await readLook(
@@ -159,11 +186,10 @@ export function createApex(host: AdapterHost): GameAdapter {
           const read = await Promise.all(
             shown.map((image, i) => readWithPaddle(image, PARTS[due[i]].kind))
           )
-          for (const [i, part] of due.entries()) {
-            last[part] = { stats: frameStats(crops[part]), at: capturedAt, read: read[i] }
-          }
-          // Parts not read this time are as they were.
-          const of = (part: Part): OcrSegment[] => last[part]?.read ?? []
+          for (const [i, part] of due.entries()) last[part] = { at: capturedAt, read: read[i] }
+          // The feed not read this time is as it was; a notice or a screen is only this look's.
+          const of = (part: Part): OcrSegment[] =>
+            MOMENTS.includes(part) && !due.includes(part) ? [] : (last[part]?.read ?? [])
           return {
             feed: of('feed'),
             center: of('center'),
@@ -204,6 +230,7 @@ export function createApex(host: AdapterHost): GameAdapter {
     stop: () => {},
     gameGone: () => {
       last = {}
+      lastLines = null
     }
   }
 }

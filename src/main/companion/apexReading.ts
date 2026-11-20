@@ -384,12 +384,17 @@ export class ApexWatch {
     if (!bars) return
     const before = this.bars
     this.bars = bars
-    const effective = bars.health + bars.shield
+    // An unreadable shield (null) leaves health alone to go on: no shield moments, and damage
+    // counted from health only.
+    const shield = bars.shield
+    const beforeShield = before?.shield ?? null
+    const effective = bars.health + (shield ?? 0)
     this.recentHealth = this.recentHealth.filter((h) => time - h.at <= HEAVY_DAMAGE_MS)
     const peak = Math.max(effective, ...this.recentHealth.map((h) => h.effective))
     this.recentHealth.push({ at: time, effective })
 
-    const critical = bars.health <= CRITICAL_HEALTH && bars.shield <= CRITICAL_SHIELD
+    const critical =
+      bars.health <= CRITICAL_HEALTH && (shield === null || shield <= CRITICAL_SHIELD)
     if (critical && !this.critical) {
       this.critical = true
       this.engage(time)
@@ -399,7 +404,7 @@ export class ApexWatch {
           confidence: 0.9
         })
       )
-    } else if (before && before.shield >= 15 && bars.shield === 0 && bars.health > 0) {
+    } else if (beforeShield !== null && beforeShield >= 15 && shield === 0 && bars.health > 0) {
       this.engage(time)
       add(makeEvent('player_shield_broken', time, 'screen', { confidence: 0.9 }))
     }
@@ -413,6 +418,8 @@ export class ApexWatch {
       )
     }
     if (
+      shield !== null &&
+      beforeShield !== null &&
       peak - effective >= HEAVY_DAMAGE &&
       !critical &&
       time - this.heavyAt > HEAVY_DAMAGE_MS * 2
@@ -421,13 +428,14 @@ export class ApexWatch {
       this.engage(time)
       add(makeEvent('heavy_damage', time, 'screen', { confidence: 0.8 }))
     }
-    if (bars.shield === 0) this.shieldBrokenAt = time
+    if (shield === 0) this.shieldBrokenAt = time
     const full = bars.armour ? ARMOUR_SHIELD[bars.armour] : Infinity
     if (
       time - this.shieldBrokenAt < SHIELD_MEMORY_MS &&
-      bars.shield >= full * 0.95 &&
-      before !== null &&
-      before.shield < full * 0.95
+      shield !== null &&
+      shield >= full * 0.95 &&
+      beforeShield !== null &&
+      beforeShield < full * 0.95
     ) {
       this.shieldBrokenAt = -Infinity
       add(makeEvent('shields_restored', time, 'screen', { confidence: 0.9 }))

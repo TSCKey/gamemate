@@ -345,3 +345,53 @@ describe('fights with the bars in them', () => {
     expect(prompts[0]).toMatch(/never say the player did/)
   })
 })
+
+describe('readings that can’t be right', () => {
+  it('reads more shield than the armour holds, or a sliver, as no shield reading', () => {
+    // A blue run past its 75, as the live 1080p game once read.
+    expect(readPlayerBars(hud({ health: 100, shield: 98 }))).toMatchObject({
+      health: 100,
+      shield: null,
+      armour: null
+    })
+    expect(readPlayerBars(hud({ health: 100, shield: 1, colour: PURPLE }))?.shield).toBeNull()
+  })
+
+  it('goes on health alone while the shield can’t be read', () => {
+    const unread = (health: number): PlayerBars => ({ health, shield: null, armour: null })
+    const events = play([
+      [0, unread(100), []],
+      [3, unread(100), []],
+      [6, unread(20), []]
+    ])
+    expect(kinds(events)).toEqual(['low_health'])
+  })
+
+  it('leaves the recovery from critical health to the fight’s escape, said once', async () => {
+    const { MatchMemory } = await import('../src/main/companion/matchMemory')
+    const memory = new MatchMemory()
+    const watch = new ApexWatch()
+    const derived: string[] = []
+    for (const [t, health] of [
+      [0, 100],
+      [3, 20],
+      [20, 90]
+    ]) {
+      const report = watch.absorb(
+        {
+          feed: [],
+          center: [],
+          bottom: [],
+          top: [],
+          team: null,
+          ring: null,
+          bars: { player: bars(health, 0), teammates: [] }
+        },
+        t * 1000,
+        ['TSCKey']
+      )
+      derived.push(...memory.absorb(report).map((e) => e.type))
+    }
+    expect(derived).not.toContain('recovery')
+  })
+})
