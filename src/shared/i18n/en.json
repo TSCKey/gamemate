@@ -247,7 +247,7 @@
     "commentaryEnglishOnly": "It only writes in English for now, so your main model writes the comments in GameMate's language.",
     "commentaryLicense": "LFM2.5 is made by Liquid AI and used under the <license>LFM Open License v1.0</license>, which doesn't cover commercial use by organizations with US$10 million or more in yearly revenue.",
     "killfeedReader": "Kill feed reader",
-    "killfeedReaderIntro": "Reads the names in a shooter's kill feed with your processor, so your graphics card stays free for the game. For VALORANT for now; without it, your main model reads the feed from screenshots.",
+    "killfeedReaderIntro": "Reads the names in a shooter's kill feed with your processor, so your graphics card stays free for the game. For VALORANT and Apex Legends for now; without it, your main model reads the feed from screenshots.",
     "killfeedDetails": "{{description}} {{size}}. Runs on the processor."
   },
   "pictures": {

@@ -69,13 +69,21 @@ export const PADDLE_SCORE_DETECT: DetectSettings = {
   limitSide: 96
 }
 
-// What is being read: small kill-feed text, a banner's big letters, or the score strip.
-export type TextKind = 'feed' | 'banner' | 'score'
+// A short line of small HUD text, such as Apex's ring timer: scaled up about twice.
+export const PADDLE_HUD_DETECT: DetectSettings = {
+  ...PADDLE_DETECT,
+  limitSide: 200
+}
+
+// What is being read: small kill-feed text, a banner's big letters, the score strip, or a short
+// line of small HUD text.
+export type TextKind = 'feed' | 'banner' | 'score' | 'hud'
 
 export const DETECT_FOR: Record<TextKind, DetectSettings> = {
   feed: PADDLE_DETECT,
   banner: PADDLE_BANNER_DETECT,
-  score: PADDLE_SCORE_DETECT
+  score: PADDLE_SCORE_DETECT,
+  hud: PADDLE_HUD_DETECT
 }
 
 const DET_MAX_CANDIDATES = 1000

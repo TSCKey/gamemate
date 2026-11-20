@@ -250,7 +250,7 @@
     "commentaryEnglishOnly": "Per ora scrive solo in inglese, quindi i commenti nella lingua di GameMate li scrive il tuo modello principale.",
     "commentaryLicense": "LFM2.5 è creato da Liquid AI e usato secondo la <license>LFM Open License v1.0</license>, che non copre l'uso commerciale da parte di organizzazioni con un fatturato annuo di 10 milioni di dollari statunitensi o più.",
     "killfeedReader": "Lettore del feed delle uccisioni",
-    "killfeedReaderIntro": "Legge i nomi nel feed delle uccisioni di uno sparatutto con il processore, così la scheda grafica resta libera per il gioco. Per ora per VALORANT; senza, il tuo modello principale legge il feed dagli screenshot.",
+    "killfeedReaderIntro": "Legge i nomi nel feed delle uccisioni di uno sparatutto con il processore, così la scheda grafica resta libera per il gioco. Per ora per VALORANT e Apex Legends; senza, il tuo modello principale legge il feed dagli screenshot.",
     "killfeedDetails": "{{description}} {{size}}. Funziona sul processore."
   },
   "pictures": {

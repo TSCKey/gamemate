@@ -250,7 +250,7 @@
     "commentaryEnglishOnly": "Por enquanto ele só escreve em inglês, então seu modelo principal escreve os comentários no idioma do GameMate.",
     "commentaryLicense": "O LFM2.5 é da Liquid AI e é usado sob a <license>LFM Open License v1.0</license>, que não cobre o uso comercial por organizações com receita anual de 10 milhões de dólares americanos ou mais.",
     "killfeedReader": "Leitor do feed de abates",
-    "killfeedReaderIntro": "Lê os nomes no feed de abates de um jogo de tiro com o seu processador, para deixar a placa de vídeo livre para o jogo. Por enquanto para VALORANT; sem ele, seu modelo principal lê o feed a partir de capturas de tela.",
+    "killfeedReaderIntro": "Lê os nomes no feed de abates de um jogo de tiro com o seu processador, para deixar a placa de vídeo livre para o jogo. Por enquanto para VALORANT e Apex Legends; sem ele, seu modelo principal lê o feed a partir de capturas de tela.",
     "killfeedDetails": "{{description}} {{size}}. Roda no processador."
   },
   "pictures": {

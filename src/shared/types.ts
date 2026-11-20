@@ -443,7 +443,19 @@ export const EVENT_TYPES = [
   'boss_encounter',
   'area_entered',
   'close_call_survived',
-  'new_area_after_deaths'
+  'new_area_after_deaths',
+  // Apex Legends (src/main/companion/apexReading.ts).
+  'shield_break',
+  'knock',
+  'multi_knock',
+  'teammate_down',
+  'player_knocked',
+  'third_party',
+  'banner_recovered',
+  'ring_closing',
+  'final_squads',
+  'kill_leader',
+  'chaotic_fight_victory'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 

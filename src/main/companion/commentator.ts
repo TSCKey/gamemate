@@ -62,7 +62,8 @@ const SAY_IT_DIFFERENTLY =
   '\nThat last attempt was too close to something you already said: word it differently.'
 
 function eventKey(event: GameEvent): string {
-  const counted = event.type === 'multikill' || event.type === 'kill_streak'
+  const counted =
+    event.type === 'multikill' || event.type === 'kill_streak' || event.type === 'multi_knock'
   // An area is told apart by its name (it is in `place`, with no opponent), so two different
   // areas close together are two events.
   const named =

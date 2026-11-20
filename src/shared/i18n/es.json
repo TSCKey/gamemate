@@ -250,7 +250,7 @@
     "commentaryEnglishOnly": "Por ahora solo escribe en inglés, así que tu modelo principal escribe los comentarios en el idioma de GameMate.",
     "commentaryLicense": "LFM2.5 es de Liquid AI y se usa bajo la <license>LFM Open License v1.0</license>, que no cubre el uso comercial por parte de organizaciones con ingresos anuales de 10 millones de dólares estadounidenses o más.",
     "killfeedReader": "Lector del registro de bajas",
-    "killfeedReaderIntro": "Lee los nombres del registro de bajas de un shooter con tu procesador, para que tu tarjeta gráfica quede libre para el juego. Por ahora para VALORANT; sin él, tu modelo principal lee el registro a partir de capturas.",
+    "killfeedReaderIntro": "Lee los nombres del registro de bajas de un shooter con tu procesador, para que tu tarjeta gráfica quede libre para el juego. Por ahora para VALORANT y Apex Legends; sin él, tu modelo principal lee el registro a partir de capturas.",
     "killfeedDetails": "{{description}} {{size}}. Funciona en el procesador."
   },
   "pictures": {

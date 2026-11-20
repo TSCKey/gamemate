@@ -496,6 +496,134 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     meaning:
       'The player died several times in one area and has now reached an area they had not been to before. It is not known whether they beat anything: do not say they did.'
   },
+  // Apex Legends, read off its HUD by src/main/companion/apexReading.ts. A knock is never taken
+  // for an elimination: only the game's own "[Bleed Out]" or "[Finisher]" says one.
+  shield_break: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 25,
+    cooldownMs: 45 * S,
+    staleMs: 8 * S,
+    dedupeMs: 4 * S,
+    namedDedupe: true,
+    meaning:
+      "An enemy's shield was broken by the player's squad (the legend's name is given). The enemy is not down."
+  },
+  knock: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 50,
+    cooldownMs: 15 * S,
+    staleMs: 12 * S,
+    dedupeMs: 10 * S,
+    namedDedupe: true,
+    meaning:
+      'The player knocked an opponent down. Knocked is not eliminated: they can still be revived or finished. Never say they were killed or eliminated.'
+  },
+  multi_knock: {
+    category: 'combat',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 72,
+    cooldownMs: 20 * S,
+    staleMs: 20 * S,
+    dedupeMs: 15 * S,
+    narrative: true,
+    meaning:
+      'The player knocked down several opponents in quick succession (the number is given). Knocks, not eliminations.'
+  },
+  teammate_down: {
+    category: 'teamwork',
+    tier: 'minor',
+    mood: 'negative',
+    priority: 35,
+    cooldownMs: 45 * S,
+    staleMs: 10 * S,
+    dedupeMs: 15 * S,
+    namedDedupe: true,
+    meaning:
+      'A teammate went down. Whether they were knocked or eliminated is only known if the facts say so.'
+  },
+  player_knocked: {
+    category: 'combat',
+    tier: 'significant',
+    mood: 'tense',
+    priority: 70,
+    cooldownMs: 60 * S,
+    staleMs: 8 * S,
+    dedupeMs: 20 * S,
+    urgent: true,
+    meaning:
+      'The player has been knocked down and is crawling with a knockdown shield; a teammate can still revive them.'
+  },
+  third_party: {
+    category: 'combat',
+    tier: 'significant',
+    mood: 'tense',
+    priority: 76,
+    cooldownMs: 90 * S,
+    staleMs: 8 * S,
+    dedupeMs: 60 * S,
+    urgent: true,
+    meaning:
+      'Another enemy squad has joined the fight: more enemies took part than one squad has. How many is not known.'
+  },
+  banner_recovered: {
+    category: 'teamwork',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 55,
+    cooldownMs: 60 * S,
+    staleMs: 20 * S,
+    dedupeMs: 120 * S,
+    meaning:
+      "A teammate picked up the player's banner, so the player can be brought back at a respawn beacon."
+  },
+  ring_closing: {
+    category: 'objectives',
+    tier: 'minor',
+    mood: 'tense',
+    priority: 30,
+    cooldownMs: 120 * S,
+    staleMs: 15 * S,
+    dedupeMs: 90 * S,
+    meaning: 'The ring has started closing in (its round is the number given, when known).'
+  },
+  final_squads: {
+    category: 'match',
+    tier: 'significant',
+    mood: 'tense',
+    priority: 68,
+    cooldownMs: 120 * S,
+    staleMs: 30 * S,
+    dedupeMs: 300 * S,
+    meaning: 'Only a few squads are left (the number is given): the endgame.'
+  },
+  kill_leader: {
+    category: 'match',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 66,
+    cooldownMs: 120 * S,
+    staleMs: 20 * S,
+    dedupeMs: 120 * S,
+    meaning:
+      'The game announced the player as the new kill leader (their kill count is the number given).'
+  },
+  chaotic_fight_victory: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 85,
+    cooldownMs: 60 * S,
+    staleMs: 30 * S,
+    dedupeMs: 60 * S,
+    narrative: true,
+    meaning:
+      "The player's squad came out on top of a messy fight despite the setbacks listed. Only what is listed happened: add nothing."
+  },
   low_health: {
     category: 'world',
     tier: 'significant',

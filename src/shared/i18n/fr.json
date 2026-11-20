@@ -250,7 +250,7 @@
     "commentaryEnglishOnly": "Pour l'instant il n'écrit qu'en anglais, donc ton modèle principal écrit les commentaires dans la langue de GameMate.",
     "commentaryLicense": "LFM2.5 est créé par Liquid AI et utilisé sous la <license>LFM Open License v1.0</license>, qui ne couvre pas l'usage commercial par des organisations dont le chiffre d'affaires annuel atteint 10 millions de dollars américains ou plus.",
     "killfeedReader": "Lecteur du fil des éliminations",
-    "killfeedReaderIntro": "Lit les noms du fil des éliminations d'un jeu de tir avec ton processeur, pour laisser ta carte graphique au jeu. Pour VALORANT pour l'instant ; sans lui, ton modèle principal lit le fil à partir de captures d'écran.",
+    "killfeedReaderIntro": "Lit les noms du fil des éliminations d'un jeu de tir avec ton processeur, pour laisser ta carte graphique au jeu. Pour VALORANT et Apex Legends pour l'instant ; sans lui, ton modèle principal lit le fil à partir de captures d'écran.",
     "killfeedDetails": "{{description}} {{size}}. Fonctionne sur le processeur."
   },
   "pictures": {

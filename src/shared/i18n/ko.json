@@ -244,7 +244,7 @@
     "commentaryEnglishOnly": "아직은 영어로만 쓸 수 있어서, GameMate 언어로 된 코멘트는 기본 모델이 씁니다.",
     "commentaryLicense": "LFM2.5는 Liquid AI가 만든 모델로 <license>LFM Open License v1.0</license>에 따라 사용됩니다. 이 라이선스는 연 매출이 1천만 미국 달러 이상인 조직의 상업적 사용에는 적용되지 않습니다.",
     "killfeedReader": "킬 피드 판독기",
-    "killfeedReaderIntro": "슈팅 게임의 킬 피드에 나오는 이름을 프로세서로 읽어서, 그래픽 카드는 게임에 쓸 수 있습니다. 지금은 VALORANT만 지원하며, 없으면 기본 모델이 스크린샷에서 킬 피드를 읽습니다.",
+    "killfeedReaderIntro": "슈팅 게임의 킬 피드에 나오는 이름을 프로세서로 읽어서, 그래픽 카드는 게임에 쓸 수 있습니다. 지금은 VALORANT와 Apex Legends를 지원하며, 없으면 기본 모델이 스크린샷에서 킬 피드를 읽습니다.",
     "killfeedDetails": "{{description}} {{size}}. 프로세서에서 실행됩니다."
   },
   "pictures": {

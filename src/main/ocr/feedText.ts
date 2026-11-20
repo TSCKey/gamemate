@@ -14,8 +14,8 @@ const MIN_NAME = 3
 
 const middle = (s: OcrSegment): number => s.y + s.height / 2
 
-// Pieces of text on one line, left to right.
-function lines(segments: OcrSegment[]): OcrSegment[][] {
+// Pieces of text on one line, left to right; lines top to bottom.
+export function lines(segments: OcrSegment[]): OcrSegment[][] {
   const rows: OcrSegment[][] = []
   for (const segment of [...segments].sort((a, b) => middle(a) - middle(b))) {
     const row = rows.at(-1)

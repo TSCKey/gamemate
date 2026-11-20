@@ -11,6 +11,13 @@ vi.mock('electron', () => ({
   net: {}
 }))
 vi.mock('koffi', () => ({ default: {} }))
+// Whether the kill-feed text reader is downloaded.
+let readerInstalled = false
+vi.mock('../src/main/ocr/paddle', () => ({
+  paddleReady: () => readerInstalled,
+  readWithPaddle: async () => [],
+  stopPaddle: async () => {}
+}))
 
 await import('../src/main/system/settings')
 const { adapterFor } = await import('../src/main/geis/adapter')
@@ -48,6 +55,14 @@ describe('choosing how to follow a game', () => {
     for (const name of ['VALORANT', 'Overwatch 2', 'Counter-Strike 2', 'Apex Legends']) {
       expect(adapterFor(adapters, game(name)).id).toBe('killfeed')
     }
+  })
+
+  it('reads Apex Legends’ HUD as text once the text reader is downloaded', () => {
+    readerInstalled = true
+    expect(adapterFor(adapters, game('Apex Legends')).id).toBe('apex')
+    expect(adapterFor(adapters, game('VALORANT')).id).toBe('killfeed')
+    readerInstalled = false
+    expect(adapterFor(adapters, game('Apex Legends')).id).toBe('killfeed')
   })
 
   it('looks at the whole screen in any other game', () => {

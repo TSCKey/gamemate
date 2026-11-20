@@ -244,7 +244,7 @@
     "commentaryEnglishOnly": "今のところ英語しか書けないため、GameMate の言語でのコメントはメインのモデルが書きます。",
     "commentaryLicense": "LFM2.5 は Liquid AI が開発したモデルで、<license>LFM Open License v1.0</license> のもとで使用しています。このライセンスは、年間売上高が 1,000 万米ドル以上の組織による商用利用には適用されません。",
     "killfeedReader": "キルログ読み取り",
-    "killfeedReaderIntro": "シューターのキルログに表示される名前をプロセッサーで読み取るので、グラフィックカードはゲームに使えます。今のところ VALORANT のみ対応。これがない場合は、メインのモデルがスクリーンショットからキルログを読み取ります。",
+    "killfeedReaderIntro": "シューターのキルログに表示される名前をプロセッサーで読み取るので、グラフィックカードはゲームに使えます。今のところ VALORANT と Apex Legends に対応。これがない場合は、メインのモデルがスクリーンショットからキルログを読み取ります。",
     "killfeedDetails": "{{description}} {{size}}。プロセッサーで動作します。"
   },
   "pictures": {

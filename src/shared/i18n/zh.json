@@ -244,7 +244,7 @@
     "commentaryEnglishOnly": "它目前只会写英语，所以 GameMate 所用语言的评论由你的主模型来写。",
     "commentaryLicense": "LFM2.5 由 Liquid AI 开发，依据 <license>LFM Open License v1.0</license> 使用。该许可不适用于年收入达到或超过 1000 万美元的组织的商业用途。",
     "killfeedReader": "击杀信息读取器",
-    "killfeedReaderIntro": "用处理器读取射击游戏击杀信息中的名字，让显卡专心运行游戏。目前支持 VALORANT；没有它时，由主模型从截图中读取击杀信息。",
+    "killfeedReaderIntro": "用处理器读取射击游戏击杀信息中的名字，让显卡专心运行游戏。目前支持 VALORANT 和 Apex Legends；没有它时，由主模型从截图中读取击杀信息。",
     "killfeedDetails": "{{description}} {{size}}。在处理器上运行。"
   },
   "pictures": {

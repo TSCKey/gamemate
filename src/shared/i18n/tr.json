@@ -247,7 +247,7 @@
     "commentaryEnglishOnly": "Şimdilik yalnızca İngilizce yazıyor, bu yüzden GameMate'in dilindeki yorumları ana modelin yazıyor.",
     "commentaryLicense": "LFM2.5, Liquid AI tarafından geliştirilmiştir ve <license>LFM Open License v1.0</license> kapsamında kullanılır. Bu lisans, yıllık geliri 10 milyon ABD doları veya daha fazla olan kuruluşların ticari kullanımını kapsamaz.",
     "killfeedReader": "Öldürme akışı okuyucu",
-    "killfeedReaderIntro": "Bir nişancı oyununun öldürme akışındaki isimleri işlemcinle okur, böylece ekran kartın oyuna kalır. Şimdilik VALORANT için; o olmadan akışı ana modelin ekran görüntülerinden okur.",
+    "killfeedReaderIntro": "Bir nişancı oyununun öldürme akışındaki isimleri işlemcinle okur, böylece ekran kartın oyuna kalır. Şimdilik VALORANT ve Apex Legends için; o olmadan akışı ana modelin ekran görüntülerinden okur.",
     "killfeedDetails": "{{description}} {{size}}. İşlemcide çalışır."
   },
   "pictures": {
