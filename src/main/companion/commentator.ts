@@ -23,6 +23,7 @@ import { CorrelationEngine } from '../geis/correlation'
 import { RULES } from '../geis/rules'
 import { pipelineTap } from '../geis/tap'
 import { MatchMemory, type MatchContext } from './matchMemory'
+import { offVoice, voiceFor } from './gameVoice'
 import { SessionMemory } from './sessionMemory'
 import {
   claimsTooMuch,
@@ -334,6 +335,11 @@ export class Commentator {
       ...(this.lastSource === 'screen' ? { session: this.session.context(this.now()) } : {})
     }
     const prompt = reactionPrompt(request)
+    const voice = voiceFor(options.game)
+    // A word that makes no sense in this game ("killed" in Rocket League) is checked in English;
+    // for other languages the prompt has to do the work.
+    const wrongWord = (text: string): string | null =>
+      options.language === 'en' ? offVoice(text, voice) : null
     const problem = (text: string): string | null =>
       !text
         ? 'the AI gave no usable line'
@@ -341,16 +347,20 @@ export class Commentator {
           ? 'too close to a recent comment'
           : claimsTooMuch(text, decision.events)
             ? 'it claimed more than was seen'
-            : null
+            : wrongWord(text)
+              ? `it used a word that doesn't fit ${options.game.name}`
+              : null
     const first = cleanReaction(await this.deps.generate(prompt), decision.tier)
     const firstProblem = problem(first)
     if (!firstProblem) return { text: first, why: '' }
-    // Small moments don't deserve a second AI call: silence is fine.
-    if (!first || decision.tier === 'minor') return { text: '', why: firstProblem }
-    const second = cleanReaction(
-      await this.deps.generate(prompt + SAY_IT_DIFFERENTLY),
-      decision.tier
-    )
+    // Small moments don't deserve a second AI call, unless the line only needed the game's own
+    // words: silence is fine.
+    const offWord = first ? wrongWord(first) : null
+    if (!first || (decision.tier === 'minor' && !offWord)) return { text: '', why: firstProblem }
+    const again = offWord
+      ? `\nThat last attempt said "${offWord}", which makes no sense in ${options.game.name}: say it in ${options.game.name}'s own words, and word it differently.`
+      : SAY_IT_DIFFERENTLY
+    const second = cleanReaction(await this.deps.generate(prompt + again), decision.tier)
     const secondProblem = problem(second)
     return secondProblem ? { text: '', why: `${secondProblem}, twice` } : { text: second, why: '' }
   }
