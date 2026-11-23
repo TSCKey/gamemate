@@ -108,7 +108,11 @@ function fact(event: GameEvent, voice: GameVoice): string {
   if (!inferredWin(event) && certainty(event) === 'likely') {
     parts.push('(Likely, not certain: it was read off the screen and may be wrong.)')
   }
-  if (event.detail) parts.push(`Seen: "${event.detail}".`)
+  // Match memory counts takedowns as "eliminations"; a game may call them something else.
+  const detail = voice.takedowns
+    ? event.detail.replace(/\beliminations\b/g, voice.takedowns)
+    : event.detail
+  if (detail) parts.push(`Seen: "${detail}".`)
   if (event.opponent && TEAMMATE_NAMED.has(event.type)) {
     parts.push(`The teammate involved is "${event.opponent}" (not the player).`)
   } else if (event.opponent) {
@@ -121,11 +125,12 @@ function fact(event: GameEvent, voice: GameVoice): string {
 
 function memoryNotes(request: ReactionRequest): string[] {
   const { context, events, tactical } = request
+  const takedowns = voiceFor(request.game).takedowns ?? 'eliminations'
   const notes: string[] = []
   if (context.killStreak >= 2) {
-    notes.push(`They are on a run of at least ${context.killStreak} eliminations.`)
+    notes.push(`They are on a run of at least ${context.killStreak} ${takedowns}.`)
   }
-  if (context.kills >= 3) notes.push(`At least ${context.kills} eliminations so far this match.`)
+  if (context.kills >= 3) notes.push(`At least ${context.kills} ${takedowns} so far this match.`)
   if (context.roundRun >= 2) notes.push(`${context.roundRun} rounds won in a row.`)
   if (context.roundRun <= -2) notes.push(`${-context.roundRun} rounds lost in a row.`)
   if (context.score) notes.push(`The score is ${context.score.own}-${context.score.enemy}.`)
@@ -163,7 +168,7 @@ function patternNote(pattern: NonNullable<MatchContext['pattern']>): string {
 }
 
 // What the game is and how its players talk, so the comment sounds like someone who knows it.
-function gameLanguage(name: string, voice: GameVoice): string[] {
+export function gameLanguage(name: string, voice: GameVoice): string[] {
   return [
     `About ${name}: ${voice.about}`,
     ...(voice.words.length

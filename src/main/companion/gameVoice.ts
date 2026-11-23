@@ -17,6 +17,9 @@ export interface GameVoice {
   avoid: string[]
   // What the player's opponents are called, in the singular ("opponent", "enemy").
   other: string
+  // What the player's takedowns are called, in the plural, where it isn't "eliminations" (in
+  // Rocket League a "kill" read off the screen is a demo).
+  takedowns?: string
   // What a moment means in this game, where the general meaning would read wrong.
   meanings?: Partial<Record<GameEventType, string>>
 }
@@ -61,6 +64,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
         'points'
       ],
       other: 'opponent',
+      takedowns: 'demos',
       meanings: {
         kill: "The player demolished an opponent's car (a demo): it blew up and is out of the play for a few seconds.",
         death:
@@ -92,7 +96,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
         'champions',
         'kill leader'
       ],
-      avoid: ['goal', 'goals', 'round', 'rounds', 'boss'],
+      avoid: ['goal', 'goals', 'boss'],
       other: 'enemy',
       meanings: {
         kill: 'The player downed an enemy; the facts say whether it was a knock or an elimination.',
@@ -138,8 +142,6 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
         'eliminated',
         'elimination',
         'squad',
-        'round',
-        'rounds',
         'goal',
         'goals',
         'frag',
@@ -162,7 +164,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
       about:
         'Minecraft is a sandbox survival game: the player gathers, builds, crafts and explores, and hostile mobs (zombies, skeletons, creepers) come out in the dark. Dying drops what they carried where they died, and they respawn at their bed or the world spawn.',
       words: ['mob', 'mobs', 'creeper', 'build', 'craft', 'biome', 'village', 'cave'],
-      avoid: ['eliminated', 'elimination', 'squad', 'round', 'rounds', 'goal', 'goals', 'frag'],
+      avoid: ['eliminated', 'elimination', 'squad', 'goal', 'goals', 'frag'],
       other: 'mob'
     }
   },
@@ -172,7 +174,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
       about:
         'Fortnite is a battle royale: players drop onto an island, loot, build cover and fight while the storm closes in, and the last one (or last team) standing gets a Victory Royale. A downed player in a team mode can be revived.',
       words: ['eliminated', 'storm', 'build', 'loot', 'Victory Royale', 'knocked', 'revive'],
-      avoid: ['goal', 'goals', 'round', 'rounds', 'boss', 'ring'],
+      avoid: ['goal', 'goals', 'boss', 'ring'],
       other: 'opponent',
       meanings: {
         victory: 'The player got a Victory Royale: they won the match.'
@@ -208,7 +210,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
       about:
         "League of Legends is a 5v5 MOBA: each player controls a champion, the teams push lanes, take towers and objectives like dragons and Baron, and win by destroying the other team's Nexus. Dead champions respawn after a timer.",
       words: ['champion', 'lane', 'tower', 'dragon', 'Baron', 'team fight', 'kill', 'Nexus'],
-      avoid: ['goal', 'goals', 'knocked', 'squad wipe', 'round', 'rounds'],
+      avoid: ['goal', 'goals', 'knocked', 'squad wipe'],
       other: 'enemy'
     }
   }
