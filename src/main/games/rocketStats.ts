@@ -1,8 +1,9 @@
 // Rocket League's Stats API: once the player turns it on in the game's own settings file, the game
 // opens a local WebSocket and sends JSON messages while a match is on. GameMate only listens: it
-// never sends the API's commands, and it never writes the settings file. It reads that file to
-// know whether the feature is on and on which port, and the player edits it themselves (see the
-// README), because GameMate doesn't modify game files.
+// never sends the API's commands. It reads the settings file to know whether the feature is on and
+// on which port, and never writes it: a setting a game documents for its official data feed is the
+// only game-file change GameMate's promise allows, and the player makes it themselves (see the
+// README).
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { RocketMessage } from '../companion/rocketReading'
