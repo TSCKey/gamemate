@@ -72,6 +72,18 @@ const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   teammate_revived: '🙌',
   teammate_respawned: '🔁',
   successful_escape: '🏃',
+  goal_scored: '⚽',
+  goal_assist: '🤝',
+  teammate_goal: '⚽',
+  goal_conceded: '🥅',
+  save: '🧤',
+  epic_save: '🧤',
+  defensive_stand: '🛡️',
+  demolition: '💥',
+  demolished: '💥',
+  crossbar_hit: '😬',
+  overtime_started: '⏱️',
+  final_seconds: '⏳',
   defeat: '🫡',
   milestone: '🎉'
 }

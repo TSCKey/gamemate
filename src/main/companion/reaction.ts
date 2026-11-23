@@ -86,6 +86,17 @@ export function certainty(event: GameEvent): 'certain' | 'likely' {
   }
 }
 
+// Events whose named person is on the player's side: a teammate who went down or came back, the
+// teammate who scored or set up a goal.
+const TEAMMATE_NAMED = new Set<GameEventType>([
+  'teammate_down',
+  'teammate_revived',
+  'teammate_respawned',
+  'teammate_goal',
+  'goal_assist',
+  'goal_scored'
+])
+
 function fact(event: GameEvent): string {
   const parts = [
     inferredWin(event)
@@ -96,7 +107,11 @@ function fact(event: GameEvent): string {
     parts.push('(Likely, not certain: it was read off the screen and may be wrong.)')
   }
   if (event.detail) parts.push(`Seen: "${event.detail}".`)
-  if (event.opponent) parts.push(`The enemy involved is "${event.opponent}" (not the player).`)
+  if (event.opponent && TEAMMATE_NAMED.has(event.type)) {
+    parts.push(`The teammate involved is "${event.opponent}" (not the player).`)
+  } else if (event.opponent) {
+    parts.push(`The enemy involved is "${event.opponent}" (not the player).`)
+  }
   if (event.place) parts.push(`Place: "${event.place}".`)
   if (event.count > 1) parts.push(`Number: ${event.count}.`)
   return `- ${parts.join(' ')}`

@@ -116,6 +116,16 @@ Open **⚙ Settings → Models** to choose the AI that runs on your PC:
 
 **Kill feed reader:** a small text reader (PaddleOCR, 31 MB) that reads what VALORANT and Apex Legends write on screen, on your processor: the kill feed, round banners and the score in VALORANT; knocks, eliminations, shield breaks, squads left, the ring and your squad's names in Apex, where it also follows your health and shield bars and your teammates' cards (knocked, revived, eliminated, respawned) by their colours. With it, GameMate doesn't need your main model to watch those two games, so your graphics card stays free for the game. In Apex it tells a knock from an elimination only by what the game writes, calls a clutch when you win a fight with the rest of your squad down, warns when another squad joins a fight, and sums up a messy fight in one comment. Download it under **Kill feed reader** in **⚙ Settings → Models**; it's used as soon as it's there. Other games' kill feeds are still read by your main model.
 
+**Rocket League live data (optional):** Rocket League can tell GameMate itself who scored, who set it up, who made a save or an epic save, who demolished whom, when the ball hit the crossbar, the clock, overtime and the result, through the game's official [Stats API](https://www.rocketleague.com/developer/stats-api). GameMate then reacts to your goals, assists, saves and demos, to equalizers, last-second and overtime goals, hat tricks and comebacks, without reading the screen. The game doesn't share boost, car positions or movement with players, so GameMate never claims a particular mechanic. The Stats API is off in the game by default, and GameMate doesn't change game files, so you turn it on yourself:
+
+1. Close Rocket League.
+2. In the game's install folder (for the Epic Games version usually `C:\Program Files\Epic Games\rocketleague`), open `TAGame\Config\TAStatsAPI.ini` in a text editor, or `DefaultStatsAPI.ini` if there's no `TAStatsAPI.ini`. Windows may ask you to open the editor as administrator.
+   ocketleague`), open `TAGame\Config\TAStatsAPI.ini`in a text editor, or`DefaultStatsAPI.ini`if there's no`TAStatsAPI.ini`. Windows may ask you to open the editor as administrator.
+3. Change `PacketSendRate=0` to `PacketSendRate=10` and save.
+4. Start Rocket League. GameMate connects by itself during matches; it only listens on your PC and never sends the game anything.
+
+To turn it off again, set it back to `PacketSendRate=0`. Without it, Rocket League is followed from the screen as before.
+
 ### Gemini, Auto and wiki lookup
 
 Click the AI name under the question box (for example **Qwen3.5 2B ▾**) to switch between **Auto**, a model on your PC and a Gemini model. **⚙ Settings → AI & online** has all the options:

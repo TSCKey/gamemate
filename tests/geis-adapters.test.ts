@@ -65,6 +65,17 @@ describe('choosing how to follow a game', () => {
     expect(adapterFor(adapters, game('Apex Legends')).id).toBe('killfeed')
   })
 
+  it('keeps watching Rocket League as before while its Stats API is off', async () => {
+    const { mkdirSync, mkdtempSync, writeFileSync } = await import('fs')
+    const dir = mkdtempSync(join(tmpdir(), 'gamemate-rl-adapter-'))
+    mkdirSync(join(dir, 'TAGame', 'Config'), { recursive: true })
+    writeFileSync(
+      join(dir, 'TAGame', 'Config', 'DefaultStatsAPI.ini'),
+      ['[TAGame.MatchStatsExporter_TA]', 'WebPort=49124', 'PacketSendRate=0'].join('\n')
+    )
+    expect(adapterFor(adapters, { ...game('Rocket League'), installDir: dir }).id).toBe('killfeed')
+  })
+
   it('looks at the whole screen in any other game', () => {
     for (const name of ['Minecraft', 'Elden Ring', 'Hollow Knight']) {
       expect(adapterFor(adapters, game(name)).id).toBe('vision-look')

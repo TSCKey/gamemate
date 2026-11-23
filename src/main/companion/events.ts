@@ -7,7 +7,8 @@ import type { CommentaryCategory, EventType } from '../../shared/types'
 export type GameEventType = Exclude<EventType, 'none'>
 export type Tier = 'minor' | 'significant' | 'exceptional'
 export type Mood = 'positive' | 'negative' | 'tense' | 'neutral'
-export type EventSource = 'vision' | 'memory' | 'screen'
+// 'game': the game's own data (Rocket League's Stats API).
+export type EventSource = 'vision' | 'memory' | 'screen' | 'game'
 export type Phase = 'playing' | 'intermission' | 'menu'
 
 // What kind of evidence an event rests on. It is fixed by where the event comes from and never
@@ -612,6 +613,135 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     meaning:
       'The game announced the player as the new kill leader (their kill count is the number given).'
   },
+  // Rocket League, from the game's own Stats API: who scored, assisted, saved and demolished is
+  // the game's word. Nothing else is claimed: no mechanics, no positions, no boost.
+  goal_scored: {
+    category: 'combat',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 92,
+    cooldownMs: 10 * S,
+    staleMs: 20 * S,
+    dedupeMs: 5 * S,
+    meaning:
+      'The player scored a goal (the game says so). What made it special, if anything, is listed; nothing else is known about how it was scored.'
+  },
+  goal_assist: {
+    category: 'teamwork',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 80,
+    cooldownMs: 10 * S,
+    staleMs: 20 * S,
+    dedupeMs: 5 * S,
+    meaning:
+      "The player set up a teammate's goal and the game counted it as their assist. How (a pass, a center) is not known."
+  },
+  teammate_goal: {
+    category: 'teamwork',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 55,
+    cooldownMs: 10 * S,
+    staleMs: 15 * S,
+    dedupeMs: 5 * S,
+    meaning: "A teammate scored (not the player, who didn't assist it either)."
+  },
+  goal_conceded: {
+    category: 'match',
+    tier: 'minor',
+    mood: 'negative',
+    priority: 50,
+    cooldownMs: 20 * S,
+    staleMs: 15 * S,
+    dedupeMs: 5 * S,
+    meaning: "The other team scored. Don't blame anyone: who was at fault is not known."
+  },
+  save: {
+    category: 'skill',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 60,
+    cooldownMs: 20 * S,
+    staleMs: 10 * S,
+    dedupeMs: 3 * S,
+    meaning: 'The player stopped a shot that was going in, as the game counted it: a save.'
+  },
+  epic_save: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 84,
+    cooldownMs: 15 * S,
+    staleMs: 12 * S,
+    dedupeMs: 3 * S,
+    meaning: 'The player made a save the game itself rated an epic save.'
+  },
+  defensive_stand: {
+    category: 'skill',
+    tier: 'significant',
+    mood: 'positive',
+    priority: 86,
+    cooldownMs: 45 * S,
+    staleMs: 15 * S,
+    dedupeMs: 20 * S,
+    narrative: true,
+    meaning:
+      'The player made several saves within a few seconds (the number is given), holding off attack after attack.'
+  },
+  demolition: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 45,
+    cooldownMs: 30 * S,
+    staleMs: 8 * S,
+    dedupeMs: 3 * S,
+    namedDedupe: true,
+    meaning:
+      'The player demolished an opponent (blew up their car) and they are out of the play for a moment.'
+  },
+  demolished: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'negative',
+    priority: 30,
+    cooldownMs: 60 * S,
+    staleMs: 8 * S,
+    dedupeMs: 3 * S,
+    namedDedupe: true,
+    meaning: "An opponent demolished the player's car; they respawn in a few seconds."
+  },
+  crossbar_hit: {
+    category: 'combat',
+    tier: 'minor',
+    mood: 'tense',
+    priority: 48,
+    cooldownMs: 30 * S,
+    staleMs: 8 * S,
+    dedupeMs: 3 * S,
+    meaning: "The player's touch sent the ball off the crossbar: inches from a goal."
+  },
+  overtime_started: {
+    category: 'match',
+    tier: 'significant',
+    mood: 'tense',
+    priority: 75,
+    cooldownMs: 60 * S,
+    staleMs: 20 * S,
+    dedupeMs: 300 * S,
+    meaning: 'The match went to overtime: the next goal wins.'
+  },
+  final_seconds: {
+    category: 'match',
+    tier: 'minor',
+    mood: 'tense',
+    priority: 40,
+    cooldownMs: 120 * S,
+    staleMs: 10 * S,
+    dedupeMs: 300 * S,
+    meaning: 'Under thirty seconds left and the score is close (the score is given).'
+  },
   // Apex Legends' health and shield bars and the squad's cards (src/main/geis/adapters/apexBars.ts).
   player_shield_broken: {
     category: 'combat',
@@ -818,7 +948,8 @@ let nextId = 0
 const SOURCE_BASIS: Record<EventSource, EvidenceBasis> = {
   vision: 'model',
   screen: 'verified',
-  memory: 'inferred'
+  memory: 'inferred',
+  game: 'telemetry'
 }
 
 export type EventFields = Partial<

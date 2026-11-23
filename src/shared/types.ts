@@ -461,7 +461,20 @@ export const EVENT_TYPES = [
   'shields_restored',
   'teammate_revived',
   'teammate_respawned',
-  'successful_escape'
+  'successful_escape',
+  // Rocket League, from its Stats API (src/main/companion/rocketReading.ts).
+  'goal_scored',
+  'goal_assist',
+  'teammate_goal',
+  'goal_conceded',
+  'save',
+  'epic_save',
+  'defensive_stand',
+  'demolition',
+  'demolished',
+  'crossbar_hit',
+  'overtime_started',
+  'final_seconds'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 
