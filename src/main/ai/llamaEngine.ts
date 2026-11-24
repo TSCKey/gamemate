@@ -173,9 +173,11 @@ export function commentaryArgs(
   return [
     '-m',
     files.model,
-    // Every fine-tuning, none applied until a comment picks one (engines.ts writeComment).
-    ...(files.adapters ?? []).flatMap((a) => ['--lora', a.path]),
-    ...(files.adapters?.length ? ['--lora-init-without-apply'] : []),
+    // Every fine-tuning, none applied until a comment picks one (engines.ts writeComment). The
+    // engine takes them as one comma-separated list (a repeated --lora is deprecated).
+    ...(files.adapters?.length
+      ? ['--lora', files.adapters.map((a) => a.path).join(','), '--lora-init-without-apply']
+      : []),
     ...['--host', '127.0.0.1', '--port', String(port), '--api-key', apiKey],
     ...['-c', String(COMMENTARY_CONTEXT_TOKENS), '-np', '1', '--no-webui'],
     ...['-fa', 'on', '-ctk', 'q8_0', '-ctv', 'q8_0'],

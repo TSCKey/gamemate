@@ -160,9 +160,7 @@ describe('the comment writer’s engine', () => {
   it('runs the model with GameMate’s fine-tuning, text only, for GameMate alone', () => {
     const args = commentaryArgs(files, 1234, 'key', 'Vulkan1').join(' ')
     // Every fine-tuning loaded, none applied until a comment picks one.
-    expect(args).toContain(
-      '-m lfm.gguf --lora general.gguf --lora sports.gguf --lora-init-without-apply'
-    )
+    expect(args).toContain('-m lfm.gguf --lora general.gguf,sports.gguf --lora-init-without-apply')
     expect(args).toContain('--host 127.0.0.1 --port 1234 --api-key key')
     expect(args).not.toContain('--mmproj')
     // It doesn't think before writing.
