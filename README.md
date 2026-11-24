@@ -120,7 +120,6 @@ Open **⚙ Settings → Models** to choose the AI that runs on your PC:
 
 1. Close Rocket League.
 2. In the game's install folder (for the Epic Games version usually `C:\Program Files\Epic Games\rocketleague`), open `TAGame\Config\TAStatsAPI.ini` in a text editor, or `DefaultStatsAPI.ini` if there's no `TAStatsAPI.ini`. Windows may ask you to open the editor as administrator.
-   ocketleague`), open `TAGame\Config\TAStatsAPI.ini`in a text editor, or`DefaultStatsAPI.ini`if there's no`TAStatsAPI.ini`. Windows may ask you to open the editor as administrator.
 3. Change `PacketSendRate=0` to `PacketSendRate=10` and save.
 4. Start Rocket League. GameMate connects by itself during matches; it only listens on your PC and never sends the game anything.
 

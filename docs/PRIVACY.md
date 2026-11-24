@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Version 2 · Last updated: 18 November 2026
+Version 2 · Last updated: 24 November 2026
 
 This policy explains what happens to your personal data when you use GameMate. It is written to meet the EU General Data Protection Regulation (GDPR), the German Telecommunications Digital Services Data Protection Act (TDDDG) and the Personal Data Protection Law of the Kingdom of Saudi Arabia (PDPL).
 
@@ -34,7 +34,8 @@ Your conversations, screenshots, voice recordings and what the companion noticed
 ## 4. What GameMate does on your PC
 
 - **Your screen** is captured only when you send a question with a screenshot, press the in-game shortcut with screenshots turned on, or while the companion is set to watch your game. You choose this in the app; the companion is off by default.
-- **Text on your game's screen:** for Hollow Knight: Silksong, the companion reads boss and area names off your screen with Windows' own text recognition, and reads the game's language setting from the game's own log file. Both happen on your PC only, and the screen captures stay in memory as described above.
+- **Text on your game's screen:** for Hollow Knight: Silksong, the companion reads boss and area names off your screen with Windows' own text recognition, and reads the game's language setting from the game's own log file. For Rocket League, it reads the scoreboard and the game's popups (such as "Epic Save") the same way. With the kill feed reader downloaded, it reads VALORANT's and Apex Legends' kill feed and banners, including the names in them, with that reader. All of this happens on your PC only, and the screen captures stay in memory as described above.
+- **A game's own match data:** if you turn on Rocket League's Stats API in the game's settings file, GameMate receives the game's match data (such as players' names, goals, saves and the clock) over a connection on your PC only. It never sends the game anything, and the data stays in memory like the rest of what the companion noticed.
 - **Your microphone** is used only while voice input is on and you press the voice shortcut or 🎤. Your speech is turned into text on your PC.
 - **The AI model** that runs on your PC (GameMate's own engine, or Ollama if you use it) receives your questions and screenshots on your PC only.
 

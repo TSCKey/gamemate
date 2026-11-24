@@ -2,7 +2,7 @@
 
 Bu çeviri kolaylık olsun diye sunulmuştur. Bağlayıcı olan [İngilizce sürümdür](../PRIVACY.md).
 
-Sürüm 2 · Son güncelleme: 18 Kasım 2026
+Sürüm 2 · Son güncelleme: 24 Kasım 2026
 
 Bu politika, GameMate'i kullandığında kişisel verilerine ne olduğunu açıklar. AB Genel Veri Koruma Tüzüğü'ne (GDPR), Almanya'nın Telekomünikasyon ve Dijital Hizmetlerde Veri Koruma Kanunu'na (TDDDG) ve Suudi Arabistan Krallığı'nın Kişisel Verilerin Korunması Kanunu'na (PDPL) uygun olacak şekilde yazılmıştır.
 
@@ -36,7 +36,8 @@ Konuşmaların, ekran görüntülerin, ses kayıtların ve yol arkadaşının fa
 ## 4. GameMate bilgisayarında ne yapar
 
 - **Ekranın** yalnızca ekran görüntüsüyle bir soru gönderdiğinde, ekran görüntüleri açıkken oyun içi kısayola bastığında veya yol arkadaşı oyununu izlemeye ayarlıyken yakalanır. Bunu uygulamada sen seçersin; yol arkadaşı varsayılan olarak kapalıdır.
-- **Oyununun ekranındaki yazı:** Hollow Knight: Silksong için yol arkadaşı, patron ve bölge adlarını Windows'un kendi metin tanıma özelliğiyle ekranından okur, oyunun dil ayarını da oyunun kendi günlük dosyasından alır. İkisi de yalnızca bilgisayarında gerçekleşir ve ekran görüntüleri yukarıda anlatıldığı gibi bellekte kalır.
+- **Oyununun ekranındaki yazı:** Hollow Knight: Silksong için yol arkadaşı, patron ve bölge adlarını Windows'un kendi metin tanıma özelliğiyle ekranından okur, oyunun dil ayarını da oyunun kendi günlük dosyasından alır. Rocket League'de skor tablosunu ve oyunun açılır yazılarını ("Epic Save" gibi) da aynı şekilde okur. Öldürme akışı okuyucusu indirildiyse, onunla VALORANT ve Apex Legends'ın öldürme akışını ve afişlerini, içlerindeki adlarla birlikte okur. Bunların hepsi yalnızca bilgisayarında gerçekleşir ve ekran görüntüleri yukarıda anlatıldığı gibi bellekte kalır.
+- **Oyunun kendi maç verileri:** Rocket League'in Stats API'sini oyunun ayar dosyasında açarsan, GameMate oyunun maç verilerini (oyuncu adları, goller, kurtarışlar ve saat gibi) yalnızca bilgisayarındaki bir bağlantı üzerinden alır. Oyuna hiçbir şey göndermez ve veriler, yol arkadaşının fark ettiği diğer her şey gibi bellekte kalır.
 - **Mikrofonun** yalnızca sesli giriş açıkken ve ses kısayoluna veya 🎤'ye bastığında kullanılır. Konuşman bilgisayarında metne dönüştürülür.
 - Bilgisayarında çalışan **yapay zekâ modeli** (GameMate'in kendi motoru ya da kullanıyorsan Ollama), sorularını ve ekran görüntülerini yalnızca bilgisayarında alır.
 

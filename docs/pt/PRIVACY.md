@@ -2,7 +2,7 @@
 
 Esta é uma tradução para sua conveniência. A [versão em inglês](../PRIVACY.md) é a vinculativa.
 
-Versão 2 · Última atualização: 18 de novembro de 2026
+Versão 2 · Última atualização: 24 de novembro de 2026
 
 Esta política explica o que acontece com os seus dados pessoais quando você usa o GameMate. Ela foi escrita para atender ao Regulamento Geral sobre a Proteção de Dados da UE (RGPD), à lei alemã de proteção de dados em telecomunicações e serviços digitais (TDDDG) e à Lei de Proteção de Dados Pessoais do Reino da Arábia Saudita (PDPL).
 
@@ -36,7 +36,8 @@ Suas conversas, capturas de tela, gravações de voz e o que o companheiro perce
 ## 4. O que o GameMate faz no seu PC
 
 - **Sua tela** só é capturada quando você envia uma pergunta com captura de tela, pressiona o atalho do jogo com as capturas ativadas ou enquanto o companheiro estiver configurado para observar seu jogo. Você escolhe isso no aplicativo; o companheiro vem desativado.
-- **O texto na tela do seu jogo:** no Hollow Knight: Silksong, o companheiro lê os nomes de chefes e de áreas na sua tela com o reconhecimento de texto do próprio Windows e lê a configuração de idioma do jogo no arquivo de registro do próprio jogo. Ambas as coisas acontecem somente no seu PC, e as capturas de tela ficam na memória, como descrito acima.
+- **O texto na tela do seu jogo:** no Hollow Knight: Silksong, o companheiro lê os nomes de chefes e de áreas na sua tela com o reconhecimento de texto do próprio Windows e lê a configuração de idioma do jogo no arquivo de registro do próprio jogo. No Rocket League, ele lê da mesma forma o placar e os avisos do jogo (como "Epic Save"). Com o leitor do feed de abates baixado, ele lê com ele o feed de abates e os banners do VALORANT e do Apex Legends, incluindo os nomes que aparecem neles. Tudo isso acontece somente no seu PC, e as capturas de tela ficam na memória, como descrito acima.
+- **Os dados de partida do próprio jogo:** se você ativar a Stats API do Rocket League no arquivo de configurações do jogo, o GameMate recebe os dados da partida do jogo (como nomes dos jogadores, gols, defesas e o relógio) por uma conexão somente no seu PC. Ele nunca envia nada ao jogo, e os dados ficam na memória como o restante do que o companheiro percebeu.
 - **Seu microfone** só é usado enquanto a entrada de voz está ativada e você pressiona o atalho de voz ou 🎤. Sua fala é transformada em texto no seu PC.
 - **O modelo de IA** que roda no seu PC (o mecanismo do próprio GameMate, ou o Ollama, se você usá-lo) recebe suas perguntas e capturas de tela somente no seu PC.
 

@@ -174,6 +174,16 @@ export function createRocketLeague(host: AdapterHost): GameAdapter {
           })
         }
       }
+      if (pipelineTap.enabled) {
+        for (const text of look.unknown) {
+          pipelineTap.record({
+            at: time,
+            stage: 'observation',
+            adapterId: 'rocket-league',
+            summary: `rocket screen: text not known yet: "${text}"`
+          })
+        }
+      }
       if (events.length) {
         console.info(`Rocket League screen moments: ${events.map((e) => e.type).join(', ')}`)
       }

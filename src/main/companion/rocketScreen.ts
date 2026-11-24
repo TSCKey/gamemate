@@ -172,6 +172,9 @@ export interface ScreenReading {
   messages: RocketMessage[]
   // What was read and what came of it, for the log and the developer inspector.
   notes: string[]
+  // Text in the middle of the screen that isn't known yet, for the developer inspector only: it
+  // can hold other players' names, which GameMate's log never does.
+  unknown: string[]
 }
 
 interface PendingGoal {
@@ -213,10 +216,12 @@ export class RocketScreen {
   // The clock was seen running this match (so the scoreboard going away means it ended).
   private clockRan = false
   private unknownText = new Set<string>()
+  private unknownOut: string[] = []
 
   look(look: RocketLook, names: string[]): ScreenReading {
     const messages: RocketMessage[] = []
     const notes: string[] = []
+    this.unknownOut = []
     const { time } = look
     if (!this.started) {
       this.started = true
@@ -236,7 +241,7 @@ export class RocketScreen {
     this.readReplay(look.replay, names, notes)
     this.settleGoal(time, messages, notes)
     this.checkEnd(time, messages, notes)
-    return { messages, notes }
+    return { messages, notes, unknown: this.unknownOut }
   }
 
   // Whether the replay card is worth reading: a goal is waiting to be told.
@@ -442,7 +447,7 @@ export class RocketScreen {
           this.unknownText.size < MAX_UNKNOWN_TEXT
         ) {
           this.unknownText.add(key)
-          notes.push(`text not known yet: "${text}"`)
+          this.unknownOut.push(text)
         }
         continue
       }

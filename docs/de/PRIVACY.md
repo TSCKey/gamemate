@@ -2,7 +2,7 @@
 
 Dies ist eine Übersetzung zu deiner Bequemlichkeit. Verbindlich ist die [englische Fassung](../PRIVACY.md).
 
-Version 2 · Zuletzt aktualisiert: 18. November 2026
+Version 2 · Zuletzt aktualisiert: 24. November 2026
 
 Diese Erklärung beschreibt, was mit deinen personenbezogenen Daten geschieht, wenn du GameMate nutzt. Sie ist so geschrieben, dass sie der EU-Datenschutz-Grundverordnung (DSGVO), dem deutschen Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz (TDDDG) und dem Gesetz zum Schutz personenbezogener Daten des Königreichs Saudi-Arabien (PDPL) entspricht.
 
@@ -36,7 +36,8 @@ Deine Unterhaltungen, Screenshots, Sprachaufnahmen und das, was der Begleiter be
 ## 4. Was GameMate auf deinem PC tut
 
 - **Dein Bildschirm** wird nur aufgenommen, wenn du eine Frage mit Screenshot sendest, das Spiel-Tastenkürzel mit eingeschalteten Screenshots drückst oder während der Begleiter dein Spiel beobachten soll. Das wählst du in der App; der Begleiter ist anfangs aus.
-- **Text auf dem Bildschirm deines Spiels:** Bei Hollow Knight: Silksong liest der Begleiter mit der in Windows eingebauten Texterkennung die Namen von Bossen und Gebieten von deinem Bildschirm ab, und die Spracheinstellung des Spiels aus dessen eigener Logdatei. Beides geschieht nur auf deinem PC, und die Bildschirmaufnahmen bleiben wie oben beschrieben im Arbeitsspeicher.
+- **Text auf dem Bildschirm deines Spiels:** Bei Hollow Knight: Silksong liest der Begleiter mit der in Windows eingebauten Texterkennung die Namen von Bossen und Gebieten von deinem Bildschirm ab, und die Spracheinstellung des Spiels aus dessen eigener Logdatei. Bei Rocket League liest er auf dieselbe Weise die Anzeigetafel und die Einblendungen des Spiels (etwa „Epic Save“). Ist der Killfeed-Leser heruntergeladen, liest er damit Killfeed und Banner von VALORANT und Apex Legends, einschließlich der Namen darin. All das geschieht nur auf deinem PC, und die Bildschirmaufnahmen bleiben wie oben beschrieben im Arbeitsspeicher.
+- **Spieldaten des Spiels selbst:** Wenn du in der Einstellungsdatei von Rocket League dessen Stats API einschaltest, empfängt GameMate die Spieldaten des Spiels (etwa Spielernamen, Tore, Paraden und die Uhr) über eine Verbindung nur auf deinem PC. Es sendet dem Spiel nie etwas, und die Daten bleiben wie alles andere, was der Begleiter bemerkt hat, im Arbeitsspeicher.
 - **Dein Mikrofon** wird nur genutzt, solange die Spracheingabe an ist und du das Sprach-Tastenkürzel oder 🎤 drückst. Deine Sprache wird auf deinem PC in Text umgewandelt.
 - **Das KI-Modell**, das auf deinem PC läuft (die eigene Engine von GameMate oder Ollama, wenn du es nutzt), erhält deine Fragen und Screenshots nur auf deinem PC.
 

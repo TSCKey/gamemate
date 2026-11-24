@@ -204,6 +204,7 @@ class Match {
   readonly screen = new RocketScreen()
   readonly watch = new RocketWatch('screen', 0.9)
   readonly notes: string[] = []
+  readonly unknown: string[] = []
   readonly events: GameEvent[] = []
   t = 0
   last: Scoreboard | null = null
@@ -216,6 +217,7 @@ class Match {
       [PLAYER, 'TSCKey']
     )
     this.notes.push(...reading.notes)
+    this.unknown.push(...reading.unknown)
     const events: GameEvent[] = []
     for (const m of reading.messages) {
       events.push(...this.watch.absorb(m, m.At ?? this.t, [PLAYER]))
@@ -413,14 +415,12 @@ describe('a match read off the screen', () => {
     expect(away.events).toEqual([])
   })
 
-  it('notes text in the middle of the screen it doesn’t know, once each', () => {
+  it('keeps text in the middle of the screen it doesn’t know, once each, for the inspector only', () => {
     const m = new Match()
     m.run(2, 0, 0, 300)
     m.look({ middle: ['TEAM FORFEITED', '+10'] })
     m.look({ middle: ['TEAM FORFEITED'] })
-    expect(m.notes.filter((n) => n.startsWith('text not known yet'))).toEqual([
-      'text not known yet: "TEAM FORFEITED"'
-    ])
+    expect(m.unknown).toEqual(['TEAM FORFEITED'])
   })
 
   it('tells a comeback after being two down', () => {
