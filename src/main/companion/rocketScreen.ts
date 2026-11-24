@@ -45,6 +45,13 @@ const CLOCK_STOPPED_MS = 2_500
 const END_WAIT_MS = 5_000
 // A clock this much higher than before, after the match ended: a new match.
 const NEW_MATCH_CLOCK_JUMP = 30
+// The scoreboard gone from the top of the screen this long, with the clock having run: the match
+// ended before time ran out, almost always by a forfeit (the game shows no result banner the
+// reader knows yet). The team ahead is taken as the winner; level, the result isn't told.
+const BOARD_GONE_MS = 8_000
+// Text in the middle of the screen that isn't a popup is noted for the log, at most this many
+// different lines a match, so new popups and end screens can be found and added.
+const MAX_UNKNOWN_TEXT = 40
 
 // The popups the game shows about the player, with the Stats API's name for each.
 const POPUPS: [string, string][] = [
@@ -175,7 +182,9 @@ interface PendingGoal {
   scoreSeen: boolean
   playerScored: boolean
   playerAssisted: boolean
-  scorer: string
+  // Names read as the scorer, with how often: a name is used once it was read the same twice,
+  // so a misread one ("BLCk.ÅE-8PØ") is never said.
+  scorers: Map<string, number>
   // The goal popups for the player ("AERIAL GOAL"), as Stats API names.
   kinds: string[]
 }
@@ -199,6 +208,11 @@ export class RocketScreen {
   private zeroAt: number | null = null
   // When the score was last read: while it can be, a goal is only a goal once it shows there.
   private boardAt = -Infinity
+  // Since when the grabbed scoreboard has shown nothing readable at all.
+  private boardGoneSince: number | null = null
+  // The clock was seen running this match (so the scoreboard going away means it ended).
+  private clockRan = false
+  private unknownText = new Set<string>()
 
   look(look: RocketLook, names: string[]): ScreenReading {
     const messages: RocketMessage[] = []
@@ -211,6 +225,12 @@ export class RocketScreen {
     if (look.board) {
       this.readBoard(look.board, time, messages, notes)
       this.readClock(look.board, time, messages, notes)
+      const gone =
+        look.board.own === null && look.board.other === null && look.board.seconds === null
+      this.boardGoneSince = gone ? (this.boardGoneSince ?? time) : null
+    } else {
+      // Not grabbed (the game isn't in front): nothing is known about it.
+      this.boardGoneSince = null
     }
     this.readMiddle(look.middle, time, names, messages, notes)
     this.readReplay(look.replay, names, notes)
@@ -248,6 +268,9 @@ export class RocketScreen {
     this.pending = null
     this.told = null
     this.clockSince = null
+    this.clockRan = false
+    this.boardGoneSince = null
+    this.unknownText.clear()
     this.zeroAt = null
     this.popupAt.clear()
     messages.push({ Event: 'MatchDestroyed' }, { Event: 'MatchCreated' }, this.state())
@@ -283,6 +306,7 @@ export class RocketScreen {
         if (still && still.seconds === board.seconds) {
           still.lastAt = time
         } else {
+          if (still) this.clockRan = true
           if (still && still.lastAt - still.at >= CLOCK_STOPPED_MS) {
             this.kickoff(time, messages, notes)
           }
@@ -364,7 +388,7 @@ export class RocketScreen {
       scoreSeen: false,
       playerScored: false,
       playerAssisted: false,
-      scorer: '',
+      scorers: new Map(),
       kinds: []
     }
   }
@@ -405,11 +429,23 @@ export class RocketScreen {
       if (scorer) {
         const goal = this.goal(time)
         if (isPlayerName(scorer, names)) goal.playerScored = true
-        else if (!goal.scorer) goal.scorer = scorer
+        else goal.scorers.set(scorer, (goal.scorers.get(scorer) ?? 0) + 1)
         continue
       }
       const popup = popupOf(text)
-      if (!popup) continue
+      if (!popup) {
+        const key = text.toUpperCase()
+        if (
+          letters(text).length >= 4 &&
+          text.length <= 40 &&
+          !this.unknownText.has(key) &&
+          this.unknownText.size < MAX_UNKNOWN_TEXT
+        ) {
+          this.unknownText.add(key)
+          notes.push(`text not known yet: "${text}"`)
+        }
+        continue
+      }
       const last = this.popupAt.get(popup) ?? -Infinity
       this.popupAt.set(popup, time)
       if (time - last <= POPUP_REPEAT_MS) continue
@@ -467,7 +503,7 @@ export class RocketScreen {
     const name = cleanName(rest || lines[at + 1] || '')
     if (!name) return
     if (isPlayerName(name, names)) this.pending.playerScored = true
-    else if (!this.pending.scorer) this.pending.scorer = name
+    else this.pending.scorers.set(name, (this.pending.scorers.get(name) ?? 0) + 1)
     notes.push('the replay names the scorer')
   }
 
@@ -498,6 +534,8 @@ export class RocketScreen {
     const playerScored = side === 0 && goal.playerScored
     const playerAssisted = side === 0 && goal.playerAssisted && !playerScored
     if (!goal.scoreSeen && this.score) this.score[side]++
+    const named = [...goal.scorers].filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1])[0]
+    const scorer = named?.[0] ?? ''
     // Told as of when it happened, not when it was put together.
     for (const kind of playerScored ? goal.kinds : []) {
       messages.push({
@@ -509,7 +547,7 @@ export class RocketScreen {
     messages.push({
       Event: 'GoalScored',
       Data: {
-        Scorer: { Name: playerScored ? PLAYER : goal.scorer, TeamNum: side },
+        Scorer: { Name: playerScored ? PLAYER : scorer, TeamNum: side },
         Assister: { Name: playerAssisted ? PLAYER : '' }
       },
       At: goal.at
@@ -536,6 +574,7 @@ export class RocketScreen {
   }
 
   private checkEnd(time: number, messages: RocketMessage[], notes: string[]): void {
+    this.checkGone(time, messages, notes)
     const clock = this.clock
     const score = this.score
     if (this.ended || !clock || !score || clock.overtime || clock.seconds !== 0) {
@@ -547,6 +586,25 @@ export class RocketScreen {
     if (time - this.zeroAt >= END_WAIT_MS) {
       this.end(score[0] > score[1] ? 0 : 1, messages, notes, 'time ran out')
     }
+  }
+
+  // The scoreboard went away while the match was on: it ended early.
+  private checkGone(time: number, messages: RocketMessage[], notes: string[]): void {
+    const since = this.boardGoneSince
+    const score = this.score
+    if (this.ended || !this.clockRan || !score || since === null || this.pending) return
+    if (time - since < BOARD_GONE_MS) return
+    if (score[0] === score[1]) {
+      notes.push('the scoreboard went away with the score level: the result isn’t known')
+      this.ended = true
+      return
+    }
+    this.end(
+      score[0] > score[1] ? 0 : 1,
+      messages,
+      notes,
+      'the scoreboard went away early: a forfeit'
+    )
   }
 
   private end(winner: 0 | 1, messages: RocketMessage[], notes: string[], why: string): void {

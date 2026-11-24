@@ -7,7 +7,7 @@ vi.mock('../src/main/system/settings', () => ({ getSettings: () => ({}) }))
 import { readScoreboard, type Scoreboard } from '../src/main/companion/rocketHud'
 import { PLAYER, popupOf, RocketScreen, scoredBy } from '../src/main/companion/rocketScreen'
 import { RocketWatch } from '../src/main/companion/rocketReading'
-import { Commentator } from '../src/main/companion/commentator'
+import { Commentator, type CommentaryOptions } from '../src/main/companion/commentator'
 import type { GameEvent } from '../src/main/companion/events'
 import type { BgraImage } from '../src/main/geis/adapters/teamBar'
 
@@ -261,17 +261,33 @@ describe('a match read off the screen', () => {
     const m = new Match()
     m.run(3, 0, 0, 250)
     m.look({ board: board(1, 246, 0), middle: ['LEQOOOO SCORED!'] })
+    m.look({ middle: ['LEQOOOO SCORED!'] })
     m.run(6, 1, 0, 245)
     m.look({ board: board(2, 240, 0), middle: ['ASSIST', '+50'] })
     m.look({ replay: ['SCORED BY', '[OMFG] Leqoooo'] })
+    m.look({ replay: ['SCORED BY', '[OMFGI Leqoooo'] })
     m.run(6, 2, 0, 238)
     m.look({ board: board(2, 233, 1), middle: ['RIVAL SCORED!'] })
+    m.look({ middle: ['RIVAL SCORED!'] })
     m.run(6, 2, 1, 232)
     expect(kinds(m.events)).toEqual([
       'teammate_goal(LEQOOOO)',
       'goal_assist(Leqoooo)',
       'goal_conceded(RIVAL)'
     ])
+    // So the writer never calls a first goal "again".
+    expect(m.events[0].detail).toMatch(/their first goal this match/)
+    expect(m.events[1].detail).toMatch(/their goal number 2 this match/)
+    expect(m.events[2].detail).toMatch(/their first goal this match/)
+  })
+
+  it('says a scorer’s name only once it was read the same twice', () => {
+    const m = new Match()
+    m.run(3, 0, 0, 250)
+    m.look({ board: board(0, 246, 1), middle: ['BLCk.ÅE-8PØ SCORED!'] })
+    m.look({ replay: ['SCORED BY', 'BLCkAE-8P0'] })
+    m.run(6, 0, 1, 245)
+    expect(kinds(m.events)).toEqual(['goal_conceded'])
   })
 
   it('takes a goal only once the scoreboard shows it, while it can be read', () => {
@@ -375,18 +391,120 @@ describe('a match read off the screen', () => {
     expect(m.notes).toContain('a new match')
   })
 
+  it('tells the result of a match ended early by a forfeit, from the scoreboard going away', () => {
+    const m = new Match()
+    m.run(5, 0, 3, 150)
+    for (let i = 0; i < 12; i++) m.look({ board: board(null, null, null) })
+    expect(kinds(m.events)).toEqual(['defeat'])
+    expect(m.notes).toContain('the match ended (the scoreboard went away early: a forfeit): lost')
+  })
+
+  it('tells no result when the scoreboard goes away level, or while the game isn’t in front', () => {
+    const level = new Match()
+    level.run(5, 1, 1, 150)
+    for (let i = 0; i < 12; i++) level.look({ board: board(null, null, null) })
+    expect(level.events).toEqual([])
+    expect(level.notes).toContain(
+      'the scoreboard went away with the score level: the result isn’t known'
+    )
+    const away = new Match()
+    away.run(5, 2, 0, 150)
+    for (let i = 0; i < 20; i++) away.look({ board: null })
+    expect(away.events).toEqual([])
+  })
+
+  it('notes text in the middle of the screen it doesn’t know, once each', () => {
+    const m = new Match()
+    m.run(2, 0, 0, 300)
+    m.look({ middle: ['TEAM FORFEITED', '+10'] })
+    m.look({ middle: ['TEAM FORFEITED'] })
+    expect(m.notes.filter((n) => n.startsWith('text not known yet'))).toEqual([
+      'text not known yet: "TEAM FORFEITED"'
+    ])
+  })
+
   it('tells a comeback after being two down', () => {
     const m = new Match()
     m.run(3, 0, 2, 200)
     m.look({ board: board(1, 196, 2), middle: ['GOAL'] })
     m.run(6, 1, 2, 195)
     m.look({ board: board(2, 190, 2), middle: ['MATE SCORED!'] })
+    m.look({ middle: ['MATE SCORED!'] })
     m.run(6, 2, 2, 189)
     expect(kinds(m.events)).toEqual(['goal_scored', 'teammate_goal(MATE)', 'comeback'])
   })
 })
 
 describe('through the commentary pipeline', () => {
+  it('speaks for the defeat right after a goal against', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    const said: string[][] = []
+    const replies = ['They score again, 0-3.', 'That one stings, but the next match is yours.']
+    let clock = 0
+    const c = new Commentator({
+      now: () => clock,
+      generate: async () => replies.shift() ?? '',
+      deliver: (_text, events) => said.push(events.map((e) => e.type))
+    })
+    const game = { id: 'rocket', name: 'Rocket League', competitive: true }
+    const options: CommentaryOptions = {
+      frequency: 'normal',
+      intensity: 'normal',
+      humor: 'light',
+      categories: {
+        combat: true,
+        skill: true,
+        teamwork: true,
+        objectives: true,
+        match: true,
+        world: true
+      },
+      tactics: false,
+      language: 'en',
+      game
+    }
+    const m = new Match()
+    const feed = async (from: number): Promise<void> => {
+      const fresh = m.events.slice(from)
+      clock = m.t
+      if (fresh.length) {
+        c.observe(
+          {
+            time: m.t,
+            source: 'game',
+            adapterId: 'rocket-league',
+            phase: 'playing',
+            inFight: false,
+            score: null,
+            description: '',
+            events: fresh
+          },
+          game
+        )
+      }
+      await c.speakIfDue(options)
+    }
+    m.run(3, 0, 2, 150)
+    let seen = m.events.length
+    m.look({ board: board(0, 146, 3) })
+    for (let i = 0; i < 8; i++) {
+      m.look({ board: board(0, 145 - i, 3) })
+      await feed(seen)
+      seen = m.events.length
+    }
+    // The defeat waits out the usual gap after the last comment; it stays worth saying for a minute.
+    for (let i = 0; i < 30; i++) {
+      m.look({ board: board(null, null, null) })
+      await feed(seen)
+      seen = m.events.length
+    }
+    const lines = info.mock.calls.map((call) => String(call[0]))
+    info.mockRestore()
+    expect(said).toEqual([['goal_conceded'], ['defeat']])
+    expect(lines).toEqual(['Comment spoken for goal_conceded', 'Comment spoken for defeat'])
+    expect(m.notes).toContain('the match ended (the scoreboard went away early: a forfeit): lost')
+  })
+
   it('offers each kind of moment for a comment, and speaks for the goal', async () => {
     const said: string[][] = []
     let clock = 0

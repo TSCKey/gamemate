@@ -127,6 +127,8 @@ export class RocketWatch {
   private goalKinds: { name: string; at: number }[] = []
   private lastPlayerGoalAt = -Infinity
   private comebackSaid = false
+  // Goals by other players this match, by name.
+  private othersGoals = new Map<string, number>()
   private players = new Map<string, number>()
   // The player, from the names in the settings, or else the car the game is showing.
   private player: string | null = null
@@ -241,6 +243,7 @@ export class RocketWatch {
     this.goalKinds = []
     this.lastPlayerGoalAt = -Infinity
     this.comebackSaid = false
+    this.othersGoals.clear()
     if (this.playerFromTarget) this.player = null
   }
 
@@ -356,6 +359,15 @@ export class RocketWatch {
     if (after[0] === after[1]) notes.push('it ties the game')
     else if (ours && before[0] === before[1]) notes.push('it puts the team ahead')
     if (time - this.roundStartedAt <= KICKOFF_GOAL_MS) notes.push('straight from the kickoff')
+    // Another player's goals this match, so the writer doesn't call a first one "again".
+    if (scorer && !this.isPlayer(scorer)) {
+      const key = scorer.toLowerCase()
+      const count = (this.othersGoals.get(key) ?? 0) + 1
+      this.othersGoals.set(key, count)
+      notes.push(
+        count === 1 ? 'their first goal this match' : `their goal number ${count} this match`
+      )
+    }
 
     if (this.isPlayer(scorer)) {
       this.playerGoals.push(time)

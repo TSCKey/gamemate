@@ -187,7 +187,8 @@ export class Director {
       if (e.category === 'world' && e.importance < pacing.worldMinImportance) {
         return ['filtered', 'not important enough at this frequency']
       }
-      if (e.mood === 'negative' && e.tier !== 'exceptional' && !always(e)) {
+      // A match's result is always worth its word, even right after a setback.
+      if (e.mood === 'negative' && e.tier !== 'exceptional' && !always(e) && e.type !== 'defeat') {
         // Don't pile on: one kind word at a time, and small setbacks pass in a hard match.
         if (now - this.lastNegativeAt < pacing.negativeGapMs) {
           return ['filtered', 'a setback was commented on a moment ago']
