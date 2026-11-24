@@ -1,8 +1,10 @@
-gamemate-commentary-v2.gguf is a LoRA adapter for LFM2.5-1.2B-Instruct by Liquid AI, Inc.
+gamemate-commentary-v2.gguf, gamemate-commentary-shooter-v3.gguf,
+gamemate-commentary-sports-v3.gguf and gamemate-commentary-adventure-v3.gguf are LoRA adapters for
+LFM2.5-1.2B-Instruct by Liquid AI, Inc.
 
-It was made by GameMate by fine-tuning that model on hand-written comments for game moments, so it
-is a modified version of the model. It is distributed under the LFM Open License v1.0 in the
-LICENSE file next to it.
+They were made by GameMate by fine-tuning that model on hand-written comments for game moments
+(the last three each on one kind of game only), so they are modified versions of the model. They
+are distributed under the LFM Open License v1.0 in the LICENSE file next to them.
 
 GameMate downloads the base model itself from Liquid AI's page on Hugging Face:
 https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF

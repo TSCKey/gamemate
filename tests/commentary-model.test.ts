@@ -9,6 +9,7 @@ import { makeEvent } from '../src/main/companion/events'
 import type { MatchContext } from '../src/main/companion/matchMemory'
 import { reactionPrompt, type ReactionRequest } from '../src/main/companion/reaction'
 import { commentaryMessages } from '../src/main/companion/commentaryFormat'
+import { commentaryKind } from '../src/main/companion/gameVoice'
 
 vi.mock('electron', () => ({
   app: { getPath: () => tmpdir(), getAppPath: () => join(__dirname, '..') },
@@ -24,6 +25,7 @@ const { commentaryArgs } = await import('../src/main/ai/llamaEngine')
 const { commentaryWriterFor } = await import('../src/main/ai/engines')
 const {
   bundledDir,
+  commentaryLoras,
   COMMENTARY_MODEL,
   COMMENTARY_MODEL_ID,
   isCatalogModelId,
@@ -147,11 +149,20 @@ describe('when the comment writer writes the comments', () => {
 })
 
 describe('the comment writer’s engine', () => {
-  const files = { model: 'lfm.gguf', adapter: 'gamemate.gguf' }
+  const files = {
+    model: 'lfm.gguf',
+    adapters: [
+      { kind: 'general' as const, path: 'general.gguf' },
+      { kind: 'sports' as const, path: 'sports.gguf' }
+    ]
+  }
 
   it('runs the model with GameMate’s fine-tuning, text only, for GameMate alone', () => {
     const args = commentaryArgs(files, 1234, 'key', 'Vulkan1').join(' ')
-    expect(args).toContain('-m lfm.gguf --lora gamemate.gguf')
+    // Every fine-tuning loaded, none applied until a comment picks one.
+    expect(args).toContain(
+      '-m lfm.gguf --lora general.gguf --lora sports.gguf --lora-init-without-apply'
+    )
     expect(args).toContain('--host 127.0.0.1 --port 1234 --api-key key')
     expect(args).not.toContain('--mmproj')
     // It doesn't think before writing.
@@ -184,12 +195,34 @@ describe('the comment writer in the model list', () => {
     expect(localModelStatuses().filter((m) => m.job === 'all')).toHaveLength(3)
   })
 
-  it('ships the fine-tuning the catalog names, with the model’s license', () => {
-    const adapter = COMMENTARY_MODEL.adapter
-    const file = join(bundledDir(), adapter?.name ?? '')
-    expect(statSync(file).size).toBe(adapter?.size)
-    expect(createHash('sha256').update(readFileSync(file)).digest('hex')).toBe(adapter?.sha256)
+  it('ships the fine-tunings the catalog names, with the model’s license', () => {
+    const adapters = COMMENTARY_MODEL.adapters ?? []
+    expect(adapters.map((a) => a.kind)).toEqual(['general', 'shooter', 'sports', 'adventure'])
+    for (const adapter of adapters) {
+      const file = join(bundledDir(), adapter.name)
+      expect(statSync(file).size).toBe(adapter.size)
+      expect(createHash('sha256').update(readFileSync(file)).digest('hex')).toBe(adapter.sha256)
+    }
+    const notice = readFileSync(join(bundledDir(), 'NOTICE'), 'utf8')
+    for (const adapter of adapters) expect(notice).toContain(adapter.name)
     expect(readFileSync(join(bundledDir(), 'LICENSE'), 'utf8')).toContain('LFM Open License v1.0')
+  })
+
+  it('applies the fine-tuning made for the kind of game, and the general one otherwise', () => {
+    const on = (kind: Parameters<typeof commentaryLoras>[0]): string | undefined =>
+      COMMENTARY_MODEL.adapters?.[commentaryLoras(kind).find((l) => l.scale === 1)?.id ?? -1]?.kind
+    expect(on(commentaryKind('Rocket League'))).toBe('sports')
+    expect(on(commentaryKind('VALORANT'))).toBe('shooter')
+    expect(on(commentaryKind('Apex Legends'))).toBe('shooter')
+    expect(on(commentaryKind('Hollow Knight: Silksong'))).toBe('adventure')
+    expect(on(commentaryKind('Some Puzzle Game'))).toBe('general')
+    // Exactly one at a time; the others are off for this comment.
+    expect(commentaryLoras('sports').filter((l) => l.scale === 1)).toHaveLength(1)
+    expect(commentaryLoras('sports')).toHaveLength(COMMENTARY_MODEL.adapters?.length ?? 0)
+  })
+
+  it('knows the game from the prompt', () => {
+    expect(commentaryMessages(reactionPrompt(deepDocks())).game).toBe('Hollow Knight: Silksong')
   })
 
   it('finds its fine-tuning outside the app archive, where the engine can read it', () => {

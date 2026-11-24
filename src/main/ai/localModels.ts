@@ -9,6 +9,7 @@ import { join } from 'path'
 import { promisify } from 'util'
 import { downloadVerified, partialPath, type DownloadSpec } from '../system/download'
 import type { LocalModelStatus } from '../../shared/types'
+import type { CommentaryKind } from '../companion/gameVoice'
 import { t } from '../system/i18n'
 import { getSettings, onSettingsChanged } from '../system/settings'
 export type { LocalModelStatus }
@@ -40,15 +41,20 @@ interface CatalogModel {
   mmproj?: ModelFile
   // Other files the model needs, such as a second network or its settings.
   extra?: ModelFile[]
-  // GameMate's fine-tuning on top of the weights (a LoRA adapter), shipped with GameMate in
+  // GameMate's fine-tuning on top of the weights (LoRA adapters), shipped with GameMate in
   // resources/commentary next to the model's license, so only the weights are downloaded.
-  adapter?: BundledFile
+  adapters?: BundledAdapter[]
 }
 
 interface BundledFile {
   name: string
   size: number
   sha256: string
+}
+
+// One fine-tuning, for one kind of game, or 'general' for the games without a kind.
+interface BundledAdapter extends BundledFile {
+  kind: CommentaryKind | 'general'
 }
 
 const hf = (repo: string, revision: string, name: string): string =>
@@ -140,7 +146,6 @@ const LFM = {
   repo: 'LiquidAI/LFM2.5-1.2B-Instruct-GGUF',
   revision: '8ed288026e23958ad9dfa92d53ed773a8eee7125'
 }
-const COMMENTARY_ADAPTER_VERSION = 2
 export const COMMENTARY_MODEL: CatalogModel = {
   id: COMMENTARY_MODEL_ID,
   name: 'LFM2.5 1.2B',
@@ -157,11 +162,35 @@ export const COMMENTARY_MODEL: CatalogModel = {
     size: 730895168,
     sha256: 'b1b3de114215d9507409a662a501a631095a479a419584e8a2ded6304b19b4f5'
   },
-  adapter: {
-    name: `gamemate-commentary-v${COMMENTARY_ADAPTER_VERSION}.gguf`,
-    size: 22230048,
-    sha256: 'edca8d1b6d485af590b91620d4b3788eddbe47b8fb3dd2d1261d180528cbfe31'
-  }
+  // One fine-tuning per kind of game (gameVoice.ts), each trained only on that kind's moments,
+  // and the general one (trained on all of them) for the other games. All are loaded together and
+  // each comment picks its own.
+  adapters: [
+    {
+      kind: 'general',
+      name: 'gamemate-commentary-v2.gguf',
+      size: 22230048,
+      sha256: 'edca8d1b6d485af590b91620d4b3788eddbe47b8fb3dd2d1261d180528cbfe31'
+    },
+    {
+      kind: 'shooter',
+      name: 'gamemate-commentary-shooter-v3.gguf',
+      size: 22230048,
+      sha256: 'afe6ec14e2a140d8dfd9b6eb323fe38009cb4a64a26592d791c52199b4d1084b'
+    },
+    {
+      kind: 'sports',
+      name: 'gamemate-commentary-sports-v3.gguf',
+      size: 22230048,
+      sha256: '3655b0a1b4cc4858172e679fb2a10493228804e092d49dcedd58bf9d71dbdcb5'
+    },
+    {
+      kind: 'adventure',
+      name: 'gamemate-commentary-adventure-v3.gguf',
+      size: 22230048,
+      sha256: '432814dc1e339a324d8b6478852010b6635abfc90023e01af2c34f57768470a8'
+    }
+  ]
 }
 
 // The kill-feed reader: PaddleOCR's PP-OCRv6 small text detection and recognition (Apache 2.0),
@@ -254,7 +283,7 @@ const engineInstalled = (): boolean => existsSync(engineExe())
 function filesInstalled(model: CatalogModel): boolean {
   return (
     filesOf(model).every((f) => existsSync(join(modelDir(model.id), f.name))) &&
-    (!model.adapter || existsSync(join(bundledDir(), model.adapter.name)))
+    (model.adapters ?? []).every((a) => existsSync(join(bundledDir(), a.name)))
   )
 }
 
@@ -267,7 +296,8 @@ export function isLocalModelInstalled(id: string): boolean {
 export interface ModelPaths {
   model: string
   mmproj?: string
-  adapter?: string
+  // The fine-tunings, in the order the engine loads them (a comment picks one by its place).
+  adapters?: { kind: CommentaryKind | 'general'; path: string }[]
 }
 
 // Paths the engine needs to run a model; throws when it isn't downloaded.
@@ -279,8 +309,22 @@ export function localModelFiles(id: string): ModelPaths {
   return {
     model: join(modelDir(id), model.model.name),
     ...(model.mmproj ? { mmproj: join(modelDir(id), model.mmproj.name) } : {}),
-    ...(model.adapter ? { adapter: join(bundledDir(), model.adapter.name) } : {})
+    ...(model.adapters
+      ? {
+          adapters: model.adapters.map((a) => ({ kind: a.kind, path: join(bundledDir(), a.name) }))
+        }
+      : {})
   }
+}
+
+// Which of the comment writer's fine-tunings to apply, as the engine wants it: every loaded one by
+// its place, the one for this kind of game at full strength and the others off. A kind without
+// its own uses the general one.
+export function commentaryLoras(kind: CommentaryKind | null): { id: number; scale: number }[] {
+  const adapters = COMMENTARY_MODEL.adapters ?? []
+  const own = adapters.findIndex((a) => a.kind === kind)
+  const chosen = own >= 0 ? own : adapters.findIndex((a) => a.kind === 'general')
+  return adapters.map((_, id) => ({ id, scale: id === chosen ? 1 : 0 }))
 }
 
 // The kill-feed reader's files, by what they are; throws when they aren't downloaded.

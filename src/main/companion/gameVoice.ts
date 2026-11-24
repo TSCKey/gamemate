@@ -22,12 +22,21 @@ export interface GameVoice {
   takedowns?: string
   // What a moment means in this game, where the general meaning would read wrong.
   meanings?: Partial<Record<GameEventType, string>>
+  // The kind of game, for the comment writer's fine-tuning made for that kind (see
+  // COMMENTARY_KINDS). A game without one gets the writer's general fine-tuning.
+  kind?: CommentaryKind
 }
+
+// The kinds of game the comment writer has its own fine-tuning for, each trained only on games of
+// that kind, so a shooter's habits ("kills", "rounds") don't leak into car soccer or a platformer.
+export const COMMENTARY_KINDS = ['shooter', 'sports', 'adventure'] as const
+export type CommentaryKind = (typeof COMMENTARY_KINDS)[number]
 
 const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^rocket league$/i,
     voice: {
+      kind: 'sports',
       about:
         "Rocket League is car soccer: two teams of rocket-powered cars try to knock a giant ball into the other team's goal. Cars boost, jump and fly (aerials), and ramming a car at full speed blows it up for a few seconds (a demo). Nobody gets hurt or dies.",
       words: [
@@ -79,6 +88,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^apex legends$/i,
     voice: {
+      kind: 'shooter',
       about:
         "Apex Legends is a squad battle royale: squads of three (or two) drop onto a map and fight to be the last squad standing, the champions, while a ring closes in. A downed player is knocked and can be revived; an eliminated player's squad can bring them back at a respawn beacon with their banner. Shields break before health.",
       words: [
@@ -110,6 +120,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^valorant$/i,
     voice: {
+      kind: 'shooter',
       about:
         'VALORANT is a tactical 5v5 shooter played in rounds: attackers plant the spike and defenders defuse it, or a team wins the round by taking out the other. Each agent has abilities. Dead players sit out until the next round.',
       words: [
@@ -135,6 +146,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^hollow knight: silksong$/i,
     voice: {
+      kind: 'adventure',
       about:
         "Hollow Knight: Silksong is a 2D action platformer: the player is Hornet, exploring a hostile kingdom and fighting bosses. Health is shown as masks; resting at a bench saves progress, and after dying Hornet wakes at the last bench she rested at. The game's moments are hits taken, close calls, bosses, new areas and deaths.",
       words: ['mask', 'masks', 'boss', 'bench', 'hit', 'area', 'Hornet', 'attack'],
@@ -161,6 +173,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^minecraft/i,
     voice: {
+      kind: 'adventure',
       about:
         'Minecraft is a sandbox survival game: the player gathers, builds, crafts and explores, and hostile mobs (zombies, skeletons, creepers) come out in the dark. Dying drops what they carried where they died, and they respawn at their bed or the world spawn.',
       words: ['mob', 'mobs', 'creeper', 'build', 'craft', 'biome', 'village', 'cave'],
@@ -171,6 +184,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^fortnite$/i,
     voice: {
+      kind: 'shooter',
       about:
         'Fortnite is a battle royale: players drop onto an island, loot, build cover and fight while the storm closes in, and the last one (or last team) standing gets a Victory Royale. A downed player in a team mode can be revived.',
       words: ['eliminated', 'storm', 'build', 'loot', 'Victory Royale', 'knocked', 'revive'],
@@ -184,6 +198,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^counter-strike/i,
     voice: {
+      kind: 'shooter',
       about:
         'Counter-Strike is a tactical 5v5 shooter played in rounds: terrorists plant the bomb and counter-terrorists defuse it, or a side wins by taking out the other. Dead players sit out until the next round.',
       words: ['round', 'kill', 'frag', 'clutch', 'ace', 'bomb', 'plant', 'defuse', 'eco', 'trade'],
@@ -197,6 +212,7 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
   {
     name: /^overwatch/i,
     voice: {
+      kind: 'shooter',
       about:
         'Overwatch is a 5v5 hero shooter: teams fight over objectives (pushing a payload, holding a point) and fallen heroes respawn after a few seconds. Heroes have abilities and ultimates.',
       words: ['elimination', 'payload', 'point', 'objective', 'ult', 'team fight', 'respawn'],
@@ -226,6 +242,11 @@ export function voiceFor(game: Pick<VisionGame, 'name' | 'competitive'>): GameVo
     avoid: [],
     other: game.competitive ? 'opponent' : 'enemy'
   }
+}
+
+// Which kind of game this is for the comment writer, or null for its general fine-tuning.
+export function commentaryKind(gameName: string): CommentaryKind | null {
+  return VOICES.find((v) => v.name.test(gameName.trim()))?.voice.kind ?? null
 }
 
 // The first word of the comment that doesn't fit the game, or null. English only: the lists are

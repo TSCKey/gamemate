@@ -11,7 +11,8 @@ import {
   commentaryMessages
 } from '../companion/commentaryFormat'
 import type { LlmEngine } from './llm'
-import { COMMENTARY_MODEL_ID, isLocalModelInstalled } from './localModels'
+import { commentaryKind } from '../companion/gameVoice'
+import { COMMENTARY_MODEL_ID, commentaryLoras, isLocalModelInstalled } from './localModels'
 import { preloadModel } from './ollamaClient'
 import { decide } from './router'
 import { getGeminiKey } from '../system/secrets'
@@ -110,9 +111,10 @@ export function commentaryWriterFor(
   return installed(COMMENTARY_MODEL_ID) ? COMMENTARY_MODEL_ID : null
 }
 
-// One comment from the comment writer, called the way it was trained (commentaryFormat.ts).
+// One comment from the comment writer, called the way it was trained (commentaryFormat.ts), with
+// the fine-tuning for the kind of game the comment is about.
 export function writeComment(modelId: string, prompt: string): Promise<string> {
-  const { system, user, retry } = commentaryMessages(prompt)
+  const { game, system, user, retry } = commentaryMessages(prompt)
   return withCommentaryEngine(modelId, (server) =>
     writeLine(
       server,
@@ -120,7 +122,10 @@ export function writeComment(modelId: string, prompt: string): Promise<string> {
         { role: 'system', content: system },
         { role: 'user', content: user }
       ],
-      retry ? COMMENTARY_RETRY_SAMPLING : COMMENTARY_SAMPLING,
+      {
+        ...(retry ? COMMENTARY_RETRY_SAMPLING : COMMENTARY_SAMPLING),
+        lora: commentaryLoras(commentaryKind(game))
+      },
       COMMENTARY_MAX_TOKENS
     )
   )

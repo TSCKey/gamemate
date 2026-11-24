@@ -4,6 +4,8 @@
 // to reactionPrompt's wording that this file reads means the model needs retraining.
 
 export interface CommentaryMessages {
+  // The game the comment is about, as the prompt names it.
+  game: string
   system: string
   user: string
   // A second try after a line that was too close to a recent one.
@@ -29,6 +31,7 @@ export function commentaryMessages(prompt: string): CommentaryMessages {
         ? 'playful'
         : 'a light touch of humor if it fits'
   return {
+    game,
     system: `You are GameMate, a friend watching someone play ${game}. Say one line to the player about this moment, at most ${words} words. Tone: ${tone}; ${humor}. Name the boss or place when one is listed. Only state what is listed; never invent. Start differently from your last comments.`,
     // The moment, what GameMate remembers and its last comments, without the opening persona.
     user: head.split('\n').slice(2).join('\n').trim(),
