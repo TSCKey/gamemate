@@ -172,7 +172,10 @@ export class Commentator {
       checks
     )
     this.engine.record(filtered.map((f) => f.event))
-    for (const f of filtered) pipelineTap.event('filtered', f.event, this.now(), f.reason)
+    for (const f of filtered) {
+      pipelineTap.event('filtered', f.event, this.now(), f.reason)
+      console.info(`Moment not commented on: ${f.event.type} (${f.reason})`)
+    }
     report = { ...report, events: accepted }
     const { fresh, held } = this.removeRepeats(report)
     if (pipelineTap.enabled) {
@@ -207,6 +210,7 @@ export class Commentator {
     for (const event of quiet) {
       event.commentary = 'filtered'
       pipelineTap.event('settled', event, this.now(), quietReason(event) ?? '')
+      console.info(`Moment not commented on: ${event.type} (${quietReason(event) ?? ''})`)
     }
     const offered = events.filter((event) => !quiet.includes(event))
     if (offered.length) this.director.offer(offered)

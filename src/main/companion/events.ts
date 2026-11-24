@@ -613,15 +613,17 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     meaning:
       'The game announced the player as the new kill leader (their kill count is the number given).'
   },
-  // Rocket League, from the game's own Stats API: who scored, assisted, saved and demolished is
-  // the game's word. Nothing else is claimed: no mechanics, no positions, no boost.
+  // Rocket League, from the game's own Stats API or the popups it shows the player: who scored,
+  // assisted, saved and demolished is the game's word. A mechanic is only ever one the game named
+  // itself (an aerial goal, a bicycle hit); nothing is said about positions or boost. A goal stays
+  // worth a word through its replay.
   goal_scored: {
     category: 'combat',
     tier: 'significant',
     mood: 'positive',
     priority: 92,
     cooldownMs: 10 * S,
-    staleMs: 20 * S,
+    staleMs: 30 * S,
     dedupeMs: 5 * S,
     meaning:
       'The player scored a goal (the game says so). What made it special, if anything, is listed; nothing else is known about how it was scored.'
@@ -632,7 +634,7 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     mood: 'positive',
     priority: 80,
     cooldownMs: 10 * S,
-    staleMs: 20 * S,
+    staleMs: 30 * S,
     dedupeMs: 5 * S,
     meaning:
       "The player set up a teammate's goal and the game counted it as their assist. How (a pass, a center) is not known."
@@ -741,6 +743,66 @@ export const EVENT_RULES: Record<GameEventType, EventRule> = {
     staleMs: 10 * S,
     dedupeMs: 300 * S,
     meaning: 'Under thirty seconds left and the score is close (the score is given).'
+  },
+  // The player's smaller stats, as the game counts them. Each is worth a word now and then, never
+  // every time: long cooldowns, and a goal that follows takes the shot's place.
+  shot_on_goal: {
+    category: 'skill',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 35,
+    cooldownMs: 30 * S,
+    minorCooldownMs: 60 * S,
+    staleMs: 15 * S,
+    dedupeMs: 3 * S,
+    meaning:
+      "The player's shot was on target (the game counted a shot on goal) but didn't go in: it was saved or missed by a little."
+  },
+  ball_centered: {
+    category: 'teamwork',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 25,
+    cooldownMs: 60 * S,
+    minorCooldownMs: 120 * S,
+    staleMs: 8 * S,
+    dedupeMs: 3 * S,
+    meaning:
+      "The player centered the ball: sent it across into the middle in front of the other team's goal, for a teammate to hit (the game counted a center)."
+  },
+  ball_cleared: {
+    category: 'skill',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 25,
+    cooldownMs: 60 * S,
+    minorCooldownMs: 120 * S,
+    staleMs: 8 * S,
+    dedupeMs: 3 * S,
+    meaning:
+      'The player cleared the ball out of their own half, away from danger (the game counted a clear).'
+  },
+  first_touch: {
+    category: 'skill',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 20,
+    cooldownMs: 120 * S,
+    minorCooldownMs: 180 * S,
+    staleMs: 8 * S,
+    dedupeMs: 5 * S,
+    meaning: 'The player got the first touch of the kickoff (the game counted it).'
+  },
+  mechanic: {
+    category: 'skill',
+    tier: 'minor',
+    mood: 'positive',
+    priority: 50,
+    cooldownMs: 30 * S,
+    staleMs: 10 * S,
+    dedupeMs: 3 * S,
+    meaning:
+      'The player pulled off a move the game itself named (which one is given: an aerial hit, a bicycle hit, a juggle). Only that move is known.'
   },
   // Apex Legends' health and shield bars and the squad's cards (src/main/geis/adapters/apexBars.ts).
   player_shield_broken: {

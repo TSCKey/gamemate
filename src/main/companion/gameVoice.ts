@@ -51,7 +51,11 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
         'kickoff',
         'boost',
         'touch',
-        'overtime'
+        'overtime',
+        'center',
+        'clear',
+        'first touch',
+        'equalizer'
       ],
       avoid: [
         'kill',
@@ -81,7 +85,8 @@ const VOICES: { name: RegExp; voice: GameVoice }[] = [
         multikill: 'The player demoed several opponents in quick succession.',
         kill_streak: 'The player has demoed several opponents without getting demoed themselves.',
         victory: 'The player’s team won the match.',
-        defeat: 'The player’s team lost the match.'
+        defeat: 'The player’s team lost the match.',
+        milestone: 'The game gave the player a match award (which one is given).'
       }
     }
   },

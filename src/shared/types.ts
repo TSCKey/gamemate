@@ -474,7 +474,13 @@ export const EVENT_TYPES = [
   'demolished',
   'crossbar_hit',
   'overtime_started',
-  'final_seconds'
+  'final_seconds',
+  // Rocket League: the player's own stats the game names (Stats API or the popups on screen).
+  'shot_on_goal',
+  'ball_centered',
+  'ball_cleared',
+  'first_touch',
+  'mechanic'
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 

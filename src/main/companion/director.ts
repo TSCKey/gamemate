@@ -126,6 +126,8 @@ export class Director {
   private lastTacticAt = -Infinity
   private lastByType = new Map<GameEvent['type'], { at: number; tier: Tier }>()
   private spokenAt: number[] = []
+  // Why the last decision waited, so a moment that went stale while waiting says what held it.
+  private waitWhy = ''
 
   offer(events: GameEvent[]): void {
     for (const event of events) event.commentary = 'pending'
@@ -160,7 +162,10 @@ export class Director {
   ): void {
     for (const event of events) {
       event.commentary = status
-      if (status !== 'spoken') pipelineTap.event('settled', event, at, why)
+      if (status === 'spoken') continue
+      pipelineTap.event('settled', event, at, why)
+      // In the log, so a quiet stretch can be explained moment by moment.
+      if (why !== 'forgotten') console.info(`Moment not commented on: ${event.type} (${why})`)
     }
   }
 
@@ -170,24 +175,33 @@ export class Director {
     // Outside competitive games, dying is always worth a word.
     const always = (e: GameEvent): boolean => e.type === 'death' && !game.competitive
 
-    const dropped = (e: GameEvent): CommentaryStatus | null => {
-      if (now - e.time > EVENT_RULES[e.type].staleMs) return 'stale'
-      if (!categories[e.category]) return 'filtered'
-      if (pacing.gapMs[e.tier] === null && !always(e)) return 'filtered'
-      if (e.category === 'world' && e.importance < pacing.worldMinImportance) return 'filtered'
+    // Why a waiting moment leaves without a comment, or null while it may still get one.
+    const dropped = (e: GameEvent): [CommentaryStatus, string] | null => {
+      if (now - e.time > EVENT_RULES[e.type].staleMs) {
+        return ['stale', this.waitWhy ? `too old; it waited: ${this.waitWhy}` : 'too old']
+      }
+      if (!categories[e.category]) return ['filtered', `${e.category} moments are turned off`]
+      if (pacing.gapMs[e.tier] === null && !always(e)) {
+        return ['filtered', `${e.tier} moments aren't commented on at this frequency`]
+      }
+      if (e.category === 'world' && e.importance < pacing.worldMinImportance) {
+        return ['filtered', 'not important enough at this frequency']
+      }
       if (e.mood === 'negative' && e.tier !== 'exceptional' && !always(e)) {
         // Don't pile on: one kind word at a time, and small setbacks pass in a hard match.
-        if (now - this.lastNegativeAt < pacing.negativeGapMs) return 'filtered'
-        if (context.form === 'hard' && e.tier === 'minor') return 'filtered'
+        if (now - this.lastNegativeAt < pacing.negativeGapMs) {
+          return ['filtered', 'a setback was commented on a moment ago']
+        }
+        if (context.form === 'hard' && e.tier === 'minor') {
+          return ['filtered', 'a small setback in a hard match']
+        }
       }
       return null
     }
     this.pending = this.pending.filter((e) => {
-      const status = dropped(e)
-      // In the log, so a quiet play session can be explained.
-      if (status === 'stale') console.info(`Moment too old to mention: ${e.type}`)
-      if (status) this.settle([e], status, now, status === 'stale' ? 'too old' : 'not wanted now')
-      return status === null
+      const out = dropped(e)
+      if (out) this.settle([e], out[0], now, out[1])
+      return out === null
     })
     if (this.pending.length === 0) return { action: 'silent' }
 
@@ -201,7 +215,7 @@ export class Director {
       )
       return now - last.at >= cooldown
     })
-    if (ready.length === 0) return { action: 'wait' }
+    if (ready.length === 0) return this.wait('its kind was commented on recently (cooldown)')
     const top = [...ready].sort(
       (a, b) =>
         RANK[b.tier] - RANK[a.tier] ||
@@ -209,20 +223,24 @@ export class Director {
         b.time - a.time
     )[0]
 
-    if (now - this.lastCommentAt < MIN_COMMENT_GAP_MS) return { action: 'wait' }
+    if (now - this.lastCommentAt < MIN_COMMENT_GAP_MS) {
+      return this.wait('the last comment is still on screen')
+    }
     if (!always(top)) {
       this.spokenAt = this.spokenAt.filter((t) => now - t < BUDGET_WINDOW_MS)
       if (top.tier !== 'exceptional' && this.spokenAt.length >= pacing.budget) {
-        return { action: 'wait' }
+        return this.wait('enough comments for the last few minutes')
       }
-      if (now - this.lastCommentAt < (pacing.gapMs[top.tier] ?? Infinity)) return { action: 'wait' }
+      if (now - this.lastCommentAt < (pacing.gapMs[top.tier] ?? Infinity)) {
+        return this.wait(`a ${top.tier} moment waits longer after the last comment`)
+      }
     }
 
     const pressing = EVENT_RULES[top.type].urgent || top.tier === 'exceptional' || always(top)
     if (!pressing) {
-      if (inFight && now - top.time < pacing.maxDeferMs) return { action: 'wait' }
+      if (inFight && now - top.time < pacing.maxDeferMs) return this.wait('mid-fight')
       const newest = this.pending[this.pending.length - 1]
-      if (now - newest.time < GROUP_MS) return { action: 'wait' }
+      if (now - newest.time < GROUP_MS) return this.wait('more moments may belong with it')
     }
 
     const group = [
@@ -241,6 +259,7 @@ export class Director {
       'another moment was spoken'
     )
     this.pending = []
+    this.waitWhy = ''
 
     const positives = group.filter((e) => e.mood === 'positive').length
     const tacticalMoment = game.competitive ? phase === 'intermission' : !inFight
@@ -259,6 +278,11 @@ export class Director {
       mood: top.mood,
       tactical
     }
+  }
+
+  private wait(why: string): Decision {
+    this.waitWhy = why
+    return { action: 'wait' }
   }
 
   // The comment went out: only now do the cooldowns start.
@@ -291,5 +315,6 @@ export class Director {
     this.lastTacticAt = -Infinity
     this.lastByType.clear()
     this.spokenAt = []
+    this.waitWhy = ''
   }
 }

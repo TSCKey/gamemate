@@ -391,7 +391,9 @@ describe('repetition', () => {
     await h.wait(600)
     const lines = info.mock.calls.map((call) => String(call[0]))
     info.mockRestore()
-    expect(lines).toContain('Moment too old to mention: assist')
+    expect(lines).toContainEqual(
+      expect.stringMatching(/^Moment not commented on: assist \(too old/)
+    )
   })
 
   it('stays silent if the second try repeats too', async () => {

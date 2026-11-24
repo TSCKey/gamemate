@@ -84,6 +84,11 @@ const EVENT_ICONS: Record<CompanionState['events'][number]['type'], string> = {
   crossbar_hit: '😬',
   overtime_started: '⏱️',
   final_seconds: '⏳',
+  shot_on_goal: '🎯',
+  ball_centered: '🎯',
+  ball_cleared: '🧹',
+  first_touch: '🏁',
+  mechanic: '✨',
   defeat: '🫡',
   milestone: '🎉'
 }

@@ -243,20 +243,123 @@ describe('the game’s own stat events', () => {
     expect(events[2].related).toEqual([events[0].id, events[1].id])
   })
 
-  it('leaves others’ stats, shots and goals (told by GoalScored) alone, and notes names it doesn’t know', () => {
+  it('leaves others’ stats and the stats a goal tells alone, and notes names it doesn’t know', () => {
     const watch = new RocketWatch()
     const events = play(
       [
         [0, state(0, 0)],
         [5, stat('Save', 'Mate')],
-        [6, stat('Shot', 'TSCKey')],
+        [6, stat('Shot', 'Rival')],
         [7, stat('Goal', 'TSCKey')],
-        [8, stat('AerialGoal', 'TSCKey')]
+        [7, stat('HatTrick', 'TSCKey')],
+        [8, stat('MysteryStat', 'TSCKey')]
       ],
       watch
     )
     expect(events).toEqual([])
-    expect([...watch.unknownStats]).toEqual(['AerialGoal'])
+    expect([...watch.unknownStats]).toEqual(['MysteryStat'])
+  })
+
+  it('tells the player’s shot only when no goal of theirs follows', () => {
+    const watch = new RocketWatch()
+    const missed = play(
+      [
+        [0, state(0, 0)],
+        [10, stat('Shot', 'TSCKey')]
+      ],
+      watch
+    )
+    expect(missed).toEqual([])
+    expect(kinds(watch.tick(15_000))).toEqual([])
+    const told = watch.tick(18_000)
+    expect(kinds(told)).toEqual(['shot_on_goal'])
+    expect(told[0].time).toBe(10_000)
+    // A shot that went in is the goal.
+    const scored = play(
+      [
+        [30, stat('Shot', 'TSCKey')],
+        [31, goal('TSCKey', 0)]
+      ],
+      watch
+    )
+    expect(kinds(scored)).toEqual(['goal_scored'])
+    expect(watch.tick(60_000)).toEqual([])
+  })
+
+  it('tells the player’s centers, clears, kickoff touches, named moves and awards', () => {
+    const events = play([
+      [0, state(0, 0)],
+      [3, stat('FirstTouch', 'TSCKey')],
+      [20, stat('Center', 'TSCKey')],
+      [30, stat('Clear', 'TSCKey')],
+      [40, stat('AerialHit', 'TSCKey')],
+      [50, stat('BicycleHit', 'Rival')],
+      [60, stat('Playmaker', 'TSCKey')]
+    ])
+    expect(kinds(events)).toEqual([
+      'first_touch',
+      'ball_centered',
+      'ball_cleared',
+      'mechanic',
+      'milestone'
+    ])
+    expect(events[3].detail).toBe('The game named it an aerial hit.')
+    expect(events[4].detail).toMatch(/^Playmaker: three assists/)
+  })
+
+  it('puts the goal mechanic the game named into the player’s goal, whichever comes first', () => {
+    const before = play([
+      [0, state(0, 0)],
+      [10, stat('AerialGoal', 'TSCKey')],
+      [10, goal('TSCKey', 0)]
+    ])
+    expect(kinds(before)).toEqual(['goal_scored'])
+    expect(before[0].detail).toMatch(/the game named it an aerial goal/)
+    const after = play([
+      [0, state(0, 0)],
+      [10, goal('TSCKey', 0)],
+      [11, stat('BicycleGoal', 'TSCKey')]
+    ])
+    expect(kinds(after)).toEqual(['goal_scored', 'mechanic'])
+    expect(after[1].detail).toBe("The player's goal: the game named it a bicycle goal.")
+  })
+
+  it('tells a comeback once the team is level after being two goals down', () => {
+    const events = play([
+      [0, state(0, 0)],
+      [10, goal('Rival', 1)],
+      [20, goal('Foe', 1)],
+      [30, goal('Mate', 0)],
+      [40, goal('TSCKey', 0)],
+      [50, goal('Rival', 1)],
+      [60, goal('Mate', 0)]
+    ])
+    expect(kinds(events)).toEqual([
+      'goal_conceded(Rival)',
+      'goal_conceded(Foe)',
+      'teammate_goal(Mate)',
+      'goal_scored',
+      'comeback',
+      'goal_conceded(Rival)',
+      'teammate_goal(Mate)'
+    ])
+    expect(events[4].detail).toMatch(/^Level again after being 2 goals behind/)
+  })
+
+  it('marks what was read off the screen as checked on screen, a little less sure', () => {
+    const events = play(
+      [
+        [0, state(0, 0)],
+        [10, stat('EpicSave', 'TSCKey')]
+      ],
+      new RocketWatch('screen', 0.9)
+    )
+    expect(events[0]).toMatchObject({
+      type: 'epic_save',
+      source: 'screen',
+      basis: 'verified',
+      confidence: 0.9
+    })
   })
 
   it('tells the player’s shot off the crossbar', () => {

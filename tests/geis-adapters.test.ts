@@ -65,7 +65,7 @@ describe('choosing how to follow a game', () => {
     expect(adapterFor(adapters, game('Apex Legends')).id).toBe('killfeed')
   })
 
-  it('keeps watching Rocket League as before while its Stats API is off', async () => {
+  it('reads Rocket League off the screen while its Stats API is off, not with the kill-feed reader', async () => {
     const { mkdirSync, mkdtempSync, writeFileSync } = await import('fs')
     const dir = mkdtempSync(join(tmpdir(), 'gamemate-rl-adapter-'))
     mkdirSync(join(dir, 'TAGame', 'Config'), { recursive: true })
@@ -73,7 +73,10 @@ describe('choosing how to follow a game', () => {
       join(dir, 'TAGame', 'Config', 'DefaultStatsAPI.ini'),
       ['[TAGame.MatchStatsExporter_TA]', 'WebPort=49124', 'PacketSendRate=0'].join('\n')
     )
-    expect(adapterFor(adapters, { ...game('Rocket League'), installDir: dir }).id).toBe('killfeed')
+    // The kill-feed reader's vision model took the cars' name tags for eliminations.
+    expect(adapterFor(adapters, { ...game('Rocket League'), installDir: dir }).id).toBe(
+      'rocket-league'
+    )
   })
 
   it('looks at the whole screen in any other game', () => {
