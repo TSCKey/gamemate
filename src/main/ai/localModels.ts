@@ -140,7 +140,7 @@ const LFM = {
   repo: 'LiquidAI/LFM2.5-1.2B-Instruct-GGUF',
   revision: '8ed288026e23958ad9dfa92d53ed773a8eee7125'
 }
-const COMMENTARY_ADAPTER_VERSION = 1
+const COMMENTARY_ADAPTER_VERSION = 2
 export const COMMENTARY_MODEL: CatalogModel = {
   id: COMMENTARY_MODEL_ID,
   name: 'LFM2.5 1.2B',
@@ -159,8 +159,8 @@ export const COMMENTARY_MODEL: CatalogModel = {
   },
   adapter: {
     name: `gamemate-commentary-v${COMMENTARY_ADAPTER_VERSION}.gguf`,
-    size: 22230560,
-    sha256: 'fd52631e0dcb7666a62110991e61c4f850b0704f53bbc50c26a5c363e2983c86'
+    size: 22230048,
+    sha256: 'edca8d1b6d485af590b91620d4b3788eddbe47b8fb3dd2d1261d180528cbfe31'
   }
 }
 
