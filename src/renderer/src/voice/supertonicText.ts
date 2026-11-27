@@ -62,10 +62,10 @@ export function textToIds(text: string, indexer: number[]): number[] {
   return ids
 }
 
-// Ends of sentences: Latin marks need a following space ("1.5" stays whole); Chinese, Japanese
-// and Arabic marks end a sentence by themselves.
+// Ends of sentences: Latin marks need a following space ("1.5" stays whole); Chinese, Japanese,
+// Arabic and Hindi (the danda) marks end a sentence by themselves.
 const SENTENCE_END =
-  /(?<=[.!?…]["'”’)\]]*)\s+|(?<=[。！？؟]["'”’)\]」』]*)(?![。！？؟"'”’)\]」』])\s*/u
+  /(?<=[.!?…]["'”’)\]]*)\s+|(?<=[。！？؟।॥]["'”’)\]」』]*)(?![。！？؟।॥"'”’)\]」』])\s*/u
 const CLAUSE_END = /(?<=[,、，،;；])/u
 
 // Pieces of at most `limit` characters: whole clauses where they fit, otherwise cut at a space.

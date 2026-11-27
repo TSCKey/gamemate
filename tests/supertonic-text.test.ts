@@ -31,6 +31,12 @@ describe('answers spoken sentence by sentence', () => {
       'هل تريد المساعدة؟',
       'اضغط هنا.'
     ])
+    // Hindi ends a sentence with the danda.
+    expect(splitForSpeech('नमस्ते, मैं GameMate हूँ। क्रीपर्स से बचकर रहिए!', 'hi')).toEqual([
+      'नमस्ते, मैं GameMate हूँ।',
+      'क्रीपर्स से बचकर रहिए!'
+    ])
+    expect(splitForSpeech('पहला।दूसरा॥ तीसरा', 'hi')).toEqual(['पहला।', 'दूसरा॥', 'तीसरा'])
   })
 
   it('keeps long sentences within limits', () => {
