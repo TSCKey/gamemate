@@ -56,3 +56,10 @@ describe('the last version whose notes the player saw', () => {
     expect(settings.getSettings().lastSeenVersion).toBe('0.4.0')
   })
 })
+
+describe('a player who never got past the first start of 0.3.0', () => {
+  it('sees no notes, since they never knew the earlier version', async () => {
+    saveFile({ termsVersion: 0, language: '' })
+    expect(settings.getSettings().lastSeenVersion).toBe(version)
+  })
+})

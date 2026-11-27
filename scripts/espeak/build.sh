@@ -4,6 +4,8 @@
 # Emscripten activated; the result is committed to vendor/espeak-ng/ with manifest.json.
 #
 # Usage: build.sh <eSpeak NG source folder> <output folder> <Emscripten version>
+# ESPEAK_COMMIT and ESPEAK_VERSION name the source in manifest.json; without them they're read
+# from git, or "unknown" (the source archive attached to GameMate's releases has no git history).
 #
 # Based on the recipe in https://github.com/ianmarmour/espeak-ng.js (whose build GameMate used
 # before): a native build first, which compiles the language data, then the program itself with
@@ -18,8 +20,8 @@ FEATURES=(--without-async --without-mbrola --without-sonic --without-pcaudiolib 
 DATA="$(mktemp -d)/espeak-ng-data"
 
 cd "$SRC"
-COMMIT="$(git rev-parse HEAD)"
-VERSION="$(git describe --tags --exact-match 2>/dev/null || echo unknown)"
+COMMIT="${ESPEAK_COMMIT:-$(git rev-parse HEAD 2>/dev/null || echo unknown)}"
+VERSION="${ESPEAK_VERSION:-$(git describe --tags --exact-match 2>/dev/null || echo unknown)}"
 
 # 1. Native build: compiles the dictionaries into espeak-ng-data.
 ./autogen.sh

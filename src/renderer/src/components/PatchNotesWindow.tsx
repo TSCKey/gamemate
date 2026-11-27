@@ -1,6 +1,7 @@
 // "What's new in GameMate": the patch notes, shown once after an update and from Settings →
 // General. The notes are GameMate's own Markdown (src/shared/patchNotes), turned into React
 // elements, never HTML.
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { parseMarkdown, type Inline } from '../legal/markdown'
 import type { PatchNotes } from '../patchNotes'
@@ -77,14 +78,21 @@ export function PatchNotesWindow({
   const { i18n } = useTranslation()
   const language = isLanguageCode(i18n.language) ? i18n.language : 'en'
   const title = t('patchNotes.title', { version: notes[0]?.version ?? '' })
+  // Closed with its button or Escape; a stray click beside it doesn't count as read.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
   return (
-    <div className="modal-backdrop is-top" onClick={onClose}>
+    <div className="modal-backdrop is-top">
       <div
         className="modal legal-reader patch-notes"
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        onClick={(e) => e.stopPropagation()}
       >
         <article className="legal-doc" lang={language} dir={languageInfo(language).dir}>
           <h2>{title}</h2>

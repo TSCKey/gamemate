@@ -242,7 +242,7 @@ function App(): React.JSX.Element {
     <TermsGate settings={settings} />
   ) : settings.featureChoices === 'ask' && restored && !featuresLater ? (
     <FeatureChoices settings={settings} onLater={() => setFeaturesLater(true)} />
-  ) : shouldShowPatchNotes(settings, APP_VERSION, false) ? (
+  ) : shouldShowPatchNotes(settings, APP_VERSION, !restored) ? (
     // After an update: what changed since the last version the player saw, once.
     <PatchNotesWindow
       notes={patchNotesSince(settings.lastSeenVersion, APP_VERSION, settings.language || 'en')}

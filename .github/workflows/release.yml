@@ -4,7 +4,7 @@
 # (src/shared/patchNotes/<version>/en.md) become the release notes:
 #   git tag -a v1.0.2 -m "GameMate 1.0.2" && git push origin v1.0.2
 # It can also be run by hand (Actions → Release → Run workflow) to rebuild an existing tag's
-# release, replacing its files.
+# release, replacing its files and its release text (edits made on GitHub are overwritten).
 name: Release
 
 on:
@@ -70,7 +70,7 @@ jobs:
           version="${TAG#v}"
           files=(dist/GameMate-Setup-$version.exe dist/GameMate-Setup-$version.exe.blockmap dist/latest.yml dist/sources/espeak-ng-1.52.0-source.tar.gz dist/sources/gamemate-espeak-build.tar.gz)
           notes=src/shared/patchNotes/$version/en.md
-          cat "$notes" .github/release-install-note.md > dist/release-notes.md
+          { cat "$notes"; sed "s/<version>/$version/g" .github/release-install-note.md; } > dist/release-notes.md
           ls -l "${files[@]}"
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release upload "$TAG" "${files[@]}" --clobber

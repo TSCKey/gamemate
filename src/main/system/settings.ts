@@ -172,8 +172,11 @@ export function getSettings(): Settings {
         current.kokoroVoice = current.kokoroVoice === 'male' ? 'am_michael' : 'af_heart'
       }
       delete (current as Settings & { voiceName?: string }).voiceName
-      // Saved by 0.3.0 or earlier, which had no patch notes: the player hasn't seen any.
-      if (saved.lastSeenVersion === undefined) current.lastSeenVersion = '0.3.0'
+      // Saved by 0.3.0 or earlier, which had no patch notes: a player who used it sees this
+      // version's; one who never got past the first start has nothing to compare with.
+      if (saved.lastSeenVersion === undefined) {
+        current.lastSeenVersion = (saved.termsVersion ?? 0) > 0 ? '0.3.0' : APP_VERSION
+      }
     } catch {
       // A new install: this version's notes describe nothing the player knew before.
       current = { ...DEFAULTS, lastSeenVersion: APP_VERSION }
