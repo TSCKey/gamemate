@@ -388,7 +388,7 @@
       "male": "Male"
     },
     "kokoroOneVoice": "Kokoro has only a female voice in {{language}}.",
-    "kokoroVoicesHelp": "Listen to a voice before you choose it.",
+    "kokoroVoicesHelp": "Choose a voice, then press Listen to hear it.",
     "accents": {
       "us": "American English",
       "gb": "British English"

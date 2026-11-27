@@ -39,14 +39,9 @@ function ModelButton({ model }: { model: SpeechModelStatus }): React.JSX.Element
 
 const SPEAK_OPTIONS: SpeakAnswers[] = ['off', 'voice', 'always']
 
-// 'British English · Male' in English, 'Male' in the other languages.
-const describeKokoroVoice = (v: KokoroVoiceInfo): string =>
-  [v.accent && t(`voicePanel.accents.${v.accent}`), t(`voicePanel.kokoroVoices.${v.gender}`)]
-    .filter(Boolean)
-    .join(' · ')
-
-// Every Kokoro voice of the language, each with a sample to listen to before choosing it.
-function KokoroVoiceList({
+// Every Kokoro voice of the language in a dropdown (English grouped into American and
+// British), and a sample of the chosen one.
+function KokoroVoiceSelect({
   voices,
   chosen,
   canListen,
@@ -57,33 +52,41 @@ function KokoroVoiceList({
   canListen: boolean
   choose: (id: string) => void
 }): React.JSX.Element {
+  const option = (v: KokoroVoiceInfo): React.JSX.Element => (
+    <option key={v.id} value={v.id}>
+      {`${v.name} · ${t(`voicePanel.kokoroVoices.${v.gender}`)}`}
+    </option>
+  )
+  const accents = [...new Set(voices.map((v) => v.accent))]
+  const name = voices.find((v) => v.id === chosen)?.name ?? ''
   return (
-    <div className="voice-list" role="radiogroup" aria-label={t('voicePanel.voice')}>
-      {voices.map((v) => (
-        <div className="voice-row" key={v.id}>
-          <label className="check">
-            <input
-              type="radio"
-              name="kokoro-voice"
-              value={v.id}
-              checked={v.id === chosen}
-              onChange={() => choose(v.id)}
-            />
-            <span>{v.name}</span>
-            <span className="field-help">{describeKokoroVoice(v)}</span>
-          </label>
-          <button
-            type="button"
-            disabled={!canListen}
-            aria-label={t('voicePanel.listenTo', { voice: v.name })}
-            onClick={() =>
-              window.api.voice.speak(t('voicePanel.hiIMGamemateWatch'), { kokoroVoice: v.id })
-            }
-          >
-            {t('voicePanel.listen')}
-          </button>
-        </div>
-      ))}
+    <div className="voice-select">
+      <select
+        name="kokoro-voice"
+        value={chosen ?? ''}
+        disabled={voices.length === 1}
+        onChange={(e) => choose(e.target.value)}
+        aria-label={t('voicePanel.voice')}
+      >
+        {accents.length > 1
+          ? accents.map((accent) => (
+              <optgroup key={accent} label={t(`voicePanel.accents.${accent}`)}>
+                {voices.filter((v) => v.accent === accent).map(option)}
+              </optgroup>
+            ))
+          : voices.map(option)}
+      </select>
+      <button
+        type="button"
+        disabled={!canListen || !chosen}
+        aria-label={t('voicePanel.listenTo', { voice: name })}
+        onClick={() =>
+          chosen &&
+          window.api.voice.speak(t('voicePanel.hiIMGamemateWatch'), { kokoroVoice: chosen })
+        }
+      >
+        {t('voicePanel.listen')}
+      </button>
     </div>
   )
 }
@@ -270,22 +273,21 @@ function VoicePanel({
           />
         </Field>
         {!usesSupertonic && kokoroVoices.length > 0 && (
-          <div className="field field-stack">
-            <div className="field-text">
-              <div className="field-label">{t('voicePanel.voice')}</div>
-              <div className="field-help">
-                {oneKokoroVoice
-                  ? t('voicePanel.kokoroOneVoice', { language: sentenceName })
-                  : t('voicePanel.kokoroVoicesHelp')}
-              </div>
-            </div>
-            <KokoroVoiceList
+          <Field
+            label={t('voicePanel.voice')}
+            help={
+              oneKokoroVoice
+                ? t('voicePanel.kokoroOneVoice', { language: sentenceName })
+                : t('voicePanel.kokoroVoicesHelp')
+            }
+          >
+            <KokoroVoiceSelect
               voices={kokoroVoices}
               chosen={kokoroVoice}
               canListen={isInstalled('kokoro')}
               choose={(id) => update({ kokoroVoice: id })}
             />
-          </div>
+          </Field>
         )}
         {usesSupertonic && (
           <Field label={t('voicePanel.voice')}>

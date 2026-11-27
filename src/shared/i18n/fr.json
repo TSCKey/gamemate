@@ -391,7 +391,7 @@
       "male": "Masculine"
     },
     "kokoroOneVoice": "En {{language}}, Kokoro n’a qu’une voix féminine.",
-    "kokoroVoicesHelp": "Écoutez une voix avant de la choisir.",
+    "kokoroVoicesHelp": "Choisissez une voix, puis cliquez sur « Écouter » pour l’entendre.",
     "accents": {
       "us": "Anglais américain",
       "gb": "Anglais britannique"
