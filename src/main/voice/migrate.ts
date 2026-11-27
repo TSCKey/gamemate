@@ -3,7 +3,7 @@ import { existsSync } from 'fs'
 import { rm } from 'fs/promises'
 import { join } from 'path'
 import { VOICE_ENGINES, type VoiceEngine } from '../../shared/types'
-import { languageInfo, type LanguageCode } from '../../shared/languages'
+import { languageInfo, type LanguageCode, type NaturalVoiceEngine } from '../../shared/languages'
 import { SPEECH_MODELS } from './voiceModels'
 
 // GameMate 0.1.3 downloaded Kokoro's English voices into the folder Kokoro downloads into
@@ -18,11 +18,20 @@ export async function removeOldVoice(modelsDir: string): Promise<void> {
 }
 
 // Voice settings saved by older GameMates: 0.3.0's Windows voices and 'natural' (Supertonic),
-// or nothing at all. Those become Kokoro where it speaks the language, else Supertonic, which
-// speaks them all. A voice the player chose ('kokoro' or 'supertonic') stays, even in a language
-// it can't speak: the Voice settings say so.
-export function migrateVoiceEngine(saved: unknown, language: LanguageCode): VoiceEngine {
+// or nothing at all. Those become a voice that is already downloaded and speaks the language
+// (Kokoro first), so a player updating with Supertonic downloaded keeps hearing answers; with
+// none downloaded, Kokoro where it speaks the language, else Supertonic, which speaks them all.
+// A voice the player chose ('kokoro' or 'supertonic') stays, even in a language it can't speak:
+// the Voice settings say so.
+export function migrateVoiceEngine(
+  saved: unknown,
+  language: LanguageCode,
+  installed: Record<NaturalVoiceEngine, boolean> = { kokoro: false, supertonic: false }
+): VoiceEngine {
   if (saved === 'natural') return 'supertonic'
   if (VOICE_ENGINES.includes(saved as VoiceEngine)) return saved as VoiceEngine
-  return languageInfo(language).voices.includes('kokoro') ? 'kokoro' : 'supertonic'
+  const { voices } = languageInfo(language)
+  const ready = voices.find((voice) => installed[voice])
+  if (ready) return ready
+  return voices.includes('kokoro') ? 'kokoro' : 'supertonic'
 }

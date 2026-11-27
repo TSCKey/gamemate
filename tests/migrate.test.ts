@@ -56,6 +56,25 @@ describe('older voice settings', () => {
     expect(migrateVoiceEngine(undefined, 'de')).toBe('supertonic')
   })
 
+  it('moves a Windows voice to a natural voice already downloaded that speaks the language', () => {
+    const only = (
+      kokoro: boolean,
+      supertonic: boolean
+    ): Record<'kokoro' | 'supertonic', boolean> => ({
+      kokoro,
+      supertonic
+    })
+    expect(migrateVoiceEngine('windows', 'en', only(false, true))).toBe('supertonic')
+    expect(migrateVoiceEngine('windows', 'en', only(true, true))).toBe('kokoro')
+    expect(migrateVoiceEngine('windows', 'es', only(true, false))).toBe('kokoro')
+    // Kokoro doesn't speak German, downloaded or not.
+    expect(migrateVoiceEngine('windows', 'de', only(true, false))).toBe('supertonic')
+    // Nothing downloaded: Kokoro where it speaks the language.
+    expect(migrateVoiceEngine('windows', 'fr', only(false, false))).toBe('kokoro')
+    // A voice the player chose stays, downloaded or not.
+    expect(migrateVoiceEngine('kokoro', 'en', only(false, true))).toBe('kokoro')
+  })
+
   it('keeps a voice the player chose, even in a language it can’t speak', () => {
     expect(migrateVoiceEngine('kokoro', 'en')).toBe('kokoro')
     expect(migrateVoiceEngine('supertonic', 'it')).toBe('supertonic')
@@ -99,6 +118,11 @@ describe('loading saved voice settings', () => {
     expect((await load({ language: 'de', voiceEngine: 'windows' })).voiceEngine).toBe('supertonic')
   })
 
+  it('gives an English Windows voice Supertonic when only Supertonic is downloaded', async () => {
+    put(join(userData, 'models', SPEECH_MODELS.supertonic.repo), SPEECH_MODELS.supertonic.files)
+    expect((await load({ language: 'en', voiceEngine: 'windows' })).voiceEngine).toBe('supertonic')
+  })
+
   it('keeps a German player’s Kokoro choice after a restart', async () => {
     expect((await load({ language: 'de', voiceEngine: 'kokoro' })).voiceEngine).toBe('kokoro')
   })
@@ -136,6 +160,11 @@ describe('the first language choice', () => {
 
   it('keeps a voice that speaks the language picked', async () => {
     expect((await choose({ voiceEngine: 'supertonic' }, 'it')).voiceEngine).toBe('supertonic')
+  })
+
+  it('switches a saved voice that can’t speak the first language picked', async () => {
+    // Saved before the player had ever picked a language, so it wasn't chosen for German.
+    expect((await choose({ voiceEngine: 'kokoro' }, 'de')).voiceEngine).toBe('supertonic')
   })
 
   it('keeps the voice when the player changes the language later', async () => {

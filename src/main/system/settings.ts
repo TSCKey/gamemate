@@ -2,7 +2,7 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { isListenModelId } from '../voice/voiceModels'
+import { isListenModelId, isSpeechModelInstalled } from '../voice/voiceModels'
 import { migrateVoiceEngine } from '../voice/migrate'
 import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
@@ -91,6 +91,7 @@ const DEFAULTS: Settings = {
   naturalVoice: 'F1',
   voiceVolume: 1,
   voiceRate: 1,
+  voiceNoticeShown: false,
   // Everything stays local until the player chooses otherwise.
   answersEngine: 'local',
   commentaryEngine: 'local',
@@ -125,6 +126,11 @@ export function onSettingsChanged(listener: (settings: Settings) => void): void 
   listeners.push(listener)
 }
 
+const installedVoices = (): Record<'kokoro' | 'supertonic', boolean> => ({
+  kokoro: isSpeechModelInstalled('kokoro'),
+  supertonic: isSpeechModelInstalled('supertonic')
+})
+
 const file = (): string => join(app.getPath('userData'), 'settings.json')
 let current: Settings | null = null
 
@@ -153,9 +159,13 @@ export function getSettings(): Settings {
       if (saved.featureChoices === undefined) {
         current.featureChoices = (saved.termsVersion ?? 0) > 0 ? 'answered' : 'ask'
       }
-      // Windows voices are gone: Kokoro or Supertonic, whichever speaks the language. Runs at
-      // every launch, so a voice the player chose is kept as it is.
-      current.voiceEngine = migrateVoiceEngine(saved.voiceEngine, current.language || 'en')
+      // Windows voices are gone: Kokoro or Supertonic, whichever speaks the language (one
+      // already downloaded first). Runs at every launch, so a voice the player chose is kept.
+      current.voiceEngine = migrateVoiceEngine(
+        saved.voiceEngine,
+        current.language || 'en',
+        installedVoices()
+      )
       // GameMate 0.1.3 saved a Kokoro voice file ('af_heart'); its second letter is the voice.
       if (!KOKORO_VOICES.includes(current.kokoroVoice)) {
         current.kokoroVoice = /^.m_/.test(String(current.kokoroVoice)) ? 'male' : 'female'
@@ -233,6 +243,7 @@ export function updateSettings(patch: unknown): Settings {
     typeof v === 'number' && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : null
   next.voiceVolume = num(p.voiceVolume, 0, 1) ?? next.voiceVolume
   next.voiceRate = num(p.voiceRate, 0.5, 2) ?? next.voiceRate
+  if (typeof p.voiceNoticeShown === 'boolean') next.voiceNoticeShown = p.voiceNoticeShown
   if (ANSWER_ENGINES.includes(p.answersEngine as AnswerEngine)) {
     next.answersEngine = p.answersEngine as AnswerEngine
   }
@@ -249,7 +260,7 @@ export function updateSettings(patch: unknown): Settings {
     // Later changes keep the voice; the settings say when it can't speak the language.
     const voices = languageInfo(p.language).voices
     if (next.language === '' && p.voiceEngine === undefined && !voices.includes(next.voiceEngine)) {
-      next.voiceEngine = migrateVoiceEngine(undefined, p.language)
+      next.voiceEngine = migrateVoiceEngine(undefined, p.language, installedVoices())
     }
     next.language = p.language
   }

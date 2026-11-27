@@ -127,6 +127,9 @@ export interface Settings {
   naturalVoice: SupertonicVoice
   voiceVolume: number
   voiceRate: number
+  // The chat was told once that nothing is read aloud because no voice is downloaded. Cleared
+  // when a voice speaks again, so removing it later tells again.
+  voiceNoticeShown: boolean
   // Which AI answers questions (or 'auto' to decide per question), and which watches the game:
   // the local model or Gemini (opt-in).
   answersEngine: AnswerEngine
