@@ -4,7 +4,7 @@ GameMate includes the software below. Each part keeps its own license; the licen
 this folder. GameMate itself is free software under the GNU General Public License, version 3 or
 (at your option) any later version.
 
-## eSpeak NG
+## eSpeak NG 1.52.0
 
 - What it does in GameMate: works out how the Kokoro voice pronounces text, in every language
   Kokoro speaks (English, Spanish, French, Italian and Portuguese). It runs on your PC.
@@ -13,24 +13,10 @@ this folder. GameMate itself is free software under the GNU General Public Licen
   Reece H. Dunn as its maintainer.
 - License: GNU General Public License, version 3 or (at your option) any later version. See
   `GPL-3.0.txt`.
-- GameMate includes two WebAssembly builds of eSpeak NG, listed in the next two sections.
-
-## espeak-ng.js 1.0.2
-
-- eSpeak NG (version 1.52-dev) compiled to WebAssembly with Emscripten, by Ian Armour. GameMate
-  uses it for Spanish, French, Italian and Portuguese.
-- Package: npm `espeak-ng` 1.0.2, https://registry.npmjs.org/espeak-ng/-/espeak-ng-1.0.2.tgz
-- Source: https://github.com/ianmarmour/espeak-ng.js (its README has the build steps)
-- License: GPL-3.0-or-later. See `GPL-3.0.txt`.
-
-## phonemizer 1.2.1
-
-- phonemizer.js by Xenova, a text-to-phonemes converter that contains its own build of eSpeak NG.
-  kokoro-js uses it for English.
-- Package: npm `phonemizer` 1.2.1, https://registry.npmjs.org/phonemizer/-/phonemizer-1.2.1.tgz
-- Source: https://github.com/xenova/phonemizer.js
-- License: the package is published under the Apache License 2.0 (see `Apache-2.0.txt`); the
-  eSpeak NG build it contains is under the GPL-3.0-or-later (see `GPL-3.0.txt`).
+- GameMate includes its own WebAssembly build of eSpeak NG 1.52.0, compiled from commit
+  4870adfa25b1a32b4361592f1be8a40337c58d6c of https://github.com/espeak-ng/espeak-ng with
+  Emscripten 3.1.50, with the dictionaries of those five languages. The build script is
+  `scripts/espeak/build.sh` in GameMate's source code.
 
 ## kokoro-js 1.2.1
 
@@ -48,7 +34,10 @@ this folder. GameMate itself is free software under the GNU General Public Licen
 
 ## Source code
 
-The source code of the GPL-licensed parts above is available from the links in each section.
-Every GameMate release on https://github.com/TSCKey/gamemate/releases also has the exact
-`espeak-ng` and `phonemizer` packages it was built with, as `espeak-ng-1.0.2.tgz` and
-`phonemizer-1.2.1.tgz`.
+GameMate's own source code, including the eSpeak NG build script, is at
+https://github.com/TSCKey/gamemate. From GameMate 0.4.0 on, every release on
+https://github.com/TSCKey/gamemate/releases also has, next to the installer:
+
+- `espeak-ng-1.52.0-source.tar.gz`: eSpeak NG's complete source code at the commit above;
+- `gamemate-espeak-build.tar.gz`: the script and workflow that built GameMate's eSpeak NG from it,
+  and the list of the files it produced with their SHA-256 hashes.

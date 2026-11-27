@@ -12,6 +12,6 @@
 
 ## Autres nouveautés
 
-- Cette fenêtre : après chaque mise à jour, GameMate montre ce qui a changé. Vous pouvez la rouvrir dans **Paramètres → Général → Nouveautés**.
+- Une fenêtre **Nouveautés** : après chaque mise à jour, GameMate montre ce qui a changé. Vous pouvez la rouvrir dans **Paramètres → Général → Nouveautés**.
 - Les Conditions d’utilisation et la Politique de confidentialité décrivent désormais les deux voix et existent aussi en hindi. Il vous est demandé une fois d’accepter les Conditions mises à jour.
 - **Paramètres → Confidentialité et mentions légales** ouvre les licences des logiciels inclus dans GameMate.

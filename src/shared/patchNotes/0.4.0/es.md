@@ -12,6 +12,6 @@
 
 ## Otras novedades
 
-- Esta ventana: después de cada actualización, GameMate muestra qué ha cambiado. Puedes volver a abrirla en **Ajustes → General → Novedades**.
+- Una ventana de **Novedades**: después de cada actualización, GameMate muestra qué ha cambiado. Puedes volver a abrirla en **Ajustes → General → Novedades**.
 - Los Términos de uso y la Política de privacidad ahora describen las dos voces y también están en hindi. Se te pedirá una vez que aceptes los Términos actualizados.
 - **Ajustes → Privacidad y aspectos legales** abre las licencias del software que incluye GameMate.

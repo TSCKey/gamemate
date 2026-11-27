@@ -12,6 +12,6 @@
 
 ## Also new
 
-- This window: after each update, GameMate shows what changed. You can open it again from **⚙ Settings → General → What's new**.
+- A **What’s new** window: after each update, GameMate shows what changed. You can open it again from **⚙ Settings → General → What’s new**.
 - The Terms of Use and Privacy Policy now describe both voices, and are available in Hindi. You're asked to accept the updated Terms once.
 - **⚙ Settings → Privacy & legal** opens the licenses of the software GameMate includes.

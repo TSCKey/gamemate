@@ -12,6 +12,6 @@
 
 ## Altre novità
 
-- Questa finestra: dopo ogni aggiornamento GameMate mostra cosa è cambiato. Puoi riaprirla da **Impostazioni → Generali → Novità**.
+- Una finestra **Novità**: dopo ogni aggiornamento GameMate mostra cosa è cambiato. Puoi riaprirla da **Impostazioni → Generali → Novità**.
 - I Termini di utilizzo e l’Informativa sulla privacy ora descrivono entrambe le voci e sono disponibili anche in hindi. Ti verrà chiesto una volta di accettare i Termini aggiornati.
 - **Impostazioni → Privacy e note legali** apre le licenze del software incluso in GameMate.

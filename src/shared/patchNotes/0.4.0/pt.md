@@ -12,6 +12,6 @@
 
 ## Também é novo
 
-- Esta janela: depois de cada atualização, o GameMate mostra o que mudou. Você pode abri-la de novo em **Configurações → Geral → Novidades**.
+- Uma janela de **Novidades**: depois de cada atualização, o GameMate mostra o que mudou. Você pode abri-la de novo em **Configurações → Geral → Novidades**.
 - Os Termos de Uso e a Política de Privacidade agora descrevem as duas vozes e também estão em hindi. Você vai precisar aceitar os Termos atualizados uma vez.
 - **Configurações → Privacidade e aspectos legais** abre as licenças dos programas incluídos no GameMate.

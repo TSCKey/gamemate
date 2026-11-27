@@ -1,7 +1,8 @@
 # Builds the Windows installer and publishes it as a GitHub Release when a version tag (like
 # v1.0.2) is pushed, so releases don't need a personal token on a developer's PC. The tag must
-# match the version in package.json, and its message becomes the release notes:
-#   git tag -a v1.0.2 -F notes.md && git push origin v1.0.2
+# match the version in package.json, and the version's English patch notes
+# (src/shared/patchNotes/<version>/en.md) become the release notes:
+#   git tag -a v1.0.2 -m "GameMate 1.0.2" && git push origin v1.0.2
 # It can also be run by hand (Actions → Release → Run workflow) to rebuild an existing tag's
 # release, replacing its files.
 name: Release
@@ -45,23 +46,35 @@ jobs:
       # uploads each file separately and lost the installer when they raced.)
       - run: npm run build
       - run: npx electron-builder --win --publish never
-      # The GPL-licensed eSpeak NG builds GameMate includes, as the exact packages it was built
-      # with, published beside the installer (licenses/THIRD-PARTY-NOTICES.md points here).
-      - name: Pack the eSpeak NG sources
+      # GameMate's eSpeak NG (GPL-3.0-or-later) is its own build (vendor/espeak-ng, checked against
+      # its manifest by npm test above). Its complete source at the commit it was built from, and
+      # the script that built it, are published beside the installer
+      # (licenses/THIRD-PARTY-NOTICES.md points here).
+      - name: Pack the eSpeak NG source and build script
         shell: bash
         run: |
           mkdir -p dist/sources
-          npm pack espeak-ng@1.0.2 phonemizer@1.2.1 --pack-destination dist/sources
+          commit=4870adfa25b1a32b4361592f1be8a40337c58d6c
+          if [ "$(node -p "require('./vendor/espeak-ng/manifest.json').commit")" != "$commit" ]; then
+            echo "vendor/espeak-ng was built from another commit." && exit 1
+          fi
+          curl -fsSL "https://github.com/espeak-ng/espeak-ng/archive/$commit.tar.gz" \
+            -o dist/sources/espeak-ng-1.52.0-source.tar.gz
+          tar -czf dist/sources/gamemate-espeak-build.tar.gz \
+            scripts/espeak .github/workflows/espeak.yml vendor/espeak-ng/manifest.json
       - name: Publish the installer and update files
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           version="${TAG#v}"
-          files=(dist/GameMate-Setup-$version.exe dist/GameMate-Setup-$version.exe.blockmap dist/latest.yml dist/sources/espeak-ng-1.0.2.tgz dist/sources/phonemizer-1.2.1.tgz)
+          files=(dist/GameMate-Setup-$version.exe dist/GameMate-Setup-$version.exe.blockmap dist/latest.yml dist/sources/espeak-ng-1.52.0-source.tar.gz dist/sources/gamemate-espeak-build.tar.gz)
+          notes=src/shared/patchNotes/$version/en.md
+          cat "$notes" .github/release-install-note.md > dist/release-notes.md
           ls -l "${files[@]}"
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release upload "$TAG" "${files[@]}" --clobber
+            gh release edit "$TAG" --notes-file dist/release-notes.md
           else
-            gh release create "$TAG" "${files[@]}" --title "GameMate $version" --notes-from-tag
+            gh release create "$TAG" "${files[@]}" --title "GameMate $version" --notes-file dist/release-notes.md
           fi

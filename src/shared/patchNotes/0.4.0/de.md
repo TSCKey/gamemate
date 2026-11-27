@@ -12,6 +12,6 @@
 
 ## Außerdem neu
 
-- Dieses Fenster: Nach jedem Update zeigt GameMate, was sich geändert hat. Du kannst es unter **Einstellungen → Allgemein → Was ist neu** wieder öffnen.
+- Ein Fenster **Was ist neu**: Nach jedem Update zeigt GameMate, was sich geändert hat. Du kannst es unter **Einstellungen → Allgemein → Was ist neu** wieder öffnen.
 - Die Nutzungsbedingungen und die Datenschutzerklärung beschreiben jetzt beide Stimmen und gibt es auch auf Hindi. Du wirst einmal gebeten, die aktualisierten Nutzungsbedingungen zu akzeptieren.
 - **Einstellungen → Datenschutz & Rechtliches** öffnet die Lizenzen der Software, die GameMate enthält.
