@@ -303,7 +303,10 @@
     },
     "aLogOfWhatGamemate": "Um registro do que o GameMate fez (como iniciar a IA ou procurar atualizações), para encontrar problemas. Ele nunca contém suas perguntas ou respostas e nunca é enviado para lugar nenhum.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>termos da API do Gemini</terms> e <privacy>Política de Privacidade do Google</privacy>.",
-    "wikiLicenses": "<b>Wikis de jogos e Modrinth:</b> o texto de cada wiki tem a própria licença (mostrada em cada resposta que o usa, por exemplo <link>minecraft.wiki</link>), por isso as respostas trazem o link da página. As imagens das respostas são baixadas dessas mesmas wikis e levam à página delas lá."
+    "wikiLicenses": "<b>Wikis de jogos e Modrinth:</b> o texto de cada wiki tem a própria licença (mostrada em cada resposta que o usa, por exemplo <link>minecraft.wiki</link>), por isso as respostas trazem o link da página. As imagens das respostas são baixadas dessas mesmas wikis e levam à página delas lá.",
+    "thirdPartySoftware": "Software de terceiros",
+    "includesThirdPartySoftware": "O GameMate inclui software de terceiros com licenças próprias, como o eSpeak NG (GPL-3.0-or-later) para a pronúncia do Kokoro.",
+    "openLicenseFolder": "Abrir a pasta de licenças"
   },
   "recipeCard": {
     "craftingGridFor": "Grade de criação de {{item}}",

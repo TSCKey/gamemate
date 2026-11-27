@@ -1,5 +1,6 @@
 // Settings, updates, screenshots, GameMate's small windows, the companion and the player's data.
-import { BrowserWindow, shell, type IpcMainInvokeEvent } from 'electron'
+import { app, BrowserWindow, shell, type IpcMainInvokeEvent } from 'electron'
+import { join } from 'path'
 import type { AppInfo } from '../../shared/types'
 import { captureSource, listSources } from '../windows/capture'
 import { stopEngine } from '../ai/llamaEngine'
@@ -47,8 +48,14 @@ export function registerAppHandlers(
   handle('updates:state', () => updateState())
   handle('updates:check', () => checkForUpdates())
   handle('updates:install', () => installUpdate())
-  // "Delete my data": everything GameMate stored on this PC, back to a fresh install.
   handle('app:open-logs', () => shell.openPath(logFolder()))
+  // The folder with the third-party notices and license texts (electron-builder's extraResources).
+  handle('app:open-licenses', () =>
+    shell.openPath(
+      app.isPackaged ? join(process.resourcesPath, 'licenses') : join(app.getAppPath(), 'licenses')
+    )
+  )
+  // "Delete my data": everything GameMate stored on this PC, back to a fresh install.
   handle('app:delete-data', async () => {
     deleteLogs()
     clearGeminiKey()

@@ -300,7 +300,10 @@
     },
     "aLogOfWhatGamemate": "A log of what GameMate did (like starting the AI or checking for updates), for finding problems. It never contains your questions or answers and is never sent anywhere.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini API terms</terms> and <privacy>Google Privacy Policy</privacy>.",
-    "wikiLicenses": "<b>Game wikis and Modrinth:</b> each wiki's text is under its own license (shown with every answer that uses it, for example <link>minecraft.wiki</link>), so answers link to the page. Pictures in answers are downloaded from the same wikis and link to their page there."
+    "wikiLicenses": "<b>Game wikis and Modrinth:</b> each wiki's text is under its own license (shown with every answer that uses it, for example <link>minecraft.wiki</link>), so answers link to the page. Pictures in answers are downloaded from the same wikis and link to their page there.",
+    "thirdPartySoftware": "Third-party software",
+    "includesThirdPartySoftware": "GameMate includes third-party software under its own licenses, such as eSpeak NG (GPL-3.0-or-later) for Kokoro's pronunciation.",
+    "openLicenseFolder": "Open license folder"
   },
   "recipeCard": {
     "craftingGridFor": "Crafting grid for {{item}}",

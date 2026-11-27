@@ -312,7 +312,10 @@
     },
     "aLogOfWhatGamemate": "سجل بما فعله GameMate (مثل تشغيل الذكاء الاصطناعي أو البحث عن تحديثات) للعثور على المشكلات. لا يحتوي أبدًا على أسئلتك أو الإجابات ولا يُرسَل إلى أي مكان.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>شروط Gemini API</terms> و<privacy>سياسة خصوصية Google</privacy>.",
-    "wikiLicenses": "<b>مواقع ويكي الألعاب وModrinth:</b> نص كل ويكي يخضع لترخيصه الخاص (يظهر مع كل إجابة تستخدمه، مثل <link>minecraft.wiki</link>)، لذا تتضمن الإجابات رابطًا إلى الصفحة. الصور في الإجابات تُنزَّل من مواقع الويكي نفسها وترتبط بصفحتها هناك."
+    "wikiLicenses": "<b>مواقع ويكي الألعاب وModrinth:</b> نص كل ويكي يخضع لترخيصه الخاص (يظهر مع كل إجابة تستخدمه، مثل <link>minecraft.wiki</link>)، لذا تتضمن الإجابات رابطًا إلى الصفحة. الصور في الإجابات تُنزَّل من مواقع الويكي نفسها وترتبط بصفحتها هناك.",
+    "thirdPartySoftware": "برامج من جهات خارجية",
+    "includesThirdPartySoftware": "يتضمن GameMate برامج من جهات خارجية بتراخيصها الخاصة، مثل eSpeak NG (GPL-3.0-or-later) لنطق Kokoro.",
+    "openLicenseFolder": "فتح مجلد التراخيص"
   },
   "recipeCard": {
     "craftingGridFor": "شبكة الصنع لـ {{item}}",

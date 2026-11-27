@@ -45,13 +45,20 @@ jobs:
       # uploads each file separately and lost the installer when they raced.)
       - run: npm run build
       - run: npx electron-builder --win --publish never
+      # The GPL-licensed eSpeak NG builds GameMate includes, as the exact packages it was built
+      # with, published beside the installer (licenses/THIRD-PARTY-NOTICES.md points here).
+      - name: Pack the eSpeak NG sources
+        shell: bash
+        run: |
+          mkdir -p dist/sources
+          npm pack espeak-ng@1.0.2 phonemizer@1.2.1 --pack-destination dist/sources
       - name: Publish the installer and update files
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           version="${TAG#v}"
-          files=(dist/GameMate-Setup-$version.exe dist/GameMate-Setup-$version.exe.blockmap dist/latest.yml)
+          files=(dist/GameMate-Setup-$version.exe dist/GameMate-Setup-$version.exe.blockmap dist/latest.yml dist/sources/espeak-ng-1.0.2.tgz dist/sources/phonemizer-1.2.1.tgz)
           ls -l "${files[@]}"
           if gh release view "$TAG" > /dev/null 2>&1; then
             gh release upload "$TAG" "${files[@]}" --clobber

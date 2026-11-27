@@ -60,6 +60,7 @@ const api: Api = {
   openSource: (url) => ipcRenderer.invoke('app:open-source', url),
   deleteData: () => ipcRenderer.invoke('app:delete-data'),
   openLogs: () => ipcRenderer.invoke('app:open-logs'),
+  openLicenses: () => ipcRenderer.invoke('app:open-licenses'),
   quit: () => ipcRenderer.invoke('app:quit'),
   pauseShortcuts: (paused) => ipcRenderer.invoke('shortcuts:pause', paused),
   legal: {

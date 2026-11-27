@@ -9,6 +9,7 @@ files:
   - '!docs/*'
   - '!scripts/*'
   - '!.github/*'
+  - '!licenses/*'
   - '!{electron.vite.config,vitest.config}.{js,ts,mjs,cjs,mts}'
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
@@ -24,6 +25,10 @@ extraResources:
     filter:
       - ort-wasm-simd-threaded.mjs
       - ort-wasm-simd-threaded.wasm
+  # Third-party notices and license texts (eSpeak NG is GPL-licensed), next to the app where
+  # Settings → Privacy & legal opens them.
+  - from: licenses
+    to: licenses
 asarUnpack:
   - resources/**
   # koffi's native binaries can't be loaded from inside the asar archive.

@@ -118,6 +118,15 @@ function PrivacyPanel({
       </Section>
 
       <Section
+        title={t('privacyPanel.thirdPartySoftware')}
+        description={t('privacyPanel.includesThirdPartySoftware')}
+      >
+        <button type="button" onClick={() => window.api.openLicenses()}>
+          {t('privacyPanel.openLicenseFolder')}
+        </button>
+      </Section>
+
+      <Section
         title={t('privacyPanel.yourConsents')}
         description={t('privacyPanel.optionalFeaturesThatSendData')}
       >

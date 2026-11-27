@@ -62,6 +62,8 @@ export interface Api {
   deleteData: () => Promise<void>
   // Opens the folder with GameMate's log file.
   openLogs: () => Promise<void>
+  // Opens the folder with the third-party notices and their license texts.
+  openLicenses: () => Promise<void>
   quit: () => Promise<void>
   // Pauses the in-game shortcuts while the player picks a new one.
   pauseShortcuts: (paused: boolean) => Promise<void>

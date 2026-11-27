@@ -53,7 +53,7 @@ GameMate kann Antworten mit einer von zwei natürlichen Stimmen vorlesen, Kokoro
 
 ### Kokoro
 
-Kokoro spricht Englisch, Spanisch, Französisch, Italienisch und Portugiesisch. Kokoro nutzt das Sprachausgabe-Modell **Kokoro-82M** (in der von onnx-community auf Hugging Face veröffentlichten Fassung) und die Bibliothek **kokoro-js**, beide unter der Apache License 2.0. In anderen Sprachen als Englisch kommt die Aussprache von Kokoro von **eSpeak NG**, das mit GameMate geliefert wird und unter der GNU General Public License, Version 3 oder (nach deiner Wahl) jeder späteren Version, steht. eSpeak NG läuft auf deinem PC: Für die Aussprache wird kein Text irgendwohin gesendet.
+Kokoro spricht Englisch, Spanisch, Französisch, Italienisch und Portugiesisch. Kokoro nutzt das Sprachausgabe-Modell **Kokoro-82M** (in der von onnx-community auf Hugging Face veröffentlichten Fassung) und die Bibliothek **kokoro-js**, beide unter der Apache License 2.0. Die Aussprache von Kokoro kommt von **eSpeak NG**, das mit GameMate geliefert wird und unter der GNU General Public License, Version 3 oder (nach deiner Wahl) jeder späteren Version, steht. eSpeak NG läuft auf deinem PC: Für die Aussprache wird kein Text irgendwohin gesendet.
 
 ### Supertonic
 

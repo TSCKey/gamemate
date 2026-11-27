@@ -53,7 +53,7 @@ GameMate غير تابع لأي ناشر ألعاب، ولا يعتمده أو �
 
 ### Kokoro
 
-يتحدث Kokoro الإنجليزية والإسبانية والفرنسية والإيطالية والبرتغالية. ويستخدم نموذج الصوت **Kokoro-82M** (بالنسخة التي نشرتها onnx-community على Hugging Face) ومكتبة **kokoro-js**، وكلاهما مرخّص بموجب Apache License 2.0. وفي اللغات غير الإنجليزية، يأتي نطق Kokoro من **eSpeak NG**، وهو مرفق مع GameMate ومرخّص بموجب GNU General Public License، الإصدار 3 أو (حسب اختيارك) أي إصدار لاحق. يعمل eSpeak NG على حاسوبك: لا يُرسَل أي نص إلى أي مكان لنطقه.
+يتحدث Kokoro الإنجليزية والإسبانية والفرنسية والإيطالية والبرتغالية. ويستخدم نموذج الصوت **Kokoro-82M** (بالنسخة التي نشرتها onnx-community على Hugging Face) ومكتبة **kokoro-js**، وكلاهما مرخّص بموجب Apache License 2.0. ويأتي نطق Kokoro من **eSpeak NG**، وهو مرفق مع GameMate ومرخّص بموجب GNU General Public License، الإصدار 3 أو (حسب اختيارك) أي إصدار لاحق. يعمل eSpeak NG على حاسوبك: لا يُرسَل أي نص إلى أي مكان لنطقه.
 
 ### Supertonic
 
