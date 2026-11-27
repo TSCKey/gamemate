@@ -15,7 +15,7 @@ Correo electrónico: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 - GameMate se ejecuta en tu PC. **No recibimos, recopilamos ni almacenamos ninguno de tus datos.** No hay servidor de GameMate, ni cuenta, ni publicidad, ni analítica, ni seguimiento.
 - Todo lo que GameMate guarda se queda en tu PC, en tu carpeta de usuario de Windows.
-- GameMate solo se conecta a servicios de otras empresas cuando usas una función que los necesita. Las funciones que envían tus datos a otro lugar (Google Gemini, búsqueda web, consultas en línea, búsqueda de las wikis de tus juegos) están **desactivadas hasta que las activas**, y puedes desactivarlas en cualquier momento. Puedes activar la búsqueda de tus juegos y las consultas en línea en la pantalla que GameMate muestra después de que aceptes los Términos de uso, o cualquiera de estas funciones más tarde en **Ajustes**.
+- GameMate solo se conecta a servicios de otras empresas cuando usas una función que los necesita. Las funciones que envían tus datos a otro lugar (Google Gemini, búsqueda web, consultas en línea, búsqueda de las wikis de tus juegos) están **desactivadas hasta que las activas**, y puedes desactivarlas en cualquier momento. Puedes activar la búsqueda de tus juegos y las consultas en línea en la pantalla que GameMate muestra después de que aceptes las Condiciones de uso, o cualquiera de estas funciones más tarde en **Ajustes**.
 - **Borrar mis datos** en **Ajustes → Privacidad y aspectos legales** elimina todo lo que GameMate guardó en tu PC.
 
 ## 3. Qué guarda GameMate en tu PC
@@ -44,7 +44,7 @@ Tus conversaciones, capturas de pantalla, grabaciones de voz y lo que el compañ
 
 ## 5. Funciones opcionales que necesitan tu consentimiento
 
-Estas funciones están desactivadas hasta que las activas. Activar una supone tu consentimiento a lo que se describe aquí (art. 6 (1) (a) RGPD, § 25 (1) TDDDG, PDPL). Puedes retirar cada consentimiento en cualquier momento desactivando la función; esto detiene la función y no afecta a nada de lo hecho antes. También puedes activar la búsqueda de tus juegos y las consultas en línea en la pantalla que GameMate muestra después de que aceptes los Términos de uso.
+Estas funciones están desactivadas hasta que las activas. Activar una supone tu consentimiento a lo que se describe aquí (art. 6 (1) (a) RGPD, § 25 (1) TDDDG, PDPL). Puedes retirar cada consentimiento en cualquier momento desactivando la función; esto detiene la función y no afecta a nada de lo hecho antes. También puedes activar la búsqueda de tus juegos y las consultas en línea en la pantalla que GameMate muestra después de que aceptes las Condiciones de uso.
 
 ### Encontrar tus juegos (Ajustes → Juegos)
 
@@ -65,7 +65,7 @@ Si eliges Gemini para las respuestas o para el compañero, GameMate envía a Goo
 ## 6. Conexiones que no son consentimientos opcionales
 
 - **Las descargas que inicias** (modelos de IA, modelos de voz y las voces naturales Kokoro (unos 330 MB) y Supertonic (401 MB) desde Hugging Face, el motor de IA de GameMate desde GitHub) se conectan a esos servicios cuando haces clic en **Descargar**, porque tú las pediste (art. 6 (1) (b) RGPD). Marcar una descarga en esa pantalla y hacer clic en **Continuar** también la inicia.
-- **La búsqueda de actualizaciones** pide a GitHub la última versión de GameMate, poco después de que se inicia y cada pocas horas, y descarga una nueva versión si la hay. Lo hacemos para ofrecer correcciones de seguridad y mejoras (nuestro interés legítimo, art. 6 (1) (f) RGPD). Puedes desactivarla en **Ajustes → General**. GameMate no busca actualizaciones antes de que hayas aceptado los Términos de uso.
+- **La búsqueda de actualizaciones** pide a GitHub la última versión de GameMate, poco después de que se inicia y cada pocas horas, y descarga una nueva versión si la hay. Lo hacemos para ofrecer correcciones de seguridad y mejoras (nuestro interés legítimo, art. 6 (1) (f) RGPD). Puedes desactivarla en **Ajustes → General**. GameMate no busca actualizaciones antes de que hayas aceptado las Condiciones de uso.
 
 Como cualquier conexión en internet, estas solicitudes muestran al servicio tu dirección IP e información técnica básica (como el nombre y la versión de la aplicación). Nosotros nunca recibimos esta información.
 

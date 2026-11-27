@@ -1,4 +1,4 @@
-# Condizioni d'uso
+# Termini di utilizzo
 
 Questa è una traduzione per tua comodità. Fa fede la [versione inglese](../TERMS.md).
 

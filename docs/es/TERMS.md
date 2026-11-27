@@ -1,4 +1,4 @@
-# Términos de uso
+# Condiciones de uso
 
 Esta es una traducción para tu comodidad. La [versión en inglés](../TERMS.md) es la vinculante.
 
