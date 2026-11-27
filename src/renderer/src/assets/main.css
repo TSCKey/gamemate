@@ -570,6 +570,9 @@ kbd {
   justify-content: flex-start;
   gap: 10px;
   padding: 8px 12px;
+  /* Longer translations wrap instead of running past the side bar. */
+  white-space: normal;
+  text-align: start;
   font-weight: 500;
   color: var(--text-2);
   background: transparent;
@@ -586,6 +589,7 @@ kbd {
 }
 
 .nav-icon {
+  flex-shrink: 0;
   width: 20px;
   text-align: center;
 }
@@ -869,6 +873,7 @@ kbd {
 
   .nav-item {
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .settings-content {
