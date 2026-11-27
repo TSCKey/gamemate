@@ -128,6 +128,9 @@ export interface Settings {
   // The chat was told once that nothing is read aloud because no voice is downloaded. Cleared
   // when a voice speaks again, so removing it later tells again.
   voiceNoticeShown: boolean
+  // The newest version whose patch notes the player has seen (a new install starts at its own
+  // version, so nothing shows until the next update).
+  lastSeenVersion: string
   // Which AI answers questions (or 'auto' to decide per question), and which watches the game:
   // the local model or Gemini (opt-in).
   answersEngine: AnswerEngine

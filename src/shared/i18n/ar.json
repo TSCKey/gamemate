@@ -204,7 +204,10 @@
     "languageHelp": "لنوافذ GameMate وإجابات الذكاء الاصطناعي. تبقى أسماء الألعاب وصفحات الويكي كما هي.",
     "voiceCantSpeak": "{{voice}} لا يتحدث {{language}}، لذلك لن يقرأ GameMate شيئًا بصوت عالٍ بهذه اللغة. اختر {{other}} من الإعدادات ← الصوت.",
     "chatScreenshot": "إرسال لقطة شاشة مع أسئلتي افتراضيًا",
-    "chatScreenshotHelp": "في نافذة المحادثة، تكون 📷 مفعّلة في كل محادثة جديدة."
+    "chatScreenshotHelp": "في نافذة المحادثة، تكون 📷 مفعّلة في كل محادثة جديدة.",
+    "whatsNew": "ما الجديد",
+    "whatsNewHelp": "ما الذي تغيّر في كل إصدار من GameMate.",
+    "showWhatsNew": "عرض"
   },
   "modelMenu": {
     "builtInAi": "الذكاء الاصطناعي المدمج",
@@ -771,5 +774,8 @@
     "openVoiceSettings": "فتح الإعدادات ← الصوت",
     "downloadInSettings": "لم يُنزَّل أي صوت، لذلك لا يستطيع GameMate القراءة بصوت عالٍ. نزّل صوتًا من الإعدادات ← الصوت.",
     "dismiss": "إغلاق"
+  },
+  "patchNotes": {
+    "title": "ما الجديد في GameMate {{version}}"
   }
 }

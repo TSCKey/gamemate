@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { PatchNotesWindow } from '../components/PatchNotesWindow'
+import { patchNotesSince, shouldShowPatchNotes } from '../patchNotes'
+import { APP_VERSION } from '../../../shared/version'
 import type { AppInfo, CaptureSource, ChatMessage, CompanionState } from '../../../preload/index.d'
 import CompanionMenu from '../components/CompanionMenu'
 import GameMenu from '../components/GameMenu'
@@ -239,6 +242,12 @@ function App(): React.JSX.Element {
     <TermsGate settings={settings} />
   ) : settings.featureChoices === 'ask' && restored && !featuresLater ? (
     <FeatureChoices settings={settings} onLater={() => setFeaturesLater(true)} />
+  ) : shouldShowPatchNotes(settings, APP_VERSION, false) ? (
+    // After an update: what changed since the last version the player saw, once.
+    <PatchNotesWindow
+      notes={patchNotesSince(settings.lastSeenVersion, APP_VERSION, settings.language || 'en')}
+      onClose={() => update({ lastSeenVersion: APP_VERSION })}
+    />
   ) : null
 
   if (settingsTab && settings) {

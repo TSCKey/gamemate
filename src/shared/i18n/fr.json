@@ -195,7 +195,10 @@
     "languageHelp": "Pour les fenêtres de GameMate et les réponses de l’IA. Les noms des jeux et les pages des wikis restent tels quels.",
     "voiceCantSpeak": "{{voice}} ne parle pas {{language}} : GameMate ne lira donc rien à voix haute dans cette langue. Choisissez {{other}} dans Paramètres → Voix.",
     "chatScreenshot": "Envoyer une capture d’écran avec mes questions par défaut",
-    "chatScreenshotHelp": "Dans la fenêtre de conversation, 📷 est activé par défaut dans chaque nouvelle conversation."
+    "chatScreenshotHelp": "Dans la fenêtre de conversation, 📷 est activé par défaut dans chaque nouvelle conversation.",
+    "whatsNew": "Nouveautés",
+    "whatsNewHelp": "Ce qui a changé dans chaque version de GameMate.",
+    "showWhatsNew": "Afficher"
   },
   "modelMenu": {
     "builtInAi": "IA intégrée",
@@ -762,5 +765,8 @@
     "openVoiceSettings": "Ouvrir Paramètres → Voix",
     "downloadInSettings": "Aucune voix n’est téléchargée : GameMate ne peut rien lire à voix haute. Téléchargez-en une dans Paramètres → Voix.",
     "dismiss": "Fermer"
+  },
+  "patchNotes": {
+    "title": "Nouveautés de GameMate {{version}}"
   }
 }

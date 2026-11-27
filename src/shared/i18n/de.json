@@ -192,7 +192,10 @@
     "languageHelp": "Für die Fenster von GameMate und die Antworten der KI. Spielnamen und Wikiseiten bleiben, wie sie sind.",
     "voiceCantSpeak": "{{voice}} spricht kein {{language}}, daher liest GameMate in dieser Sprache nichts vor. Wähle {{other}} unter Einstellungen → Stimme.",
     "chatScreenshot": "Screenshot standardmäßig mit meinen Fragen senden",
-    "chatScreenshotHelp": "Im Chatfenster ist 📷 in jedem neuen Chat eingeschaltet."
+    "chatScreenshotHelp": "Im Chatfenster ist 📷 in jedem neuen Chat eingeschaltet.",
+    "whatsNew": "Was ist neu",
+    "whatsNewHelp": "Was sich in jeder Version von GameMate geändert hat.",
+    "showWhatsNew": "Anzeigen"
   },
   "modelMenu": {
     "builtInAi": "Integrierte KI",
@@ -759,5 +762,8 @@
     "openVoiceSettings": "Einstellungen → Stimme öffnen",
     "downloadInSettings": "Es ist keine Stimme heruntergeladen, daher kann GameMate nichts vorlesen. Lade unter Einstellungen → Stimme eine herunter.",
     "dismiss": "Schließen"
+  },
+  "patchNotes": {
+    "title": "Was ist neu in GameMate {{version}}"
   }
 }

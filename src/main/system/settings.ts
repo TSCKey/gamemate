@@ -10,6 +10,7 @@ import { existsSync } from 'fs'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT, isValidShortcut } from '../../shared/shortcuts'
 import { isLanguageCode, languageInfo } from '../../shared/languages'
 import { isKokoroVoice } from '../../shared/voices'
+import { APP_VERSION } from '../../shared/version'
 import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
@@ -91,6 +92,7 @@ const DEFAULTS: Settings = {
   voiceVolume: 1,
   voiceRate: 1,
   voiceNoticeShown: false,
+  lastSeenVersion: '',
   // Everything stays local until the player chooses otherwise.
   answersEngine: 'local',
   commentaryEngine: 'local',
@@ -170,8 +172,11 @@ export function getSettings(): Settings {
         current.kokoroVoice = current.kokoroVoice === 'male' ? 'am_michael' : 'af_heart'
       }
       delete (current as Settings & { voiceName?: string }).voiceName
+      // Saved by 0.3.0 or earlier, which had no patch notes: the player hasn't seen any.
+      if (saved.lastSeenVersion === undefined) current.lastSeenVersion = '0.3.0'
     } catch {
-      current = { ...DEFAULTS }
+      // A new install: this version's notes describe nothing the player knew before.
+      current = { ...DEFAULTS, lastSeenVersion: APP_VERSION }
     }
   }
   return current
@@ -241,6 +246,9 @@ export function updateSettings(patch: unknown): Settings {
   next.voiceVolume = num(p.voiceVolume, 0, 1) ?? next.voiceVolume
   next.voiceRate = num(p.voiceRate, 0.5, 2) ?? next.voiceRate
   if (typeof p.voiceNoticeShown === 'boolean') next.voiceNoticeShown = p.voiceNoticeShown
+  if (typeof p.lastSeenVersion === 'string' && /^\d+\.\d+\.\d+$/.test(p.lastSeenVersion)) {
+    next.lastSeenVersion = p.lastSeenVersion
+  }
   if (ANSWER_ENGINES.includes(p.answersEngine as AnswerEngine)) {
     next.answersEngine = p.answersEngine as AnswerEngine
   }

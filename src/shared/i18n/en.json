@@ -192,7 +192,10 @@
     "languageHelp": "For GameMate’s windows and the AI’s answers. Game names and wiki pages stay as they are.",
     "voiceCantSpeak": "{{voice}} doesn’t speak {{language}}, so GameMate won’t read anything aloud in it. Choose {{other}} in Settings → Voice.",
     "chatScreenshot": "Send a screenshot with my questions by default",
-    "chatScreenshotHelp": "In the chat window, 📷 starts on in every new chat."
+    "chatScreenshotHelp": "In the chat window, 📷 starts on in every new chat.",
+    "whatsNew": "What’s new",
+    "whatsNewHelp": "What changed in each version of GameMate.",
+    "showWhatsNew": "Show"
   },
   "modelMenu": {
     "builtInAi": "Built-in AI",
@@ -759,5 +762,8 @@
     "openVoiceSettings": "Open Settings → Voice",
     "downloadInSettings": "No voice is downloaded, so GameMate can't read aloud. Download one in Settings → Voice.",
     "dismiss": "Dismiss"
+  },
+  "patchNotes": {
+    "title": "What’s new in GameMate {{version}}"
   }
 }

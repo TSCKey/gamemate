@@ -192,7 +192,10 @@
     "languageHelp": "GameMate की विंडो और AI के जवाबों के लिए। गेम के नाम और विकी पेज जैसे हैं वैसे ही रहते हैं।",
     "voiceCantSpeak": "{{voice}} {{language}} नहीं बोलती, इसलिए GameMate इस भाषा में कुछ भी बोलकर नहीं सुनाएगा। सेटिंग्स → आवाज़ में {{other}} चुनें।",
     "chatScreenshot": "डिफ़ॉल्ट रूप से मेरे सवालों के साथ स्क्रीनशॉट भेजें",
-    "chatScreenshotHelp": "चैट विंडो में, हर नई चैट में 📷 पहले से चालू होता है।"
+    "chatScreenshotHelp": "चैट विंडो में, हर नई चैट में 📷 पहले से चालू होता है।",
+    "whatsNew": "नया क्या है",
+    "whatsNewHelp": "GameMate के हर वर्ज़न में क्या बदला।",
+    "showWhatsNew": "दिखाएँ"
   },
   "modelMenu": {
     "builtInAi": "बिल्ट-इन AI",
@@ -759,5 +762,8 @@
     "openVoiceSettings": "सेटिंग्स → आवाज़ खोलें",
     "downloadInSettings": "कोई आवाज़ डाउनलोड नहीं है, इसलिए GameMate बोलकर नहीं सुना सकता। सेटिंग्स → आवाज़ में कोई आवाज़ डाउनलोड करें।",
     "dismiss": "बंद करें"
+  },
+  "patchNotes": {
+    "title": "GameMate {{version}} में नया क्या है"
   }
 }

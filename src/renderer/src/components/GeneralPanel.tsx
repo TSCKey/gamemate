@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { PatchNotesWindow } from './PatchNotesWindow'
+import { allPatchNotes, type PatchNotes } from '../patchNotes'
 import type { AppInfo, Settings, UpdateState } from '../../../preload/index.d'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT } from '../../../shared/shortcuts'
 import { LANGUAGES, languageInfo, type LanguageCode } from '../../../shared/languages'
@@ -38,6 +40,7 @@ function Updates({
   update: (patch: Partial<Settings>) => void
 }): React.JSX.Element {
   const [state, setState] = useState<UpdateState | null>(null)
+  const [notes, setNotes] = useState<PatchNotes[] | null>(null)
   useEffect(() => {
     window.api.updates.state().then(setState)
     return window.api.updates.onState(setState)
@@ -71,6 +74,12 @@ function Updates({
           onChange={(autoUpdate) => update({ autoUpdate })}
         />
       </Field>
+      <Field label={t('generalPanel.whatsNew')} help={t('generalPanel.whatsNewHelp')}>
+        <button type="button" onClick={() => setNotes(allPatchNotes(settings.language || 'en'))}>
+          {t('generalPanel.showWhatsNew')}
+        </button>
+      </Field>
+      {notes && <PatchNotesWindow notes={notes} onClose={() => setNotes(null)} />}
     </Section>
   )
 }
