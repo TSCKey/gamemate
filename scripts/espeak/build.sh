@@ -26,6 +26,11 @@ VERSION="$(git describe --tags --exact-match 2>/dev/null || echo unknown)"
 ./configure "${FEATURES[@]}"
 make -j"$(nproc)"
 cp -r espeak-ng-data "$DATA"
+# Only the dictionaries of the languages Kokoro speaks in GameMate; the rest would only make the
+# installer bigger.
+find "$DATA" -maxdepth 1 -name '*_dict' \
+  ! -name en_dict ! -name es_dict ! -name fr_dict ! -name it_dict ! -name pt_dict -delete
+ls "$DATA"/*_dict
 
 # 2. The same program with Emscripten. The data is embedded where the program looks for it
 #    (the default prefix, /usr/local).
