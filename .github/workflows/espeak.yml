@@ -1,0 +1,47 @@
+# Compiles eSpeak NG to WebAssembly with scripts/espeak/build.sh, from a pinned release and with
+# a pinned Emscripten, and uploads the result. The files are then committed to vendor/espeak-ng/;
+# every GameMate release attaches the same eSpeak NG source and this build script.
+name: Build eSpeak NG
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [espeak-build]
+
+permissions:
+  contents: read
+
+env:
+  ESPEAK_COMMIT: 4870adfa25b1a32b4361592f1be8a40337c58d6c # tag 1.52.0
+  EMSCRIPTEN_VERSION: 3.1.50
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: espeak-ng/espeak-ng
+          ref: ${{ env.ESPEAK_COMMIT }}
+          path: espeak-src
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Install the build tools
+        run: sudo apt-get update && sudo apt-get install -y make autoconf automake libtool pkg-config gcc
+      - name: Install Emscripten ${{ env.EMSCRIPTEN_VERSION }}
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git "$RUNNER_TEMP/emsdk"
+          cd "$RUNNER_TEMP/emsdk"
+          ./emsdk install "$EMSCRIPTEN_VERSION"
+          ./emsdk activate "$EMSCRIPTEN_VERSION"
+      - name: Build
+        run: |
+          source "$RUNNER_TEMP/emsdk/emsdk_env.sh"
+          bash scripts/espeak/build.sh espeak-src out "$EMSCRIPTEN_VERSION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: espeak-ng
+          path: out/
