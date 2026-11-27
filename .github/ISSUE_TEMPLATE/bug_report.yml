@@ -41,14 +41,6 @@ body:
         - العربية (Arabic)
         - Français (French)
         - Deutsch (German)
-        - Español (Spanish)
-        - Português (Portuguese)
-        - Italiano (Italian)
-        - Türkçe (Turkish)
-        - Русский (Russian)
-        - 日本語 (Japanese)
-        - 中文 (Chinese)
-        - 한국어 (Korean)
   - type: input
     id: game
     attributes:

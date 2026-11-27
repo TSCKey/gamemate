@@ -384,7 +384,7 @@
     "addWindowsVoicesHelp": "Opens Windows' speech settings, where you can add voices in more languages. Come back here afterwards.",
     "naturalNotForLanguage": "The natural voice doesn't speak {{language}}, so GameMate uses a Windows voice for it.",
     "naturalDescription": "Supertonic, a natural-sounding voice that runs on this PC and works offline.",
-    "naturalHelp": "Natural is Supertonic 3 (OpenRAIL-M license): a one-time download, then it works offline. It speaks every GameMate language except Chinese.",
+    "naturalHelp": "Natural is Supertonic 3 (OpenRAIL-M license): a one-time download, then it works offline. It speaks every GameMate language.",
     "naturalSupertonic": "Natural (Supertonic)"
   },
   "useLocalModels": {

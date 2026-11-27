@@ -170,7 +170,7 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 
 - **Read answers aloud:** Never, When I ask by voice (the default), or Always.
 - **Read companion comments aloud:** speaks Commentary mode's reactions.
-- **Voice type:** **Natural (Supertonic)** sounds like a real person and speaks every GameMate language except Chinese. Click **Download** once (401 MB); it then runs on your PC and works offline. Until it's downloaded, for Chinese, or if you pick **Windows voices**, GameMate uses a Windows voice for your language.
+- **Voice type:** **Natural (Supertonic)** sounds like a real person and speaks every GameMate language. Click **Download** once (401 MB); it then runs on your PC and works offline. Until it's downloaded, or if you pick **Windows voices**, GameMate uses a Windows voice for your language.
 - Choose a **Voice** (Supertonic has 5 female and 5 male voices; Windows voices are listed for your language) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
 - **No Windows voice for your language?** Click **Add Windows voices** to open Windows' speech settings, add a voice there, then come back to the Voice page.
 - GameMate 0.1.3's natural voice (Kokoro) has been replaced by Supertonic. Its files are deleted after the update to free 340 MB; download Supertonic to keep a natural voice.
@@ -181,7 +181,7 @@ The first time you open GameMate it asks for your language, starting on your PC'
 
 - **Answers** come in the language you write in, so you can also ask in another language for a single question.
 - **Game names and wiki pages** stay as they are. Most game wikis are in English, so GameMate looks pages up by their English name and answers you in your language.
-- **Voice input** understands your language, and answers are read aloud in it: by the Natural voice, or by a Windows voice for Chinese (see [Voice](#voice)).
+- **Voice input** understands your language, and answers are read aloud in it: by the Natural voice, or by a Windows voice if you chose one (see [Voice](#voice)).
 
 ### Updates
 

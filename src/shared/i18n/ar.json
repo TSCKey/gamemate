@@ -396,7 +396,7 @@
     "addWindowsVoicesHelp": "يفتح إعدادات الكلام في Windows، حيث يمكنك إضافة أصوات بلغات أخرى. ثم عُد إلى هنا.",
     "naturalNotForLanguage": "الصوت الطبيعي لا يتحدث {{language}}، لذلك يستخدم GameMate صوتًا من Windows.",
     "naturalDescription": "Supertonic، صوت طبيعي يعمل على هذا الكمبيوتر ودون اتصال بالإنترنت.",
-    "naturalHelp": "الصوت الطبيعي هو Supertonic 3 (رخصة OpenRAIL-M): يُنزَّل مرة واحدة ثم يعمل دون اتصال. يتحدث كل لغات GameMate ما عدا الصينية.",
+    "naturalHelp": "الصوت الطبيعي هو Supertonic 3 (رخصة OpenRAIL-M): يُنزَّل مرة واحدة ثم يعمل دون اتصال. يتحدث كل لغات GameMate.",
     "naturalSupertonic": "طبيعي (Supertonic)"
   },
   "useLocalModels": {
