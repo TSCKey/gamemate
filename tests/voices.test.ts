@@ -17,8 +17,7 @@ vi.mock('../src/shared/languages', async (original) => {
 
 const voices: WindowsVoice[] = [
   { name: 'Microsoft Zira', language: 'en-US' },
-  { name: 'Microsoft Hortense', language: 'fr-FR' },
-  { name: 'Microsoft Huihui', language: 'zh-CN' }
+  { name: 'Microsoft Hortense', language: 'fr-FR' }
 ]
 const base = {
   engine: 'natural',

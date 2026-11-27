@@ -80,7 +80,7 @@ describe('the windows', () => {
   })
 })
 
-describe('the eleven translations', () => {
+describe('the three translations', () => {
   const english = resources.en.translation
   const englishTexts = new Map(
     flattenKeys(english).map((k) => [
