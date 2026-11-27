@@ -92,10 +92,9 @@ function shorten(sentence: string, limit: number): string[] {
   return pieces
 }
 
-// An answer as pieces to speak one after another, so the first words start quickly. Japanese
-// and Korean pieces stay shorter, as Supertone's sample does.
-export function splitForSpeech(text: string, language: LanguageCode): string[] {
-  const limit = language === 'ja' || language === 'ko' ? 120 : 300
+// An answer as pieces to speak one after another, so the first words start quickly.
+export function splitForSpeech(text: string, _language: LanguageCode): string[] {
+  const limit = 300
   return text
     .replace(/\s+/g, ' ')
     .trim()

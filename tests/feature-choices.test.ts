@@ -18,6 +18,19 @@ vi.mock('electron', () => ({
 vi.mock('@electron-toolkit/utils', () => ({ is: { dev: false } }))
 vi.mock('koffi', () => ({ default: {} }))
 
+// A test can make the current language one without the natural voice, which no shipped language is.
+let noNaturalVoice = false
+vi.mock('../src/shared/languages', async (original) => {
+  const real = await original<typeof import('../src/shared/languages')>()
+  return {
+    ...real,
+    languageInfo: (code: Parameters<typeof real.languageInfo>[0]) => ({
+      ...real.languageInfo(code),
+      naturalVoice: !noNaturalVoice && real.languageInfo(code).naturalVoice
+    })
+  }
+})
+
 // Which speech models count as installed, and the download calls, are controlled by each test.
 let installed = new Set<string>()
 const downloads: Array<{ id: string; done: () => void }> = []
@@ -40,6 +53,7 @@ let features: typeof import('../src/main/system/featureChoices')
 
 beforeEach(async () => {
   installed = new Set()
+  noNaturalVoice = false
   downloads.length = 0
   downloadSpeechModel.mockClear()
   scanGames.mockClear()
@@ -210,8 +224,9 @@ describe('applying feature choices', () => {
     expect(s.voiceEngine).toBe('natural')
   })
 
-  it('no natural voice for Chinese', () => {
-    settings.updateSettings({ language: 'zh' })
+  it('no natural voice for a language without one', () => {
+    noNaturalVoice = true
+    settings.updateSettings({ language: 'de' })
     installed.add('supertonic')
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).not.toHaveBeenCalled()
@@ -223,5 +238,27 @@ describe('applying feature choices', () => {
     vi.doMock('../src/main/windows/overlay', () => ({ hideOverlay: () => {} }))
     const { AFTER_TERMS } = await import('../src/main/ipc/legal')
     expect(AFTER_TERMS.has('features:apply')).toBe(true)
+  })
+})
+
+describe('saved language', () => {
+  it('a language no longer offered loads as English', () => {
+    saveFile({ termsVersion: 2, language: 'es' })
+    expect(settings.getSettings().language).toBe('en')
+  })
+
+  it('an offered language stays', () => {
+    saveFile({ termsVersion: 2, language: 'de' })
+    expect(settings.getSettings().language).toBe('de')
+  })
+
+  it('never chosen stays unchosen', () => {
+    saveFile({ termsVersion: 2, language: '' })
+    expect(settings.getSettings().language).toBe('')
+  })
+
+  it('a language no longer offered cannot be chosen', () => {
+    settings.updateSettings({ language: 'de' })
+    expect(settings.updateSettings({ language: 'ja' as never }).language).toBe('de')
   })
 })

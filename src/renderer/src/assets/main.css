@@ -1663,22 +1663,6 @@ button.link:hover:not(:disabled) {
   unicode-bidi: plaintext;
 }
 
-/* Japanese, Chinese and Korean in Windows' own fonts for them. */
-body:lang(ja),
-[lang='ja'] {
-  font-family: 'Yu Gothic UI', 'Meiryo UI', 'Segoe UI', sans-serif;
-}
-
-body:lang(zh),
-[lang='zh'] {
-  font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', 'Segoe UI', sans-serif;
-}
-
-body:lang(ko),
-[lang='ko'] {
-  font-family: 'Malgun Gothic', 'Segoe UI', sans-serif;
-}
-
 .language-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

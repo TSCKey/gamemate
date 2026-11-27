@@ -93,12 +93,7 @@ describe('the eleven translations', () => {
   // Words a language writes exactly like English.
   const SAME_WORDS: Partial<Record<LanguageCode, string[]>> = {
     fr: ['⏸ Pause', 'Modpack', '✦ Auto', 'Gemini (cloud)', 'Volume', 'Observation', 'Expressive'],
-    de: ['Modpack', 'Wiki: {{wiki}}', 'Updates', '📷 Screenshot', 'Normal', 'Text'],
-    es: ['Wiki: {{wiki}}', 'General', 'Normal'],
-    pt: ['Wiki: {{wiki}}', 'Volume', 'Normal'],
-    it: ['Wiki: {{wiki}}', 'Gemini (cloud)', 'Volume', '📷 Screenshot'],
-    tr: ['Model', 'Wiki: {{wiki}}', 'Normal'],
-    ja: ['Wiki: {{wiki}}']
+    de: ['Modpack', 'Wiki: {{wiki}}', 'Updates', '📷 Screenshot', 'Normal', 'Text']
   }
 
   for (const { code } of LANGUAGES.filter((l) => l.code !== 'en')) {

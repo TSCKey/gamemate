@@ -143,6 +143,8 @@ export function getSettings(): Settings {
         ...(current.webSearch ? { search: '' } : {}),
         ...saved.consents
       }
+      // A language GameMate no longer offers becomes English; never chosen stays unchosen.
+      if (current.language !== '' && !isLanguageCode(current.language)) current.language = 'en'
       // Players who set GameMate up with Ollama before the built-in engine existed keep it.
       if (saved.localBackend === undefined && saved.model) current.localBackend = 'ollama'
       // Players who already accepted the Terms before this screen existed aren't asked again.

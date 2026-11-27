@@ -1,6 +1,19 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { pickVoice, windowsVoicesFor } from '../src/shared/voices'
 import type { WindowsVoice } from '../src/shared/types'
+
+// A test can make French a language without the natural voice, which no shipped language is.
+let frenchWithoutNaturalVoice = false
+vi.mock('../src/shared/languages', async (original) => {
+  const real = await original<typeof import('../src/shared/languages')>()
+  return {
+    ...real,
+    languageInfo: (code: Parameters<typeof real.languageInfo>[0]) => ({
+      ...real.languageInfo(code),
+      naturalVoice: !(frenchWithoutNaturalVoice && code === 'fr')
+    })
+  }
+})
 
 const voices: WindowsVoice[] = [
   { name: 'Microsoft Zira', language: 'en-US' },
@@ -20,14 +33,19 @@ describe('the voice GameMate speaks with', () => {
     expect(pickVoice({ ...base, language: 'de' })).toEqual({ kind: 'natural', voice: 'F1' })
   })
 
-  it('is never Supertonic for Chinese', () => {
-    expect(pickVoice({ ...base, language: 'zh' })).toEqual({
-      kind: 'windows',
-      name: 'Microsoft Huihui'
-    })
-    expect(pickVoice({ ...base, language: 'zh', windowsVoices: voices.slice(0, 2) })).toEqual({
-      kind: 'none'
-    })
+  it('is never Supertonic for a language it does not speak', () => {
+    frenchWithoutNaturalVoice = true
+    try {
+      expect(pickVoice({ ...base, language: 'fr' })).toEqual({
+        kind: 'windows',
+        name: 'Microsoft Hortense'
+      })
+      expect(pickVoice({ ...base, language: 'fr', windowsVoices: voices.slice(0, 1) })).toEqual({
+        kind: 'none'
+      })
+    } finally {
+      frenchWithoutNaturalVoice = false
+    }
   })
 
   it('switches to a Windows voice for the new language', () => {

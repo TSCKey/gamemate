@@ -1,7 +1,6 @@
 // The languages GameMate speaks. Shared by the main process and the windows.
 
-export type LanguageCode =
-  'en' | 'ar' | 'fr' | 'de' | 'es' | 'pt' | 'it' | 'tr' | 'ru' | 'ja' | 'zh' | 'ko'
+export type LanguageCode = 'en' | 'de' | 'fr' | 'ar'
 
 export interface Language {
   code: LanguageCode
@@ -16,30 +15,16 @@ export interface Language {
 
 export const LANGUAGES: Language[] = [
   { code: 'en', englishName: 'English', nativeName: 'English', dir: 'ltr', naturalVoice: true },
-  { code: 'ar', englishName: 'Arabic', nativeName: 'العربية', dir: 'rtl', naturalVoice: true },
-  { code: 'fr', englishName: 'French', nativeName: 'Français', dir: 'ltr', naturalVoice: true },
   { code: 'de', englishName: 'German', nativeName: 'Deutsch', dir: 'ltr', naturalVoice: true },
-  { code: 'es', englishName: 'Spanish', nativeName: 'Español', dir: 'ltr', naturalVoice: true },
-  {
-    code: 'pt',
-    englishName: 'Portuguese',
-    nativeName: 'Português',
-    dir: 'ltr',
-    naturalVoice: true
-  },
-  { code: 'it', englishName: 'Italian', nativeName: 'Italiano', dir: 'ltr', naturalVoice: true },
-  { code: 'tr', englishName: 'Turkish', nativeName: 'Türkçe', dir: 'ltr', naturalVoice: true },
-  { code: 'ru', englishName: 'Russian', nativeName: 'Русский', dir: 'ltr', naturalVoice: true },
-  { code: 'ja', englishName: 'Japanese', nativeName: '日本語', dir: 'ltr', naturalVoice: true },
-  { code: 'zh', englishName: 'Chinese', nativeName: '中文', dir: 'ltr', naturalVoice: false },
-  { code: 'ko', englishName: 'Korean', nativeName: '한국어', dir: 'ltr', naturalVoice: true }
+  { code: 'fr', englishName: 'French', nativeName: 'Français', dir: 'ltr', naturalVoice: true },
+  { code: 'ar', englishName: 'Arabic', nativeName: 'العربية', dir: 'rtl', naturalVoice: true }
 ]
 
 export function isLanguageCode(value: unknown): value is LanguageCode {
   return LANGUAGES.some((l) => l.code === value)
 }
 
-// The first of Windows' preferred languages that GameMate supports ("zh-Hant-TW" -> "zh"),
+// The first of Windows' preferred languages that GameMate supports ("de-AT" -> "de"),
 // otherwise English.
 export function matchLanguage(tags: string[]): LanguageCode {
   for (const tag of tags) {

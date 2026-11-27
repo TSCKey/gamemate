@@ -17,13 +17,13 @@ describe('text for the Supertonic voice', () => {
 })
 
 describe('answers spoken sentence by sentence', () => {
-  it('splits Latin, Japanese and Arabic sentences', () => {
+  it('splits Latin, Japanese-style and Arabic sentences', () => {
     expect(splitForSpeech('Get iron. Smelt it! Done?', 'en')).toEqual([
       'Get iron.',
       'Smelt it!',
       'Done?'
     ])
-    expect(splitForSpeech('鉄を取ります。かまどに入れます！', 'ja')).toEqual([
+    expect(splitForSpeech('鉄を取ります。かまどに入れます！', 'en')).toEqual([
       '鉄を取ります。',
       'かまどに入れます！'
     ])
@@ -33,10 +33,7 @@ describe('answers spoken sentence by sentence', () => {
     ])
   })
 
-  it('keeps Japanese and Korean pieces short and long sentences within limits', () => {
-    const ja = splitForSpeech('あいう、'.repeat(60), 'ja')
-    expect(ja.length).toBeGreaterThan(1)
-    expect(ja.every((s) => s.length <= 120)).toBe(true)
+  it('keeps long sentences within limits', () => {
     const en = splitForSpeech('one, two, three, four, '.repeat(30), 'en')
     expect(en.every((s) => s.length <= 300)).toBe(true)
     expect(en.join(' ').replace(/\s+/g, ' ')).toBe('one, two, three, four, '.repeat(30).trim())
