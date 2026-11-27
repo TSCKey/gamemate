@@ -1748,3 +1748,37 @@ body:lang(hi),
   font-size: 0.9em;
   opacity: 0.8;
 }
+
+/* What's new: the patch notes after an update (PatchNotesWindow). */
+.patch-notes {
+  padding-top: 4px;
+}
+
+.patch-notes .legal-doc h3 {
+  font-size: 16px;
+}
+
+.patch-notes .legal-doc h4 {
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.patch-notes .legal-doc ul {
+  list-style: disc;
+}
+
+.patch-notes .legal-doc li {
+  margin: 4px 0;
+}
+
+.patch-notes .legal-doc strong {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.patch-notes-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}

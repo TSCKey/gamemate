@@ -187,7 +187,7 @@ The first time you open GameMate it asks for your language, starting on your PC'
 
 ### Updates
 
-GameMate checks for a new version when it starts and every few hours, downloads it in the background and installs it the next time it starts. To update right away, open **⚙ Settings → General → Updates** and click **Restart and update**. You can also click **Check now**, or turn off **Check for updates automatically**.
+GameMate checks for a new version when it starts and every few hours, downloads it in the background and installs it the next time it starts. To update right away, open **⚙ Settings → General → Updates** and click **Restart and update**. You can also click **Check now**, or turn off **Check for updates automatically**. After an update, GameMate shows what changed in that version; **⚙ Settings → General → What’s new** shows it again.
 
 ### Chat window
 
@@ -318,7 +318,7 @@ npm install
 npm run dev
 ```
 
-To build a Windows installer, run `npm run build:win`; it ends up in `dist/`. To publish a release that installed copies update to, raise `version` in `package.json`, commit, and push a matching tag whose message is the release notes (`git tag -a v1.0.2 -F notes.md`, then `git push origin v1.0.2`). GitHub Actions builds the installer and publishes it.
+To build a Windows installer, run `npm run build:win`; it ends up in `dist/`. To publish a release that installed copies update to, raise `version` in `package.json`, write that version's patch notes in all eight languages (`src/shared/patchNotes/<version>/`; a test fails without them), commit, and push a matching tag (`git tag -a v1.0.2 -m "GameMate 1.0.2"`, then `git push origin v1.0.2`). GitHub Actions builds the installer and publishes it, with the English patch notes as the release text and eSpeak NG's source and build script beside the installer. eSpeak NG itself is rebuilt only when needed, with the **Build eSpeak NG** workflow (`scripts/espeak/build.sh`); its output goes in `vendor/espeak-ng/`.
 
 To refresh the bundled Minecraft data, run `node scripts/build-minecraft-data.mjs`.
 
