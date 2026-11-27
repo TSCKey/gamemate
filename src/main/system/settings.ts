@@ -2,7 +2,7 @@
 import { app, BrowserWindow } from 'electron'
 import { readFileSync, renameSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { isListenModelId, isSpeechModelInstalled } from '../voice/voiceModels'
+import { isListenModelId } from '../voice/voiceModels'
 import { migrateVoiceEngine } from '../voice/migrate'
 import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
@@ -16,6 +16,7 @@ import {
   COMMENTARY_HUMOR_LEVELS,
   REACTION_INTENSITIES,
   SPEAK_ANSWERS,
+  KOKORO_VOICES,
   SUPERTONIC_VOICES,
   VOICE_ENGINES,
   ENGINES,
@@ -30,6 +31,7 @@ import type {
   CommentaryHumor,
   ReactionIntensity,
   SpeakAnswers,
+  KokoroVoice,
   SupertonicVoice,
   VoiceEngine,
   Engine,
@@ -84,8 +86,8 @@ const DEFAULTS: Settings = {
   speechModel: 'accurate',
   speakAnswers: 'voice',
   speakComments: false,
-  voiceEngine: 'windows',
-  voiceName: '',
+  voiceEngine: 'kokoro',
+  kokoroVoice: 'female',
   naturalVoice: 'F1',
   voiceVolume: 1,
   voiceRate: 1,
@@ -151,12 +153,16 @@ export function getSettings(): Settings {
       if (saved.featureChoices === undefined) {
         current.featureChoices = (saved.termsVersion ?? 0) > 0 ? 'answered' : 'ask'
       }
-      // GameMate 0.1.3's Kokoro voice is gone: Supertonic if it's installed, else Windows voices.
+      // Windows voices are gone: Kokoro or Supertonic, whichever speaks the language.
       current.voiceEngine = migrateVoiceEngine(
         saved.voiceEngine ?? DEFAULTS.voiceEngine,
-        isSpeechModelInstalled('supertonic')
+        current.language || 'en'
       )
-      delete (current as Settings & { kokoroVoice?: string }).kokoroVoice
+      // GameMate 0.1.3 saved a Kokoro voice file ('af_heart'); its second letter is the voice.
+      if (!KOKORO_VOICES.includes(current.kokoroVoice)) {
+        current.kokoroVoice = /^.m_/.test(String(current.kokoroVoice)) ? 'male' : 'female'
+      }
+      delete (current as Settings & { voiceName?: string }).voiceName
     } catch {
       current = { ...DEFAULTS }
     }
@@ -217,9 +223,11 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.speakComments === 'boolean') next.speakComments = p.speakComments
   // A comment has to reach the player somehow.
   if (!next.speakComments) next.showComments = true
-  if (typeof p.voiceName === 'string') next.voiceName = p.voiceName.slice(0, 200)
   if (VOICE_ENGINES.includes(p.voiceEngine as VoiceEngine))
     next.voiceEngine = p.voiceEngine as VoiceEngine
+  if (KOKORO_VOICES.includes(p.kokoroVoice as KokoroVoice)) {
+    next.kokoroVoice = p.kokoroVoice as KokoroVoice
+  }
   if (SUPERTONIC_VOICES.includes(p.naturalVoice as SupertonicVoice)) {
     next.naturalVoice = p.naturalVoice as SupertonicVoice
   }

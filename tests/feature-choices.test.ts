@@ -26,7 +26,7 @@ vi.mock('../src/shared/languages', async (original) => {
     ...real,
     languageInfo: (code: Parameters<typeof real.languageInfo>[0]) => ({
       ...real.languageInfo(code),
-      naturalVoice: !noNaturalVoice && real.languageInfo(code).naturalVoice
+      voices: noNaturalVoice ? [] : real.languageInfo(code).voices
     })
   }
 })
@@ -72,6 +72,23 @@ describe('feature choices setting', () => {
     expect(s.featureChoices).toBe('ask')
     expect(s.chatScreenshot).toBe(false)
     expect(s.closeToTray).toBe(true)
+  })
+
+  it('fresh install speaks with Kokoro, its female voice and Supertonic’s F1', () => {
+    const s = settings.getSettings()
+    expect(s.voiceEngine).toBe('kokoro')
+    expect(s.kokoroVoice).toBe('female')
+    expect(s.naturalVoice).toBe('F1')
+    expect('voiceName' in s).toBe(false)
+  })
+
+  it('keeps only known voice choices', () => {
+    settings.updateSettings({ voiceEngine: 'supertonic', kokoroVoice: 'male' })
+    expect(settings.getSettings().voiceEngine).toBe('supertonic')
+    expect(settings.getSettings().kokoroVoice).toBe('male')
+    settings.updateSettings({ voiceEngine: 'windows', kokoroVoice: 'af_heart' })
+    expect(settings.getSettings().voiceEngine).toBe('supertonic')
+    expect(settings.getSettings().kokoroVoice).toBe('male')
   })
 
   it('existing player who accepted is not asked', () => {
@@ -203,7 +220,7 @@ describe('applying feature choices', () => {
     settings.updateSettings({ language: 'en' })
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).toHaveBeenCalledWith('supertonic')
-    expect(s.voiceEngine).toBe('natural')
+    expect(s.voiceEngine).toBe('supertonic')
   })
 
   it('failed natural voice download keeps the natural voice chosen', async () => {
@@ -211,8 +228,8 @@ describe('applying feature choices', () => {
     features.applyFeatureChoices({ naturalVoice: true })
     downloads[0].done()
     await new Promise((r) => setTimeout(r, 0))
-    // Not installed, so Windows voices speak until it is (pickVoice falls back).
-    expect(settings.getSettings().voiceEngine).toBe('natural')
+    // Not installed, so nothing is read aloud until it is (pickVoice says why).
+    expect(settings.getSettings().voiceEngine).toBe('supertonic')
     expect(settings.getSettings().featureChoices).toBe('answered')
   })
 
@@ -221,7 +238,7 @@ describe('applying feature choices', () => {
     installed.add('supertonic')
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).not.toHaveBeenCalled()
-    expect(s.voiceEngine).toBe('natural')
+    expect(s.voiceEngine).toBe('supertonic')
   })
 
   it('no natural voice for a language without one', () => {
@@ -230,7 +247,7 @@ describe('applying feature choices', () => {
     installed.add('supertonic')
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).not.toHaveBeenCalled()
-    expect(s.voiceEngine).toBe('windows')
+    expect(s.voiceEngine).toBe('kokoro')
   })
 
   it('needs the Terms', async () => {

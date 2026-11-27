@@ -32,8 +32,8 @@ describe('supported languages', () => {
     ])
   })
 
-  it('all have the natural voice', () => {
-    expect(LANGUAGES.filter((l) => !l.naturalVoice)).toEqual([])
+  it('all have a natural voice', () => {
+    expect(LANGUAGES.filter((l) => l.voices.length === 0)).toEqual([])
   })
 
   it('match Windows language tags, regional variants included', () => {

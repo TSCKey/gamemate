@@ -1,6 +1,6 @@
-// Reads text off small images with the text recognition built into Windows, fully offline. Like
-// the voices in voice/tts.ts, a long-lived PowerShell process does the work through Windows'
-// current API (WinRT), so each read costs milliseconds instead of starting PowerShell again.
+// Reads text off small images with the text recognition built into Windows, fully offline. A
+// long-lived PowerShell process does the work through Windows' current API (WinRT), so each read
+// costs milliseconds instead of starting PowerShell again.
 // Commands go over stdin as JSON lines; replies come back on stdout.
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process'
 import { createInterface } from 'readline'

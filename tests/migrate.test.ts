@@ -29,23 +29,33 @@ describe('moving from Kokoro to Supertonic', () => {
     await expect(removeOldVoice(models)).resolves.toBeUndefined()
   })
 
-  it('moves the Kokoro voice setting to Supertonic if it is installed, else Windows', () => {
-    expect(migrateVoiceEngine('kokoro', false)).toBe('windows')
-    expect(migrateVoiceEngine('kokoro', true)).toBe('natural')
-    expect(migrateVoiceEngine('windows', true)).toBe('windows')
-    expect(migrateVoiceEngine('natural', false)).toBe('natural')
-    expect(migrateVoiceEngine(undefined, true)).toBe('windows')
+  it('moves older voice settings to Kokoro or Supertonic, by language', () => {
+    expect(migrateVoiceEngine('natural', 'en')).toBe('supertonic')
+    expect(migrateVoiceEngine('windows', 'en')).toBe('kokoro')
+    expect(migrateVoiceEngine('windows', 'ar')).toBe('supertonic')
+    expect(migrateVoiceEngine('kokoro', 'en')).toBe('kokoro')
+    expect(migrateVoiceEngine('junk', 'hi')).toBe('supertonic')
+    expect(migrateVoiceEngine(undefined, 'pt')).toBe('kokoro')
+    expect(migrateVoiceEngine('supertonic', 'it')).toBe('supertonic')
+    // Kokoro doesn't speak German.
+    expect(migrateVoiceEngine('kokoro', 'de')).toBe('supertonic')
   })
 
-  it('loads settings saved with Kokoro as Windows voices, without the Kokoro voice', async () => {
+  it('loads settings saved with the 0.1.3 Kokoro voice as Kokoro, without the Windows voice', async () => {
     writeFileSync(
       join(userData, 'settings.json'),
-      JSON.stringify({ voiceEngine: 'kokoro', kokoroVoice: 'af_heart', voiceVolume: 0.5 })
+      JSON.stringify({
+        voiceEngine: 'kokoro',
+        kokoroVoice: 'am_michael',
+        voiceName: 'Microsoft Zira',
+        voiceVolume: 0.5
+      })
     )
     const { getSettings } = await import('../src/main/system/settings')
     const settings = getSettings()
-    expect(settings.voiceEngine).toBe('windows')
+    expect(settings.voiceEngine).toBe('kokoro')
+    expect(settings.kokoroVoice).toBe('male')
     expect(settings.voiceVolume).toBe(0.5)
-    expect('kokoroVoice' in settings).toBe(false)
+    expect('voiceName' in settings).toBe(false)
   })
 })

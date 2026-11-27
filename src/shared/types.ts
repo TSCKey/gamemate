@@ -37,8 +37,11 @@ export type CommentaryCategories = Record<CommentaryCategory, boolean>
 export const SPEAK_ANSWERS = ['off', 'voice', 'always'] as const
 export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
 
-export const VOICE_ENGINES = ['windows', 'natural'] as const
+export const VOICE_ENGINES = ['kokoro', 'supertonic'] as const
 export type VoiceEngine = (typeof VOICE_ENGINES)[number]
+// Kokoro's voice in each language it speaks (French has only a female one).
+export const KOKORO_VOICES = ['female', 'male'] as const
+export type KokoroVoice = (typeof KOKORO_VOICES)[number]
 
 export const ENGINES = ['local', 'gemini'] as const
 export type Engine = (typeof ENGINES)[number]
@@ -115,10 +118,11 @@ export interface Settings {
   speakAnswers: SpeakAnswers
   // Read the companion's comments aloud.
   speakComments: boolean
-  // GameMate's voice: Windows' built-in voices, or Supertonic (natural, needs a download).
+  // GameMate's voice: Kokoro or Supertonic, each a one-time download. Kokoro doesn't speak every
+  // language; then nothing is read aloud until the player picks Supertonic.
   voiceEngine: VoiceEngine
-  // The preferred Windows voice ('' = the first one for GameMate's language).
-  voiceName: string
+  // Kokoro's female or male voice.
+  kokoroVoice: KokoroVoice
   // Supertonic voice, e.g. 'F1'.
   naturalVoice: SupertonicVoice
   voiceVolume: number
@@ -361,12 +365,6 @@ export interface SpeechModelStatus {
   // 0-1 while downloading, otherwise null.
   progress: number | null
   error: string | null
-}
-
-// A voice installed in Windows, with the language it speaks (BCP-47, e.g. 'de-DE').
-export interface WindowsVoice {
-  name: string
-  language: string
 }
 
 // Supertonic's voices: five female, five male.

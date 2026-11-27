@@ -37,7 +37,6 @@ import { themeTitleBar } from './windows/titleBar'
 import { closeToast, setUpToast, showToast } from './windows/toast'
 import { openInspectorIfAsked } from './geis/inspector'
 import { screenWatchingFrom, stopScreenWatch } from './windows/screenWatch'
-import { shutdownSpeech } from './voice/tts'
 import { shutdownOcr } from './system/ocr'
 import { removeOldVoice } from './voice/migrate'
 import { registerModelScheme, serveModels } from './voice/voiceModels'
@@ -354,7 +353,6 @@ app.on('will-quit', (event) => {
   stopObserver()
   stopScreenWatch()
   closeToast()
-  shutdownSpeech()
   shutdownOcr()
   flushSettings()
   globalShortcut.unregisterAll()

@@ -29,7 +29,7 @@ function FeatureChoices({
   const [sizes, setSizes] = useState<Record<string, number>>({})
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const naturalVoice = languageInfo(settings.language || 'en').naturalVoice !== false
+  const naturalVoice = languageInfo(settings.language || 'en').voices.length > 0
 
   useEffect(() => {
     window.api.voice

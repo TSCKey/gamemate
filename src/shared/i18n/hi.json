@@ -385,6 +385,7 @@
     "naturalNotForLanguage": "नैचुरल आवाज़ {{language}} नहीं बोलती, इसलिए GameMate इसके लिए Windows की आवाज़ इस्तेमाल करता है।",
     "naturalDescription": "Supertonic, एक नैचुरल-सी लगने वाली आवाज़ जो इस PC पर चलती है और ऑफ़लाइन काम करती है।",
     "naturalHelp": "नैचुरल आवाज़ Supertonic 3 है (OpenRAIL-M लाइसेंस): एक बार डाउनलोड करें, फिर यह ऑफ़लाइन काम करती है। यह GameMate की हर भाषा बोलती है।",
+    "naturalKokoro": "नैचुरल (Kokoro)",
     "naturalSupertonic": "नैचुरल (Supertonic)"
   },
   "useLocalModels": {

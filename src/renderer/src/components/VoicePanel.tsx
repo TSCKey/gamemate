@@ -5,8 +5,7 @@ import type {
   ListenModelId,
   SpeakAnswers,
   SpeechModelStatus,
-  SupertonicVoice,
-  WindowsVoice
+  SupertonicVoice
 } from '../../../preload/index.d'
 import { SUPERTONIC_VOICES } from '../../../shared/types'
 import { speak } from '../voice/speak'
@@ -14,7 +13,6 @@ import { Field, Section, Slider, Toggle } from './ui'
 import { t } from '../i18n'
 import { languageInfo } from '../../../shared/languages'
 import { canListen } from '../../../shared/speech'
-import { windowsVoicesFor } from '../../../shared/voices'
 import { naturalVoiceLabel } from '../voice/labels'
 
 // Download, progress and remove for one model.
@@ -49,30 +47,19 @@ function VoicePanel({
   appInfo: AppInfo | null
 }): React.JSX.Element {
   const [models, setModels] = useState<SpeechModelStatus[]>([])
-  const [voices, setVoices] = useState<WindowsVoice[]>([])
 
   useEffect(() => {
     window.api.voice.models().then(setModels)
     return window.api.voice.onModels(setModels)
   }, [])
 
-  // Asked again when the player comes back from adding a voice in Windows' Settings.
-  useEffect(() => {
-    const refresh = (): void => void window.api.voice.voices().then(setVoices)
-    refresh()
-    window.addEventListener('focus', refresh)
-    return () => window.removeEventListener('focus', refresh)
-  }, [])
-
   const listen = models.filter((m) => m.kind === 'listen')
   const supertonic = models.find((m) => m.id === 'supertonic')
   const selected = models.find((m) => m.id === settings.speechModel)
-  const natural = settings.voiceEngine === 'natural'
+  const usesSupertonic = settings.voiceEngine === 'supertonic'
   const language = settings.language || 'en'
-  const { nativeName, naturalVoice: naturalSpeaksIt } = languageInfo(language)
-  const windowsVoices = windowsVoicesFor(language, voices)
-  // Supertonic speaks unless the language is one it doesn't (Chinese); then a Windows voice does.
-  const speaksNaturally = natural && naturalSpeaksIt
+  const { nativeName, voices } = languageInfo(language)
+  const supertonicSpeaksIt = voices.includes('supertonic')
 
   return (
     <>
@@ -139,9 +126,7 @@ function VoicePanel({
 
       <Section
         title={t('voicePanel.gamemateSVoice')}
-        description={
-          natural ? t('voicePanel.naturalDescription') : t('voicePanel.usesTheVoicesBuiltInto')
-        }
+        description={t('voicePanel.naturalDescription')}
       >
         <Field label={t('voicePanel.voiceType')} help={t('voicePanel.naturalHelp')}>
           <select
@@ -149,11 +134,11 @@ function VoicePanel({
             onChange={(e) => update({ voiceEngine: e.target.value as Settings['voiceEngine'] })}
             aria-label={t('voicePanel.voiceType')}
           >
-            <option value="natural">{t('voicePanel.naturalSupertonic')}</option>
-            <option value="windows">{t('voicePanel.windowsVoices')}</option>
+            <option value="kokoro">{t('voicePanel.naturalKokoro')}</option>
+            <option value="supertonic">{t('voicePanel.naturalSupertonic')}</option>
           </select>
         </Field>
-        {natural && supertonic && (
+        {usesSupertonic && supertonic && (
           <Field
             label={
               <>
@@ -166,7 +151,7 @@ function VoicePanel({
             help={
               supertonic.error ? (
                 <span className="error-text">{supertonic.error}</span>
-              ) : !naturalSpeaksIt ? (
+              ) : !supertonicSpeaksIt ? (
                 t('voicePanel.naturalNotForLanguage', { language: nativeName })
               ) : supertonic.installed ? (
                 t('voicePanel.downloaded')
@@ -197,16 +182,8 @@ function VoicePanel({
             onChange={(speakComments) => update({ speakComments })}
           />
         </Field>
-        <Field
-          label={t('voicePanel.voice')}
-          help={
-            !speaksNaturally &&
-            (windowsVoices.length
-              ? t('voicePanel.addWindowsVoicesHelp')
-              : t('voicePanel.noWindowsVoice', { language: nativeName }))
-          }
-        >
-          {speaksNaturally ? (
+        {usesSupertonic && (
+          <Field label={t('voicePanel.voice')}>
             <select
               value={settings.naturalVoice}
               onChange={(e) => update({ naturalVoice: e.target.value as SupertonicVoice })}
@@ -218,28 +195,8 @@ function VoicePanel({
                 </option>
               ))}
             </select>
-          ) : (
-            <div className="button-row">
-              {windowsVoices.length > 0 && (
-                <select
-                  value={settings.voiceName}
-                  onChange={(e) => update({ voiceName: e.target.value })}
-                  aria-label={t('voicePanel.voice')}
-                >
-                  <option value="">{t('voicePanel.windowsDefault')}</option>
-                  {windowsVoices.map((v) => (
-                    <option key={v.name} value={v.name}>
-                      {v.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-              <button type="button" onClick={() => window.api.voice.openWindowsVoices()}>
-                {t('voicePanel.addWindowsVoices')}
-              </button>
-            </div>
-          )}
-        </Field>
+          </Field>
+        )}
         <Field label={t('voicePanel.volume')}>
           <Slider
             min={0}

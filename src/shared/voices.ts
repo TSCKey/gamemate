@@ -1,32 +1,39 @@
 // Which voice GameMate speaks with, per language. Shared by the main process and the windows.
-import { languageInfo, type LanguageCode } from './languages'
-import type { SupertonicVoice, VoiceEngine, WindowsVoice } from './types'
+import { languageInfo, type LanguageCode, type NaturalVoiceEngine } from './languages'
+import type { KokoroVoice, SupertonicVoice, VoiceEngine } from './types'
 
 export type VoiceChoice =
-  { kind: 'natural'; voice: SupertonicVoice } | { kind: 'windows'; name: string } | { kind: 'none' }
+  | { kind: 'kokoro'; voice: string }
+  | { kind: 'supertonic'; voice: SupertonicVoice }
+  // Nothing is read aloud: the chosen voice isn't downloaded, or doesn't speak the language.
+  | { kind: 'none'; reason: 'notDownloaded' | 'cantSpeak' }
 
-// The Windows voices that speak a language ('fr' matches 'fr-FR' and 'fr-CA').
-export function windowsVoicesFor(language: LanguageCode, voices: WindowsVoice[]): WindowsVoice[] {
-  return voices.filter((v) => v.language.split(/[-_]/)[0].toLowerCase() === language)
+// Kokoro's voice files, per language it speaks. French has no male voice.
+const KOKORO_VOICE_IDS: Partial<Record<LanguageCode, Record<KokoroVoice, string>>> = {
+  en: { female: 'af_heart', male: 'am_michael' },
+  es: { female: 'ef_dora', male: 'em_alex' },
+  fr: { female: 'ff_siwis', male: 'ff_siwis' },
+  it: { female: 'if_sara', male: 'im_nicola' },
+  pt: { female: 'pf_dora', male: 'pm_alex' }
 }
 
-// Supertonic when it's chosen, installed and speaks the language; otherwise the chosen Windows
-// voice if it speaks the language, else the first Windows voice that does, else none.
+// The Kokoro voice for a language, or null where Kokoro doesn't speak it.
+export function kokoroVoiceId(language: LanguageCode, voice: KokoroVoice): string | null {
+  return KOKORO_VOICE_IDS[language]?.[voice] ?? null
+}
+
+// The chosen voice if it speaks the language and is downloaded; otherwise none, and why.
 export function pickVoice(o: {
   language: LanguageCode
   engine: VoiceEngine
-  naturalInstalled: boolean
-  naturalVoice: SupertonicVoice
-  voiceName: string
-  windowsVoices: WindowsVoice[]
+  installed: Record<NaturalVoiceEngine, boolean>
+  kokoroVoice: KokoroVoice
+  supertonicVoice: SupertonicVoice
 }): VoiceChoice {
-  if (o.engine === 'natural' && o.naturalInstalled && languageInfo(o.language).naturalVoice) {
-    return { kind: 'natural', voice: o.naturalVoice }
-  }
-  const speaking = windowsVoicesFor(o.language, o.windowsVoices)
-  // GameMate 0.1.3 saved the older System.Speech names ("Microsoft Zira Desktop").
-  const voice =
-    speaking.find((v) => v.name === o.voiceName || o.voiceName.startsWith(`${v.name} `)) ??
-    speaking[0]
-  return voice ? { kind: 'windows', name: voice.name } : { kind: 'none' }
+  if (!languageInfo(o.language).voices.includes(o.engine))
+    return { kind: 'none', reason: 'cantSpeak' }
+  if (!o.installed[o.engine]) return { kind: 'none', reason: 'notDownloaded' }
+  if (o.engine === 'supertonic') return { kind: 'supertonic', voice: o.supertonicVoice }
+  const voice = kokoroVoiceId(o.language, o.kokoroVoice)
+  return voice ? { kind: 'kokoro', voice } : { kind: 'none', reason: 'cantSpeak' }
 }

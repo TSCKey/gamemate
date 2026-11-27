@@ -1,92 +1,90 @@
-import { describe, expect, it, vi } from 'vitest'
-import { pickVoice, windowsVoicesFor } from '../src/shared/voices'
-import type { WindowsVoice } from '../src/shared/types'
+import { describe, expect, it } from 'vitest'
+import { kokoroVoiceId, pickVoice } from '../src/shared/voices'
+import { LANGUAGES } from '../src/shared/languages'
 
-// A test can make French a language without the natural voice, which no shipped language is.
-let frenchWithoutNaturalVoice = false
-vi.mock('../src/shared/languages', async (original) => {
-  const real = await original<typeof import('../src/shared/languages')>()
-  return {
-    ...real,
-    languageInfo: (code: Parameters<typeof real.languageInfo>[0]) => ({
-      ...real.languageInfo(code),
-      naturalVoice: !(frenchWithoutNaturalVoice && code === 'fr')
-    })
-  }
-})
-
-const voices: WindowsVoice[] = [
-  { name: 'Microsoft Zira', language: 'en-US' },
-  { name: 'Microsoft Hortense', language: 'fr-FR' }
-]
 const base = {
-  engine: 'natural',
-  naturalInstalled: true,
-  naturalVoice: 'F1',
-  voiceName: 'Microsoft Zira',
-  windowsVoices: voices
+  installed: { kokoro: true, supertonic: true },
+  kokoroVoice: 'female',
+  supertonicVoice: 'F1'
 } as const
 
 describe('the voice GameMate speaks with', () => {
-  it('is Supertonic where it speaks the language', () => {
-    expect(pickVoice({ ...base, language: 'de' })).toEqual({ kind: 'natural', voice: 'F1' })
-  })
-
-  it('is never Supertonic for a language it does not speak', () => {
-    frenchWithoutNaturalVoice = true
-    try {
-      expect(pickVoice({ ...base, language: 'fr' })).toEqual({
-        kind: 'windows',
-        name: 'Microsoft Hortense'
-      })
-      expect(pickVoice({ ...base, language: 'fr', windowsVoices: voices.slice(0, 1) })).toEqual({
-        kind: 'none'
-      })
-    } finally {
-      frenchWithoutNaturalVoice = false
-    }
-  })
-
-  it('switches to a Windows voice for the new language', () => {
-    expect(pickVoice({ ...base, engine: 'windows', language: 'fr' })).toEqual({
-      kind: 'windows',
-      name: 'Microsoft Hortense'
+  it('is the Kokoro voice of the language', () => {
+    expect(pickVoice({ ...base, engine: 'kokoro', language: 'es' })).toEqual({
+      kind: 'kokoro',
+      voice: 'ef_dora'
     })
-    expect(pickVoice({ ...base, naturalInstalled: false, language: 'en' })).toEqual({
-      kind: 'windows',
-      name: 'Microsoft Zira'
+    expect(pickVoice({ ...base, engine: 'kokoro', kokoroVoice: 'male', language: 'es' })).toEqual({
+      kind: 'kokoro',
+      voice: 'em_alex'
     })
-    expect(pickVoice({ ...base, engine: 'windows', language: 'de' })).toEqual({ kind: 'none' })
   })
 
-  it('keeps the chosen Windows voice when it speaks the language', () => {
-    const two = [...voices, { name: 'Microsoft Mark', language: 'en-US' }]
+  it('is no voice when Kokoro can’t speak the language', () => {
+    expect(pickVoice({ ...base, engine: 'kokoro', language: 'de' })).toEqual({
+      kind: 'none',
+      reason: 'cantSpeak'
+    })
+  })
+
+  it('is Supertonic in every language once it is installed', () => {
+    expect(pickVoice({ ...base, engine: 'supertonic', language: 'de' })).toEqual({
+      kind: 'supertonic',
+      voice: 'F1'
+    })
     expect(
       pickVoice({
         ...base,
-        engine: 'windows',
-        voiceName: 'Microsoft Mark',
-        windowsVoices: two,
-        language: 'en'
+        engine: 'supertonic',
+        installed: { kokoro: true, supertonic: false },
+        language: 'hi'
       })
-    ).toEqual({ kind: 'windows', name: 'Microsoft Mark' })
+    ).toEqual({ kind: 'none', reason: 'notDownloaded' })
   })
 
-  it('recognizes a voice chosen in GameMate 0.1.3 by its older name', () => {
-    const two = [...voices, { name: 'Microsoft Mark', language: 'en-US' }]
+  it('is no voice while Kokoro isn’t downloaded', () => {
     expect(
       pickVoice({
         ...base,
-        engine: 'windows',
-        voiceName: 'Microsoft Mark Desktop',
-        windowsVoices: two,
+        engine: 'kokoro',
+        installed: { kokoro: false, supertonic: true },
         language: 'en'
       })
-    ).toEqual({ kind: 'windows', name: 'Microsoft Mark' })
+    ).toEqual({ kind: 'none', reason: 'notDownloaded' })
   })
 
-  it('lists the Windows voices of a language', () => {
-    expect(windowsVoicesFor('fr', voices).map((v) => v.name)).toEqual(['Microsoft Hortense'])
-    expect(windowsVoicesFor('de', voices)).toEqual([])
+  it('is the female voice in French, which has no male Kokoro voice', () => {
+    expect(pickVoice({ ...base, engine: 'kokoro', kokoroVoice: 'male', language: 'fr' })).toEqual({
+      kind: 'kokoro',
+      voice: 'ff_siwis'
+    })
+  })
+})
+
+describe('the Kokoro voices', () => {
+  it('cover English, Spanish, French, Italian and Portuguese', () => {
+    expect(['en', 'es', 'fr', 'it', 'pt'].map((l) => kokoroVoiceId(l as 'en', 'female'))).toEqual([
+      'af_heart',
+      'ef_dora',
+      'ff_siwis',
+      'if_sara',
+      'pf_dora'
+    ])
+    expect(['en', 'es', 'fr', 'it', 'pt'].map((l) => kokoroVoiceId(l as 'en', 'male'))).toEqual([
+      'am_michael',
+      'em_alex',
+      'ff_siwis',
+      'im_nicola',
+      'pm_alex'
+    ])
+    expect(kokoroVoiceId('de', 'female')).toBeNull()
+    expect(kokoroVoiceId('ar', 'male')).toBeNull()
+    expect(kokoroVoiceId('hi', 'female')).toBeNull()
+  })
+
+  it('are listed for exactly the languages Kokoro speaks', () => {
+    const kokoro = LANGUAGES.filter((l) => l.voices.includes('kokoro')).map((l) => l.code)
+    expect(kokoro).toEqual(['en', 'fr', 'es', 'pt', 'it'])
+    expect(LANGUAGES.every((l) => l.voices.includes('supertonic'))).toBe(true)
   })
 })

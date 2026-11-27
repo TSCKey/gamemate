@@ -388,6 +388,7 @@
     "naturalNotForLanguage": "A voz natural não fala {{language}}, então o GameMate usa uma voz do Windows.",
     "naturalDescription": "Supertonic, uma voz natural que roda neste PC e funciona offline.",
     "naturalHelp": "A voz natural é a Supertonic 3 (licença OpenRAIL-M): um único download e depois funciona offline. Fala todos os idiomas do GameMate.",
+    "naturalKokoro": "Voz natural (Kokoro)",
     "naturalSupertonic": "Voz natural (Supertonic)"
   },
   "useLocalModels": {

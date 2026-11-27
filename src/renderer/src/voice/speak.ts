@@ -1,5 +1,5 @@
-// Text-to-speech runs in the main process with the voices built into Windows
-// (Electron's speechSynthesis has no voices on Windows).
+// Reading aloud: the main process picks the voice for GameMate's language (shared/voices.ts) and
+// the pop-up window speaks it. Nothing is said when no downloaded voice speaks the language.
 
 export function speak(text: string): void {
   window.api.voice.speak(text)

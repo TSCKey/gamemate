@@ -28,7 +28,7 @@ export function parseFeatureChoices(input: unknown): FeatureChoices {
 export function applyFeatureChoices(input: unknown): Settings {
   const choices = parseFeatureChoices(input)
   const language = getSettings().language || 'en'
-  const naturalWanted = choices.naturalVoice && languageInfo(language).naturalVoice
+  const naturalWanted = choices.naturalVoice && languageInfo(language).voices.includes('supertonic')
 
   const patch: Record<string, unknown> = { closeToTray: choices.tray, featureChoices: 'answered' }
   if (choices.games) patch.deviceConsent = true
@@ -38,8 +38,8 @@ export function applyFeatureChoices(input: unknown): Settings {
     patch.speechModel = 'accurate'
   }
   if (choices.screenshot) patch.chatScreenshot = true
-  // Chosen at once, so the Voice panel shows the download; Windows voices speak until it's done.
-  if (naturalWanted) patch.voiceEngine = 'natural'
+  // Chosen at once, so the Voice panel shows the download; nothing is read aloud until it's done.
+  if (naturalWanted) patch.voiceEngine = 'supertonic'
   const result = updateSettings(patch)
 
   if (choices.games) {

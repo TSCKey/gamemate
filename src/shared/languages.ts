@@ -2,6 +2,9 @@
 
 export type LanguageCode = 'en' | 'de' | 'fr' | 'ar' | 'es' | 'pt' | 'it' | 'hi'
 
+// GameMate's two natural voices, each a one-time download.
+export type NaturalVoiceEngine = 'kokoro' | 'supertonic'
+
 export interface Language {
   code: LanguageCode
   // For the AI's instructions ("answer in German").
@@ -9,25 +12,22 @@ export interface Language {
   // How the language calls itself, shown in the language picker.
   nativeName: string
   dir: 'ltr' | 'rtl'
-  // Whether GameMate's natural voice (Supertonic) speaks it; otherwise a Windows voice does.
-  naturalVoice: boolean
+  // The voices that speak it. Supertonic speaks all eight; Kokoro only some.
+  voices: NaturalVoiceEngine[]
 }
 
+const BOTH: NaturalVoiceEngine[] = ['kokoro', 'supertonic']
+const SUPERTONIC: NaturalVoiceEngine[] = ['supertonic']
+
 export const LANGUAGES: Language[] = [
-  { code: 'en', englishName: 'English', nativeName: 'English', dir: 'ltr', naturalVoice: true },
-  { code: 'de', englishName: 'German', nativeName: 'Deutsch', dir: 'ltr', naturalVoice: true },
-  { code: 'fr', englishName: 'French', nativeName: 'Français', dir: 'ltr', naturalVoice: true },
-  { code: 'ar', englishName: 'Arabic', nativeName: 'العربية', dir: 'rtl', naturalVoice: true },
-  { code: 'es', englishName: 'Spanish', nativeName: 'Español', dir: 'ltr', naturalVoice: true },
-  {
-    code: 'pt',
-    englishName: 'Portuguese',
-    nativeName: 'Português',
-    dir: 'ltr',
-    naturalVoice: true
-  },
-  { code: 'it', englishName: 'Italian', nativeName: 'Italiano', dir: 'ltr', naturalVoice: true },
-  { code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी', dir: 'ltr', naturalVoice: true }
+  { code: 'en', englishName: 'English', nativeName: 'English', dir: 'ltr', voices: BOTH },
+  { code: 'de', englishName: 'German', nativeName: 'Deutsch', dir: 'ltr', voices: SUPERTONIC },
+  { code: 'fr', englishName: 'French', nativeName: 'Français', dir: 'ltr', voices: BOTH },
+  { code: 'ar', englishName: 'Arabic', nativeName: 'العربية', dir: 'rtl', voices: SUPERTONIC },
+  { code: 'es', englishName: 'Spanish', nativeName: 'Español', dir: 'ltr', voices: BOTH },
+  { code: 'pt', englishName: 'Portuguese', nativeName: 'Português', dir: 'ltr', voices: BOTH },
+  { code: 'it', englishName: 'Italian', nativeName: 'Italiano', dir: 'ltr', voices: BOTH },
+  { code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी', dir: 'ltr', voices: SUPERTONIC }
 ]
 
 export function isLanguageCode(value: unknown): value is LanguageCode {
