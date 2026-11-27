@@ -749,5 +749,11 @@
     "later": "Ricordamelo più tardi",
     "never": "Non mostrare più",
     "continue": "Continua"
+  },
+  "voiceNotice": {
+    "noVoice": "Nessuna voce è stata scaricata, quindi GameMate non può leggere ad alta voce.",
+    "openVoiceSettings": "Apri Impostazioni → Voce",
+    "downloadInSettings": "Nessuna voce è stata scaricata, quindi GameMate non può leggere ad alta voce. Scaricane una in Impostazioni → Voce.",
+    "dismiss": "Chiudi"
   }
 }

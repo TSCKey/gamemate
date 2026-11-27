@@ -112,7 +112,8 @@ export interface Api {
   voice: {
     models: () => Promise<SpeechModelStatus[]>
     // Speaks with the voice, volume and speed from settings, replacing anything still playing.
-    speak: (text: string) => Promise<void>
+    // With notice, 'noVoice' the first time nothing is said because no voice is downloaded.
+    speak: (text: string, options?: { notice?: boolean }) => Promise<'noVoice' | undefined>
     stop: () => Promise<void>
     download: (id: SpeechModelId) => Promise<void>
     remove: (id: SpeechModelId) => Promise<void>

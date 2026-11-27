@@ -746,5 +746,11 @@
     "later": "Remind me later",
     "never": "Don't show again",
     "continue": "Continue"
+  },
+  "voiceNotice": {
+    "noVoice": "No voice is downloaded, so GameMate can't read aloud.",
+    "openVoiceSettings": "Open Settings → Voice",
+    "downloadInSettings": "No voice is downloaded, so GameMate can't read aloud. Download one in Settings → Voice.",
+    "dismiss": "Dismiss"
   }
 }

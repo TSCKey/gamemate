@@ -7,7 +7,7 @@ import Sources from '../components/Sources'
 import { errorMessage, useSettings } from '../hooks/useSettings'
 import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
 import { useGames } from '../hooks/useGames'
-import { speak, stopSpeaking } from '../voice/speak'
+import { speakOrNotice, stopSpeaking } from '../voice/speak'
 import { useVoiceInput } from '../voice/useVoiceInput'
 import { t, useAppLanguage } from '../i18n'
 import { withLatestScreenshotOnly } from '../../../shared/chat'
@@ -30,6 +30,8 @@ function Overlay(): React.JSX.Element {
   // The answer so far, while it is being written.
   const [written, setWritten] = useState('')
   const [error, setError] = useState<string | null>(null)
+  // Told once: the answer wasn't read aloud because no voice is downloaded.
+  const [voiceNotice, setVoiceNotice] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const lastActivity = useRef(0)
@@ -99,6 +101,7 @@ function Overlay(): React.JSX.Element {
     const mine = { before: history, text }
     asking.current = mine
     setError(null)
+    setVoiceNotice(false)
     setThinking(true)
     lastActivity.current = Date.now()
     try {
@@ -117,7 +120,7 @@ function Overlay(): React.JSX.Element {
       setHistory([...next, reply])
       const say = settings?.speakAnswers
       if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
-        speak(reply.content)
+        speakOrNotice(reply.content).then((notice) => notice && setVoiceNotice(true))
       }
     } catch (e) {
       if (asking.current === mine) setError(errorMessage(e))
@@ -285,6 +288,9 @@ function Overlay(): React.JSX.Element {
                 <Sources sources={lastAnswer.sources} />
                 <SearchSuggestions html={lastAnswer.searchSuggestions} />
               </div>
+            )}
+            {!thinking && voiceNotice && (
+              <div className="overlay-notice">{t('voiceNotice.downloadInSettings')}</div>
             )}
             {(error || voice.error) && <div className="overlay-error">{error ?? voice.error}</div>}
           </div>

@@ -11,7 +11,7 @@ import SetupCard from '../components/SetupCard'
 import ChatBubble from '../components/ChatBubble'
 import { TERMS_VERSION } from '../constants'
 import SettingsScreen, { type SettingsTab } from './SettingsScreen'
-import { speak } from '../voice/speak'
+import { speakOrNotice } from '../voice/speak'
 import { useVoiceInput } from '../voice/useVoiceInput'
 import { errorMessage, useSettings } from '../hooks/useSettings'
 import { localModelInfo, useLocalModels } from '../hooks/useLocalModels'
@@ -84,6 +84,8 @@ function App(): React.JSX.Element {
     if (chatScreenshot !== undefined) setAttachScreenshot(chatScreenshot)
   }
   const [settingsTab, setSettingsTab] = useState<SettingsTab | null>(null)
+  // Told once: an answer wasn't read aloud because no voice is downloaded.
+  const [voiceNotice, setVoiceNotice] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const loading = status !== 'idle'
@@ -190,7 +192,7 @@ function App(): React.JSX.Element {
       setMessages([...history, reply])
       const say = settings?.speakAnswers
       if (settings && (say === 'always' || (say === 'voice' && byVoice))) {
-        speak(reply.content)
+        speakOrNotice(reply.content).then((notice) => notice && setVoiceNotice(true))
       }
     } catch (e) {
       if (asking.current === mine) setError(errorMessage(e))
@@ -386,6 +388,30 @@ function App(): React.JSX.Element {
       </main>
 
       {(shownError || voice.error) && <div className="chat-error">{shownError ?? voice.error}</div>}
+      {voiceNotice && (
+        <div className="chat-notice">
+          <span>{t('voiceNotice.noVoice')}</span>
+          <button
+            type="button"
+            className="link-button"
+            onClick={() => {
+              setVoiceNotice(false)
+              setSettingsTab('voice')
+            }}
+          >
+            {t('voiceNotice.openVoiceSettings')}
+          </button>
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setVoiceNotice(false)}
+            title={t('voiceNotice.dismiss')}
+            aria-label={t('voiceNotice.dismiss')}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <form
         className="composer"

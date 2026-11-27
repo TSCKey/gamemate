@@ -98,7 +98,7 @@ const api: Api = {
   },
   voice: {
     models: () => ipcRenderer.invoke('voice:models'),
-    speak: (text) => ipcRenderer.invoke('voice:speak', text),
+    speak: (text, options) => ipcRenderer.invoke('voice:speak', text, options),
     stop: () => ipcRenderer.invoke('voice:stop'),
     download: (id) => ipcRenderer.invoke('voice:download', id),
     remove: (id) => ipcRenderer.invoke('voice:remove', id),

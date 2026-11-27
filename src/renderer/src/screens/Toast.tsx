@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { Settings } from '../../../preload/index.d'
-import { useAppLanguage } from '../i18n'
-import { speak } from '../voice/speak'
+import { t, useAppLanguage } from '../i18n'
+import { speak, speakOrNotice } from '../voice/speak'
 import { hush, say } from '../voice/natural'
 import { watchScreen } from '../screen/watch'
 
@@ -11,6 +11,8 @@ const WINDOW_PADDING = 12
 // A companion comment shown over the game. It never takes focus; clicking it dismisses it.
 function Toast(): React.JSX.Element {
   const [text, setText] = useState('')
+  // Told once, under a comment: it wasn't read aloud because no voice is downloaded.
+  const [voiceNotice, setVoiceNotice] = useState(false)
   const [language, setLanguage] = useState<Settings['language']>('')
   useAppLanguage({ language })
 
@@ -25,8 +27,14 @@ function Toast(): React.JSX.Element {
   useEffect(() => {
     const stopShow = window.api.toast.onShow(async (comment) => {
       setText(comment)
+      setVoiceNotice(false)
       const settings = await window.api.getSettings()
-      if (settings.speakComments) speak(comment)
+      if (!settings.speakComments) return
+      // The notice only where the pop-up surely shows (it may stay hidden over a fullscreen
+      // game); otherwise the chat tells it later.
+      if (settings.showComments && !settings.hideCommentsInFullscreen) {
+        if (await speakOrNotice(comment)) setVoiceNotice(true)
+      } else speak(comment)
     })
     let latest = 0
     const stopSay = window.api.voice.onSay(async (request) => {
@@ -61,7 +69,12 @@ function Toast(): React.JSX.Element {
     <div className="toast" style={{ padding: WINDOW_PADDING }}>
       <div className="toast-bubble" ref={bubbleRef} onClick={() => window.api.toast.hide()}>
         <span className="toast-icon">🎮</span>
-        <span dir="auto">{text}</span>
+        <span dir="auto">
+          {text}
+          {voiceNotice && (
+            <span className="toast-notice">{t('voiceNotice.downloadInSettings')}</span>
+          )}
+        </span>
       </div>
     </div>
   )

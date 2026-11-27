@@ -18,6 +18,7 @@ import { speak } from '../voice/speak'
 import { Field, Section, Slider, Toggle } from './ui'
 import { t } from '../i18n'
 import { languageInfo } from '../../../shared/languages'
+import { kokoroVoiceId } from '../../../shared/voices'
 import { canListen } from '../../../shared/speech'
 import { naturalVoiceLabel } from '../voice/labels'
 
@@ -64,8 +65,7 @@ function VoicePanel({
   const usesSupertonic = settings.voiceEngine === 'supertonic'
   const language = settings.language || 'en'
   const { sentenceName, voices } = languageInfo(language)
-  // The chosen voice's download, and why it wouldn't read aloud (if it wouldn't).
-  const chosen = models.find((m) => m.id === settings.voiceEngine)
+  // Why the chosen voice wouldn't read aloud (if it wouldn't).
   const isInstalled = (id: string): boolean => models.some((m) => m.id === id && m.installed)
   const hint = voiceHint({
     language,
@@ -76,6 +76,8 @@ function VoicePanel({
   })
   const other = hint.kind === 'cantSpeak' ? hint.other : null
   const oneKokoroVoice = kokoroHasOneVoice(language)
+  // Kokoro's female or male voice, where Kokoro speaks the language.
+  const kokoroSpeaks = kokoroVoiceId(language, 'female') !== null
 
   return (
     <>
@@ -198,15 +200,10 @@ function VoicePanel({
             </div>
           </div>
         )}
-        {hint.kind === 'notDownloaded' && chosen && (
-          <div className="field">
-            <p className="field-help">
-              {t('voicePanel.downloadItOnceToUse', { voice: VOICE_NAMES[settings.voiceEngine] })}
-            </p>
-            <div className="field-control">
-              <ModelButton model={chosen} />
-            </div>
-          </div>
+        {hint.kind === 'notDownloaded' && (
+          <p className="field-help">
+            {t('voicePanel.downloadItOnceToUse', { voice: VOICE_NAMES[settings.voiceEngine] })}
+          </p>
         )}
         <Field label={t('voicePanel.readAnswersAloud')}>
           <select
@@ -227,7 +224,7 @@ function VoicePanel({
             onChange={(speakComments) => update({ speakComments })}
           />
         </Field>
-        {!usesSupertonic && (
+        {!usesSupertonic && kokoroSpeaks && (
           <Field
             label={t('voicePanel.voice')}
             help={

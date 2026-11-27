@@ -749,5 +749,11 @@
     "later": "Me le rappeler plus tard",
     "never": "Ne plus afficher",
     "continue": "Continuer"
+  },
+  "voiceNotice": {
+    "noVoice": "Aucune voix n’est téléchargée : GameMate ne peut rien lire à voix haute.",
+    "openVoiceSettings": "Ouvrir Paramètres → Voix",
+    "downloadInSettings": "Aucune voix n’est téléchargée : GameMate ne peut rien lire à voix haute. Téléchargez-en une dans Paramètres → Voix.",
+    "dismiss": "Fermer"
   }
 }

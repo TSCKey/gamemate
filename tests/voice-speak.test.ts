@@ -10,7 +10,11 @@ vi.mock('../src/main/system/security', () => ({
 vi.mock('electron', () => ({ shell: {} }))
 
 const current = vi.hoisted(() => ({ settings: {} as Partial<Settings> }))
-vi.mock('../src/main/system/settings', () => ({ getSettings: () => current.settings }))
+vi.mock('../src/main/system/settings', () => ({
+  getSettings: () => current.settings,
+  updateSettings: (patch: Partial<Settings>) =>
+    (current.settings = { ...current.settings, ...patch })
+}))
 
 const sayInToast = vi.hoisted(() => vi.fn(() => true))
 vi.mock('../src/main/windows/toast', () => ({ sayInToast, hushToast: () => {} }))
@@ -26,7 +30,8 @@ vi.mock('../src/main/voice/voiceModels', () => ({
 
 const { registerVoiceHandlers } = await import('../src/main/ipc/voice')
 registerVoiceHandlers()
-const speak = (text: string): unknown => handlers.get('voice:speak')?.({}, text)
+const speak = (text: string, options?: unknown): unknown =>
+  handlers.get('voice:speak')?.({}, text, options)
 
 describe('reading aloud', () => {
   beforeEach(() => {
@@ -91,6 +96,39 @@ describe('reading aloud', () => {
     installed.add('kokoro')
     await speak('Guter Schuss!')
     expect(sayInToast).not.toHaveBeenCalled()
+  })
+
+  it('tells a chat once that no voice is downloaded', async () => {
+    installed.clear()
+    current.settings = { ...current.settings, voiceNoticeShown: false }
+    expect(await speak('Guter Schuss!', { notice: true })).toBe('noVoice')
+    expect(current.settings.voiceNoticeShown).toBe(true)
+    // Only once: the flag is saved with the settings.
+    expect(await speak('Noch einer!', { notice: true })).toBeUndefined()
+  })
+
+  it('leaves the notice for a window that can show it', async () => {
+    installed.clear()
+    current.settings = { ...current.settings, voiceNoticeShown: false }
+    // The Voice settings' test button explains it on the spot.
+    expect(await speak('Hallo!')).toBeUndefined()
+    expect(current.settings.voiceNoticeShown).toBe(false)
+  })
+
+  it('says nothing about it when the voice can’t speak the language', async () => {
+    current.settings = { ...current.settings, voiceEngine: 'kokoro', voiceNoticeShown: false }
+    installed.add('kokoro')
+    expect(await speak('Guter Schuss!', { notice: true })).toBeUndefined()
+    expect(current.settings.voiceNoticeShown).toBe(false)
+  })
+
+  it('tells again after a voice was downloaded and removed', async () => {
+    current.settings = { ...current.settings, voiceNoticeShown: true }
+    await speak('Guter Schuss!', { notice: true })
+    expect(sayInToast).toHaveBeenCalled()
+    expect(current.settings.voiceNoticeShown).toBe(false)
+    installed.clear()
+    expect(await speak('Guter Schuss!', { notice: true })).toBe('noVoice')
   })
 
   it('has no Windows voices to list or add any more', () => {

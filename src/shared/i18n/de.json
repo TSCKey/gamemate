@@ -746,5 +746,11 @@
     "later": "Später erinnern",
     "never": "Nicht mehr anzeigen",
     "continue": "Weiter"
+  },
+  "voiceNotice": {
+    "noVoice": "Es ist keine Stimme heruntergeladen, daher kann GameMate nichts vorlesen.",
+    "openVoiceSettings": "Einstellungen → Stimme öffnen",
+    "downloadInSettings": "Es ist keine Stimme heruntergeladen, daher kann GameMate nichts vorlesen. Lade unter Einstellungen → Stimme eine herunter.",
+    "dismiss": "Schließen"
   }
 }
