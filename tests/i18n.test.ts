@@ -80,7 +80,7 @@ describe('the windows', () => {
   })
 })
 
-describe('the six translations', () => {
+describe('every translation', () => {
   const english = resources.en.translation
   const englishTexts = new Map(
     flattenKeys(english).map((k) => [
@@ -93,10 +93,10 @@ describe('the six translations', () => {
   // Words a language writes exactly like English.
   const SAME_WORDS: Partial<Record<LanguageCode, string[]>> = {
     fr: ['⏸ Pause', 'Modpack', '✦ Auto', 'Gemini (cloud)', 'Volume', 'Observation', 'Expressive'],
-    de: ['Modpack', 'Wiki: {{wiki}}', 'Updates', '📷 Screenshot', 'Normal', 'Text'],
-    es: ['Wiki: {{wiki}}', 'General', 'Normal'],
-    pt: ['Wiki: {{wiki}}', 'Volume', 'Normal'],
-    it: ['Wiki: {{wiki}}', 'Gemini (cloud)', 'Volume', '📷 Screenshot']
+    de: ['Modpack', 'Wiki: {{wiki}}', 'Updates', 'Status', '📷 Screenshot', 'Normal', 'Text'],
+    es: ['Modpack', 'Wiki: {{wiki}}', 'General', 'Normal'],
+    pt: ['Modpack', 'Wiki: {{wiki}}', 'Volume', 'Normal'],
+    it: ['Modpack', 'Wiki: {{wiki}}', 'Gemini (cloud)', 'Volume', '📷 Screenshot']
   }
 
   for (const { code } of LANGUAGES.filter((l) => l.code !== 'en')) {

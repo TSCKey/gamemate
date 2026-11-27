@@ -43,7 +43,7 @@ Alguns recursos se conectam a serviços de outras empresas. Cada uma tem os pró
 
 - **Google Gemini e pesquisa na web** (somente se você os ativar): [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms) e [Política de Privacidade do Google](https://policies.google.com/privacy). Os resultados da pesquisa vêm de sites mantidos por terceiros, que o GameMate não verifica.
 - **Wikis de jogos e Modrinth** (somente se você ativar as consultas on-line): os textos e imagens de cada wiki são compartilhados pelos autores sob a licença do próprio wiki, que o GameMate mostra em cada resposta que os usa.
-- **Hugging Face** (modelos de IA, modelos de fala e as vozes naturais) e **GitHub** (o mecanismo de IA do GameMate e as atualizações): somente quando você baixa algo ou procura atualizações.
+- **Hugging Face** (modelos de IA, modelos de fala e as vozes naturais) e **GitHub** (o motor de IA do GameMate e as atualizações): somente quando você baixa algo ou procura atualizações.
 
 O GameMate não é afiliado a nenhuma publicadora de jogos nem é endossado ou patrocinado por ela. Nomes de jogos e outras marcas pertencem aos seus donos; por exemplo, Minecraft é uma marca da Mojang Synergies AB.
 

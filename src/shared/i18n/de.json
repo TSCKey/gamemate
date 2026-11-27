@@ -83,11 +83,11 @@
     "reactionIntensity": "Stärke der Reaktionen",
     "humorLevel": "Humor",
     "hideInFullscreen": "Text im Vollbild ausblenden",
-    "hideInFullscreenHelp": "Solange ein Spiel den ganzen Bildschirm füllt, werden Kommentare nur gesprochen: Das Pop-up bleibt vom Spiel fern.",
+    "hideInFullscreenHelp": "Solange ein Spiel den ganzen Bildschirm füllt, werden Kommentare nur gesprochen: Über dem Spiel erscheint kein Pop-up.",
     "tacticalComments": "Taktische Hinweise",
     "tacticalCommentsHelp": "Gibt ab und zu eine freundliche, nützliche Beobachtung. Nie in Spielen, in denen nur der Match-Feed beobachtet wird; in anderen kompetitiven Spielen nur zwischen den Runden.",
     "playerNames": "Dein Spielername",
-    "playerNamesHelp": "Damit erkennt GameMate deine eigenen Zeilen im Kill-Feed. Mehrere Namen mit Kommas trennen. Ohne Namen gibt es nur Reaktionen auf Banner.",
+    "playerNamesHelp": "Damit erkennt GameMate deine eigenen Zeilen im Killfeed. Mehrere Namen mit Kommas trennen. Ohne Namen gibt es nur Reaktionen auf Banner.",
     "showReactionsAs": "Reaktionen als",
     "whatToReactTo": "Worauf reagieren",
     "whatToReactToHelp": "GameMate kann nur auf das reagieren, was es auf deinem Bildschirm lesen kann. Sehr kurze Momente können ihm entgehen."
@@ -166,10 +166,10 @@
     "downloadingVersion": "Version {{available}} wird heruntergeladen… {{value}} %",
     "versionIsReadyItInstalls": "Version {{available}} ist bereit. Sie wird beim Neustart von GameMate installiert.",
     "gamemateIsUpToDate": "GameMate ist auf dem neuesten Stand.",
-    "couldnTCheckForUpdates": "Konnte nicht nach Updates suchen.",
+    "couldnTCheckForUpdates": "Suche nach Updates fehlgeschlagen.",
     "updatesComeFromGamemateS": "Updates kommen von den GameMate-Releases auf GitHub.",
     "updates": "Updates",
-    "status": "Zustand",
+    "status": "Status",
     "restartAndUpdate": "Neu starten und aktualisieren",
     "checkNow": "Jetzt prüfen",
     "checkForUpdatesAutomatically": "Automatisch nach Updates suchen",
@@ -227,7 +227,7 @@
     "saveGraphicsMemoryHelp": "Liest Screenshots mit dem zweiten Grafikchip deines PCs oder, wenn er keinen hat, mit dem Prozessor statt mit der Grafikkarte. Gibt etwa 0,9 GB Speicher der Karte frei; einen Screenshot zu lesen dauert ein paar Sekunden länger.",
     "alreadyUseOllamaGamemateCan": "Du nutzt schon Ollama? GameMate kann dessen Modelle statt der integrierten verwenden.",
     "useMyOllamaModels": "Meine Ollama-Modelle verwenden",
-    "ollamaMustBeRunningGamemate": "Ollama muss laufen. GameMate gibt sein Modell frei, wenn GameMate beendet wird.",
+    "ollamaMustBeRunningGamemate": "Ollama muss laufen. Beim Beenden gibt GameMate das Ollama-Modell frei.",
     "model": "Modell",
     "modelsMarkedCanSeeScreenshots": "Mit 👁 markierte Modelle sehen Screenshots.",
     "ollamaModel": "Ollama-Modell",
@@ -276,7 +276,7 @@
     "onlyInYourWindowsUser": "Nur in deinem Windows-Benutzerordner, nur für dein Windows-Konto lesbar.",
     "yourSettings": "Deine Einstellungen.",
     "yourGeminiApiKeyIf": "Dein Gemini-API-Schlüssel, falls du einen eingegeben hast, von Windows verschlüsselt.",
-    "aiModelsGamemateSAi": "KI-Modelle, die KI-Engine von GameMate Sprachmodelle und Stimmen, die du heruntergeladen hast.",
+    "aiModelsGamemateSAi": "KI-Modelle, die KI-Engine von GameMate sowie Sprachmodelle und Stimmen, die du heruntergeladen hast.",
     "gamesFoundOrAddedTheir": "Gefundene oder hinzugefügte Spiele: Name, Ordner oder Programm und Wiki-Adresse.",
     "openLogFolder": "Protokollordner öffnen",
     "whenYouUseOnlineFeatures": "Wenn du Online-Funktionen nutzt",
@@ -569,7 +569,7 @@
       "needConsent": "Stimme zuerst den Gemini-Bedingungen zu.",
       "notAKey": "Das sieht nicht wie ein Gemini-API-Schlüssel aus.",
       "cantEncrypt": "Windows kann den Schlüssel auf diesem PC nicht verschlüsseln, daher speichert GameMate ihn nicht.",
-      "busy": "Gemini ist gerade ausgelastet (Google meldet hohe Nachfrage). Versuch es gleich noch einmal oder wechsle zur eingebauten KI."
+      "busy": "Gemini ist gerade ausgelastet (Google meldet hohe Nachfrage). Versuch es gleich noch einmal oder wechsle zur integrierten KI."
     },
     "builtin": {
       "failed": "Die integrierte KI ist fehlgeschlagen: {{detail}}",
@@ -608,7 +608,7 @@
       "age": "Bestätige zuerst dein Alter."
     },
     "updates": {
-      "check": "Konnte nicht nach Updates suchen. Bist du online?",
+      "check": "Suche nach Updates fehlgeschlagen. Bist du online?",
       "download": "Das Update konnte nicht heruntergeladen werden. Es wird später erneut versucht."
     },
     "capture": {
@@ -727,7 +727,7 @@
     "sendsData": "Diese senden ein paar Daten",
     "games": "Meine Spiele finden",
     "gamesHelp": "Liest Steam, Epic Games, Battle.net, Riot und deine CurseForge-Modpacks auf diesem PC sowie beim Spielen den Namen des Programms im Vordergrund. Nur Spielnamen gehen an wiki.gg und Fandom.",
-    "lookups": "Infos online nachschlagen",
+    "lookups": "Online nachschlagen",
     "lookupsHelp": "Nur das Thema einer Frage geht an das Wiki des Spiels (und an Modrinth bei Mods).",
     "voice": "Per Sprache fragen",
     "voiceHelp": "Lädt die Spracherkennung herunter ({{size}} MB). Deine Sprache wird auf diesem PC in Text umgewandelt.",
@@ -737,7 +737,7 @@
     "naturalVoiceHelpNoSize": "Lädt {{voice}} herunter, eine natürliche Stimme, die Antworten auf diesem PC vorliest, auch offline.",
     "screenshot": "Screenshot mit meinen Fragen senden",
     "screenshotHelp": "📷 ist in jedem neuen Chat eingeschaltet.",
-    "tray": "Im Infobereich weiterlaufen lassen",
+    "tray": "Im Infobereich weiterlaufen",
     "trayHelp": "Beim Schließen des Fensters bleibt GameMate im Infobereich, bereit für das Tastenkürzel.",
     "tickAll": "Alle anhaken",
     "later": "Später erinnern",

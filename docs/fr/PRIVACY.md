@@ -31,7 +31,7 @@ GameMate enregistre les éléments suivants dans son dossier de votre profil uti
 | Un journal de ce que GameMate a fait (par exemple démarrer l'IA ou rechercher des mises à jour), sans vos questions ni vos réponses | Pour trouver et corriger les problèmes                                    | Environ 1 Mo, les entrées les plus anciennes sont écrasées ; supprimé avec vos données        |
 | Vos pseudos en jeu, si vous les saisissez                                                                                           | Pour reconnaître vos propres lignes dans le fil des éliminations d'un jeu | Jusqu'à ce que vous les modifiiez ou supprimiez vos données                                   |
 
-Vos conversations, captures d'écran, enregistrements vocaux et ce que le compagnon a remarqué sont **conservés uniquement en mémoire** et disparaissent lorsque vous fermez la discussion, désactivez le compagnon ou quittez GameMate. Les captures d'écran et les enregistrements vocaux ne sont jamais enregistrés sur le disque.
+Vos conversations, captures d'écran, enregistrements vocaux et ce que le compagnon a remarqué sont **conservés uniquement en mémoire** et disparaissent lorsque vous fermez la conversation, désactivez le compagnon ou quittez GameMate. Les captures d'écran et les enregistrements vocaux ne sont jamais enregistrés sur le disque.
 
 ## 4. Ce que GameMate fait sur votre PC
 

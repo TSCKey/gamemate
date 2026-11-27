@@ -141,7 +141,7 @@
     "competitiveGamesCheckTheGame": "Juegos competitivos: revisa las normas del juego antes de usar el compañero en partidas clasificatorias.",
     "minecraftModpacks": "Modpacks de Minecraft",
     "yourCurseforgeModpacksOnThis": "Tus modpacks de CurseForge en este PC, para que las respuestas sepan qué mods tienes. Con otro launcher, GameMate lee los mods del pack en ejecución.",
-    "modpack": "Paquete de mods",
+    "modpack": "Modpack",
     "noModpackRunningRightNow": "No hay ningún modpack en ejecución. Abre uno o elígelo aquí.",
     "plainMinecraftWithoutMods": "Minecraft normal, sin mods.",
     "detectTheOneIM": "Detectar el que estoy jugando",
@@ -195,7 +195,7 @@
     "languageHelp": "Para las ventanas de GameMate y las respuestas de la IA. Los nombres de los juegos y las páginas de las wikis no cambian.",
     "voiceCantSpeak": "{{voice}} no habla {{language}}, así que GameMate no leerá nada en voz alta en este idioma. Elige {{other}} en Ajustes → Voz.",
     "chatScreenshot": "Enviar una captura de pantalla con mis preguntas por defecto",
-    "chatScreenshotHelp": "En la ventana del chat, 📷 se activa en cada chat nuevo."
+    "chatScreenshotHelp": "En la ventana del chat, 📷 viene activado en cada chat nuevo."
   },
   "modelMenu": {
     "builtInAi": "IA integrada",
@@ -224,7 +224,7 @@
     "keep": "Conservar",
     "inUse": "✓ En uso",
     "use": "Usar",
-    "delete": "Eliminar {{size}}",
+    "delete": "Borrar {{size}}",
     "tryAgain": "Reintentar",
     "saveGraphicsMemory": "Dejar más memoria gráfica para los juegos",
     "saveGraphicsMemoryHelp": "Lee las capturas con el segundo chip gráfico de tu PC, o con el procesador si no tiene, en lugar de la tarjeta gráfica. Libera unos 0,9 GB de memoria de la tarjeta; leer una captura tarda unos segundos más.",
@@ -279,7 +279,7 @@
     "onlyInYourWindowsUser": "Solo en tu carpeta de usuario de Windows, legible únicamente por tu cuenta de Windows.",
     "yourSettings": "Tus ajustes.",
     "yourGeminiApiKeyIf": "Tu clave de API de Gemini, si añadiste una, cifrada por Windows.",
-    "aiModelsGamemateSAi": "Los modelos de IA, el motor de IA de GameMate y los modelos de voz que descargaste.",
+    "aiModelsGamemateSAi": "Los modelos de IA, el motor de IA de GameMate, y los modelos de voz y las voces que descargaste.",
     "gamesFoundOrAddedTheir": "Los juegos encontrados o añadidos: su nombre, carpeta o programa, y la dirección de la wiki.",
     "openLogFolder": "Abrir la carpeta de registros",
     "whenYouUseOnlineFeatures": "Cuando usas funciones en línea",
@@ -290,7 +290,7 @@
     "cancel": "Cancelar",
     "withdrawAcceptance": "Retirar la aceptación",
     "deleteMyData": "Borrar mis datos",
-    "removesEverythingAboveFromThis": "Elimina de este PC todo lo anterior y restablece GameMate como recién instalado. Los datos ya enviados a Google se rigen por las políticas de Google.",
+    "removesEverythingAboveFromThis": "Borra de este PC todo lo anterior y restablece GameMate como recién instalado. Los datos ya enviados a Google se rigen por las políticas de Google.",
     "doneEverythingGamemateStoredHas": "Hecho. Se ha borrado todo lo que GameMate guardó.",
     "yesDeleteEverything": "Sí, borrar todo",
     "summary": {
@@ -422,7 +422,7 @@
     "englishBinding": "Las traducciones son para tu comodidad; la <english>versión en inglés</english> es la vinculante."
   },
   "app": {
-    "entireScreen": "Pantalla completa",
+    "entireScreen": "Toda la pantalla",
     "newChat": "Nuevo chat",
     "settings": "Ajustes",
     "whatCanIHelpWith": "¿En qué puedo ayudarte?",
@@ -580,7 +580,7 @@
       "stopped": "La IA integrada se detuvo de forma inesperada. Vuelve a intentarlo.",
       "tooLong": "Esta conversación es demasiado larga para la IA integrada. Empieza un nuevo chat.",
       "noGraphicsMemory": "La IA integrada no pudo iniciarse: no hay suficiente memoria gráfica para este modelo. Prueba un modelo más pequeño o cierra otros programas.",
-      "badModelFile": "La IA integrada no pudo iniciarse: no se pudo cargar el archivo del modelo. Elimínalo en Ajustes → Modelos y vuelve a descargarlo.",
+      "badModelFile": "La IA integrada no pudo iniciarse: no se pudo cargar el archivo del modelo. Bórralo en Ajustes → Modelos y vuelve a descargarlo.",
       "couldNotStart": "La IA integrada no pudo iniciarse ({{detail}}).",
       "slowStart": "La IA integrada no pudo iniciarse: tardó demasiado en cargar el modelo."
     },
@@ -643,7 +643,7 @@
     "local": {
       "fast": "Rápido",
       "2b": "Respuestas rápidas en la mayoría de tarjetas gráficas. Un buen comienzo.",
-      "smart": "Listo",
+      "smart": "Inteligente",
       "4b": "Mejores respuestas. Ideal con 6 GB o más de memoria gráfica.",
       "best": "El mejor",
       "9b": "Las mejores respuestas en este PC. Ideal con 10 GB o más de memoria gráfica.",
@@ -681,7 +681,7 @@
     },
     "generic": {
       "next": "¿Qué debería hacer ahora?",
-      "tips": "¿Algún consejo para donde estoy?"
+      "tips": "¿Algún consejo para la zona en la que estoy?"
     },
     "valorant": {
       "beginner": "¿Qué agente es bueno para principiantes?",
@@ -730,17 +730,17 @@
     "sendsData": "Estas envían algunos datos",
     "games": "Encontrar mis juegos",
     "gamesHelp": "Lee Steam, Epic Games, Battle.net, Riot y tus modpacks de CurseForge en este PC, y el nombre del programa en primer plano mientras juegas. Solo los nombres de los juegos se envían a wiki.gg y Fandom.",
-    "lookups": "Buscar información en línea",
+    "lookups": "Consultar información en línea",
     "lookupsHelp": "Solo el tema de la pregunta se envía a la wiki del juego (y a Modrinth para los mods).",
-    "voice": "Preguntar por voz",
+    "voice": "Preguntar con la voz",
     "voiceHelp": "Descarga el reconocimiento de voz ({{size}} MB). Tu voz se convierte en texto en este PC.",
     "voiceHelpNoSize": "Descarga el reconocimiento de voz. Tu voz se convierte en texto en este PC.",
     "naturalVoice": "Voz natural para las respuestas",
     "naturalVoiceHelp": "Descarga {{voice}}, una voz natural ({{size}} MB) que lee las respuestas en voz alta en este PC, también sin conexión.",
     "naturalVoiceHelpNoSize": "Descarga {{voice}}, una voz natural que lee las respuestas en voz alta en este PC, también sin conexión.",
     "screenshot": "Enviar una captura de pantalla con mis preguntas",
-    "screenshotHelp": "📷 se activa en cada chat nuevo.",
-    "tray": "Mantener en la bandeja del sistema",
+    "screenshotHelp": "📷 viene activado en cada chat nuevo.",
+    "tray": "Seguir en la bandeja del sistema",
     "trayHelp": "Al cerrar la ventana, GameMate sigue en la bandeja del sistema, listo para el atajo.",
     "tickAll": "Marcar todo",
     "later": "Recordármelo más tarde",

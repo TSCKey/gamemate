@@ -19,7 +19,7 @@
     "whichAiAnswers": "Quelle IA répond",
     "everythingRunsOnThisPc": "Tout fonctionne sur ce PC, sauf si vous choisissez Gemini pour une tâche.",
     "yourQuestions": "Vos questions",
-    "chatAndTheInGame": "Le chat et la fenêtre en jeu.",
+    "chatAndTheInGame": "La fenêtre de conversation et la fenêtre en jeu.",
     "aiForQuestions": "IA pour les questions",
     "companion": "Compagnon",
     "watchingYourGameOnGemini": "Suit votre partie. Avec Gemini, des captures d’écran sont envoyées toutes les quelques secondes, ce qui peut épuiser les limites d’une clé gratuite.",
@@ -83,11 +83,11 @@
     "reactionIntensity": "Intensité des réactions",
     "humorLevel": "Niveau d’humour",
     "hideInFullscreen": "Masquer le texte en plein écran",
-    "hideInFullscreenHelp": "Quand un jeu occupe tout l'écran, les commentaires sont seulement dits à voix haute : la fenêtre ne s'affiche pas par-dessus le jeu.",
+    "hideInFullscreenHelp": "Quand un jeu occupe tout l’écran, les commentaires sont seulement dits à voix haute : la fenêtre ne s’affiche pas par-dessus le jeu.",
     "tacticalComments": "Observations tactiques",
     "tacticalCommentsHelp": "Ajoute de temps en temps une remarque utile et bienveillante. Jamais dans les jeux où seul le fil de la partie est observé ; dans les autres jeux compétitifs, seulement entre les manches.",
     "playerNames": "Votre pseudo en jeu",
-    "playerNamesHelp": "Permet à GameMate de reconnaître vos propres lignes dans le fil des éliminations. Séparez plusieurs pseudos par des virgules. Sans pseudo, il ne réagit qu'aux bannières.",
+    "playerNamesHelp": "Permet à GameMate de reconnaître vos propres lignes dans le fil des éliminations. Séparez plusieurs pseudos par des virgules. Sans pseudo, il ne réagit qu’aux bannières.",
     "showReactionsAs": "Format des réactions",
     "whatToReactTo": "À quoi réagir",
     "whatToReactToHelp": "GameMate ne peut réagir qu’à ce qu’il lit sur votre écran : les moments très brefs peuvent lui échapper."
@@ -194,8 +194,8 @@
     "language": "Langue",
     "languageHelp": "Pour les fenêtres de GameMate et les réponses de l’IA. Les noms des jeux et les pages des wikis restent tels quels.",
     "voiceCantSpeak": "{{voice}} ne parle pas {{language}} : GameMate ne lira donc rien à voix haute dans cette langue. Choisissez {{other}} dans Paramètres → Voix.",
-    "chatScreenshot": "Envoyer une capture d'écran avec mes questions par défaut",
-    "chatScreenshotHelp": "Dans la fenêtre de discussion, 📷 est activé dans chaque nouvelle discussion."
+    "chatScreenshot": "Envoyer une capture d’écran avec mes questions par défaut",
+    "chatScreenshotHelp": "Dans la fenêtre de conversation, 📷 est activé par défaut dans chaque nouvelle conversation."
   },
   "modelMenu": {
     "builtInAi": "IA intégrée",
@@ -243,15 +243,15 @@
     "modelDetails": "{{description}} {{size}}. Voit les captures d’écran.",
     "download": "Télécharger",
     "commentaryWriter": "Rédacteur de commentaires",
-    "commentaryWriterIntro": "Un petit modèle d'IA que GameMate a entraîné à écrire les commentaires du compagnon. Il en écrit un en moins d'une seconde et a besoin d'environ 1 Go de mémoire, donc les commentaires arrivent plus vite et plus souvent. Ton modèle principal continue de regarder l'écran et de répondre à tes questions.",
+    "commentaryWriterIntro": "Un petit modèle d’IA que GameMate a entraîné à écrire les commentaires du compagnon. Il en écrit un en moins d’une seconde et a besoin d’environ 1 Go de mémoire, donc les commentaires arrivent plus vite et plus souvent. Votre modèle principal continue de regarder l’écran et de répondre à vos questions.",
     "commentaryDetails": "{{description}} {{size}}. Écrit seulement des commentaires, en anglais.",
     "useCommentaryModel": "Écrire les commentaires avec lui",
-    "useCommentaryModelHelp": "Les commentaires dans d'autres langues, et ceux qu'il ne peut pas écrire, viennent de ton modèle principal.",
-    "commentaryGemini": "Gemini écrit tes commentaires en ce moment, donc ce modèle n'est pas utilisé.",
-    "commentaryEnglishOnly": "Pour l'instant il n'écrit qu'en anglais, donc ton modèle principal écrit les commentaires dans la langue de GameMate.",
-    "commentaryLicense": "LFM2.5 est créé par Liquid AI et utilisé sous la <license>LFM Open License v1.0</license>, qui ne couvre pas l'usage commercial par des organisations dont le chiffre d'affaires annuel atteint 10 millions de dollars américains ou plus.",
+    "useCommentaryModelHelp": "Les commentaires dans d’autres langues, et ceux qu’il ne peut pas écrire, viennent de votre modèle principal.",
+    "commentaryGemini": "Gemini écrit vos commentaires en ce moment, donc ce modèle n’est pas utilisé.",
+    "commentaryEnglishOnly": "Pour l’instant il n’écrit qu’en anglais, donc votre modèle principal écrit les commentaires dans la langue de GameMate.",
+    "commentaryLicense": "LFM2.5 est créé par Liquid AI et utilisé sous la <license>LFM Open License v1.0</license>, qui ne couvre pas l’usage commercial par des organisations dont le chiffre d’affaires annuel atteint 10 millions de dollars américains ou plus.",
     "killfeedReader": "Lecteur du fil des éliminations",
-    "killfeedReaderIntro": "Lit les noms du fil des éliminations d'un jeu de tir avec ton processeur, pour laisser ta carte graphique au jeu. Pour VALORANT et Apex Legends pour l'instant ; sans lui, ton modèle principal lit le fil à partir de captures d'écran.",
+    "killfeedReaderIntro": "Lit les noms du fil des éliminations d’un jeu de tir avec votre processeur, pour laisser votre carte graphique au jeu. Pour VALORANT et Apex Legends pour l’instant ; sans lui, votre modèle principal lit le fil à partir de captures d’écran.",
     "killfeedDetails": "{{description}} {{size}}. Fonctionne sur le processeur."
   },
   "pictures": {
@@ -269,7 +269,7 @@
     "readTheTermsOfUse": "Lire les conditions d’utilisation",
     "readThePrivacyPolicy": "Lire la politique de confidentialité",
     "yourConsents": "Vos consentements",
-    "optionalFeaturesThatSendData": "Des fonctions facultatives qui envoient des données à d’autres services. En retirer un ne désactive que cette fonction ; le reste de GameMate continue de fonctionner.",
+    "optionalFeaturesThatSendData": "Des fonctions facultatives qui envoient des données à d’autres services. Retirer un consentement ne désactive que la fonction concernée ; le reste de GameMate continue de fonctionner.",
     "settingsGames": "Paramètres → Jeux",
     "onlineLookups": "Recherches en ligne",
     "settingsAiOnline": "Paramètres → IA et en ligne",
@@ -279,7 +279,7 @@
     "onlyInYourWindowsUser": "Uniquement dans votre dossier utilisateur Windows, lisible seulement par votre compte Windows.",
     "yourSettings": "Vos paramètres.",
     "yourGeminiApiKeyIf": "Votre clé API Gemini, si vous en avez ajouté une, chiffrée par Windows.",
-    "aiModelsGamemateSAi": "Les modèles d’IA, le moteur d’IA de GameMate et les modèles vocaux que vous avez téléchargés.",
+    "aiModelsGamemateSAi": "Les modèles d’IA, le moteur d’IA de GameMate, ainsi que les modèles vocaux et les voix que vous avez téléchargés.",
     "gamesFoundOrAddedTheir": "Les jeux trouvés ou ajoutés : leur nom, leur dossier ou programme, et l’adresse du wiki.",
     "openLogFolder": "Ouvrir le dossier des journaux",
     "whenYouUseOnlineFeatures": "Quand vous utilisez les fonctions en ligne",
@@ -373,7 +373,7 @@
       "always": "Toujours"
     },
     "englishOnlyModel": "Vous avez la version anglaise uniquement. Téléchargez la version multilingue pour parler en {{language}}.",
-    "englishOnlyWorks": "Vous avez la version anglaise uniquement. Elle fonctionne en anglais ; téléchargez la version multilingue pour parler aussi d'autres langues.",
+    "englishOnlyWorks": "Vous avez la version anglaise uniquement. Elle fonctionne en anglais ; téléchargez la version multilingue pour parler aussi dans d’autres langues.",
     "naturalVoices": {
       "female": "Voix féminine {{number}}",
       "male": "Voix masculine {{number}}"
@@ -488,7 +488,7 @@
   "useVoiceInput": {
     "sorryIDidnTCatch": "Désolé, je n’ai pas compris.",
     "gamemateIsNotAllowedTo": "GameMate n’a pas l’autorisation d’utiliser le micro. Vérifiez les paramètres de confidentialité du micro dans Windows.",
-    "englishOnly": "Votre modèle vocal ne comprend que l'anglais. Téléchargez la version multilingue dans Paramètres → Voix pour parler en {{language}}.",
+    "englishOnly": "Votre modèle vocal ne comprend que l’anglais. Téléchargez la version multilingue dans Paramètres → Voix pour parler en {{language}}.",
     "notDownloaded": "Téléchargez un modèle vocal dans Paramètres → Voix pour parler à GameMate."
   },
   "companion": {
@@ -572,7 +572,7 @@
       "needConsent": "Acceptez d’abord les conditions de Gemini.",
       "notAKey": "Cela ne ressemble pas à une clé API Gemini.",
       "cantEncrypt": "Windows ne peut pas chiffrer la clé sur ce PC, GameMate ne l’enregistrera donc pas.",
-      "busy": "Gemini est occupé pour le moment (Google signale une forte demande). Réessayez dans un instant ou passez à l'IA intégrée."
+      "busy": "Gemini est occupé pour le moment (Google signale une forte demande). Réessayez dans un instant ou passez à l’IA intégrée."
     },
     "builtin": {
       "failed": "L’IA intégrée a échoué : {{detail}}",
@@ -725,22 +725,22 @@
     }
   },
   "featureChoices": {
-    "title": "Profitez de toute l'expérience GameMate",
-    "lead": "Cochez ces options pour profiter de toute l'expérience. Vous pourrez les modifier plus tard dans les Paramètres.",
+    "title": "Profitez de toute l’expérience GameMate",
+    "lead": "Cochez ces options pour profiter de toute l’expérience. Vous pourrez les modifier plus tard dans les Paramètres.",
     "sendsData": "Ces options envoient un peu de données",
     "games": "Trouver mes jeux",
     "gamesHelp": "Lit Steam, Epic Games, Battle.net, Riot et vos modpacks CurseForge sur ce PC, ainsi que le nom du programme au premier plan pendant que vous jouez. Seuls les noms de jeux sont envoyés à wiki.gg et Fandom.",
-    "lookups": "Chercher des informations en ligne",
-    "lookupsHelp": "Seul le sujet d'une question est envoyé au wiki du jeu (et à Modrinth pour les mods).",
-    "voice": "Poser des questions à la voix",
+    "lookups": "Rechercher des infos en ligne",
+    "lookupsHelp": "Seul le sujet d’une question est envoyé au wiki du jeu (et à Modrinth pour les mods).",
+    "voice": "Demander à voix haute",
     "voiceHelp": "Télécharge la reconnaissance vocale ({{size}} Mo). Votre voix est transformée en texte sur ce PC.",
     "voiceHelpNoSize": "Télécharge la reconnaissance vocale. Votre voix est transformée en texte sur ce PC.",
     "naturalVoice": "Voix naturelle pour les réponses",
     "naturalVoiceHelp": "Télécharge {{voice}}, une voix naturelle ({{size}} Mo) qui lit les réponses à voix haute sur ce PC, même hors ligne.",
     "naturalVoiceHelpNoSize": "Télécharge {{voice}}, une voix naturelle qui lit les réponses à voix haute sur ce PC, même hors ligne.",
-    "screenshot": "Envoyer une capture d'écran avec mes questions",
-    "screenshotHelp": "📷 est activé dans chaque nouvelle discussion.",
-    "tray": "Laisser GameMate actif dans la zone de notification",
+    "screenshot": "Envoyer une capture d’écran avec mes questions",
+    "screenshotHelp": "📷 est activé par défaut dans chaque nouvelle conversation.",
+    "tray": "Rester actif dans la zone de notification",
     "trayHelp": "Fermer la fenêtre laisse GameMate dans la zone de notification, prêt pour le raccourci.",
     "tickAll": "Tout cocher",
     "later": "Me le rappeler plus tard",

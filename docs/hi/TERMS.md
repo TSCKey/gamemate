@@ -57,7 +57,7 @@ Kokoro अंग्रेज़ी, स्पैनिश, फ़्रेंच
 
 ### Supertonic
 
-Supertonic, Supertone का आवाज़ मॉडल **Supertonic 3** है। यह GameMate की सभी भाषाएँ बोलती है और जर्मन, अरबी और हिंदी के लिए अकेली नैचुरल आवाज़ है। यह [BigScience Open RAIL-M License](https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE) के तहत लाइसेंस किया गया है। Supertonic मॉडल उस लाइसेंस के पैराग्राफ़ 5 ("paragraph 5") में दी गई इस्तेमाल से जुड़ी पाबंदियों के अधीन है, और जब भी आप GameMate के ज़रिए Supertonic इस्तेमाल करते हैं, आपको उनका पालन करना होगा।
+Supertonic, Supertone का आवाज़ मॉडल **Supertonic 3** है। यह मॉडल GameMate की सभी भाषाएँ बोलता है और जर्मन, अरबी और हिंदी के लिए अकेली नैचुरल आवाज़ है। यह मॉडल [BigScience Open RAIL-M License](https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE) के तहत लाइसेंस किया गया है। Supertonic मॉडल उस लाइसेंस के पैराग्राफ़ 5 ("paragraph 5") में दी गई इस्तेमाल से जुड़ी पाबंदियों के अधीन है, और जब भी आप GameMate के ज़रिए Supertonic इस्तेमाल करते हैं, आपको उनका पालन करना होगा।
 
 आप सहमत हैं कि आप Supertonic आवाज़ को, या उससे बनाई गई किसी भी चीज़ को, इन तरीकों से इस्तेमाल नहीं करेंगे (लाइसेंस के अंग्रेज़ी शब्दों में):
 
@@ -75,7 +75,7 @@ Supertonic, Supertone का आवाज़ मॉडल **Supertonic 3** ह�
 - (l) To provide medical advice and medical results interpretation;
 - (m) To generate or disseminate information for the purpose to be used for administration of justice, law enforcement, immigration or asylum processes, such as predicting an individual will commit fraud/crime commitment (e.g. by text profiling, drawing causal relationships between assertions made in documents, indiscriminate and arbitrarily-targeted use).
 
-संक्षेप में: आप Supertonic आवाज़ का इस्तेमाल कानून तोड़ने के लिए; नाबालिगों या दूसरे लोगों को नुकसान पहुँचाने, उनसे भेदभाव करने, उन्हें बदनाम करने या परेशान करने के लिए; नुकसान पहुँचाने वाली झूठी जानकारी या नुकसानदेह निजी डेटा फैलाने के लिए; दूसरों की सहमति के बिना उनकी नकल करने के लिए (जैसे डीपफ़ेक); मशीन से बनी सामग्री के लिए बिना साफ़ बताए कि वह मशीन से बनी है; लोगों के अधिकारों पर पूरी तरह स्वचालित फ़ैसलों के लिए; चिकित्सा सलाह देने के लिए; या न्याय, कानून लागू करने, आप्रवासन या शरण के कामों के लिए नहीं कर सकते। ऊपर दिए गए अंग्रेज़ी शब्द ही मान्य हैं।
+संक्षेप में: आप Supertonic आवाज़ का इस्तेमाल कानून तोड़ने के लिए; नाबालिगों या दूसरे लोगों को नुकसान पहुँचाने, उनसे भेदभाव करने, उन्हें बदनाम करने या परेशान करने के लिए; नुकसान पहुँचाने वाली झूठी जानकारी या नुकसानदेह निजी डेटा फैलाने के लिए; दूसरों की सहमति के बिना उनकी नकल करने के लिए (जैसे डीपफ़ेक); यह साफ़ बताए बिना मशीन से बनी सामग्री फैलाने के लिए; लोगों के अधिकारों पर पूरी तरह स्वचालित फ़ैसलों के लिए; चिकित्सा सलाह देने के लिए; या न्याय, कानून लागू करने, आप्रवासन या शरण के कामों के लिए नहीं कर सकते। ऊपर दिए गए अंग्रेज़ी शब्द ही मान्य हैं।
 
 ## 9. GameMate की उपलब्धता और उसमें बदलाव
 

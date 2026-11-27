@@ -22,14 +22,14 @@ E-mail: [TSCKey1@outlook.com](mailto:TSCKey1@outlook.com)
 
 O GameMate guarda o seguinte na pasta dele no seu perfil de usuário do Windows, que só a sua conta do Windows pode ler. Guardar isso é necessário para oferecer os recursos que você usa (§ 25 (2) n.º 2 TDDDG).
 
-| O quê                                                                                                                   | Por quê                                                               | Por quanto tempo                                                                 |
-| ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Suas configurações, inclusive quando você aceitou estes documentos e deu cada consentimento                             | Para lembrar suas escolhas e como registro dos seus consentimentos    | Até você mudá-las ou apagar seus dados                                           |
-| Sua chave de API do Gemini, se você adicionar uma, criptografada pelo Windows                                           | Para usar o Gemini                                                    | Até você removê-la, retirar seu consentimento ao Gemini ou apagar seus dados     |
-| Modelos de IA, o mecanismo de IA do GameMate, modelos de fala e vozes que você baixou                                   | Para rodar a IA no seu PC                                             | Até você removê-los ou apagar seus dados                                         |
-| Jogos encontrados ou adicionados: nome, pasta ou programa, endereço da wiki                                             | Para ajudar no jogo que você está jogando                             | Até você retirar esse consentimento ou apagar seus dados                         |
-| Um registro do que o GameMate fez (por exemplo, iniciar a IA ou procurar atualizações), sem suas perguntas ou respostas | Para encontrar e corrigir problemas                                   | Cerca de 1 MB; as entradas mais antigas são sobrescritas; apagado com seus dados |
-| Seus nomes nos jogos, se você os informar                                                                               | Para reconhecer suas próprias linhas no registro de abates de um jogo | Até você alterá-los ou excluir seus dados                                        |
+| O quê                                                                                                                   | Por quê                                                            | Por quanto tempo                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| Suas configurações, inclusive quando você aceitou estes documentos e deu cada consentimento                             | Para lembrar suas escolhas e como registro dos seus consentimentos | Até você mudá-las ou apagar seus dados                                           |
+| Sua chave de API do Gemini, se você adicionar uma, criptografada pelo Windows                                           | Para usar o Gemini                                                 | Até você removê-la, retirar seu consentimento ao Gemini ou apagar seus dados     |
+| Modelos de IA, o motor de IA do GameMate, modelos de fala e vozes que você baixou                                       | Para rodar a IA no seu PC                                          | Até você removê-los ou apagar seus dados                                         |
+| Jogos encontrados ou adicionados: nome, pasta ou programa, endereço da wiki                                             | Para ajudar no jogo que você está jogando                          | Até você retirar esse consentimento ou apagar seus dados                         |
+| Um registro do que o GameMate fez (por exemplo, iniciar a IA ou procurar atualizações), sem suas perguntas ou respostas | Para encontrar e corrigir problemas                                | Cerca de 1 MB; as entradas mais antigas são sobrescritas; apagado com seus dados |
+| Seus nomes nos jogos, se você os informar                                                                               | Para reconhecer suas próprias linhas no feed de abates de um jogo  | Até você alterá-los ou apagar seus dados                                         |
 
 Suas conversas, capturas de tela, gravações de voz e o que o companheiro percebeu ficam **somente na memória** e somem quando você fecha o chat, desliga o companheiro ou sai do GameMate. Capturas de tela e gravações de voz nunca são salvas no disco.
 
@@ -40,7 +40,7 @@ Suas conversas, capturas de tela, gravações de voz e o que o companheiro perce
 - **Os dados de partida do próprio jogo:** se você ativar a Stats API do Rocket League no arquivo de configurações do jogo, o GameMate recebe os dados da partida do jogo (como nomes dos jogadores, gols, defesas e o relógio) por uma conexão somente no seu PC. Ele nunca envia nada ao jogo, e os dados ficam na memória como o restante do que o companheiro percebeu.
 - **Seu microfone** só é usado enquanto a entrada de voz está ativada e você pressiona o atalho de voz ou 🎤. Sua fala é transformada em texto no seu PC.
 - **Leitura em voz alta:** a voz natural que você baixou (Kokoro ou Supertonic) transforma as respostas e os comentários em fala no seu PC. Para o Kokoro em idiomas diferentes do inglês, o eSpeak NG, que vem com o GameMate, determina a pronúncia, também no seu PC. Nenhum texto é enviado para lugar nenhum para ser lido em voz alta.
-- **O modelo de IA** que roda no seu PC (o mecanismo do próprio GameMate, ou o Ollama, se você usá-lo) recebe suas perguntas e capturas de tela somente no seu PC.
+- **O modelo de IA** que roda no seu PC (o motor do próprio GameMate, ou o Ollama, se você usá-lo) recebe suas perguntas e capturas de tela somente no seu PC.
 
 ## 5. Recursos opcionais que precisam do seu consentimento
 
@@ -64,7 +64,7 @@ Se você escolher o Gemini para as respostas ou para o companheiro, o GameMate e
 
 ## 6. Conexões que não são consentimentos opcionais
 
-- **Os downloads que você inicia** (modelos de IA, modelos de fala e as vozes naturais Kokoro (cerca de 330 MB) e Supertonic (401 MB) do Hugging Face, o mecanismo de IA do GameMate do GitHub) se conectam a esses serviços quando você clica em **Baixar**, porque você os pediu (art. 6 (1) (b) RGPD). Marcar um download nessa tela e clicar em **Continuar** também o inicia.
+- **Os downloads que você inicia** (modelos de IA, modelos de fala e as vozes naturais Kokoro (cerca de 330 MB) e Supertonic (401 MB) do Hugging Face, o motor de IA do GameMate do GitHub) se conectam a esses serviços quando você clica em **Baixar**, porque você os pediu (art. 6 (1) (b) RGPD). Marcar um download nessa tela e clicar em **Continuar** também o inicia.
 - **A busca por atualizações** pergunta ao GitHub qual é a versão mais recente do GameMate, logo depois de ele iniciar e a cada poucas horas, e baixa uma nova versão se houver. Fazemos isso para entregar correções de segurança e melhorias (nosso interesse legítimo, art. 6 (1) (f) RGPD). Você pode desativar isso em **Configurações → Geral**. O GameMate não procura atualizações antes de você aceitar os Termos de uso.
 
 Como qualquer conexão na internet, essas solicitações mostram ao serviço o seu endereço IP e informações técnicas básicas (como o nome e a versão do aplicativo). Nós nunca recebemos essas informações.

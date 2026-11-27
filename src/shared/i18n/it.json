@@ -85,7 +85,7 @@
     "hideInFullscreen": "Nascondi il testo a schermo intero",
     "hideInFullscreenHelp": "Quando un gioco occupa tutto lo schermo, i commenti vengono solo pronunciati: il pop-up non copre il gioco.",
     "tacticalComments": "Osservazioni tattiche",
-    "tacticalCommentsHelp": "Ogni tanto aggiunge un’osservazione utile e gentile. Mai nei giochi in cui si osserva solo il feed della partita; negli altri giochi competitivi, solo tra un round e l’altro.",
+    "tacticalCommentsHelp": "Ogni tanto aggiunge un'osservazione utile e gentile. Mai nei giochi in cui si osserva solo il feed della partita; negli altri giochi competitivi, solo tra un round e l'altro.",
     "playerNames": "Il tuo nome di gioco",
     "playerNamesHelp": "Permette a GameMate di riconoscere le tue righe nel feed delle uccisioni. Separa più nomi con virgole. Senza nome reagisce solo ai banner.",
     "showReactionsAs": "Mostra le reazioni come",
@@ -141,7 +141,7 @@
     "competitiveGamesCheckTheGame": "Giochi competitivi: controlla le regole del gioco prima di usare il compagno nelle partite classificate.",
     "minecraftModpacks": "Modpack di Minecraft",
     "yourCurseforgeModpacksOnThis": "I tuoi modpack di CurseForge su questo PC, così le risposte sanno quali mod hai. Con un altro launcher, GameMate legge le mod del pack in esecuzione.",
-    "modpack": "Pacchetto di mod",
+    "modpack": "Modpack",
     "noModpackRunningRightNow": "Nessun modpack in esecuzione al momento. Avviane uno o sceglilo qui.",
     "plainMinecraftWithoutMods": "Minecraft base, senza mod.",
     "detectTheOneIM": "Rileva quello a cui sto giocando",
@@ -224,10 +224,10 @@
     "keep": "Mantieni",
     "inUse": "✓ In uso",
     "use": "Usa",
-    "delete": "Elimina {{size}}",
+    "delete": "Cancella {{size}}",
     "tryAgain": "Riprova",
     "saveGraphicsMemory": "Lascia più memoria grafica ai giochi",
-    "saveGraphicsMemoryHelp": "Legge gli screenshot con il secondo chip grafico del PC, o con il processore se non c’è, invece che con la scheda grafica. Libera circa 0,9 GB di memoria della scheda; leggere uno screenshot richiede qualche secondo in più.",
+    "saveGraphicsMemoryHelp": "Legge gli screenshot con il secondo chip grafico del PC, o con il processore se non c'è, invece che con la scheda grafica. Libera circa 0,9 GB di memoria della scheda; leggere uno screenshot richiede qualche secondo in più.",
     "alreadyUseOllamaGamemateCan": "Usi già Ollama? GameMate può usare i suoi modelli al posto di quelli integrati.",
     "useMyOllamaModels": "Usa i miei modelli di Ollama",
     "ollamaMustBeRunningGamemate": "Ollama deve essere in esecuzione. GameMate libera il suo modello quando si chiude.",
@@ -251,7 +251,7 @@
     "commentaryEnglishOnly": "Per ora scrive solo in inglese, quindi i commenti nella lingua di GameMate li scrive il tuo modello principale.",
     "commentaryLicense": "LFM2.5 è creato da Liquid AI e usato secondo la <license>LFM Open License v1.0</license>, che non copre l'uso commerciale da parte di organizzazioni con un fatturato annuo di 10 milioni di dollari statunitensi o più.",
     "killfeedReader": "Lettore del feed delle uccisioni",
-    "killfeedReaderIntro": "Legge i nomi nel feed delle uccisioni di uno sparatutto con il processore, così la scheda grafica resta libera per il gioco. Per ora per VALORANT e Apex Legends; senza, il tuo modello principale legge il feed dagli screenshot.",
+    "killfeedReaderIntro": "Legge i nomi nel feed delle uccisioni di uno sparatutto con il processore, così la scheda grafica resta libera per il gioco. Per ora per VALORANT e Apex Legends; senza di esso, il tuo modello principale legge il feed dagli screenshot.",
     "killfeedDetails": "{{description}} {{size}}. Funziona sul processore."
   },
   "pictures": {
@@ -349,7 +349,7 @@
     "volume": "Volume",
     "speed": "Velocità",
     "tryIt": "Prova",
-    "hiIMGamemateWatch": "Ciao, sono GameMate. Attento ai creeper!",
+    "hiIMGamemateWatch": "Ciao, sono GameMate. Occhio ai creeper!",
     "testVoice": "🔊 Prova la voce",
     "speechModels": {
       "fast": {
@@ -422,7 +422,7 @@
     "englishBinding": "Le traduzioni sono per tua comodità; fa fede la <english>versione inglese</english>."
   },
   "app": {
-    "entireScreen": "Schermo intero",
+    "entireScreen": "Tutto lo schermo",
     "newChat": "Nuova chat",
     "settings": "Impostazioni",
     "whatCanIHelpWith": "Come posso aiutarti?",
@@ -580,7 +580,7 @@
       "stopped": "L'IA integrata si è fermata inaspettatamente. Riprova.",
       "tooLong": "Questa conversazione è troppo lunga per l'IA integrata. Inizia una nuova chat.",
       "noGraphicsMemory": "Impossibile avviare l'IA integrata: la memoria grafica non basta per questo modello. Prova un modello più piccolo o chiudi altri programmi.",
-      "badModelFile": "Impossibile avviare l'IA integrata: il file del modello non può essere caricato. Eliminalo in Impostazioni → Modelli e scaricalo di nuovo.",
+      "badModelFile": "Impossibile avviare l'IA integrata: il file del modello non può essere caricato. Cancellalo in Impostazioni → Modelli e scaricalo di nuovo.",
       "couldNotStart": "Impossibile avviare l'IA integrata ({{detail}}).",
       "slowStart": "Impossibile avviare l'IA integrata: il caricamento del modello ha richiesto troppo tempo."
     },
@@ -612,7 +612,7 @@
     },
     "updates": {
       "check": "Impossibile cercare aggiornamenti. Sei online?",
-      "download": "Impossibile scaricare l'aggiornamento. Riproverà più tardi."
+      "download": "Impossibile scaricare l'aggiornamento. GameMate riproverà più tardi."
     },
     "capture": {
       "failed": "Impossibile catturare lo schermo.",
@@ -656,7 +656,7 @@
   "tray": {
     "status": {
       "off": "Non segue",
-      "paused": "Monitoraggio in pausa",
+      "paused": "In pausa",
       "no-model": "Scegli un modello per iniziare a seguire",
       "needs-consent": "Consenti il rilevamento dei giochi nelle Impostazioni",
       "waiting-for-game": "In attesa di un gioco",
@@ -696,7 +696,7 @@
       "teamUps": "Come funzionano le abilità di squadra?"
     },
     "counterStrike": {
-      "spray": "Come controllo lo spray dell’AK-47?",
+      "spray": "Come controllo lo spray dell'AK-47?",
       "save": "Quando dovrei risparmiare soldi?"
     },
     "league": {
@@ -732,7 +732,7 @@
     "gamesHelp": "Legge Steam, Epic Games, Battle.net, Riot e i tuoi modpack di CurseForge su questo PC, e il nome del programma in primo piano mentre giochi. Solo i nomi dei giochi vengono inviati a wiki.gg e Fandom.",
     "lookups": "Cerca informazioni online",
     "lookupsHelp": "Solo l'argomento di una domanda viene inviato alla wiki del gioco (e a Modrinth per le mod).",
-    "voice": "Fai domande a voce",
+    "voice": "Chiedi a voce",
     "voiceHelp": "Scarica il riconoscimento vocale ({{size}} MB). La tua voce viene trasformata in testo su questo PC.",
     "voiceHelpNoSize": "Scarica il riconoscimento vocale. La tua voce viene trasformata in testo su questo PC.",
     "naturalVoice": "Voce naturale per le risposte",
@@ -740,7 +740,7 @@
     "naturalVoiceHelpNoSize": "Scarica {{voice}}, una voce naturale che legge le risposte ad alta voce su questo PC, anche offline.",
     "screenshot": "Invia uno screenshot con le mie domande",
     "screenshotHelp": "📷 è attivo in ogni nuova chat.",
-    "tray": "Mantieni attivo nell'area di notifica",
+    "tray": "Resta attivo nell'area di notifica",
     "trayHelp": "Chiudendo la finestra GameMate resta nell'area di notifica, pronto per la scorciatoia.",
     "tickAll": "Seleziona tutto",
     "later": "Ricordamelo più tardi",

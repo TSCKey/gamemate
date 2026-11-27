@@ -87,7 +87,7 @@
     "tacticalComments": "Observações táticas",
     "tacticalCommentsHelp": "De vez em quando acrescenta uma observação útil e gentil. Nunca em jogos em que só o feed da partida é observado; em outros jogos competitivos, só entre as rodadas.",
     "playerNames": "Seu nome no jogo",
-    "playerNamesHelp": "Permite que o GameMate reconheça suas próprias linhas no registro de abates. Separe vários nomes com vírgulas. Sem ele, só reage aos banners.",
+    "playerNamesHelp": "Permite que o GameMate reconheça suas próprias linhas no feed de abates. Separe vários nomes com vírgulas. Sem ele, só reage aos banners.",
     "showReactionsAs": "Mostrar reações como",
     "whatToReactTo": "A que reagir",
     "whatToReactToHelp": "O GameMate só consegue reagir ao que lê na sua tela, então momentos muito rápidos podem passar despercebidos."
@@ -141,7 +141,7 @@
     "competitiveGamesCheckTheGame": "Jogos competitivos: confira as regras do jogo antes de usar o companheiro em partidas ranqueadas.",
     "minecraftModpacks": "Modpacks de Minecraft",
     "yourCurseforgeModpacksOnThis": "Seus modpacks do CurseForge neste PC, para que as respostas saibam quais mods você tem. Com outro launcher, o GameMate lê os mods do pack em execução.",
-    "modpack": "Pacote de mods",
+    "modpack": "Modpack",
     "noModpackRunningRightNow": "Nenhum modpack em execução agora. Abra um ou escolha aqui.",
     "plainMinecraftWithoutMods": "Minecraft puro, sem mods.",
     "detectTheOneIM": "Detectar o que estou jogando",
@@ -195,7 +195,7 @@
     "languageHelp": "Para as janelas do GameMate e as respostas da IA. Os nomes dos jogos e as páginas das wikis continuam como estão.",
     "voiceCantSpeak": "{{voice}} não fala {{language}}, então o GameMate não vai ler nada em voz alta nesse idioma. Escolha {{other}} em Configurações → Voz.",
     "chatScreenshot": "Enviar uma captura de tela com minhas perguntas por padrão",
-    "chatScreenshotHelp": "Na janela do chat, 📷 começa ativada em cada novo chat."
+    "chatScreenshotHelp": "Na janela do chat, 📷 começa ativada em cada nova conversa."
   },
   "modelMenu": {
     "builtInAi": "IA integrada",
@@ -224,7 +224,7 @@
     "keep": "Manter",
     "inUse": "✓ Em uso",
     "use": "Usar",
-    "delete": "Excluir {{size}}",
+    "delete": "Apagar {{size}}",
     "tryAgain": "Tentar de novo",
     "saveGraphicsMemory": "Deixar mais memória de vídeo para os jogos",
     "saveGraphicsMemoryHelp": "Lê as capturas com o segundo chip gráfico do seu PC, ou com o processador se não houver, em vez da placa de vídeo. Libera cerca de 0,9 GB de memória da placa; ler uma captura leva alguns segundos a mais.",
@@ -279,7 +279,7 @@
     "onlyInYourWindowsUser": "Somente na sua pasta de usuário do Windows, legível só pela sua conta do Windows.",
     "yourSettings": "Suas configurações.",
     "yourGeminiApiKeyIf": "Sua chave de API do Gemini, se você adicionou uma, criptografada pelo Windows.",
-    "aiModelsGamemateSAi": "Os modelos de IA, o motor de IA do GameMate e os modelos de voz que você baixou.",
+    "aiModelsGamemateSAi": "Os modelos de IA, o motor de IA do GameMate, os modelos de fala e as vozes que você baixou.",
     "gamesFoundOrAddedTheir": "Os jogos encontrados ou adicionados: nome, pasta ou programa e endereço da wiki.",
     "openLogFolder": "Abrir a pasta de logs",
     "whenYouUseOnlineFeatures": "Quando você usa recursos on-line",
@@ -290,7 +290,7 @@
     "cancel": "Cancelar",
     "withdrawAcceptance": "Retirar a aceitação",
     "deleteMyData": "Apagar meus dados",
-    "removesEverythingAboveFromThis": "Remove tudo o que está acima deste PC e redefine o GameMate como se tivesse acabado de ser instalado. Os dados já enviados ao Google seguem as políticas do Google.",
+    "removesEverythingAboveFromThis": "Remove deste PC tudo o que está acima e redefine o GameMate como se tivesse acabado de ser instalado. Os dados já enviados ao Google seguem as políticas do Google.",
     "doneEverythingGamemateStoredHas": "Pronto. Tudo o que o GameMate guardou foi apagado.",
     "yesDeleteEverything": "Sim, apagar tudo",
     "summary": {
@@ -299,7 +299,7 @@
       "findingYourGames": "<b>A busca pelos seus jogos</b> só acontece depois que você permite em Configurações → Jogos. Então o GameMate lê as listas de jogos dos seus launchers (Steam, Epic Games, Battle.net, Riot), seus modpacks do CurseForge e o nome do programa em primeiro plano. Isso fica no seu PC; para encontrar wikis, só os nomes dos jogos são enviados para wiki.gg e Fandom.",
       "yourMicrophone": "<b>Seu microfone</b> só é usado quando a entrada de voz está ativada e você aperta o atalho de voz ou 🎤. A fala é convertida em texto neste PC.",
       "chatsAndTheCompanionLog": "<b>As conversas e o registro do companheiro</b> só ficam guardados enquanto o GameMate está aberto.",
-      "onlineFeaturesAreOffUntil": "<b>Os recursos on-line ficam desativados até você ativá-los:</b> consultar a wiki do seu jogo ou o Modrinth (só o tema é enviado) e o Google Gemini (suas perguntas e capturas de tela são enviadas ao Google). Os downloads acontecem uma vez, quando você pede: os modelos de IA e de voz vêm do Hugging Face, e o motor de IA do GameMate, do GitHub. A busca por atualizações pergunta ao GitHub qual é a versão mais recente do GameMate (você pode desativá-la)."
+      "onlineFeaturesAreOffUntil": "<b>Os recursos on-line ficam desativados até você ativá-los:</b> consultar a wiki do seu jogo ou o Modrinth (só o tema é enviado) e o Google Gemini (suas perguntas e capturas de tela são enviadas ao Google). Os downloads acontecem uma vez, quando você pede: os modelos de IA, de fala e de voz vêm do Hugging Face, e o motor de IA do GameMate, do GitHub. A busca por atualizações pergunta ao GitHub qual é a versão mais recente do GameMate (você pode desativá-la)."
     },
     "aLogOfWhatGamemate": "Um registro do que o GameMate fez (como iniciar a IA ou procurar atualizações), para encontrar problemas. Ele nunca contém suas perguntas ou respostas e nunca é enviado para lugar nenhum.",
     "geminiTerms": "<b>Google Gemini:</b> <terms>termos da API do Gemini</terms> e <privacy>Política de Privacidade do Google</privacy>.",
@@ -378,7 +378,7 @@
       "female": "Voz feminina {{number}}",
       "male": "Voz masculina {{number}}"
     },
-    "naturalDescription": "Duas vozes naturais que rodam neste PC e funcionam offline depois de um único download. Kokoro (licença Apache 2.0) fala inglês, espanhol, francês, italiano e português; Supertonic 3 (licença OpenRAIL-M) fala todos os idiomas do GameMate.",
+    "naturalDescription": "Duas vozes naturais que rodam neste PC e funcionam off-line depois de um único download. O Kokoro (licença Apache 2.0) fala inglês, espanhol, francês, italiano e português; o Supertonic 3 (licença OpenRAIL-M) fala todos os idiomas do GameMate.",
     "speaksLanguage": "Fala {{language}}.",
     "doesntSpeakLanguage": "Não fala {{language}}.",
     "cantSpeakLanguage": "{{voice}} não fala {{language}}, então o GameMate não lê nada em voz alta. {{other}} fala.",
@@ -387,7 +387,7 @@
       "female": "Feminina",
       "male": "Masculina"
     },
-    "kokoroOneVoice": "Em {{language}}, Kokoro tem só uma voz feminina."
+    "kokoroOneVoice": "Em {{language}}, o Kokoro tem só uma voz feminina."
   },
   "useLocalModels": {
     "builtInAi": "IA integrada",
@@ -580,7 +580,7 @@
       "stopped": "A IA integrada parou inesperadamente. Tente de novo.",
       "tooLong": "Esta conversa está longa demais para a IA integrada. Comece uma nova conversa.",
       "noGraphicsMemory": "A IA integrada não conseguiu iniciar: não há memória de vídeo suficiente para este modelo. Tente um modelo menor ou feche outros programas.",
-      "badModelFile": "A IA integrada não conseguiu iniciar: não foi possível carregar o arquivo do modelo. Exclua-o em Configurações → Modelos e baixe de novo.",
+      "badModelFile": "A IA integrada não conseguiu iniciar: não foi possível carregar o arquivo do modelo. Apague-o em Configurações → Modelos e baixe de novo.",
       "couldNotStart": "A IA integrada não conseguiu iniciar ({{detail}}).",
       "slowStart": "A IA integrada não conseguiu iniciar: o modelo demorou demais para carregar."
     },
@@ -730,17 +730,17 @@
     "sendsData": "Estas enviam alguns dados",
     "games": "Encontrar meus jogos",
     "gamesHelp": "Lê Steam, Epic Games, Battle.net, Riot e seus modpacks do CurseForge neste PC, e o nome do programa em primeiro plano enquanto você joga. Apenas os nomes dos jogos vão para wiki.gg e Fandom.",
-    "lookups": "Pesquisar informações online",
+    "lookups": "Consultar informações on-line",
     "lookupsHelp": "Apenas o assunto da pergunta vai para a wiki do jogo (e para o Modrinth, no caso de mods).",
     "voice": "Perguntar por voz",
     "voiceHelp": "Baixa o reconhecimento de voz ({{size}} MB). Sua fala é transformada em texto neste PC.",
     "voiceHelpNoSize": "Baixa o reconhecimento de voz. Sua fala é transformada em texto neste PC.",
     "naturalVoice": "Voz natural para as respostas",
-    "naturalVoiceHelp": "Baixa {{voice}}, uma voz natural ({{size}} MB) que lê as respostas em voz alta neste PC, também offline.",
-    "naturalVoiceHelpNoSize": "Baixa {{voice}}, uma voz natural que lê as respostas em voz alta neste PC, também offline.",
+    "naturalVoiceHelp": "Baixa {{voice}}, uma voz natural ({{size}} MB) que lê as respostas em voz alta neste PC, também off-line.",
+    "naturalVoiceHelpNoSize": "Baixa {{voice}}, uma voz natural que lê as respostas em voz alta neste PC, também off-line.",
     "screenshot": "Enviar uma captura de tela com minhas perguntas",
-    "screenshotHelp": "📷 começa ativada em cada novo chat.",
-    "tray": "Manter na bandeja do sistema",
+    "screenshotHelp": "📷 começa ativada em cada nova conversa.",
+    "tray": "Continuar rodando na bandeja",
     "trayHelp": "Ao fechar a janela, o GameMate continua na bandeja do sistema, pronto para o atalho.",
     "tickAll": "Marcar tudo",
     "later": "Lembrar mais tarde",

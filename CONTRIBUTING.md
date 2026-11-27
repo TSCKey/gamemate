@@ -12,7 +12,7 @@ Security problems go privately to the maintainer, not into an issue: see [SECURI
 
 ## Improving a translation
 
-GameMate is translated into Arabic, French and German, and the translations need native speakers. You can:
+GameMate is translated into German, French, Arabic, Spanish, Portuguese (Brazil), Italian and Hindi, and the translations need native speakers. You can:
 
 - open a **Translation fix** issue with what a text says now and what it should say, or
 - edit the language's file in `src/shared/i18n/` (for example `de.json`) and open a pull request. Keep the keys and the `{{placeholders}}` exactly as they are, and keep the tags such as `<b>…</b>`.
@@ -56,7 +56,7 @@ npm run format
 ```
 
 - **Add a test** for what you fix or add. Tests use [Vitest](https://vitest.dev/); look at a test file near your change for how they stub Electron.
-- **Every text the player sees goes through the translation files**, in all four languages (`src/shared/i18n/*.json`). A test fails when a window shows text that isn't translated, or a language is missing a key. If you can't translate a text, put the English in the other files and say so in the pull request.
+- **Every text the player sees goes through the translation files**, in all eight languages (`src/shared/i18n/*.json`). A test fails when a window shows text that isn't translated, or a language is missing a key. If you can't translate a text, put the English in the other files and say so in the pull request.
 - **Keep GameMate local by default.** Anything that sends data off the PC must be off until the player turns it on, and must be described in the Privacy Policy.
 - Keep pull requests focused on one change, and explain what it does for a player.
 
