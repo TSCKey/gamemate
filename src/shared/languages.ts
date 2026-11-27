@@ -1,6 +1,6 @@
 // The languages GameMate speaks. Shared by the main process and the windows.
 
-export type LanguageCode = 'en' | 'de' | 'fr' | 'ar' | 'es' | 'pt' | 'it'
+export type LanguageCode = 'en' | 'de' | 'fr' | 'ar' | 'es' | 'pt' | 'it' | 'hi'
 
 export interface Language {
   code: LanguageCode
@@ -26,7 +26,8 @@ export const LANGUAGES: Language[] = [
     dir: 'ltr',
     naturalVoice: true
   },
-  { code: 'it', englishName: 'Italian', nativeName: 'Italiano', dir: 'ltr', naturalVoice: true }
+  { code: 'it', englishName: 'Italian', nativeName: 'Italiano', dir: 'ltr', naturalVoice: true },
+  { code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी', dir: 'ltr', naturalVoice: true }
 ]
 
 export function isLanguageCode(value: unknown): value is LanguageCode {

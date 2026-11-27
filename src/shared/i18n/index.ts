@@ -7,6 +7,7 @@ import de from './de.json'
 import en from './en.json'
 import es from './es.json'
 import fr from './fr.json'
+import hi from './hi.json'
 import it from './it.json'
 import pt from './pt.json'
 
@@ -19,7 +20,8 @@ export const resources: Record<LanguageCode, { translation: object }> = {
   de: { translation: de },
   es: { translation: es },
   pt: { translation: pt },
-  it: { translation: it }
+  it: { translation: it },
+  hi: { translation: hi }
 }
 
 export type Translate = (key: string, vars?: Record<string, unknown>) => string

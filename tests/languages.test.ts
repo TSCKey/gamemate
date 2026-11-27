@@ -17,8 +17,8 @@ vi.mock('electron', () => ({
 }))
 
 describe('supported languages', () => {
-  it('are English, German, French, Arabic, Spanish, Portuguese and Italian, with Arabic the only right-to-left one', () => {
-    expect(LANGUAGES.map((l) => l.code)).toEqual(['en', 'de', 'fr', 'ar', 'es', 'pt', 'it'])
+  it('are English, German, French, Arabic, Spanish, Portuguese, Italian and Hindi, with Arabic the only right-to-left one', () => {
+    expect(LANGUAGES.map((l) => l.code)).toEqual(['en', 'de', 'fr', 'ar', 'es', 'pt', 'it', 'hi'])
     expect(LANGUAGES.filter((l) => l.dir === 'rtl').map((l) => l.code)).toEqual(['ar'])
     expect(LANGUAGES.map((l) => l.nativeName)).toEqual([
       'English',
@@ -27,7 +27,8 @@ describe('supported languages', () => {
       'العربية',
       'Español',
       'Português',
-      'Italiano'
+      'Italiano',
+      'हिन्दी'
     ])
   })
 
@@ -40,6 +41,7 @@ describe('supported languages', () => {
     expect(matchLanguage(['es-MX'])).toBe('es')
     expect(matchLanguage(['pt-PT'])).toBe('pt')
     expect(matchLanguage(['it-IT'])).toBe('it')
+    expect(matchLanguage(['hi-IN'])).toBe('hi')
     expect(matchLanguage(['de-AT'])).toBe('de')
     expect(matchLanguage(['fr-CA'])).toBe('fr')
     expect(matchLanguage(['ar-EG'])).toBe('ar')

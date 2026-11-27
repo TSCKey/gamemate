@@ -1,0 +1,748 @@
+{
+  "aiPanel": {
+    "geminiIsAnOptionalCloud": "Gemini, Google का एक वैकल्पिक क्लाउड AI है। अगर आप इसे चालू करते हैं:",
+    "forTheJobsYouSet": "जिन कामों के लिए आप Gemini चुनते हैं, उनमें आपके सवाल, अब तक की चैट और कोई भी स्क्रीनशॉट Google को भेजे जाते हैं और Google के सर्वर पर प्रोसेस होते हैं, जो आपके देश से बाहर हो सकते हैं।",
+    "googleRequiresYouToBe": "Google के लिए आपकी उम्र 18 साल या उससे ज़्यादा होनी चाहिए। EU/EEA, स्विट्ज़रलैंड और UK में, Google की शर्तों के अनुसार ऐसे ऐप्स में पेड (बिलिंग वाली) API कुंजी चाहिए।",
+    "youCanTurnGeminiOff": "आप Gemini को कभी भी बंद कर सकते हैं। तब GameMate आपकी कुंजी मिटा देता है।",
+    "turnOnGemini": "Gemini चालू करें",
+    "ifYouTurnOnWeb": "अगर आप वेब सर्च चालू करते हैं:",
+    "forQuestionsAboutWhatS": "जब सवाल किसी ताज़ा चीज़ के बारे में हो (मेटा, पैच, सीज़न) या खिलाड़ी क्या सुझाते हैं, और विकी में जवाब न हो, तब GameMate या AI आपके सवाल के मुख्य शब्दों और गेम के नाम से एक छोटी सर्च क्वेरी बनाता है (जैसे “Overwatch characters currently meta”)। सिर्फ़ वही क्वेरी आपकी API कुंजी से Gemini के ज़रिए Google को जाती है। आपकी बातचीत और स्क्रीनशॉट उसके साथ नहीं भेजे जाते।",
+    "searchesCountTowardYourKey": "सर्च आपकी कुंजी की मुफ़्त Google Search सीमा में गिने जाते हैं; अगर आपकी कुंजी पर बिलिंग चालू है, तो उससे ज़्यादा सर्च के लिए Google पैसे ले सकता है।",
+    "youCanTurnWebSearch": "आप वेब सर्च को कभी भी यहाँ या सेटिंग्स → गोपनीयता और कानूनी में बंद कर सकते हैं।",
+    "turnOnWebSearch": "वेब सर्च चालू करें",
+    "cancel": "रद्द करें",
+    "ifYouTurnOnOnline": "अगर आप ऑनलाइन जानकारी ढूँढना चालू करते हैं:",
+    "whenAQuestionIsAbout": "जब सवाल किसी गेम की किसी चीज़ के बारे में हो, तो GameMate उस विषय (जैसे “Ender Dragon”) को उस गेम की विकी पर भेजता है, और Minecraft मॉड के लिए मॉड का नाम Modrinth पर। आपका सवाल खुद नहीं भेजा जाता।",
+    "gamemateDownloadsThePageAnd": "GameMate आपको दिखाने के लिए पेज और उसकी तस्वीरें डाउनलोड करता है। किसी भी वेबसाइट की तरह विकी आपका IP पता देखती हैं और उसे अपनी गोपनीयता नीतियों के तहत संभालती हैं।",
+    "youCanTurnLookupsOff": "आप जानकारी ढूँढना कभी भी यहाँ या सेटिंग्स → गोपनीयता और कानूनी में बंद कर सकते हैं।",
+    "turnOnLookups": "जानकारी ढूँढना चालू करें",
+    "whichAiAnswers": "कौन-सा AI जवाब दे",
+    "everythingRunsOnThisPc": "जब तक आप किसी काम के लिए Gemini नहीं चुनते, सब कुछ इसी PC पर चलता है।",
+    "yourQuestions": "आपके सवाल",
+    "chatAndTheInGame": "चैट और इन-गेम विंडो।",
+    "aiForQuestions": "सवालों के लिए AI",
+    "companion": "साथी",
+    "watchingYourGameOnGemini": "आपका गेम देखना। Gemini पर यह हर कुछ सेकंड में स्क्रीनशॉट भेजता है, जिससे मुफ़्त कुंजी की सीमा खत्म हो सकती है।",
+    "aiForTheCompanion": "साथी के लिए AI",
+    "smarterAnswersAndBetterScreen": "आपकी अपनी Google API कुंजी से ज़्यादा समझदार जवाब और स्क्रीन की बेहतर समझ।",
+    "model": "मॉडल",
+    "flashModelsAreFastAnd": "Flash मॉडल तेज़ हैं और इनका सबसे ज़्यादा मुफ़्त इस्तेमाल मिलता है।",
+    "choose": "चुनें…",
+    "apiKey": "API कुंजी",
+    "savedOnThisPcEncrypted": "इस PC पर सेव, Windows द्वारा एन्क्रिप्ट की गई।",
+    "removeKey": "कुंजी हटाएँ",
+    "pasteYourKey": "अपनी कुंजी पेस्ट करें",
+    "geminiApiKey": "Gemini API कुंजी",
+    "checking": "जाँच हो रही है…",
+    "turnOffGemini": "Gemini बंद करें",
+    "deletesYourKeyAndGoes": "आपकी कुंजी मिटाकर लोकल AI पर वापस चला जाता है।",
+    "turnOff": "बंद करें",
+    "answers": "जवाब",
+    "detailedAnswers": "विस्तृत जवाब",
+    "answersExplainTheDetailsSteps": "जवाब में बारीकियाँ, स्टेप्स और काम की टिप्स समझाई जाती हैं।",
+    "answersGetStraightToThe": "जवाब एक से तीन वाक्यों में सीधे मुद्दे पर आते हैं। लंबी व्याख्या के लिए इसे चालू करें।",
+    "lookThingsUp": "जानकारी ढूँढें",
+    "lookThingsUpOnline": "ऑनलाइन जानकारी ढूँढें",
+    "letsTheAiReadYour": "जब AI को पक्का पता न हो, तब वह आपके गेम की विकी (और Minecraft मॉड के लिए Modrinth) पढ़ सकता है, जैसे बॉस, आइटम या Nether portal बनाने के बारे में। सिर्फ़ विषय भेजा जाता है, और जवाब में पेज का लिंक होता है और उसकी तस्वीरें, जैसे मैप, दिख सकती हैं।",
+    "searchTheWeb": "वेब पर सर्च करें",
+    "letsTheAiSearchThe": "AI को Google से (Gemini के ज़रिए) वेब पर ऐसे पैच, रणनीतियाँ और टिप्स सर्च करने देता है जो विकी में नहीं हैं। सिर्फ़ सर्च क्वेरी भेजी जाती है।",
+    "searchesTheWebWithGoogle": "जो विकी में नहीं है, उसे Google से वेब पर सर्च करता है। इसके लिए Gemini चाहिए: पहले उसे चालू करें और ऊपर अपनी कुंजी जोड़ें।",
+    "googleHandlesThatData": "Google उस डेटा को GameMate की नहीं, बल्कि <terms>Gemini API शर्तों</terms> और <privacy>Google गोपनीयता नीति</privacy> के तहत संभालता है। मुफ़्त कुंजी के साथ, Google आपके भेजे गए डेटा का इस्तेमाल अपने प्रोडक्ट बेहतर बनाने के लिए कर सकता है और लोग उसे देख सकते हैं, सिवाय EU/EEA, स्विट्ज़रलैंड और UK के। निजी जानकारी शेयर न करें।",
+    "iM18OrOlder": "मेरी उम्र 18 साल या उससे ज़्यादा है और मैं यह डेटा Google को भेजने के लिए सहमत हूँ।",
+    "googleSearchesTheWeb": "Google <terms>Gemini API शर्तों</terms> और <privacy>Google गोपनीयता नीति</privacy> के तहत वेब पर सर्च करता है, Reddit जैसे फ़ोरम भी। जवाबों में इस्तेमाल किए गए पेज और Google के सर्च सुझाव दिखते हैं।",
+    "autoDecidePerQuestion": "ऑटो (हर सवाल पर तय करें)",
+    "autoAddAKeyFirst": "ऑटो (हर सवाल पर तय करें) (पहले कुंजी जोड़ें)",
+    "onThisPc": "इस PC पर ({{name}})",
+    "geminiAddAKeyFirst": "Gemini (पहले कुंजी जोड़ें)",
+    "getOneAt": "<link>aistudio.google.com</link> पर पाएँ। GameMate सेव करने से पहले उसे Google से जाँचता है।",
+    "save": "सेव करें"
+  },
+  "answeredByLabel": {
+    "onThisPc": "💻 इस PC पर"
+  },
+  "companionMenu": {
+    "companionMode": "साथी मोड",
+    "howOftenToComment": "कितनी बार टिप्पणी करे",
+    "resumeWatching": "▶ फिर से देखना शुरू करें",
+    "pauseWatching": "⏸ देखना रोकें",
+    "companionSettings": "साथी सेटिंग्स…",
+    "companion": "साथी: {{mode}}"
+  },
+  "companionPanel": {
+    "justNow": "अभी-अभी",
+    "minAgo": "{{minutes}} मिनट पहले",
+    "hAgo": "{{value}} घंटे पहले",
+    "companionMode": "साथी मोड",
+    "howMuchGamemateWatchesYour": "GameMate आपका गेम कितना देखे और खुद से कितना बोले।",
+    "howOftenToComment": "कितनी बार टिप्पणी करे",
+    "resume": "▶ फिर शुरू करें",
+    "pause": "⏸ रोकें",
+    "whatGamemateSaw": "GameMate ने क्या देखा",
+    "keptOnlyWhileGamemateIs": "सिर्फ़ तब तक रखा जाता है जब तक GameMate खुला है।",
+    "nothingYetStartPlayingAnd": "अभी कुछ नहीं। खेलना शुरू करें, GameMate जो होता है उसे लॉग करेगा।",
+    "reactionIntensity": "रिएक्शन की तीव्रता",
+    "humorLevel": "मज़ाक का स्तर",
+    "hideInFullscreen": "फ़ुलस्क्रीन में टेक्स्ट छिपाएँ",
+    "hideInFullscreenHelp": "जब गेम पूरी स्क्रीन पर हो, तो टिप्पणियाँ सिर्फ़ बोली जाती हैं: पॉप-अप गेम के ऊपर नहीं आता।",
+    "tacticalComments": "रणनीतिक टिप्पणियाँ",
+    "tacticalCommentsHelp": "कभी-कभी कोई दोस्ताना, काम की बात जोड़ता है। उन गेम्स में कभी नहीं जहाँ सिर्फ़ मैच फ़ीड देखी जाती है; दूसरे कॉम्पिटिटिव गेम्स में सिर्फ़ राउंड के बीच।",
+    "playerNames": "आपका इन-गेम नाम",
+    "playerNamesHelp": "इससे GameMate किल फ़ीड में आपकी अपनी लाइनें पहचान पाता है। कई नामों के लिए कॉमा लगाएँ। इसके बिना सिर्फ़ बैनर पर रिएक्शन मिलता है।",
+    "showReactionsAs": "रिएक्शन ऐसे दिखाएँ",
+    "whatToReactTo": "किन चीज़ों पर रिएक्ट करे",
+    "whatToReactToHelp": "GameMate सिर्फ़ उसी पर रिएक्ट कर सकता है जो वह आपकी स्क्रीन पर पढ़ पाता है, इसलिए जल्दी गुज़रने वाले पल छूट सकते हैं।"
+  },
+  "gameMenu": {
+    "theGameGamemateHelpsWith": "वह गेम जिसमें GameMate मदद करता है",
+    "followTheGameIM": "अभी खेले जा रहे गेम को फ़ॉलो करें",
+    "switchesByItselfWhenYou": "आपके गेम में होने पर अपने आप बदल जाता है",
+    "allowGameDetectionInSettings": "पहले सेटिंग्स → गेम्स में गेम पहचानने की अनुमति दें",
+    "game": "गेम",
+    "scanForGames": "गेम्स के लिए स्कैन करें…",
+    "findMyGames": "मेरे गेम्स ढूँढें…"
+  },
+  "gamesPanel": {
+    "gamemateCanFindYourGames": "GameMate आपके गेम्स ढूँढ सकता है और जिसे आप खेल रहे हैं उसे फ़ॉलो कर सकता है। इसके लिए यह:",
+    "scanForGames": "गेम्स के लिए स्कैन करें",
+    "looksUpAWikiFor": "मिले हर गेम के लिए विकी ढूँढता है, wiki.gg और Fandom को सिर्फ़ गेम का नाम भेजकर।",
+    "readsTheNameOfThe": "आपके खेलते समय सामने वाले प्रोग्राम का नाम पढ़ता है, ताकि पता चले कि कौन-सा गेम है।",
+    "keepsEverythingOnThisPc": "सब कुछ इसी PC पर रखता है। इसे बंद करने पर मिले हुए सभी गेम्स भूल जाता है।",
+    "allowAndScanForGames": "अनुमति दें और गेम्स स्कैन करें",
+    "rankedOnlineGameAiHelp": "रैंक्ड ऑनलाइन गेम: मैच के दौरान AI की मदद इसके नियम तोड़ सकती है",
+    "competitive": "कॉम्पिटिटिव",
+    "newWikiAddress": "नया विकी पता",
+    "noWikiFoundPasteIts": "कोई विकी नहीं मिली। उसका पता पेस्ट करें, जैसे https://…fandom.com",
+    "wikiAddressFor": "{{name}} के लिए विकी पता",
+    "checking": "जाँच हो रही है…",
+    "useWiki": "विकी इस्तेमाल करें",
+    "change": "बदलें",
+    "looking": "ढूँढ रहा है…",
+    "otherWikis": "दूसरी विकी",
+    "inUse": "इस्तेमाल में",
+    "use": "इस्तेमाल करें",
+    "remove": "हटाएँ",
+    "addAGameThatS": "चल रहा गेम जोड़ें…",
+    "noProgramsWithAWindow": "विंडो वाला कोई प्रोग्राम नहीं मिला। अपना गेम शुरू करें, फिर दोबारा कोशिश करें।",
+    "runningProgram": "चल रहा प्रोग्राम",
+    "gameName": "गेम का नाम",
+    "add": "जोड़ें",
+    "cancel": "रद्द करें",
+    "findYourGames": "अपने गेम्स ढूँढें",
+    "gamemateKnowsMinecraftOutOf": "GameMate शुरू से ही Minecraft जानता है। आपके बाकी गेम्स इस PC के स्कैन से आते हैं।",
+    "scanning": "स्कैन हो रहा है…",
+    "looksThroughSteamEpicGames": "Steam, Epic Games, Battle.net और Riot में देखता है, और हर गेम की विकी ढूँढता है। कोई गेम इंस्टॉल करने के बाद इसे फिर चलाएँ।",
+    "followTheGameIM": "अभी खेले जा रहे गेम को फ़ॉलो करें",
+    "whenYouPressTheShortcut": "जब आप शॉर्टकट दबाते हैं या साथी देख रहा होता है, तो GameMate सामने वाले गेम पर चला जाता है।",
+    "stopLookingForGames": "गेम्स ढूँढना बंद करें",
+    "turnsDetectionOffAndForgets": "पहचानना बंद करता है और GameMate के ढूँढे सभी गेम्स भूल जाता है।",
+    "turnOff": "बंद करें",
+    "yourGames": "आपके गेम्स",
+    "eachGameSWikiWas": "हर गेम की विकी उसके नाम से ढूँढी गई: कई होने पर सबसे सक्रिय वाली। दूसरी विकी से कोई और चुनें, या बदलें से किसी भी विकी का पता पेस्ट करें।",
+    "competitiveGamesCheckTheGame": "कॉम्पिटिटिव गेम्स: रैंक्ड मैच के दौरान साथी इस्तेमाल करने से पहले गेम के नियम देख लें।",
+    "minecraftModpacks": "Minecraft मॉडपैक",
+    "yourCurseforgeModpacksOnThis": "इस PC पर आपके CurseForge मॉडपैक, ताकि जवाबों को पता हो कि आपके पास कौन-से मॉड हैं। किसी दूसरे लॉन्चर के साथ, GameMate चल रहे पैक के मॉड पढ़ता है।",
+    "modpack": "मॉडपैक",
+    "noModpackRunningRightNow": "अभी कोई मॉडपैक नहीं चल रहा। कोई शुरू करें, या यहाँ चुनें।",
+    "plainMinecraftWithoutMods": "सादा Minecraft, बिना मॉड के।",
+    "detectTheOneIM": "अभी खेले जा रहे पैक को पहचानें",
+    "nonePlainMinecraft": "कोई नहीं (सादा Minecraft)",
+    "builtIn": "बिल्ट-इन",
+    "addedByYou": "आपके जोड़े हुए",
+    "readsTheGameLists": "जब आप <b>गेम्स के लिए स्कैन करें</b> पर क्लिक करते हैं, तब इस PC पर Steam, Epic Games, Battle.net और Riot की गेम लिस्ट और आपके CurseForge Minecraft मॉडपैक पढ़ता है।",
+    "allowGamemateToLook": "GameMate को इस PC पर गेम्स ढूँढने दें।",
+    "wiki": "विकी: {{wiki}}",
+    "noOtherWikisFound": "{{name}} के लिए कोई दूसरी विकी नहीं मिली।",
+    "wikiSize": "{{pages}} पेज, {{editors}} सक्रिय एडिटर",
+    "gamesFound_one": "{{count}} गेम मिला",
+    "gamesFound_other": "{{count}} गेम्स मिले",
+    "usingModpack_one": "{{pack}} इस्तेमाल हो रहा है, {{count}} मॉड।",
+    "usingModpack_other": "{{pack}} इस्तेमाल हो रहा है, {{count}} मॉड।",
+    "mods_one": "{{count}} मॉड",
+    "mods_other": "{{count}} मॉड"
+  },
+  "generalPanel": {
+    "runningFromSourceCodeUpdates": "सोर्स कोड से चल रहा है: अपडेट git से आते हैं।",
+    "checkingForUpdates": "अपडेट देखे जा रहे हैं…",
+    "downloadingVersion": "वर्शन {{available}} डाउनलोड हो रहा है… {{value}}%",
+    "versionIsReadyItInstalls": "वर्शन {{available}} तैयार है। GameMate के रीस्टार्ट होने पर यह इंस्टॉल हो जाएगा।",
+    "gamemateIsUpToDate": "GameMate अप टू डेट है।",
+    "couldnTCheckForUpdates": "अपडेट नहीं देखे जा सके।",
+    "updatesComeFromGamemateS": "अपडेट GitHub पर GameMate की रिलीज़ से आते हैं।",
+    "updates": "अपडेट",
+    "status": "स्थिति",
+    "restartAndUpdate": "रीस्टार्ट करें और अपडेट करें",
+    "checkNow": "अभी देखें",
+    "checkForUpdatesAutomatically": "अपडेट अपने आप देखें",
+    "looksForANewVersion": "GameMate शुरू होने पर और हर कुछ घंटों में नया वर्शन देखता है, और उसे बैकग्राउंड में डाउनलोड करता है।",
+    "inGameWindow": "इन-गेम विंडो",
+    "shortcut": "शॉर्टकट",
+    "anotherAppIsUsingThis": "यह शॉर्टकट कोई दूसरा ऐप इस्तेमाल कर रहा है, इसलिए यह बंद है। कोई दूसरा चुनें, या वह ऐप बंद करके GameMate को रीस्टार्ट करें।",
+    "opensASmallWindowOver": "सवाल पूछने के लिए आपके गेम के ऊपर एक छोटी विंडो खोलता है।",
+    "voiceShortcut": "वॉइस शॉर्टकट",
+    "anotherAppIsUsingThis2": "यह शॉर्टकट कोई दूसरा ऐप इस्तेमाल कर रहा है, इसलिए यह बंद है। कोई दूसरा चुनें।",
+    "opensTheInGameWindow": "बोलकर पूछे गए सवाल को सुनने के लिए इन-गेम विंडो खोलता है। वॉइस इनपुट चालू होने पर काम करता है (सेटिंग्स → आवाज़)।",
+    "sendAScreenshotWithQuestions": "सवालों के साथ स्क्रीनशॉट भेजें",
+    "letsGamemateSeeWhatYou": "गेम से पूछने पर GameMate देख पाता है कि आप क्या देख रहे हैं।",
+    "whenYouCloseTheWindow": "विंडो बंद करने पर",
+    "whenGamemateQuitsItFrees": "GameMate बंद होने पर AI मॉडल को तुरंत छोड़ देता है, ताकि बैकग्राउंड में कुछ न चलता रहे।",
+    "keepRunningInTheTray": "ट्रे में चलता रहे",
+    "keepsTheInGameShortcuts": "इन-गेम शॉर्टकट और साथी काम करते रहते हैं। ट्रे आइकन से बंद करें। कुछ मिनट खाली रहने पर AI मॉडल छोड़ दिया जाता है।",
+    "closingTheWindowQuitsGamemate": "विंडो बंद करने से GameMate बंद हो जाता है। जब तक आप इसे फिर शुरू नहीं करते, इन-गेम शॉर्टकट और साथी रुके रहते हैं।",
+    "language": "भाषा",
+    "languageHelp": "GameMate की विंडो और AI के जवाबों के लिए। गेम के नाम और विकी पेज जैसे हैं वैसे ही रहते हैं।",
+    "chatScreenshot": "डिफ़ॉल्ट रूप से मेरे सवालों के साथ स्क्रीनशॉट भेजें",
+    "chatScreenshotHelp": "चैट विंडो में, हर नई चैट में 📷 चालू रहता है।"
+  },
+  "modelMenu": {
+    "builtInAi": "बिल्ट-इन AI",
+    "auto": "✦ ऑटो",
+    "chooseAModel": "मॉडल चुनें",
+    "whichAiAnswers": "कौन-सा AI जवाब दे",
+    "whichAiAnswersYourQuestions": "कौन-सा AI आपके सवालों के जवाब दे",
+    "picksThisPcOrGemini": "हर सवाल के लिए यह PC या Gemini चुनता है",
+    "picksThisPcOrGemini2": "हर सवाल के लिए यह PC या Gemini चुनता है। पहले Gemini सेट अप करें।",
+    "onThisPc": "इस PC पर",
+    "canSeeScreenshots": "{{label}} · स्क्रीनशॉट देख सकता है",
+    "downloadAModel": "मॉडल डाउनलोड करें…",
+    "runsOnYourGraphicsCard": "आपके ग्राफ़िक्स कार्ड पर चलता है, ऑफ़लाइन काम करता है",
+    "canSeeScreenshots2": "स्क्रीनशॉट देख सकता है",
+    "textOnly": "सिर्फ़ टेक्स्ट",
+    "geminiCloud": "Gemini (क्लाउड)",
+    "setUpGemini": "Gemini सेट अप करें…",
+    "smarterAnswersWithYourOwn": "आपकी अपनी Google API कुंजी से ज़्यादा समझदार जवाब",
+    "manageModels": "मॉडल मैनेज करें…"
+  },
+  "modelsPanel": {
+    "aiModelsOnThisPc": "इस PC पर AI मॉडल",
+    "theyRunOnYourGraphics": "ये आपके ग्राफ़िक्स कार्ड पर चलते हैं और ऑफ़लाइन काम करते हैं: आप जो भी पूछते हैं, वह इस PC से बाहर नहीं जाता। पहला डाउनलोड GameMate का AI इंजन (37 MB) भी इंस्टॉल करता है।",
+    "recommended": "सुझाया गया",
+    "cancel": "रद्द करें",
+    "keep": "रखें",
+    "inUse": "✓ इस्तेमाल में",
+    "use": "इस्तेमाल करें",
+    "delete": "{{size}} मिटाएँ",
+    "tryAgain": "दोबारा कोशिश करें",
+    "saveGraphicsMemory": "गेम्स के लिए ज़्यादा ग्राफ़िक्स मेमोरी छोड़ें",
+    "saveGraphicsMemoryHelp": "स्क्रीनशॉट ग्राफ़िक्स कार्ड के बजाय आपके PC की दूसरी ग्राफ़िक्स चिप से पढ़ता है, या वह न हो तो प्रोसेसर से। कार्ड की लगभग 0.9 GB मेमोरी खाली होती है; स्क्रीनशॉट पढ़ने में कुछ सेकंड ज़्यादा लगते हैं।",
+    "alreadyUseOllamaGamemateCan": "पहले से Ollama इस्तेमाल करते हैं? GameMate बिल्ट-इन मॉडल की जगह उसके मॉडल इस्तेमाल कर सकता है।",
+    "useMyOllamaModels": "मेरे Ollama मॉडल इस्तेमाल करें",
+    "ollamaMustBeRunningGamemate": "Ollama चल रहा होना चाहिए। GameMate बंद होने पर GameMate उसका मॉडल छोड़ देता है।",
+    "model": "मॉडल",
+    "modelsMarkedCanSeeScreenshots": "👁 वाले मॉडल स्क्रीनशॉट देख सकते हैं।",
+    "ollamaModel": "Ollama मॉडल",
+    "noModels": "कोई मॉडल नहीं",
+    "reload": "फिर से लोड करें",
+    "cloudModels": "क्लाउड मॉडल",
+    "runOnAnotherCompanyS": "किसी दूसरी कंपनी के सर्वर पर चलते हैं। हर एक कुछ भी भेजने से पहले आपकी सहमति माँगता है।",
+    "smarterAnswersAndBetterScreen": "आपकी अपनी Google API कुंजी से ज़्यादा समझदार जवाब और स्क्रीन की बेहतर समझ।",
+    "setUp": "सेट अप करें",
+    "modelDetails": "{{description}} {{size}}। स्क्रीनशॉट देख सकता है।",
+    "download": "डाउनलोड करें",
+    "commentaryWriter": "टिप्पणी लेखक",
+    "commentaryWriterIntro": "एक छोटा AI मॉडल जिसे GameMate ने साथी की टिप्पणियाँ लिखने के लिए ट्रेन किया है। यह एक सेकंड से कम में टिप्पणी लिखता है और इसे लगभग 1 GB मेमोरी चाहिए, इसलिए टिप्पणियाँ जल्दी और ज़्यादा बार आती हैं। आपका मुख्य मॉडल अब भी स्क्रीन देखता है और आपके सवालों के जवाब देता है।",
+    "commentaryDetails": "{{description}} {{size}}। सिर्फ़ टिप्पणियाँ लिखता है, अंग्रेज़ी में।",
+    "useCommentaryModel": "इससे टिप्पणियाँ लिखें",
+    "useCommentaryModelHelp": "दूसरी भाषाओं में टिप्पणियाँ, और जो यह नहीं लिख पाता, वे आपके मुख्य मॉडल से आती हैं।",
+    "commentaryGemini": "अभी आपकी टिप्पणियाँ Gemini लिखता है, इसलिए यह मॉडल इस्तेमाल नहीं होता।",
+    "commentaryEnglishOnly": "यह अभी सिर्फ़ अंग्रेज़ी में लिखता है, इसलिए GameMate की भाषा में टिप्पणियाँ आपका मुख्य मॉडल लिखता है।",
+    "commentaryLicense": "LFM2.5 को Liquid AI ने बनाया है और यह <license>LFM Open License v1.0</license> के तहत इस्तेमाल होता है, जो सालाना US$10 मिलियन या उससे ज़्यादा कमाई वाले संगठनों के कमर्शियल इस्तेमाल को कवर नहीं करता।",
+    "killfeedReader": "किल फ़ीड रीडर",
+    "killfeedReaderIntro": "शूटर गेम की किल फ़ीड में नाम आपके प्रोसेसर से पढ़ता है, ताकि आपका ग्राफ़िक्स कार्ड गेम के लिए खाली रहे। अभी VALORANT और Apex Legends के लिए; इसके बिना, आपका मुख्य मॉडल स्क्रीनशॉट से फ़ीड पढ़ता है।",
+    "killfeedDetails": "{{description}} {{size}}। प्रोसेसर पर चलता है।"
+  },
+  "pictures": {
+    "openOnThe": "{{wiki}} पर खोलें"
+  },
+  "privacyPanel": {
+    "findingYourGames": "आपके गेम्स ढूँढना",
+    "givenOnYouCanAlso": "{{value}} को दी गई। आप इसे {{where}} में भी बदल सकते हैं।",
+    "givenYouCanAlsoChange": "दी गई। आप इसे {{where}} में भी बदल सकते हैं।",
+    "notGivenYouCanTurn": "नहीं दी गई। आप इसे {{where}} में चालू कर सकते हैं।",
+    "withdraw": "वापस लें",
+    "off": "बंद",
+    "termsOfUseAndPrivacy": "उपयोग की शर्तें और गोपनीयता नीति",
+    "youAcceptedTheTermsOf": "आपने {{value}} को उपयोग की शर्तें स्वीकार कीं।",
+    "readTheTermsOfUse": "उपयोग की शर्तें पढ़ें",
+    "readThePrivacyPolicy": "गोपनीयता नीति पढ़ें",
+    "yourConsents": "आपकी सहमतियाँ",
+    "optionalFeaturesThatSendData": "वैकल्पिक फ़ीचर जो दूसरी सेवाओं को डेटा भेजते हैं। किसी एक को वापस लेने से सिर्फ़ वही फ़ीचर बंद होता है; बाकी GameMate काम करता रहता है।",
+    "settingsGames": "सेटिंग्स → गेम्स",
+    "onlineLookups": "ऑनलाइन जानकारी ढूँढना",
+    "settingsAiOnline": "सेटिंग्स → AI और ऑनलाइन",
+    "webSearchGoogle": "वेब सर्च (Google)",
+    "howGamemateHandlesYourData": "GameMate आपका डेटा कैसे संभालता है",
+    "storedOnThisPc": "इस PC पर सेव",
+    "onlyInYourWindowsUser": "सिर्फ़ आपके Windows यूज़र फ़ोल्डर में, जिसे सिर्फ़ आपका Windows अकाउंट पढ़ सकता है।",
+    "yourSettings": "आपकी सेटिंग्स।",
+    "yourGeminiApiKeyIf": "आपकी Gemini API कुंजी, अगर आपने जोड़ी है, Windows द्वारा एन्क्रिप्ट की गई।",
+    "aiModelsGamemateSAi": "AI मॉडल, GameMate का AI इंजन और आपके डाउनलोड किए स्पीच मॉडल और आवाज़ें।",
+    "gamesFoundOrAddedTheir": "मिले या जोड़े गए गेम्स: उनका नाम, फ़ोल्डर या प्रोग्राम, और विकी पता।",
+    "openLogFolder": "लॉग फ़ोल्डर खोलें",
+    "whenYouUseOnlineFeatures": "जब आप ऑनलाइन फ़ीचर इस्तेमाल करते हैं",
+    "theseServicesHandleYourData": "ये सेवाएँ आपका डेटा GameMate की नहीं, अपनी शर्तों के तहत संभालती हैं।",
+    "withdrawMyAcceptanceOfThe": "शर्तों की मेरी स्वीकृति वापस लें",
+    "gamemateStopsWorkingUntilYou": "जब तक आप उपयोग की शर्तें फिर से स्वीकार नहीं करते, GameMate काम करना बंद कर देता है: यह ऑफ़लाइन हो जाता है, साथी रुक जाता है और AI बंद हो जाता है। जब तक आप अपना डेटा भी नहीं मिटाते, आपकी सेटिंग्स और डाउनलोड बने रहते हैं।",
+    "yesWithdraw": "हाँ, वापस लें",
+    "cancel": "रद्द करें",
+    "withdrawAcceptance": "स्वीकृति वापस लें",
+    "deleteMyData": "मेरा डेटा मिटाएँ",
+    "removesEverythingAboveFromThis": "ऊपर की सारी चीज़ें इस PC से हटाता है और GameMate को ऐसे रीसेट करता है जैसे अभी इंस्टॉल हुआ हो। Google को पहले से भेजा गया डेटा Google की नीतियों के तहत आता है।",
+    "doneEverythingGamemateStoredHas": "हो गया। GameMate ने जो कुछ भी सेव किया था, वह मिटा दिया गया है।",
+    "yesDeleteEverything": "हाँ, सब कुछ मिटाएँ",
+    "summary": {
+      "runsOnYourPc": "<b>आपके PC पर चलता है।</b> कोई अकाउंट नहीं, कोई विज्ञापन नहीं, कोई एनालिटिक्स नहीं। GameMate के डेवलपर्स को आपसे कुछ नहीं मिलता।",
+      "yourScreen": "<b>आपकी स्क्रीन</b> सिर्फ़ तब कैप्चर होती है जब आप पूछते हैं, या जब साथी आपका गेम देखने पर सेट हो। स्क्रीनशॉट मेमोरी में रहते हैं और कभी डिस्क पर सेव नहीं होते।",
+      "findingYourGames": "<b>आपके गेम्स ढूँढना</b> सिर्फ़ तब होता है जब आप सेटिंग्स → गेम्स में इसकी अनुमति देते हैं। तब GameMate आपके लॉन्चरों की गेम लिस्ट (Steam, Epic Games, Battle.net, Riot), आपके CurseForge मॉडपैक और सामने वाले प्रोग्राम का नाम पढ़ता है। यह आपके PC पर ही रहता है; विकी ढूँढने के लिए सिर्फ़ गेम्स के नाम wiki.gg और Fandom को भेजे जाते हैं।",
+      "yourMicrophone": "<b>आपका माइक्रोफ़ोन</b> सिर्फ़ तब इस्तेमाल होता है जब वॉइस इनपुट चालू हो और आप वॉइस शॉर्टकट या 🎤 दबाएँ। बोली इसी PC पर टेक्स्ट में बदली जाती है।",
+      "chatsAndTheCompanionLog": "<b>चैट और साथी का लॉग</b> सिर्फ़ तब तक रखे जाते हैं जब तक GameMate खुला है।",
+      "onlineFeaturesAreOffUntil": "<b>ऑनलाइन फ़ीचर तब तक बंद रहते हैं जब तक आप उन्हें चालू नहीं करते:</b> आपके गेम की विकी या Modrinth पर जानकारी ढूँढना (सिर्फ़ विषय भेजा जाता है) और Google Gemini (आपके सवाल और स्क्रीनशॉट Google को भेजे जाते हैं)। डाउनलोड एक बार होते हैं, जब आप उन्हें माँगते हैं: AI, स्पीच और आवाज़ के मॉडल Hugging Face से आते हैं, और GameMate का AI इंजन GitHub से। अपडेट जाँच GitHub से GameMate का नया वर्शन पूछती है (आप इसे बंद कर सकते हैं)।"
+    },
+    "aLogOfWhatGamemate": "GameMate ने क्या किया (जैसे AI शुरू करना या अपडेट देखना), इसका लॉग, समस्याएँ ढूँढने के लिए। इसमें कभी आपके सवाल या जवाब नहीं होते और यह कभी कहीं नहीं भेजा जाता।",
+    "geminiTerms": "<b>Google Gemini:</b> <terms>Gemini API शर्तें</terms> और <privacy>Google गोपनीयता नीति</privacy>।",
+    "wikiLicenses": "<b>गेम विकी और Modrinth:</b> हर विकी का टेक्स्ट उसके अपने लाइसेंस के तहत है (उसे इस्तेमाल करने वाले हर जवाब के साथ दिखाया जाता है, जैसे <link>minecraft.wiki</link>), इसलिए जवाबों में पेज का लिंक होता है। जवाबों की तस्वीरें उन्हीं विकी से डाउनलोड होती हैं और वहाँ उनके पेज से लिंक होती हैं।"
+  },
+  "recipeCard": {
+    "craftingGridFor": "{{item}} के लिए क्राफ़्टिंग ग्रिड",
+    "anyArrangementWorks": "किसी भी क्रम में रखें, चलेगा"
+  },
+  "searchSuggestions": {
+    "googleSearchSuggestions": "Google सर्च सुझाव"
+  },
+  "setupCard": {
+    "downloadGamemateSAi": "GameMate का AI डाउनलोड करें",
+    "oneDownloadAndGamemateRuns": "एक डाउनलोड और GameMate इस PC पर चलने लगता है, ऑफ़लाइन भी। आप जो भी पूछते हैं, वह आपके कंप्यूटर से बाहर नहीं जाता।",
+    "cancel": "रद्द करें",
+    "otherModels": "दूसरे मॉडल",
+    "iUseOllama": "मेरे पास Ollama है",
+    "useGeminiCloud": "Gemini (क्लाउड) इस्तेमाल करें",
+    "downloading": "{{name}} डाउनलोड हो रहा है: {{size}} का {{percent}}%",
+    "download": "{{name}} डाउनलोड करें ({{size}})"
+  },
+  "shortcutField": {
+    "thatIsAlreadyGamemateS": "यह पहले से GameMate का दूसरा शॉर्टकट है।",
+    "pressTheNewShortcutEsc": "नया शॉर्टकट दबाएँ… (रद्द करने के लिए Esc)",
+    "change": "बदलें",
+    "default": "डिफ़ॉल्ट"
+  },
+  "sources": {
+    "source": "स्रोत:"
+  },
+  "voicePanel": {
+    "remove": "हटाएँ",
+    "download": "डाउनलोड करें",
+    "talkToGamemate": "GameMate से बात करें",
+    "speechIsTurnedIntoText": "बोली इसी PC पर टेक्स्ट में बदली जाती है। आपकी आवाज़ कभी इससे बाहर नहीं जाती।",
+    "askWithYourMicrophone": "अपने माइक्रोफ़ोन से पूछें",
+    "isUsedByAnotherApp": "{{voiceShortcut}} कोई दूसरा ऐप इस्तेमाल कर रहा है। इसकी जगह 🎤 बटन इस्तेमाल करें।",
+    "inAGamePressAnd": "गेम में {{voiceShortcut}} दबाएँ और बोलकर पूछें। आपके रुकने पर GameMate सुनना बंद कर देता है।",
+    "downloadTheSelectedModelOnce": "शुरू करने के लिए चुना हुआ मॉडल एक बार डाउनलोड करें। उसके बाद यह ऑफ़लाइन काम करता है।",
+    "gamemateSVoice": "GameMate की आवाज़",
+    "usesTheVoicesBuiltInto": "Windows में बनी आवाज़ें इस्तेमाल करता है।",
+    "voiceType": "आवाज़ का प्रकार",
+    "windowsVoices": "Windows आवाज़ें",
+    "downloaded": "डाउनलोड हो गया।",
+    "downloadItOnceToUse": "इस्तेमाल करने के लिए इसे एक बार डाउनलोड करें। तब तक GameMate Windows की आवाज़ इस्तेमाल करता है।",
+    "readAnswersAloud": "जवाब बोलकर सुनाएँ",
+    "readCompanionCommentsAloud": "साथी की टिप्पणियाँ बोलकर सुनाएँ",
+    "voice": "आवाज़",
+    "windowsDefault": "Windows डिफ़ॉल्ट",
+    "volume": "वॉल्यूम",
+    "speed": "गति",
+    "tryIt": "आज़माएँ",
+    "hiIMGamemateWatch": "नमस्ते, मैं GameMate हूँ। Creepers से बचकर रहना!",
+    "testVoice": "🔊 आवाज़ टेस्ट करें",
+    "speechModels": {
+      "fast": {
+        "label": "तेज़ स्पीच मॉडल",
+        "help": "सबसे तेज़, लेकिन ज़्यादा बार गलत सुनता है।"
+      },
+      "accurate": {
+        "label": "सटीक स्पीच मॉडल",
+        "help": "तेज़ वाले से कम गलत सुनता है।"
+      },
+      "best": {
+        "label": "सबसे अच्छा स्पीच मॉडल",
+        "help": "Whisper Small: आपको सबसे अच्छी तरह समझता है, अलग-अलग लहजों में भी, लेकिन कुछ सेकंड ज़्यादा लेता है। सुझाया गया।"
+      }
+    },
+    "mb": "{{size}} MB",
+    "downloading": "डाउनलोड हो रहा है… {{percent}}%",
+    "speakAnswers": {
+      "off": "कभी नहीं",
+      "voice": "जब मैं बोलकर पूछूँ",
+      "always": "हमेशा"
+    },
+    "naturalVoice": "नैचुरल आवाज़",
+    "englishOnlyModel": "आपके पास सिर्फ़-अंग्रेज़ी वर्शन है। {{language}} में बात करने के लिए बहुभाषी वर्शन डाउनलोड करें।",
+    "englishOnlyWorks": "आपके पास सिर्फ़-अंग्रेज़ी वर्शन है। यह अंग्रेज़ी के लिए काम करता है; दूसरी भाषाओं में भी बात करने के लिए बहुभाषी वर्शन डाउनलोड करें।",
+    "naturalVoices": {
+      "female": "महिला {{number}}",
+      "male": "पुरुष {{number}}"
+    },
+    "noWindowsVoice": "अभी कोई Windows आवाज़ {{language}} नहीं बोलती।",
+    "addWindowsVoices": "Windows आवाज़ें जोड़ें",
+    "addWindowsVoicesHelp": "Windows की स्पीच सेटिंग्स खोलता है, जहाँ आप और भाषाओं में आवाज़ें जोड़ सकते हैं। उसके बाद यहाँ वापस आएँ।",
+    "naturalNotForLanguage": "नैचुरल आवाज़ {{language}} नहीं बोलती, इसलिए GameMate इसके लिए Windows की आवाज़ इस्तेमाल करता है।",
+    "naturalDescription": "Supertonic, एक नैचुरल-सी लगने वाली आवाज़ जो इस PC पर चलती है और ऑफ़लाइन काम करती है।",
+    "naturalHelp": "नैचुरल आवाज़ Supertonic 3 है (OpenRAIL-M लाइसेंस): एक बार डाउनलोड करें, फिर यह ऑफ़लाइन काम करती है। यह GameMate की हर भाषा बोलती है।",
+    "naturalSupertonic": "नैचुरल (Supertonic)"
+  },
+  "useLocalModels": {
+    "builtInAi": "बिल्ट-इन AI",
+    "gb": "{{value}} GB",
+    "mb": "{{sizeMb}} MB"
+  },
+  "useSettings": {
+    "noModelsInstalledRunOllama": "कोई मॉडल इंस्टॉल नहीं है। चलाएँ: ollama pull qwen3.5:2b"
+  },
+  "legalReader": {
+    "termsOfUse": "उपयोग की शर्तें",
+    "privacyPolicy": "गोपनीयता नीति",
+    "close": "बंद करें",
+    "readEnglish": "बाध्यकारी अंग्रेज़ी वर्शन पढ़ें",
+    "backToTranslation": "{{language}} पर वापस जाएँ"
+  },
+  "termsGate": {
+    "ourTermsHaveChanged": "हमारी शर्तें बदल गई हैं",
+    "welcomeToGamemate": "GameMate में आपका स्वागत है",
+    "pleaseReadAndAcceptThe": "GameMate इस्तेमाल करते रहने के लिए कृपया अपडेट की गई उपयोग की शर्तें पढ़ें और स्वीकार करें।",
+    "beforeYouStartHereIs": "शुरू करने से पहले, जानिए GameMate आपका डेटा कैसे संभालता है।",
+    "featuresThatSendDataTo": "दूसरी सेवाओं को डेटा भेजने वाले फ़ीचर तब तक बंद रहते हैं जब तक आप उन्हें चालू नहीं करते। आप अपनी स्वीकृति कभी भी सेटिंग्स → गोपनीयता और कानूनी में वापस ले सकते हैं।",
+    "deleteEverythingGamemateStored": "GameMate ने जो कुछ सेव किया है, सब मिटाएँ?",
+    "delete": "मिटाएँ",
+    "cancel": "रद्द करें",
+    "deleteMyData": "मेरा डेटा मिटाएँ",
+    "quitGamemate": "GameMate बंद करें",
+    "acceptAndContinue": "स्वीकार करें और जारी रखें",
+    "pleaseReadTheFull": "कृपया पूरी <terms>उपयोग की शर्तें</terms> और <privacy>गोपनीयता नीति</privacy> पढ़ें।",
+    "iAm16OrOlder": "मेरी उम्र 16 साल या उससे ज़्यादा है, या मेरे माता-पिता या अभिभावक मेरे GameMate इस्तेमाल करने के लिए सहमत हैं।",
+    "iAcceptTheTerms": "मुझे उपयोग की शर्तें स्वीकार हैं और मैंने गोपनीयता नीति पढ़ ली है।",
+    "englishBinding": "अनुवाद आपकी सुविधा के लिए हैं; <english>अंग्रेज़ी वर्शन</english> ही बाध्यकारी है।"
+  },
+  "app": {
+    "entireScreen": "पूरी स्क्रीन",
+    "newChat": "नई चैट",
+    "settings": "सेटिंग्स",
+    "whatCanIHelpWith": "मैं किसमें मदद करूँ?",
+    "whatSOnMyScreen": "📷 मेरी स्क्रीन पर क्या है?",
+    "screenshotSentWithThisQuestion": "इस सवाल के साथ स्क्रीनशॉट भेजा गया",
+    "capturingScreen": "स्क्रीन कैप्चर हो रही है…",
+    "thinking": "सोच रहा है…",
+    "downloadGamemateSAiTo": "शुरू करने के लिए GameMate का AI डाउनलोड करें",
+    "pickAnAiModelIn": "पहले सेटिंग्स में AI मॉडल चुनें",
+    "listening": "सुन रहा है…",
+    "workingOutWhatYouSaid": "समझ रहा है कि आपने क्या कहा…",
+    "askAboutYourScreenOr": "अपनी स्क्रीन के बारे में पूछें… (या बस Enter दबाएँ)",
+    "askAbout": "{{value}} के बारे में पूछें…",
+    "sendAScreenshotWithYour": "अपने सवाल के साथ स्क्रीनशॉट भेजें",
+    "screenshot": "📷 स्क्रीनशॉट",
+    "screenshotSource": "स्क्रीनशॉट का स्रोत",
+    "nothingToCapture": "कैप्चर करने के लिए कुछ नहीं",
+    "screenAccessIsOffCompanion": "स्क्रीन एक्सेस बंद है (साथी: बंद)।",
+    "thisModelCanTSee": "यह मॉडल स्क्रीनशॉट नहीं देख सकता।",
+    "listeningClickToStop": "सुन रहा है, रोकने के लिए क्लिक करें",
+    "askByVoice": "बोलकर पूछें",
+    "send": "भेजें",
+    "whatIsHappeningOnMy": "मेरी स्क्रीन पर क्या हो रहा है?",
+    "pressShortcutInAnyGame": "किसी भी गेम में उसे छोड़े बिना पूछने के लिए <kbd>{{shortcut}}</kbd> दबाएँ।",
+    "shortcutIsUsedByAnother": "<kbd>{{shortcut}}</kbd> कोई दूसरा ऐप इस्तेमाल कर रहा है, इसलिए इन-गेम शॉर्टकट बंद है। वह ऐप बंद करें और GameMate को रीस्टार्ट करें।",
+    "stop": "रोकें"
+  },
+  "overlay": {
+    "dragToMove": "हटाने के लिए खींचें",
+    "openGamemateAndSetUp": "पहले GameMate खोलें और AI मॉडल सेट अप करें",
+    "listening": "सुन रहा है…",
+    "workingOutWhatYouSaid": "समझ रहा है कि आपने क्या कहा…",
+    "askGamemate": "GameMate से पूछें…",
+    "listeningClickToStop": "सुन रहा है, रोकने के लिए क्लिक करें",
+    "askByVoice": "बोलकर पूछें ({{voiceShortcut}})",
+    "thisModelCanTSee": "यह मॉडल तस्वीरें नहीं देख सकता",
+    "screenshotOnGamemateSeesYour": "स्क्रीनशॉट चालू: GameMate आपकी स्क्रीन देखता है",
+    "screenshotOff": "स्क्रीनशॉट बंद",
+    "newConversation": "नई बातचीत",
+    "thinking": "सोच रहा है…",
+    "answersComeFromGeminiGoogle": "जवाब Gemini (Google) से आते हैं",
+    "gamematePicksTheLocalAi": "GameMate हर सवाल के लिए लोकल AI या Gemini चुनता है",
+    "auto": "✦ ऑटो",
+    "theGameGamemateHelpsWith": "वह गेम जिसमें GameMate मदद करता है",
+    "autoGemini": "✦ ऑटो: ☁ Gemini",
+    "autoThisPc": "✦ ऑटो: यह PC",
+    "hint": "पूछने के लिए Enter · छिपाने के लिए Esc",
+    "hintWithVoice": "पूछने के लिए Enter · बोलने के लिए {{voiceShortcut}} · छिपाने के लिए Esc"
+  },
+  "settingsScreen": {
+    "settings": "सेटिंग्स",
+    "backToChat": "← चैट पर वापस",
+    "tabs": {
+      "general": "सामान्य",
+      "games": "गेम्स",
+      "models": "मॉडल",
+      "companion": "साथी",
+      "voice": "आवाज़",
+      "ai": "AI और ऑनलाइन",
+      "privacy": "गोपनीयता और कानूनी"
+    }
+  },
+  "useVoiceInput": {
+    "sorryIDidnTCatch": "माफ़ कीजिए, मैं समझ नहीं पाया।",
+    "gamemateIsNotAllowedTo": "GameMate को माइक्रोफ़ोन इस्तेमाल करने की अनुमति नहीं है। Windows की माइक्रोफ़ोन गोपनीयता सेटिंग्स देखें।",
+    "englishOnly": "आपका स्पीच मॉडल सिर्फ़ अंग्रेज़ी समझता है। {{language}} में बात करने के लिए सेटिंग्स → आवाज़ में बहुभाषी वर्शन डाउनलोड करें।",
+    "notDownloaded": "GameMate से बात करने के लिए सेटिंग्स → आवाज़ में स्पीच मॉडल डाउनलोड करें।"
+  },
+  "companion": {
+    "modes": {
+      "disabled": {
+        "label": "बंद",
+        "help": "आपकी स्क्रीन कभी नहीं देखता, शॉर्टकट दबाने पर भी नहीं।"
+      },
+      "on-demand": {
+        "label": "माँगने पर",
+        "help": "सिर्फ़ आपके पूछने पर देखता है और जवाब देता है।"
+      },
+      "observation": {
+        "label": "निगरानी",
+        "help": "आपका गेम देखता है और जो होता है उसका लॉग रखता है, बिना पॉप-अप के।"
+      },
+      "commentary": {
+        "label": "कमेंट्री",
+        "help": "आपका गेम देखता है और कुछ अहम होने पर एक छोटी टिप्पणी पॉप-अप करता है।"
+      },
+      "quiet": {
+        "label": "चुपचाप",
+        "help": "चुपचाप देखता है और जो देखा उसे सिर्फ़ आपके सवालों के जवाब देने में इस्तेमाल करता है।"
+      }
+    },
+    "frequencies": {
+      "rare": "कभी-कभार (सिर्फ़ बड़े पल)",
+      "normal": "संतुलित",
+      "frequent": "बार-बार"
+    },
+    "status": {
+      "off": "नहीं देख रहा",
+      "paused": "रुका हुआ",
+      "no-model": "देखना शुरू करने के लिए मॉडल चुनें",
+      "needs-consent": "देखना शुरू करने के लिए सेटिंग्स → गेम्स में गेम पहचानने की अनुमति दें",
+      "waiting-for-game": "किसी गेम के सक्रिय विंडो बनने का इंतज़ार",
+      "watching": "देख रहा है",
+      "analyzing": "आपकी स्क्रीन देख रहा है…",
+      "blocked-by-fullscreen": "गेम एक्सक्लूसिव फ़ुलस्क्रीन में चल रहा है, इसलिए GameMate उसे नहीं देख सकता। इसे विंडोड फ़ुलस्क्रीन पर करें।"
+    },
+    "intensities": {
+      "subtle": "हल्की",
+      "normal": "सामान्य",
+      "expressive": "ज़ोरदार"
+    },
+    "humorLevels": {
+      "none": "कोई नहीं",
+      "light": "हल्का",
+      "playful": "मस्तीभरा"
+    },
+    "delivery": {
+      "text": "टेक्स्ट",
+      "voice": "आवाज़",
+      "both": "टेक्स्ट और आवाज़"
+    },
+    "categories": {
+      "combat": "लड़ाई (किल, डेथ, मल्टीकिल)",
+      "skill": "स्किल (क्लच, बाल-बाल बचना)",
+      "teamwork": "टीमवर्क (बचाव, टीम वाइप)",
+      "objectives": "ऑब्जेक्टिव (कैप्चर, प्लांट, डिफ़्यूज़)",
+      "match": "मैच (राउंड, स्ट्रीक, जीत, हार)",
+      "world": "खतरे और खोजें"
+    }
+  },
+  "errors": {
+    "ai": {
+      "noLocalModel": "पहले GameMate में AI मॉडल डाउनलोड करें (सेटिंग्स → मॉडल)।",
+      "pickModel": "पहले GameMate में मॉडल चुनें।"
+    },
+    "gemini": {
+      "turnOn": "पहले GameMate की सेटिंग्स (AI और ऑनलाइन) में Gemini चालू करें।",
+      "addKey": "पहले GameMate की AI सेटिंग्स में अपनी Gemini API कुंजी जोड़ें।",
+      "pickModel": "GameMate की AI सेटिंग्स में Gemini मॉडल चुनें।",
+      "timeout": "Gemini ने जवाब देने में बहुत देर लगाई।",
+      "unreachable": "Gemini तक नहीं पहुँच सके। अपना इंटरनेट कनेक्शन जाँचें।",
+      "badKey": "Gemini ने API कुंजी अस्वीकार कर दी। इसे GameMate की AI सेटिंग्स में जाँचें।",
+      "keyNotAllowed": "इस API कुंजी को Gemini इस्तेमाल करने की अनुमति नहीं है।",
+      "usageLimit": "Gemini की इस्तेमाल सीमा पूरी हो गई। बाद में फिर कोशिश करें या लोकल मॉडल पर जाएँ।",
+      "error": "Gemini त्रुटि {{status}}{{detail}}",
+      "noAnswer": "Gemini ने जवाब नहीं दिया{{reason}}।",
+      "needConsent": "पहले Gemini की शर्तों से सहमति दें।",
+      "notAKey": "यह Gemini API कुंजी जैसी नहीं लगती।",
+      "cantEncrypt": "Windows इस PC पर कुंजी एन्क्रिप्ट नहीं कर सकता, इसलिए GameMate इसे सेव नहीं करेगा।",
+      "busy": "Gemini अभी व्यस्त है (Google के अनुसार माँग ज़्यादा है)। थोड़ी देर में फिर कोशिश करें, या बिल्ट-इन AI पर जाएँ।"
+    },
+    "builtin": {
+      "failed": "बिल्ट-इन AI विफल रहा: {{detail}}",
+      "timeout": "बिल्ट-इन AI ने जवाब देने में बहुत देर लगाई।",
+      "stopped": "बिल्ट-इन AI अचानक रुक गया। फिर कोशिश करें।",
+      "tooLong": "यह बातचीत बिल्ट-इन AI के लिए बहुत लंबी है। नई चैट शुरू करें।",
+      "noGraphicsMemory": "बिल्ट-इन AI शुरू नहीं हो सका: इस मॉडल के लिए पर्याप्त ग्राफ़िक्स मेमोरी नहीं है। छोटा मॉडल आज़माएँ या दूसरे प्रोग्राम बंद करें।",
+      "badModelFile": "बिल्ट-इन AI शुरू नहीं हो सका: मॉडल फ़ाइल लोड नहीं हो सकी। इसे सेटिंग्स → मॉडल में मिटाएँ और फिर से डाउनलोड करें।",
+      "couldNotStart": "बिल्ट-इन AI शुरू नहीं हो सका ({{detail}})।",
+      "slowStart": "बिल्ट-इन AI शुरू नहीं हो सका: मॉडल लोड करने में बहुत देर लगी।"
+    },
+    "ollama": {
+      "timeout": "Ollama ने जवाब देने में बहुत देर लगाई।",
+      "unreachable": "{{url}} पर Ollama तक नहीं पहुँच सके। क्या यह चल रहा है?",
+      "error": "Ollama त्रुटि {{detail}}",
+      "noAnswer": "Ollama ने कोई जवाब नहीं भेजा।"
+    },
+    "download": {
+      "engineIncomplete": "AI इंजन अधूरा है",
+      "diskSpace": "डिस्क पर पर्याप्त खाली जगह नहीं है ({{size}} GB चाहिए)",
+      "failed": "{{name}} डाउनलोड नहीं हो सका: {{reason}}",
+      "serverAnswered": "सर्वर ने {{status}} जवाब दिया",
+      "incomplete": "डाउनलोड अधूरा है",
+      "damaged": "डाउनलोड की गई फ़ाइल खराब है (checksum मेल नहीं खाता)",
+      "voiceFailed": "आवाज़ डाउनलोड नहीं हो सकी: {{reason}}",
+      "speechModelFailed": "स्पीच मॉडल डाउनलोड नहीं हो सका: {{reason}}"
+    },
+    "games": {
+      "needConsent": "पहले GameMate को गेम्स ढूँढने दें (सेटिंग्स → गेम्स)।",
+      "noName": "गेम को नाम दें।",
+      "tooMany": "यह बहुत ज़्यादा गेम्स हैं।",
+      "cantAdd": "यह प्रोग्राम नहीं जोड़ा जा सकता।"
+    },
+    "terms": {
+      "notAccepted": "पहले GameMate की उपयोग की शर्तें स्वीकार करें।",
+      "age": "पहले अपनी उम्र की पुष्टि करें।"
+    },
+    "updates": {
+      "check": "अपडेट नहीं देखे जा सके। क्या आप ऑनलाइन हैं?",
+      "download": "अपडेट डाउनलोड नहीं हो सका। यह बाद में फिर कोशिश करेगा।"
+    },
+    "capture": {
+      "failed": "स्क्रीन कैप्चर नहीं हो सकी।",
+      "windowGone": "वह विंडो अब उपलब्ध नहीं है। कैप्चर करने के लिए कोई दूसरी चुनें।"
+    },
+    "wiki": {
+      "address": "विकी का पता डालें, जो https:// से शुरू हो",
+      "notFound": "उस पते पर कोई विकी नहीं मिली। GameMate Fandom और wiki.gg जैसी MediaWiki साइटों के साथ काम करता है।"
+    },
+    "answerStopped": "आपने जवाब रोक दिया।"
+  },
+  "answers": {
+    "reason": {
+      "geminiNotSetUp": "Gemini सेट अप नहीं है",
+      "noLocalModel": "कोई लोकल मॉडल नहीं",
+      "screenshot": "स्क्रीनशॉट पढ़ना",
+      "recipe": "GameMate के डेटा से रेसिपी",
+      "complex": "ज़्यादा सोचने की ज़रूरत",
+      "longQuestion": "लंबा सवाल",
+      "longConversation": "लंबी बातचीत",
+      "quick": "छोटा सवाल",
+      "geminiUnreachable": "Gemini तक नहीं पहुँच सके",
+      "localUnreachable": "लोकल मॉडल तक नहीं पहुँच सके"
+    },
+    "noAnswer": "मुझे इसका कोई भरोसेमंद जवाब नहीं मिला।"
+  },
+  "models": {
+    "local": {
+      "fast": "तेज़",
+      "2b": "ज़्यादातर ग्राफ़िक्स कार्ड पर जल्दी जवाब। शुरुआत के लिए अच्छा।",
+      "smart": "स्मार्ट",
+      "4b": "बेहतर जवाब। 6 GB या उससे ज़्यादा ग्राफ़िक्स मेमोरी के साथ सबसे अच्छा।",
+      "best": "सबसे अच्छा",
+      "9b": "इस PC पर सबसे अच्छे जवाब। 10 GB या उससे ज़्यादा ग्राफ़िक्स मेमोरी के साथ सबसे अच्छा।",
+      "commentary": "टिप्पणियाँ",
+      "commentaryHelp": "Liquid AI का LFM2.5, जिसे GameMate ने टिप्पणियाँ लिखने के लिए आगे ट्रेन किया है।",
+      "killfeed": "किल फ़ीड",
+      "killfeedHelp": "PaddlePaddle का PaddleOCR टेक्स्ट पहचान (Apache 2.0)।"
+    }
+  },
+  "tray": {
+    "status": {
+      "off": "नहीं देख रहा",
+      "paused": "देखना रुका हुआ है",
+      "no-model": "देखना शुरू करने के लिए मॉडल चुनें",
+      "needs-consent": "सेटिंग्स में गेम पहचानने की अनुमति दें",
+      "waiting-for-game": "गेम का इंतज़ार",
+      "watching": "आपका गेम देख रहा है",
+      "watchingGame": "{{game}} देख रहा है"
+    },
+    "resume": "फिर से देखना शुरू करें",
+    "pause": "देखना रोकें",
+    "ask": "GameMate से पूछें ({{shortcut}})",
+    "open": "GameMate खोलें",
+    "quit": "GameMate बंद करें"
+  },
+  "languagePicker": {
+    "title": "अपनी भाषा चुनें",
+    "lead": "GameMate की विंडो और जवाब इसी भाषा में होंगे। आप इसे कभी भी सेटिंग्स → सामान्य में बदल सकते हैं।",
+    "continue": "जारी रखें"
+  },
+  "gameExamples": {
+    "minecraft": {
+      "piston": "Piston कैसे क्राफ़्ट करूँ?",
+      "netherPortal": "Nether portal कैसे बनाऊँ?"
+    },
+    "generic": {
+      "next": "अब मुझे आगे क्या करना चाहिए?",
+      "tips": "मैं जहाँ हूँ, वहाँ के लिए कोई टिप्स?"
+    },
+    "valorant": {
+      "beginner": "नए खिलाड़ियों के लिए कौन-सा agent अच्छा है?",
+      "jettDash": "Jett का dash कैसे काम करता है?"
+    },
+    "overwatch": {
+      "widowmaker": "Widowmaker को कैसे काउंटर करूँ?",
+      "tank": "कौन-सा tank सीखना सबसे आसान है?"
+    },
+    "marvelRivals": {
+      "beginner": "नए खिलाड़ियों के लिए कौन-सा hero अच्छा है?",
+      "teamUps": "Team-up abilities कैसे काम करती हैं?"
+    },
+    "counterStrike": {
+      "spray": "AK-47 का spray कंट्रोल कैसे करूँ?",
+      "save": "मुझे पैसे कब सेव करने चाहिए?"
+    },
+    "league": {
+      "beginner": "नए खिलाड़ियों के लिए कौन-सा champion अच्छा है?",
+      "farm": "बेहतर farm कैसे करूँ?"
+    },
+    "apex": {
+      "beginner": "नए खिलाड़ियों के लिए कौन-सा legend अच्छा है?",
+      "land": "मुझे कहाँ land करना चाहिए?"
+    },
+    "fortnite": {
+      "build": "तेज़ी से build कैसे करूँ?",
+      "land": "मुझे कहाँ land करना चाहिए?"
+    },
+    "rainbowSix": {
+      "beginner": "नए खिलाड़ियों के लिए कौन-सा operator अच्छा है?",
+      "drones": "Drones का अच्छे से इस्तेमाल कैसे करूँ?"
+    },
+    "rocketLeague": {
+      "aerial": "Aerial कैसे करूँ?",
+      "rotate": "सही तरीके से rotate कैसे करूँ?"
+    },
+    "fighting": {
+      "beginner": "नए खिलाड़ियों के लिए कौन अच्छा है?",
+      "better": "मैं इसमें बेहतर कैसे बनूँ?"
+    }
+  },
+  "featureChoices": {
+    "title": "GameMate का पूरा अनुभव पाएँ",
+    "lead": "पूरे अनुभव के लिए इन्हें चुनें। आप इनमें से कोई भी बाद में सेटिंग्स में बदल सकते हैं।",
+    "sendsData": "ये थोड़ा डेटा भेजते हैं",
+    "games": "मेरे गेम्स ढूँढें",
+    "gamesHelp": "इस PC पर Steam, Epic Games, Battle.net, Riot और आपके CurseForge मॉडपैक पढ़ता है, और आपके खेलते समय सामने वाले प्रोग्राम का नाम। सिर्फ़ गेम्स के नाम wiki.gg और Fandom को जाते हैं।",
+    "lookups": "ऑनलाइन जानकारी ढूँढें",
+    "lookupsHelp": "सवाल का सिर्फ़ विषय गेम की विकी (और मॉड के लिए Modrinth) को जाता है।",
+    "voice": "बोलकर पूछें",
+    "voiceHelp": "स्पीच रिकग्निशन डाउनलोड करता है ({{size}} MB)। आपकी बोली इसी PC पर टेक्स्ट में बदली जाती है।",
+    "voiceHelpNoSize": "स्पीच रिकग्निशन डाउनलोड करता है। आपकी बोली इसी PC पर टेक्स्ट में बदली जाती है।",
+    "naturalVoice": "जवाबों के लिए नैचुरल आवाज़",
+    "naturalVoiceHelp": "Windows की आवाज़ की जगह जवाब बोलकर सुनाने के लिए एक नैचुरल आवाज़ ({{size}} MB) डाउनलोड करता है।",
+    "naturalVoiceHelpNoSize": "Windows की आवाज़ की जगह जवाब बोलकर सुनाने के लिए एक नैचुरल आवाज़ डाउनलोड करता है।",
+    "screenshot": "मेरे सवालों के साथ स्क्रीनशॉट भेजें",
+    "screenshotHelp": "हर नई चैट में 📷 चालू रहता है।",
+    "tray": "ट्रे में चलता रहे",
+    "trayHelp": "विंडो बंद करने पर GameMate ट्रे में रहता है, शॉर्टकट के लिए तैयार।",
+    "tickAll": "सभी चुनें",
+    "later": "बाद में याद दिलाएँ",
+    "never": "फिर से न दिखाएँ",
+    "continue": "जारी रखें"
+  }
+}
