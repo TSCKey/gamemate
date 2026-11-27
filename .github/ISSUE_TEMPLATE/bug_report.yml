@@ -38,9 +38,13 @@ body:
       label: GameMate's language
       options:
         - English
-        - العربية (Arabic)
-        - Français (French)
         - Deutsch (German)
+        - Français (French)
+        - العربية (Arabic)
+        - Español (Spanish)
+        - Português (Portuguese, Brazil)
+        - Italiano (Italian)
+        - हिन्दी (Hindi)
   - type: input
     id: game
     attributes:

@@ -12,9 +12,13 @@ body:
     attributes:
       label: Language
       options:
-        - العربية (Arabic)
-        - Français (French)
         - Deutsch (German)
+        - Français (French)
+        - العربية (Arabic)
+        - Español (Spanish)
+        - Português (Portuguese, Brazil)
+        - Italiano (Italian)
+        - हिन्दी (Hindi)
         - English
     validations:
       required: true
