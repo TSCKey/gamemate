@@ -18,35 +18,35 @@ describe('text for the Supertonic voice', () => {
 
 describe('answers spoken sentence by sentence', () => {
   it('splits Latin, full-width and Arabic sentences', () => {
-    expect(splitForSpeech('Get iron. Smelt it! Done?', 'en')).toEqual([
+    expect(splitForSpeech('Get iron. Smelt it! Done?')).toEqual([
       'Get iron.',
       'Smelt it!',
       'Done?'
     ])
-    expect(splitForSpeech('鉄を取ります。かまどに入れます！', 'en')).toEqual([
+    expect(splitForSpeech('鉄を取ります。かまどに入れます！')).toEqual([
       '鉄を取ります。',
       'かまどに入れます！'
     ])
-    expect(splitForSpeech('هل تريد المساعدة؟ اضغط هنا.', 'ar')).toEqual([
+    expect(splitForSpeech('هل تريد المساعدة؟ اضغط هنا.')).toEqual([
       'هل تريد المساعدة؟',
       'اضغط هنا.'
     ])
     // Hindi ends a sentence with the danda.
-    expect(splitForSpeech('नमस्ते, मैं GameMate हूँ। क्रीपर्स से बचकर रहिए!', 'hi')).toEqual([
+    expect(splitForSpeech('नमस्ते, मैं GameMate हूँ। क्रीपर्स से बचकर रहिए!')).toEqual([
       'नमस्ते, मैं GameMate हूँ।',
       'क्रीपर्स से बचकर रहिए!'
     ])
-    expect(splitForSpeech('पहला।दूसरा॥ तीसरा', 'hi')).toEqual(['पहला।', 'दूसरा॥', 'तीसरा'])
+    expect(splitForSpeech('पहला।दूसरा॥ तीसरा')).toEqual(['पहला।', 'दूसरा॥', 'तीसरा'])
   })
 
   it('keeps long sentences within limits', () => {
-    const en = splitForSpeech('one, two, three, four, '.repeat(30), 'en')
+    const en = splitForSpeech('one, two, three, four, '.repeat(30))
     expect(en.every((s) => s.length <= 300)).toBe(true)
     expect(en.join(' ').replace(/\s+/g, ' ')).toBe('one, two, three, four, '.repeat(30).trim())
   })
 
   it('never returns empty pieces', () => {
-    expect(splitForSpeech('  ', 'en')).toEqual([])
-    expect(splitForSpeech('Hi!!  ', 'en')).toEqual(['Hi!!'])
+    expect(splitForSpeech('  ')).toEqual([])
+    expect(splitForSpeech('Hi!!  ')).toEqual(['Hi!!'])
   })
 })

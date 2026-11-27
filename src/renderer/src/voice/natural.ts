@@ -83,7 +83,7 @@ function play(samples: Float32Array, rate: number, volume: number): Promise<void
 export async function say(request: SayRequest): Promise<void> {
   hush()
   const mine = ++generation
-  const parts = splitForSpeech(request.text, request.language)
+  const parts = splitForSpeech(request.text)
   if (!parts.length) return
   // Start making the next sentence while the current one plays.
   let next = synthesize(parts[0], request)

@@ -1,7 +1,6 @@
 // Text preparation for the Supertonic voice, following Supertone's MIT-licensed sample code
 // (github.com/supertone-oss-archive/supertonic, web/helper.js), and splitting answers into
 // pieces short enough to speak one after another.
-import type { LanguageCode } from '../../../shared/languages'
 
 // The languages Supertonic 3 reads ('na' = no particular language).
 const SUPERTONIC_LANGUAGES = [
@@ -93,7 +92,7 @@ function shorten(sentence: string, limit: number): string[] {
 }
 
 // An answer as pieces to speak one after another, so the first words start quickly.
-export function splitForSpeech(text: string, _language: LanguageCode): string[] {
+export function splitForSpeech(text: string): string[] {
   const limit = 300
   return text
     .replace(/\s+/g, ' ')
