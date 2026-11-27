@@ -32,8 +32,10 @@ cp -r espeak-ng-data "$DATA"
 make distclean
 emconfigure ./configure "${FEATURES[@]}"
 emmake make -j"$(nproc)" src/espeak-ng
+# libtool leaves the library as a static archive or a "shared" object, depending on the version.
+LIB="$(ls src/.libs/libespeak-ng.a src/.libs/libespeak-ng.so 2>/dev/null | head -1)"
 emcc -O2 \
-  src/.libs/libespeak-ng.a src/espeak-ng.o \
+  "$LIB" src/espeak-ng.o \
   -o "$OUT/espeak-ng.js" \
   --embed-file "$DATA@/usr/local/share/espeak-ng-data/" \
   -s MODULARIZE=1 -s EXPORT_ES6=1 -s EXPORT_NAME=ESpeakNG \
