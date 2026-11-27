@@ -2,7 +2,7 @@
 
 Ceci est une traduction fournie pour votre confort. Seule la [version anglaise](../TERMS.md) fait foi.
 
-Version 2 · Dernière mise à jour : 4 novembre 2026
+Version 3 · Dernière mise à jour : 27 novembre 2026
 
 Ces conditions sont un accord entre vous et le fournisseur de GameMate. Veuillez les lire avant d'utiliser GameMate. Vous les acceptez au premier démarrage de GameMate, et vous pouvez retirer votre acceptation à tout moment dans **Paramètres → Confidentialité et mentions légales**.
 
@@ -43,13 +43,21 @@ Certaines fonctions se connectent à des services d'autres entreprises. Chacune 
 
 - **Google Gemini et la recherche sur le web** (uniquement si vous les activez) : [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms) et [Règles de confidentialité de Google](https://policies.google.com/privacy). Les résultats de la recherche viennent de sites web gérés par d'autres, que GameMate ne vérifie pas.
 - **Wikis de jeux et Modrinth** (uniquement si vous activez les recherches en ligne) : les textes et images de chaque wiki sont partagés par leurs auteurs sous la licence propre au wiki, que GameMate affiche avec chaque réponse qui les utilise.
-- **Hugging Face** (modèles d'IA, modèles vocaux et la voix naturelle) et **GitHub** (le moteur d'IA de GameMate et les mises à jour) : uniquement lorsque vous téléchargez quelque chose ou recherchez des mises à jour.
+- **Hugging Face** (modèles d'IA, modèles vocaux et les voix naturelles) et **GitHub** (le moteur d'IA de GameMate et les mises à jour) : uniquement lorsque vous téléchargez quelque chose ou recherchez des mises à jour.
 
 GameMate n'est affilié à aucun éditeur de jeux, ni approuvé ou sponsorisé par l'un d'eux. Les noms de jeux et les autres marques appartiennent à leurs propriétaires ; par exemple, Minecraft est une marque de Mojang Synergies AB.
 
-## 8. La voix naturelle (Supertonic)
+## 8. Les voix naturelles (Kokoro et Supertonic)
 
-La voix naturelle de GameMate est **Supertonic 3**, un modèle de voix de Supertone que vous pouvez télécharger depuis Hugging Face dans **Paramètres → Voix**. Il est distribué sous la [BigScience Open RAIL-M License](https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE). Le modèle Supertonic est soumis aux restrictions d'utilisation du paragraphe 5 (« paragraph 5 ») de cette licence, et vous devez les respecter chaque fois que vous utilisez la voix via GameMate.
+GameMate peut lire les réponses à voix haute avec l'une de deux voix naturelles, Kokoro et Supertonic. Chacune est un téléchargement facultatif depuis Hugging Face que vous lancez dans **Paramètres → Voix**, et chacune fonctionne sur votre PC. Si la voix que vous avez choisie ne parle pas votre langue, GameMate ne lit rien à voix haute.
+
+### Kokoro
+
+Kokoro parle anglais, espagnol, français, italien et portugais. Elle utilise le modèle de voix **Kokoro-82M** (dans la version publiée par onnx-community sur Hugging Face) et la bibliothèque **kokoro-js**, tous deux distribués sous l'Apache License 2.0. Dans les langues autres que l'anglais, la prononciation de Kokoro est fournie par **eSpeak NG**, livré avec GameMate et distribué sous la GNU General Public License, version 3 ou (à votre choix) toute version ultérieure. eSpeak NG fonctionne sur votre PC : aucun texte n'est envoyé nulle part pour être prononcé.
+
+### Supertonic
+
+Supertonic est **Supertonic 3**, un modèle de voix de Supertone. Supertonic parle toutes les langues de GameMate et est la seule voix naturelle pour l'allemand, l'arabe et le hindi. Le modèle est distribué sous la [BigScience Open RAIL-M License](https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE). Le modèle Supertonic est soumis aux restrictions d'utilisation du paragraphe 5 (« paragraph 5 ») de cette licence, et vous devez les respecter chaque fois que vous utilisez Supertonic via GameMate.
 
 Vous vous engagez à ne pas utiliser la voix Supertonic, ni rien de ce qui en est tiré, de la manière suivante (dans le texte anglais de la licence) :
 
@@ -67,7 +75,7 @@ Vous vous engagez à ne pas utiliser la voix Supertonic, ni rien de ce qui en es
 - (l) To provide medical advice and medical results interpretation;
 - (m) To generate or disseminate information for the purpose to be used for administration of justice, law enforcement, immigration or asylum processes, such as predicting an individual will commit fraud/crime commitment (e.g. by text profiling, drawing causal relationships between assertions made in documents, indiscriminate and arbitrarily-targeted use).
 
-En résumé : vous ne devez pas utiliser la voix pour enfreindre la loi ; pour nuire à des mineurs ou à d'autres personnes, les discriminer, les diffamer ou les harceler ; pour diffuser de fausses informations ou des données personnelles nuisibles ; pour imiter d'autres personnes sans leur consentement (par exemple des deepfakes) ; pour du contenu généré par machine sans l'indiquer clairement ; pour des décisions entièrement automatisées sur les droits de personnes ; pour des conseils médicaux ; ni à des fins de justice, de maintien de l'ordre, d'immigration ou d'asile. Seul le texte anglais ci-dessus fait foi.
+En résumé : vous ne devez pas utiliser la voix Supertonic pour enfreindre la loi ; pour nuire à des mineurs ou à d'autres personnes, les discriminer, les diffamer ou les harceler ; pour diffuser de fausses informations ou des données personnelles nuisibles ; pour imiter d'autres personnes sans leur consentement (par exemple des deepfakes) ; pour du contenu généré par machine sans l'indiquer clairement ; pour des décisions entièrement automatisées sur les droits de personnes ; pour des conseils médicaux ; ni à des fins de justice, de maintien de l'ordre, d'immigration ou d'asile. Seul le texte anglais ci-dessus fait foi.
 
 ## 9. Disponibilité et modifications de GameMate
 

@@ -7,6 +7,7 @@ import { docLink, legalText } from '../src/renderer/src/legal/texts'
 import { LegalDocument } from '../src/renderer/src/legal/LegalReader'
 import { parseMarkdown } from '../src/renderer/src/legal/markdown'
 import { flat, SUPERTONIC_RESTRICTIONS } from './helpers/supertonic'
+import { TERMS_VERSION } from '../src/shared/types'
 
 const english = (name: string): string => readFileSync(join(__dirname, '..', 'docs', name), 'utf8')
 const render = (language: 'de' | 'en' | 'ar'): string =>
@@ -22,7 +23,10 @@ describe('the legal documents in the player’s language', () => {
   })
 
   it('are in English where there is no translation', () => {
-    expect(legalText('terms', 'xx' as never, {})).toEqual({ text: english('TERMS.md'), language: 'en' })
+    expect(legalText('terms', 'xx' as never, {})).toEqual({
+      text: english('TERMS.md'),
+      language: 'en'
+    })
     expect(legalText('privacy', 'en')).toEqual({ text: english('PRIVACY.md'), language: 'en' })
   })
 
@@ -44,8 +48,9 @@ describe('the legal documents in the player’s language', () => {
 })
 
 // Every translation has the English text's sections, links and email addresses, the note that
-// English is binding, and the Supertonic voice's use restrictions word for word.
-const TRANSLATED = ['ar', 'fr', 'de', 'es', 'pt', 'it'] as const
+// English is binding, the section on the two natural voices with Kokoro's licenses, and the
+// Supertonic voice's use restrictions word for word.
+const TRANSLATED = ['ar', 'fr', 'de', 'es', 'pt', 'it', 'hi'] as const
 const headings = (text: string): number => text.match(/^## /gm)?.length ?? 0
 const links = (text: string): string[] =>
   [...text.matchAll(/\]\(([^)\s]+)\)/g)]
@@ -65,12 +70,27 @@ describe.each(TRANSLATED)('the %s legal texts', (code) => {
       expect(text.split('\n\n')[1]).toContain(`](../${file})`)
       expect(headings(text)).toBe(headings(english(file)))
       expect(links(text)).toEqual(links(english(file)))
-      expect(text).toMatch(/^.*2.*·/m)
+      expect(text).toMatch(new RegExp(`^.*${TERMS_VERSION}.*·`, 'm'))
       const shownText = JSON.stringify(parseMarkdown(text))
       expect(shownText).not.toContain('**')
       expect(shownText).not.toContain('](')
       if (doc === 'terms') {
         for (const restriction of SUPERTONIC_RESTRICTIONS) expect(flat(text)).toContain(restriction)
+        // Section 8 covers both voices: a Kokoro part and a Supertonic part with the restrictions.
+        const voices = text.split(/^## /m)[8]
+        expect(voices.split('\n')[0]).toMatch(/^8\. .*Kokoro.*Supertonic/)
+        const [kokoro, supertonic] = voices.split(/^### /m).slice(1)
+        expect(kokoro).toMatch(/^Kokoro\n/)
+        for (const name of ['Kokoro-82M', 'kokoro-js', 'Apache License 2.0', 'eSpeak NG'])
+          expect(kokoro).toContain(name)
+        expect(kokoro).toContain('GNU General Public License')
+        expect(supertonic).toMatch(/^Supertonic\n/)
+        for (const restriction of SUPERTONIC_RESTRICTIONS)
+          expect(flat(supertonic)).toContain(restriction)
+      } else {
+        expect(text).toContain('Kokoro')
+        expect(text).toContain('330')
+        expect(text).toContain('eSpeak NG')
       }
     })
   }

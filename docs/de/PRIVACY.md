@@ -2,7 +2,7 @@
 
 Dies ist eine Übersetzung zu deiner Bequemlichkeit. Verbindlich ist die [englische Fassung](../PRIVACY.md).
 
-Version 2 · Zuletzt aktualisiert: 24. November 2026
+Version 3 · Zuletzt aktualisiert: 27. November 2026
 
 Diese Erklärung beschreibt, was mit deinen personenbezogenen Daten geschieht, wenn du GameMate nutzt. Sie ist so geschrieben, dass sie der EU-Datenschutz-Grundverordnung (DSGVO), dem deutschen Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz (TDDDG) und dem Gesetz zum Schutz personenbezogener Daten des Königreichs Saudi-Arabien (PDPL) entspricht.
 
@@ -39,6 +39,7 @@ Deine Unterhaltungen, Screenshots, Sprachaufnahmen und das, was der Begleiter be
 - **Text auf dem Bildschirm deines Spiels:** Bei Hollow Knight: Silksong liest der Begleiter mit der in Windows eingebauten Texterkennung die Namen von Bossen und Gebieten von deinem Bildschirm ab, und die Spracheinstellung des Spiels aus dessen eigener Logdatei. Bei Rocket League liest er auf dieselbe Weise die Anzeigetafel und die Einblendungen des Spiels (etwa „Epic Save“). Ist der Killfeed-Leser heruntergeladen, liest er damit Killfeed und Banner von VALORANT und Apex Legends, einschließlich der Namen darin. All das geschieht nur auf deinem PC, und die Bildschirmaufnahmen bleiben wie oben beschrieben im Arbeitsspeicher.
 - **Spieldaten des Spiels selbst:** Wenn du in der Einstellungsdatei von Rocket League dessen Stats API einschaltest, empfängt GameMate die Spieldaten des Spiels (etwa Spielernamen, Tore, Paraden und die Uhr) über eine Verbindung nur auf deinem PC. Es sendet dem Spiel nie etwas, und die Daten bleiben wie alles andere, was der Begleiter bemerkt hat, im Arbeitsspeicher.
 - **Dein Mikrofon** wird nur genutzt, solange die Spracheingabe an ist und du das Sprach-Tastenkürzel oder 🎤 drückst. Deine Sprache wird auf deinem PC in Text umgewandelt.
+- **Vorlesen:** Die natürliche Stimme, die du heruntergeladen hast (Kokoro oder Supertonic), wandelt Antworten und Kommentare auf deinem PC in Sprache um. Bei Kokoro in anderen Sprachen als Englisch ermittelt eSpeak NG, das mit GameMate geliefert wird, die Aussprache ebenfalls auf deinem PC. Zum Vorlesen wird kein Text irgendwohin gesendet.
 - **Das KI-Modell**, das auf deinem PC läuft (die eigene Engine von GameMate oder Ollama, wenn du es nutzt), erhält deine Fragen und Screenshots nur auf deinem PC.
 
 ## 5. Optionale Funktionen, die deine Einwilligung brauchen
@@ -63,7 +64,7 @@ Wenn du Gemini für Antworten oder für den Begleiter wählst, sendet GameMate a
 
 ## 6. Verbindungen, die keine optionalen Einwilligungen sind
 
-- **Downloads, die du startest** (KI-Modelle, Sprachmodelle und die natürliche Stimme von Hugging Face, die KI-Engine von GameMate von GitHub), verbinden sich mit diesen Diensten, wenn du auf **Herunterladen** klickst, weil du sie angefordert hast (Art. 6 Abs. 1 lit. b DSGVO). Wenn du auf diesem Bildschirm einen Download ankreuzt und auf **Weiter** klickst, startet er ebenfalls.
+- **Downloads, die du startest** (KI-Modelle, Sprachmodelle und die natürlichen Stimmen Kokoro (etwa 330 MB) und Supertonic (401 MB) von Hugging Face, die KI-Engine von GameMate von GitHub), verbinden sich mit diesen Diensten, wenn du auf **Herunterladen** klickst, weil du sie angefordert hast (Art. 6 Abs. 1 lit. b DSGVO). Wenn du auf diesem Bildschirm einen Download ankreuzt und auf **Weiter** klickst, startet er ebenfalls.
 - **Die Suche nach Updates** fragt GitHub nach der neuesten Version von GameMate, kurz nach dem Start und alle paar Stunden, und lädt eine neue Version herunter, wenn es eine gibt. Wir tun das, um Sicherheitskorrekturen und Verbesserungen auszuliefern (unser berechtigtes Interesse, Art. 6 Abs. 1 lit. f DSGVO). Du kannst das unter **Einstellungen → Allgemein** ausschalten. GameMate sucht nicht nach Updates, bevor du die Nutzungsbedingungen angenommen hast.
 
 Wie jede Verbindung im Internet zeigen diese Anfragen dem Dienst deine IP-Adresse und grundlegende technische Angaben (etwa den Namen und die Version der App). Wir erhalten diese Angaben nie.

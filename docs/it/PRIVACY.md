@@ -2,7 +2,7 @@
 
 Questa è una traduzione per tua comodità. Fa fede la [versione inglese](../PRIVACY.md).
 
-Versione 2 · Ultimo aggiornamento: 24 novembre 2026
+Versione 3 · Ultimo aggiornamento: 27 novembre 2026
 
 Questa informativa spiega che cosa succede ai tuoi dati personali quando usi GameMate. È scritta per rispettare il Regolamento generale sulla protezione dei dati dell'UE (GDPR), la legge tedesca sulla protezione dei dati nelle telecomunicazioni e nei servizi digitali (TDDDG) e la Legge sulla protezione dei dati personali del Regno dell'Arabia Saudita (PDPL).
 
@@ -39,6 +39,7 @@ Le tue conversazioni, gli screenshot, le registrazioni vocali e ciò che il comp
 - **Il testo sullo schermo del tuo gioco:** per Hollow Knight: Silksong, il compagno legge i nomi dei boss e delle aree dal tuo schermo con il riconoscimento del testo integrato in Windows, e legge la lingua del gioco dal file di log del gioco stesso. Per Rocket League legge allo stesso modo il tabellone e i messaggi del gioco (come "Epic Save"). Con il lettore del registro delle uccisioni scaricato, legge con esso il registro delle uccisioni e i banner di VALORANT e Apex Legends, compresi i nomi che vi compaiono. Tutto questo avviene solo sul tuo PC, e gli screenshot restano in memoria come descritto sopra.
 - **I dati della partita del gioco stesso:** se attivi la Stats API di Rocket League nel file delle impostazioni del gioco, GameMate riceve i dati della partita dal gioco (come i nomi dei giocatori, i gol, le parate e il cronometro) tramite una connessione solo sul tuo PC. Non invia mai nulla al gioco, e i dati restano in memoria come il resto di ciò che il compagno ha notato.
 - **Il tuo microfono** viene usato solo mentre l'input vocale è attivo e premi la scorciatoia vocale o 🎤. La tua voce viene trasformata in testo sul tuo PC.
+- **La lettura ad alta voce:** la voce naturale che hai scaricato (Kokoro o Supertonic) trasforma risposte e commenti in parlato sul tuo PC. Per Kokoro nelle lingue diverse dall'inglese, eSpeak NG, incluso in GameMate, ricava la pronuncia, anch'esso sul tuo PC. Nessun testo viene inviato da nessuna parte per essere letto ad alta voce.
 - **Il modello di IA** che funziona sul tuo PC (il motore di GameMate, oppure Ollama se lo usi) riceve le tue domande e i tuoi screenshot solo sul tuo PC.
 
 ## 5. Funzioni facoltative che richiedono il tuo consenso
@@ -63,7 +64,7 @@ Se scegli Gemini per le risposte o per il compagno, GameMate invia a Google: le 
 
 ## 6. Connessioni che non sono consensi facoltativi
 
-- **I download che avvii** (modelli di IA, modelli vocali e la voce naturale da Hugging Face, il motore di IA di GameMate da GitHub) si collegano a questi servizi quando fai clic su **Scarica**, perché li hai richiesti tu (art. 6 (1) (b) GDPR). Anche selezionare un download in quella schermata e fare clic su **Continua** lo avvia.
+- **I download che avvii** (modelli di IA, modelli vocali e le voci naturali Kokoro (circa 330 MB) e Supertonic (401 MB) da Hugging Face, il motore di IA di GameMate da GitHub) si collegano a questi servizi quando fai clic su **Scarica**, perché li hai richiesti tu (art. 6 (1) (b) GDPR). Anche selezionare un download in quella schermata e fare clic su **Continua** lo avvia.
 - **La ricerca degli aggiornamenti** chiede a GitHub l'ultima versione di GameMate, poco dopo l'avvio e ogni qualche ora, e scarica una nuova versione se c'è. Lo facciamo per fornire correzioni di sicurezza e miglioramenti (nostro legittimo interesse, art. 6 (1) (f) GDPR). Puoi disattivarla in **Impostazioni → Generali**. GameMate non cerca aggiornamenti prima che tu abbia accettato le Condizioni d'uso.
 
 Come ogni connessione su internet, queste richieste mostrano al servizio il tuo indirizzo IP e informazioni tecniche di base (come il nome e la versione dell'app). Noi non riceviamo mai queste informazioni.

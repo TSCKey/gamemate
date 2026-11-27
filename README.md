@@ -26,7 +26,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **Looks things up.** Turn on lookups and GameMate reads your game's wiki (for example [minecraft.wiki](https://minecraft.wiki), the Terraria Wiki or Eldenpedia) for bosses, items, places and mechanics, and links to the page it used.
 - **Shows pictures.** With lookups on, answers come with pictures from the wiki: ask for a map ("map of the Forgotten Crossroads") and you get the area map, ask about a boss or item and you see it, and Minecraft recipe cards show the real game icons and the crafted item.
 - **Local or cloud, your choice.** Use the local model for everything, or Gemini for questions, the companion, or both.
-- **Speaks your language.** GameMate comes in English, German, French and Arabic, and the AI answers in the language you ask in. Arabic is shown right to left.
+- **Speaks your language.** GameMate comes in English, German, French, Arabic, Spanish, Portuguese (Brazil), Italian and Hindi, and the AI answers in the language you ask in. It reads its answers aloud in every one of them. Arabic is shown right to left.
 - **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or online lookups.
 
 ## Requirements
@@ -170,10 +170,12 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 
 - **Read answers aloud:** Never, When I ask by voice (the default), or Always.
 - **Read companion comments aloud:** speaks Commentary mode's reactions.
-- **Voice type:** **Natural (Supertonic)** sounds like a real person and speaks every GameMate language. Click **Download** once (401 MB); it then runs on your PC and works offline. Until it's downloaded, or if you pick **Windows voices**, GameMate uses a Windows voice for your language.
-- Choose a **Voice** (Supertonic has 5 female and 5 male voices; Windows voices are listed for your language) and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
-- **No Windows voice for your language?** Click **Add Windows voices** to open Windows' speech settings, add a voice there, then come back to the Voice page.
-- GameMate 0.1.3's natural voice (Kokoro) has been replaced by Supertonic. Its files are deleted after the update to free 340 MB; download Supertonic to keep a natural voice.
+- **Two natural voices** sound like a real person. Each is a one-time download; it then runs on your PC and works offline. Choose one, and click **Download** next to it.
+  - **Kokoro** (330 MB) speaks English, Spanish, French, Italian and Portuguese, with a female and a male voice (only a female voice in French).
+  - **Supertonic** (401 MB) speaks all of GameMate's languages and has 5 female and 5 male voices. It's the voice for German, Arabic and Hindi.
+- The Voice page shows which voice speaks your language. If the one you chose doesn't, GameMate reads nothing aloud and the page offers the other one. Until your voice is downloaded, GameMate reads nothing aloud either.
+- Choose a **Voice** and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.
+- If you used GameMate 0.1.3's natural voice, its old English-only files are deleted after the update to free 340 MB. Download Kokoro again for the new version that speaks five languages.
 
 ### Language
 
@@ -181,7 +183,7 @@ The first time you open GameMate it asks for your language, starting on your PC'
 
 - **Answers** come in the language you write in, so you can also ask in another language for a single question.
 - **Game names and wiki pages** stay as they are. Most game wikis are in English, so GameMate looks pages up by their English name and answers you in your language.
-- **Voice input** understands your language, and answers are read aloud in it: by the Natural voice, or by a Windows voice if you chose one (see [Voice](#voice)).
+- **Voice input** understands your language, and answers are read aloud in it by the natural voice you chose, if that voice speaks your language (see [Voice](#voice)).
 
 ### Updates
 
@@ -257,7 +259,7 @@ Your game and the AI model share your graphics card. Try a smaller model, close 
 
 ## Privacy
 
-GameMate is local by default. The first time you open it, it shows a short summary of how it handles your data and asks you to accept the [Terms of Use](docs/TERMS.md) and confirm your age (16 or older, or younger with a parent's or guardian's permission). The full [Privacy Policy](docs/PRIVACY.md) explains everything below in detail. GameMate shows both in your language (the English version is binding; a lawyer has not yet checked the translations), with a button for the English text, and they are also in this repository: [German](docs/de/TERMS.md), [French](docs/fr/TERMS.md) and [Arabic](docs/ar/TERMS.md). The Terms include the use restrictions of the natural voice (Supertonic), which its license requires. After updating from GameMate 0.1.3 you accept the new version once. Both can be read again in **⚙ Settings → Privacy & legal**, where you can also see and withdraw each consent you gave, or withdraw your acceptance of the Terms (GameMate then stays closed to use until you accept again). GameMate goes online for nothing, not even update checks, before you accept. Optional features use the internet only when you turn them on:
+GameMate is local by default. The first time you open it, it shows a short summary of how it handles your data and asks you to accept the [Terms of Use](docs/TERMS.md) and confirm your age (16 or older, or younger with a parent's or guardian's permission). The full [Privacy Policy](docs/PRIVACY.md) explains everything below in detail. GameMate shows both in your language (the English version is binding; a lawyer has not yet checked the translations), with a button for the English text, and they are also in this repository: [German](docs/de/TERMS.md), [French](docs/fr/TERMS.md), [Arabic](docs/ar/TERMS.md), [Spanish](docs/es/TERMS.md), [Portuguese (Brazil)](docs/pt/TERMS.md), [Italian](docs/it/TERMS.md) and [Hindi](docs/hi/TERMS.md). The Terms describe both natural voices and include the use restrictions of Supertonic, which its license requires. After updating GameMate you accept the new Terms once. Both can be read again in **⚙ Settings → Privacy & legal**, where you can also see and withdraw each consent you gave, or withdraw your acceptance of the Terms (GameMate then stays closed to use until you accept again). GameMate goes online for nothing, not even update checks, before you accept. Optional features use the internet only when you turn them on:
 
 - **Gemini** sends the questions and screenshots for the jobs you set to Gemini to Google, under the [Gemini API terms](https://ai.google.dev/gemini-api/terms) and [Google's Privacy Policy](https://policies.google.com/privacy). GameMate asks for your agreement before you can add a key, and Google requires you to be 18 or older. That includes recent observations from the companion and, if the Companion is set to Gemini, its screenshots. Your API key is encrypted with Windows' per-user protection, and GameMate never shows it again or sends it anywhere except Google.
 - **Web search** (needs Gemini) sends only a short search query made from your question's key words and the game's name, such as "Overwatch characters currently meta", to Google through Gemini, with your API key. It counts toward your key's free Google Search allowance.
@@ -275,7 +277,7 @@ Screenshots go only to the AI you chose and are never saved to disk. What GameMa
 
 GameMate keeps a small log file on your PC of what it did, such as starting the AI or checking for updates, to help find problems. It never contains your questions or answers and is never sent anywhere. **⚙ Settings → Privacy & legal → Open log folder** shows it.
 
-GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models and the natural voice are downloaded once from Hugging Face when you click **Download**.
+GameMate only uses the microphone while 🎤 is lit, after you press **Alt + V** or click **🎤**. Your voice is turned into text on your PC and is never recorded to disk or sent anywhere. Speech models and the natural voices are downloaded once from Hugging Face when you click **Download**, and the voices read aloud on your PC: no text is sent anywhere to be spoken.
 
 **Deleting your data:** click **Delete my data** in **⚙ Settings → Privacy & legal** (or on the first-start screen) to remove everything GameMate stored on your PC (settings, your Gemini key, the log, and the AI engine, AI models, speech models and voices you downloaded) and start fresh. Data already sent to Google is covered by Google's policies.
 
@@ -292,7 +294,8 @@ The only exception is a setting that a game documents itself for turning on its 
 - The kill feed reader is [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)'s PP-OCRv6 small text detection and recognition by PaddlePaddle (Apache 2.0), following [RapidOCR](https://github.com/RapidAI/RapidOCR) (Apache 2.0), run with [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) (MIT).
 - The comment writer is [LFM2.5 1.2B](https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct) by Liquid AI, with GameMate's own fine-tuning, under the [LFM Open License v1.0](https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/blob/main/LICENSE). That license doesn't cover commercial use by organizations with US$10 million or more in yearly revenue.
 - Speech recognition uses [Whisper](https://github.com/openai/whisper) (MIT), converted by [onnx-community](https://huggingface.co/onnx-community).
-- The natural voice is [Supertonic 3](https://huggingface.co/Supertone/supertonic-3) by Supertone (OpenRAIL-M license), run with [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) (MIT) following Supertone's [sample code](https://github.com/supertone-oss-archive/supertonic) (MIT).
+- The natural voice Kokoro is [Kokoro-82M](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX) (Apache 2.0), run with [kokoro-js](https://github.com/hexgrad/kokoro/tree/main/kokoro.js) (Apache 2.0). In languages other than English, its pronunciation comes from [eSpeak NG](https://github.com/espeak-ng/espeak-ng) (GPL-3.0-or-later), which comes with GameMate.
+- The natural voice Supertonic is [Supertonic 3](https://huggingface.co/Supertone/supertonic-3) by Supertone (OpenRAIL-M license), run with [ONNX Runtime Web](https://github.com/microsoft/onnxruntime) (MIT) following Supertone's [sample code](https://github.com/supertone-oss-archive/supertonic) (MIT).
 - Wiki answers come from each game's community wiki, such as [minecraft.wiki](https://minecraft.wiki) (CC BY-NC-SA 3.0); every answer shows its source and that wiki's license. Pictures come from the same wikis, are credited with the wiki's name and link to their page there. Mod descriptions come from [Modrinth](https://modrinth.com).
 - GameMate isn't affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang.
 

@@ -69,7 +69,7 @@ export type FeatureChoices = {
 
 // The current Terms of Use and Privacy Policy (docs/TERMS.md and docs/PRIVACY.md). Bump it when
 // either changes in a way players must accept again.
-export const TERMS_VERSION = 2
+export const TERMS_VERSION = 3
 
 // When the player gave each optional consent (ISO date, '' if given before GameMate kept dates).
 export interface ConsentDates {

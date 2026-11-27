@@ -104,12 +104,14 @@ describe('accepting the Terms of Use', () => {
   it('needs accepting again when the Terms change', () => {
     const old = { ...settings.acceptTerms(), termsVersion: TERMS_VERSION - 1 }
     expect(settings.termsAccepted(old)).toBe(false)
-    // Players who accepted version 1 accept the Terms with the Supertonic voice once more.
+    // Players who accepted version 1 accept the Terms with the Supertonic voice once more, and
+    // those who accepted version 2 the Terms with the Kokoro voice.
     expect(settings.termsAccepted({ ...old, termsVersion: 1 })).toBe(false)
+    expect(settings.termsAccepted({ ...old, termsVersion: 2 })).toBe(false)
   })
 })
 
-describe('version 2 of the legal documents', () => {
+describe('version 3 of the legal documents', () => {
   it('quote every use restriction of the Supertonic voice word for word', () => {
     const terms = flat(read('TERMS.md'))
     for (const restriction of SUPERTONIC_RESTRICTIONS) expect(terms).toContain(restriction)
@@ -118,9 +120,33 @@ describe('version 2 of the legal documents', () => {
   })
 
   it('give the version the app asks players to accept', () => {
-    expect(TERMS_VERSION).toBe(2)
+    expect(TERMS_VERSION).toBe(3)
     for (const doc of ['TERMS.md', 'PRIVACY.md'])
       expect(read(doc)).toContain(`Version ${TERMS_VERSION} ·`)
+  })
+})
+
+describe('the voices in the legal documents', () => {
+  it('describe Kokoro, its licenses and eSpeak NG beside Supertonic', () => {
+    const voices = flat(read('TERMS.md').split(/^## /m)[8])
+    expect(voices).toMatch(/^8\. The natural voices \(Kokoro and Supertonic\)/)
+    for (const text of ['Kokoro-82M', 'kokoro-js', 'Apache License 2.0', 'eSpeak NG'])
+      expect(voices).toContain(text)
+    expect(voices).toContain(
+      'GNU General Public License, version 3 or (at your option) any later version'
+    )
+    expect(voices).toContain('whenever you use Supertonic through GameMate')
+  })
+
+  it('name the Kokoro download and no Windows voices', () => {
+    const privacy = flat(read('PRIVACY.md'))
+    expect(privacy).toContain('Kokoro (about 330 MB)')
+    expect(privacy).toContain('eSpeak NG')
+    for (const doc of ['TERMS.md', 'PRIVACY.md']) expect(read(doc)).not.toMatch(/Windows voice/i)
+    const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf8')
+    expect(readme).not.toMatch(/Windows voice/i)
+    expect(readme).toContain('Kokoro')
+    expect(readme).toContain('[Hindi](docs/hi/TERMS.md)')
   })
 })
 

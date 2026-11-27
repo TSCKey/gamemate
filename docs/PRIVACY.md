@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Version 2 · Last updated: 24 November 2026
+Version 3 · Last updated: 27 November 2026
 
 This policy explains what happens to your personal data when you use GameMate. It is written to meet the EU General Data Protection Regulation (GDPR), the German Telecommunications Digital Services Data Protection Act (TDDDG) and the Personal Data Protection Law of the Kingdom of Saudi Arabia (PDPL).
 
@@ -37,6 +37,7 @@ Your conversations, screenshots, voice recordings and what the companion noticed
 - **Text on your game's screen:** for Hollow Knight: Silksong, the companion reads boss and area names off your screen with Windows' own text recognition, and reads the game's language setting from the game's own log file. For Rocket League, it reads the scoreboard and the game's popups (such as "Epic Save") the same way. With the kill feed reader downloaded, it reads VALORANT's and Apex Legends' kill feed and banners, including the names in them, with that reader. All of this happens on your PC only, and the screen captures stay in memory as described above.
 - **A game's own match data:** if you turn on Rocket League's Stats API in the game's settings file, GameMate receives the game's match data (such as players' names, goals, saves and the clock) over a connection on your PC only. It never sends the game anything, and the data stays in memory like the rest of what the companion noticed.
 - **Your microphone** is used only while voice input is on and you press the voice shortcut or 🎤. Your speech is turned into text on your PC.
+- **Reading aloud:** the natural voice you downloaded (Kokoro or Supertonic) turns answers and comments into speech on your PC. For Kokoro in languages other than English, eSpeak NG, which comes with GameMate, works out the pronunciation on your PC as well. No text is sent anywhere to be read aloud.
 - **The AI model** that runs on your PC (GameMate's own engine, or Ollama if you use it) receives your questions and screenshots on your PC only.
 
 ## 5. Optional features that need your consent
@@ -61,7 +62,7 @@ If you choose Gemini for answers or for the companion, GameMate sends to Google:
 
 ## 6. Connections that are not optional consents
 
-- **Downloads you start** (AI models, speech models and the natural voice from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR). Ticking a download on that screen and pressing **Continue** also starts it.
+- **Downloads you start** (AI models, speech models and the natural voices Kokoro (about 330 MB) and Supertonic (401 MB) from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR). Ticking a download on that screen and pressing **Continue** also starts it.
 - **Update checks** ask GitHub for the latest version of GameMate, shortly after GameMate starts and every few hours, and download a new version if there is one. We do this to deliver security fixes and improvements (our legitimate interest, Art. 6 (1) (f) GDPR). You can turn this off in **Settings → General**. GameMate makes no update check before you have accepted the Terms of Use.
 
 Like any connection on the internet, these requests show the service your IP address and basic technical information (such as the app's name and version). We never receive this information.

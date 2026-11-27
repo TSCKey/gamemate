@@ -2,7 +2,7 @@
 
 Ceci est une traduction fournie pour votre confort. Seule la [version anglaise](../PRIVACY.md) fait foi.
 
-Version 2 · Dernière mise à jour : 24 novembre 2026
+Version 3 · Dernière mise à jour : 27 novembre 2026
 
 Cette politique explique ce qu'il advient de vos données personnelles lorsque vous utilisez GameMate. Elle est rédigée pour respecter le Règlement général sur la protection des données de l'UE (RGPD), la loi allemande sur la protection des données dans les télécommunications et les services numériques (TDDDG) et la loi sur la protection des données personnelles du Royaume d'Arabie saoudite (PDPL).
 
@@ -39,6 +39,7 @@ Vos conversations, captures d'écran, enregistrements vocaux et ce que le compag
 - **Le texte à l'écran de votre jeu :** pour Hollow Knight: Silksong, le compagnon lit les noms des boss et des zones sur votre écran avec la reconnaissance de texte propre à Windows, et lit la langue du jeu dans le fichier journal du jeu lui-même. Pour Rocket League, il lit de la même façon le tableau des scores et les messages du jeu (comme « Epic Save »). Si le lecteur du fil des éliminations est téléchargé, il lit avec celui-ci le fil des éliminations et les bannières de VALORANT et d'Apex Legends, y compris les noms qui y figurent. Tout cela se fait uniquement sur votre PC, et les captures d'écran restent en mémoire, comme décrit plus haut.
 - **Les données de match du jeu lui-même :** si vous activez la Stats API de Rocket League dans le fichier de paramètres du jeu, GameMate reçoit les données de match du jeu (comme les noms des joueurs, les buts, les arrêts et le chronomètre) par une connexion uniquement sur votre PC. Il n'envoie jamais rien au jeu, et les données restent en mémoire comme tout ce que le compagnon a remarqué.
 - **Votre microphone** n'est utilisé que lorsque la saisie vocale est activée et que vous appuyez sur le raccourci vocal ou sur 🎤. Votre parole est transformée en texte sur votre PC.
+- **La lecture à voix haute :** la voix naturelle que vous avez téléchargée (Kokoro ou Supertonic) transforme les réponses et les commentaires en parole sur votre PC. Pour Kokoro dans les langues autres que l'anglais, eSpeak NG, livré avec GameMate, détermine la prononciation, lui aussi sur votre PC. Aucun texte n'est envoyé nulle part pour être lu à voix haute.
 - **Le modèle d'IA** qui fonctionne sur votre PC (le moteur de GameMate, ou Ollama si vous l'utilisez) reçoit vos questions et captures d'écran uniquement sur votre PC.
 
 ## 5. Fonctions facultatives qui nécessitent votre consentement
@@ -63,7 +64,7 @@ Si vous choisissez Gemini pour les réponses ou pour le compagnon, GameMate envo
 
 ## 6. Connexions qui ne sont pas des consentements facultatifs
 
-- **Les téléchargements que vous lancez** (modèles d'IA, modèles vocaux et la voix naturelle depuis Hugging Face, le moteur d'IA de GameMate depuis GitHub) se connectent à ces services lorsque vous cliquez sur **Télécharger**, parce que vous les avez demandés (art. 6 (1) (b) RGPD). Cocher un téléchargement sur cet écran et cliquer sur **Continuer** le lance aussi.
+- **Les téléchargements que vous lancez** (modèles d'IA, modèles vocaux et les voix naturelles Kokoro (environ 330 Mo) et Supertonic (401 Mo) depuis Hugging Face, le moteur d'IA de GameMate depuis GitHub) se connectent à ces services lorsque vous cliquez sur **Télécharger**, parce que vous les avez demandés (art. 6 (1) (b) RGPD). Cocher un téléchargement sur cet écran et cliquer sur **Continuer** le lance aussi.
 - **La recherche de mises à jour** demande à GitHub la dernière version de GameMate, peu après le démarrage puis toutes les quelques heures, et télécharge une nouvelle version s'il y en a une. Nous le faisons pour fournir des correctifs de sécurité et des améliorations (notre intérêt légitime, art. 6 (1) (f) RGPD). Vous pouvez la désactiver dans **Paramètres → Général**. GameMate ne recherche aucune mise à jour avant que vous ayez accepté les Conditions d'utilisation.
 
 Comme toute connexion sur internet, ces requêtes montrent au service votre adresse IP et des informations techniques de base (comme le nom et la version de l'application). Nous ne recevons jamais ces informations.

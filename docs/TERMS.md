@@ -1,6 +1,6 @@
 # Terms of Use
 
-Version 2 · Last updated: 4 November 2026
+Version 3 · Last updated: 27 November 2026
 
 These terms are an agreement between you and the provider of GameMate. Please read them before you use GameMate. You accept them when you first start GameMate, and you can withdraw your acceptance at any time in **Settings → Privacy & legal**.
 
@@ -41,13 +41,21 @@ Some features connect to services of other companies. Each of them has its own t
 
 - **Google Gemini and web search** (only if you turn them on): [Gemini API Additional Terms of Service](https://ai.google.dev/gemini-api/terms) and [Google Privacy Policy](https://policies.google.com/privacy). Web search results come from websites run by others, which GameMate does not check.
 - **Game wikis and Modrinth** (only if you turn on online lookups): each wiki's text and pictures are shared by their authors under the wiki's own license, which GameMate shows with every answer that uses them.
-- **Hugging Face** (AI models, speech models and the natural voice) and **GitHub** (GameMate's AI engine and updates): only when you download something or check for updates.
+- **Hugging Face** (AI models, speech models and the natural voices) and **GitHub** (GameMate's AI engine and updates): only when you download something or check for updates.
 
 GameMate is not affiliated with, endorsed by or sponsored by any game publisher. Game names and other trademarks belong to their owners; for example, Minecraft is a trademark of Mojang Synergies AB.
 
-## 8. The natural voice (Supertonic)
+## 8. The natural voices (Kokoro and Supertonic)
 
-GameMate's natural voice is **Supertonic 3**, a voice model by Supertone that you can download from Hugging Face in **Settings → Voice**. It is licensed under the [BigScience Open RAIL-M License](https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE). The Supertonic model is subject to the use-based restrictions in paragraph 5 of that license, and you must follow them whenever you use the voice through GameMate.
+GameMate can read answers aloud with one of two natural voices, Kokoro and Supertonic. Each is an optional download from Hugging Face that you start in **Settings → Voice**, and each runs on your PC. If the voice you chose doesn't speak your language, GameMate reads nothing aloud.
+
+### Kokoro
+
+Kokoro speaks English, Spanish, French, Italian and Portuguese. It uses the **Kokoro-82M** voice model (as published by onnx-community on Hugging Face) and the **kokoro-js** library, both licensed under the Apache License 2.0. In languages other than English, Kokoro's pronunciation comes from **eSpeak NG**, which comes with GameMate and is licensed under the GNU General Public License, version 3 or (at your option) any later version. eSpeak NG runs on your PC: no text is sent anywhere to be pronounced.
+
+### Supertonic
+
+Supertonic is **Supertonic 3**, a voice model by Supertone. It speaks all of GameMate's languages and is the only natural voice for German, Arabic and Hindi. It is licensed under the [BigScience Open RAIL-M License](https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE). The Supertonic model is subject to the use-based restrictions in paragraph 5 of that license, and you must follow them whenever you use Supertonic through GameMate.
 
 You agree not to use the Supertonic voice, or anything made from it:
 
