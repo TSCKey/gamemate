@@ -153,11 +153,9 @@ export function getSettings(): Settings {
       if (saved.featureChoices === undefined) {
         current.featureChoices = (saved.termsVersion ?? 0) > 0 ? 'answered' : 'ask'
       }
-      // Windows voices are gone: Kokoro or Supertonic, whichever speaks the language.
-      current.voiceEngine = migrateVoiceEngine(
-        saved.voiceEngine ?? DEFAULTS.voiceEngine,
-        current.language || 'en'
-      )
+      // Windows voices are gone: Kokoro or Supertonic, whichever speaks the language. Runs at
+      // every launch, so a voice the player chose is kept as it is.
+      current.voiceEngine = migrateVoiceEngine(saved.voiceEngine, current.language || 'en')
       // GameMate 0.1.3 saved a Kokoro voice file ('af_heart'); its second letter is the voice.
       if (!KOKORO_VOICES.includes(current.kokoroVoice)) {
         current.kokoroVoice = /^.m_/.test(String(current.kokoroVoice)) ? 'male' : 'female'

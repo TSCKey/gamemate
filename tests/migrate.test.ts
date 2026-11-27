@@ -1,10 +1,11 @@
 import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from 'fs'
 import { tmpdir } from 'os'
-import { join } from 'path'
-import { describe, expect, it, vi } from 'vitest'
+import { dirname, join } from 'path'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { migrateVoiceEngine, removeOldVoice } from '../src/main/voice/migrate'
+import { SPEECH_MODELS } from '../src/main/voice/voiceModels'
 
-const userData = mkdtempSync(join(tmpdir(), 'gamemate-migrate-settings-'))
+let userData = mkdtempSync(join(tmpdir(), 'gamemate-migrate-settings-'))
 vi.mock('electron', () => ({
   app: { getPath: () => userData, getAppPath: () => join(__dirname, '..') },
   BrowserWindow: { getAllWindows: () => [] },
@@ -12,50 +13,93 @@ vi.mock('electron', () => ({
   net: {}
 }))
 
-describe('moving from Kokoro to Supertonic', () => {
-  it('deletes Kokoro’s files and leaves the speech models alone', async () => {
+const KOKORO = join('onnx-community', 'Kokoro-82M-v1.0-ONNX')
+const put = (dir: string, files: readonly string[]): void => {
+  for (const name of files) {
+    mkdirSync(dirname(join(dir, name)), { recursive: true })
+    writeFileSync(join(dir, name), 'x')
+  }
+}
+
+describe('GameMate 0.1.3’s Kokoro download', () => {
+  it('deletes 0.1.3’s English-only Kokoro files and leaves the speech models alone', async () => {
     const models = mkdtempSync(join(tmpdir(), 'gamemate-migrate-'))
-    const kokoro = join(models, 'onnx-community', 'Kokoro-82M-v1.0-ONNX', 'onnx')
-    const whisper = join(models, 'onnx-community', 'whisper-base.en')
-    mkdirSync(kokoro, { recursive: true })
-    mkdirSync(whisper, { recursive: true })
-    writeFileSync(join(kokoro, 'model.onnx'), 'x')
-    writeFileSync(join(whisper, 'config.json'), '{}')
+    put(join(models, KOKORO), ['config.json', 'onnx/model.onnx', 'voices/af_heart.bin'])
+    put(join(models, 'onnx-community', 'whisper-base.en'), ['config.json'])
 
     await removeOldVoice(models)
-    expect(existsSync(join(models, 'onnx-community', 'Kokoro-82M-v1.0-ONNX'))).toBe(false)
-    expect(existsSync(join(whisper, 'config.json'))).toBe(true)
+    expect(existsSync(join(models, KOKORO))).toBe(false)
+    expect(existsSync(join(models, 'onnx-community', 'whisper-base.en', 'config.json'))).toBe(true)
     // Nothing to delete the next time.
     await expect(removeOldVoice(models)).resolves.toBeUndefined()
   })
 
-  it('moves older voice settings to Kokoro or Supertonic, by language', () => {
+  it('keeps Kokoro’s new download at every launch', async () => {
+    const models = mkdtempSync(join(tmpdir(), 'gamemate-migrate-'))
+    put(join(models, KOKORO), SPEECH_MODELS.kokoro.files)
+
+    await removeOldVoice(models)
+    await removeOldVoice(models)
+    for (const name of SPEECH_MODELS.kokoro.files) {
+      expect(existsSync(join(models, KOKORO, name))).toBe(true)
+    }
+  })
+})
+
+describe('older voice settings', () => {
+  it('moves legacy or unknown voice settings to Kokoro or Supertonic, by language', () => {
     expect(migrateVoiceEngine('natural', 'en')).toBe('supertonic')
     expect(migrateVoiceEngine('windows', 'en')).toBe('kokoro')
     expect(migrateVoiceEngine('windows', 'ar')).toBe('supertonic')
-    expect(migrateVoiceEngine('kokoro', 'en')).toBe('kokoro')
     expect(migrateVoiceEngine('junk', 'hi')).toBe('supertonic')
     expect(migrateVoiceEngine(undefined, 'pt')).toBe('kokoro')
-    expect(migrateVoiceEngine('supertonic', 'it')).toBe('supertonic')
-    // Kokoro doesn't speak German.
-    expect(migrateVoiceEngine('kokoro', 'de')).toBe('supertonic')
+    expect(migrateVoiceEngine(undefined, 'de')).toBe('supertonic')
   })
 
-  it('loads settings saved with the 0.1.3 Kokoro voice as Kokoro, without the Windows voice', async () => {
-    writeFileSync(
-      join(userData, 'settings.json'),
-      JSON.stringify({
-        voiceEngine: 'kokoro',
-        kokoroVoice: 'am_michael',
-        voiceName: 'Microsoft Zira',
-        voiceVolume: 0.5
-      })
-    )
+  it('keeps a voice the player chose, even in a language it can’t speak', () => {
+    expect(migrateVoiceEngine('kokoro', 'en')).toBe('kokoro')
+    expect(migrateVoiceEngine('supertonic', 'it')).toBe('supertonic')
+    // The Voice settings explain that Kokoro doesn't speak German; the choice isn't undone.
+    expect(migrateVoiceEngine('kokoro', 'de')).toBe('kokoro')
+  })
+})
+
+describe('loading saved voice settings', () => {
+  beforeEach(() => {
+    userData = mkdtempSync(join(tmpdir(), 'gamemate-migrate-settings-'))
+    vi.resetModules()
+  })
+
+  const load = async (saved: object): Promise<import('../src/shared/types').Settings> => {
+    writeFileSync(join(userData, 'settings.json'), JSON.stringify(saved))
     const { getSettings } = await import('../src/main/system/settings')
-    const settings = getSettings()
+    return getSettings()
+  }
+
+  it('loads settings saved with the 0.1.3 Kokoro voice as Kokoro, without the Windows voice', async () => {
+    const settings = await load({
+      voiceEngine: 'kokoro',
+      kokoroVoice: 'am_michael',
+      voiceName: 'Microsoft Zira',
+      voiceVolume: 0.5
+    })
     expect(settings.voiceEngine).toBe('kokoro')
     expect(settings.kokoroVoice).toBe('male')
     expect(settings.voiceVolume).toBe(0.5)
     expect('voiceName' in settings).toBe(false)
+  })
+
+  it('moves a language no longer offered to English before choosing the voice', async () => {
+    const settings = await load({ language: 'ja', voiceEngine: 'windows' })
+    expect(settings.language).toBe('en')
+    expect(settings.voiceEngine).toBe('kokoro')
+  })
+
+  it('gives a German Windows voice Supertonic', async () => {
+    expect((await load({ language: 'de', voiceEngine: 'windows' })).voiceEngine).toBe('supertonic')
+  })
+
+  it('keeps a German player’s Kokoro choice after a restart', async () => {
+    expect((await load({ language: 'de', voiceEngine: 'kokoro' })).voiceEngine).toBe('kokoro')
   })
 })
