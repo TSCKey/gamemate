@@ -243,7 +243,7 @@ describe('applying feature choices', () => {
 
 describe('saved language', () => {
   it('a language no longer offered loads as English', () => {
-    saveFile({ termsVersion: 2, language: 'es' })
+    saveFile({ termsVersion: 2, language: 'ja' })
     expect(settings.getSettings().language).toBe('en')
   })
 

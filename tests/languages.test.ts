@@ -17,10 +17,18 @@ vi.mock('electron', () => ({
 }))
 
 describe('supported languages', () => {
-  it('are English, German, French and Arabic, with Arabic the only right-to-left one', () => {
-    expect(LANGUAGES.map((l) => l.code)).toEqual(['en', 'de', 'fr', 'ar'])
+  it('are English, German, French, Arabic, Spanish, Portuguese and Italian, with Arabic the only right-to-left one', () => {
+    expect(LANGUAGES.map((l) => l.code)).toEqual(['en', 'de', 'fr', 'ar', 'es', 'pt', 'it'])
     expect(LANGUAGES.filter((l) => l.dir === 'rtl').map((l) => l.code)).toEqual(['ar'])
-    expect(LANGUAGES.map((l) => l.nativeName)).toEqual(['English', 'Deutsch', 'Français', 'العربية'])
+    expect(LANGUAGES.map((l) => l.nativeName)).toEqual([
+      'English',
+      'Deutsch',
+      'Français',
+      'العربية',
+      'Español',
+      'Português',
+      'Italiano'
+    ])
   })
 
   it('all have the natural voice', () => {
@@ -28,7 +36,10 @@ describe('supported languages', () => {
   })
 
   it('match Windows language tags, regional variants included', () => {
-    expect(matchLanguage(['es-ES', 'zh-Hant-TW'])).toBe('en')
+    expect(matchLanguage(['zh-Hant-TW', 'ja-JP'])).toBe('en')
+    expect(matchLanguage(['es-MX'])).toBe('es')
+    expect(matchLanguage(['pt-PT'])).toBe('pt')
+    expect(matchLanguage(['it-IT'])).toBe('it')
     expect(matchLanguage(['de-AT'])).toBe('de')
     expect(matchLanguage(['fr-CA'])).toBe('fr')
     expect(matchLanguage(['ar-EG'])).toBe('ar')

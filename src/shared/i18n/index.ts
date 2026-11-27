@@ -5,7 +5,10 @@ import type { LanguageCode } from '../languages'
 import ar from './ar.json'
 import de from './de.json'
 import en from './en.json'
+import es from './es.json'
 import fr from './fr.json'
+import it from './it.json'
+import pt from './pt.json'
 
 export type Resources = Partial<Record<LanguageCode, { translation: object }>>
 
@@ -13,7 +16,10 @@ export const resources: Record<LanguageCode, { translation: object }> = {
   en: { translation: en },
   ar: { translation: ar },
   fr: { translation: fr },
-  de: { translation: de }
+  de: { translation: de },
+  es: { translation: es },
+  pt: { translation: pt },
+  it: { translation: it }
 }
 
 export type Translate = (key: string, vars?: Record<string, unknown>) => string
