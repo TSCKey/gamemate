@@ -8,7 +8,10 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src')
+        '@renderer': resolve('src/renderer/src'),
+        // kokoro-js pronounces English with the phonemizer package, which carries its own eSpeak
+        // NG build; GameMate's own build stands in for it (see englishPhonemes.ts).
+        phonemizer: resolve('src/renderer/src/voice/englishPhonemes.ts')
       }
     },
     plugins: [react()]

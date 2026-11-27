@@ -1,0 +1,9 @@
+{
+  "version": "1.52.0",
+  "commit": "4870adfa25b1a32b4361592f1be8a40337c58d6c",
+  "emscripten": "3.1.50",
+  "files": {
+    "espeak-ng.js": "41e613de5b24684f5d998d31ecfe8571fe9c6efb7f5b2e31174da0552262df7c",
+    "espeak-ng.wasm": "0e4f40cdfd0080bebf58c62e5d41e55b95abedff669837146cc4cf559d6bd35b"
+  }
+}
