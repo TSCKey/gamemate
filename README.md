@@ -26,7 +26,7 @@ By default everything runs **on your own computer**. GameMate comes with its own
 - **Looks things up.** Turn on lookups and GameMate reads your game's wiki (for example [minecraft.wiki](https://minecraft.wiki), the Terraria Wiki or Eldenpedia) for bosses, items, places and mechanics, and links to the page it used.
 - **Shows pictures.** With lookups on, answers come with pictures from the wiki: ask for a map ("map of the Forgotten Crossroads") and you get the area map, ask about a boss or item and you see it, and Minecraft recipe cards show the real game icons and the crafted item.
 - **Local or cloud, your choice.** Use the local model for everything, or Gemini for questions, the companion, or both.
-- **Speaks your language.** GameMate comes in English, German, French, Arabic, Spanish, Portuguese (Brazil), Italian and Hindi, and the AI answers in the language you ask in. With a natural voice downloaded, it reads its answers aloud in every one of them. Arabic is shown right to left.
+- **Speaks your language.** GameMate comes in English, German, French, Arabic, Spanish, Portuguese (Brazil), Italian and Hindi, and the AI answers in the language you ask in. With a natural voice downloaded, it reads its answers aloud: Kokoro in English, Spanish, French, Italian and Portuguese, and Supertonic in all of them. Arabic is shown right to left.
 - **Private by default.** No accounts, nothing uploaded, unless you choose Gemini or online lookups.
 
 ## Requirements
