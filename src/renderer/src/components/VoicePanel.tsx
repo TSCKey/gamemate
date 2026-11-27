@@ -7,7 +7,13 @@ import type {
   SpeechModelStatus,
   SupertonicVoice
 } from '../../../preload/index.d'
-import { SUPERTONIC_VOICES } from '../../../shared/types'
+import {
+  KOKORO_VOICES,
+  SUPERTONIC_VOICES,
+  VOICE_ENGINES,
+  type KokoroVoice
+} from '../../../shared/types'
+import { VOICE_NAMES, kokoroHasOneVoice, voiceHint } from '../voice/voiceHint'
 import { speak } from '../voice/speak'
 import { Field, Section, Slider, Toggle } from './ui'
 import { t } from '../i18n'
@@ -54,12 +60,22 @@ function VoicePanel({
   }, [])
 
   const listen = models.filter((m) => m.kind === 'listen')
-  const supertonic = models.find((m) => m.id === 'supertonic')
   const selected = models.find((m) => m.id === settings.speechModel)
   const usesSupertonic = settings.voiceEngine === 'supertonic'
   const language = settings.language || 'en'
   const { nativeName, voices } = languageInfo(language)
-  const supertonicSpeaksIt = voices.includes('supertonic')
+  // The chosen voice's download, and why it wouldn't read aloud (if it wouldn't).
+  const chosen = models.find((m) => m.id === settings.voiceEngine)
+  const isInstalled = (id: string): boolean => models.some((m) => m.id === id && m.installed)
+  const hint = voiceHint({
+    language,
+    engine: settings.voiceEngine,
+    installed: { kokoro: isInstalled('kokoro'), supertonic: isInstalled('supertonic') },
+    kokoroVoice: settings.kokoroVoice,
+    supertonicVoice: settings.naturalVoice
+  })
+  const other = hint.kind === 'cantSpeak' ? hint.other : null
+  const oneKokoroVoice = kokoroHasOneVoice(language)
 
   return (
     <>
@@ -128,40 +144,69 @@ function VoicePanel({
         title={t('voicePanel.gamemateSVoice')}
         description={t('voicePanel.naturalDescription')}
       >
-        <Field label={t('voicePanel.voiceType')} help={t('voicePanel.naturalHelp')}>
-          <select
-            value={settings.voiceEngine}
-            onChange={(e) => update({ voiceEngine: e.target.value as Settings['voiceEngine'] })}
-            aria-label={t('voicePanel.voiceType')}
-          >
-            <option value="kokoro">{t('voicePanel.naturalKokoro')}</option>
-            <option value="supertonic">{t('voicePanel.naturalSupertonic')}</option>
-          </select>
-        </Field>
-        {usesSupertonic && supertonic && (
-          <Field
-            label={
-              <>
-                {t('voicePanel.naturalVoice')}{' '}
-                <span className="field-help">
-                  {t('voicePanel.mb', { size: supertonic.sizeMb })}
-                </span>
-              </>
-            }
-            help={
-              supertonic.error ? (
-                <span className="error-text">{supertonic.error}</span>
-              ) : !supertonicSpeaksIt ? (
-                t('voicePanel.naturalNotForLanguage', { language: nativeName })
-              ) : supertonic.installed ? (
-                t('voicePanel.downloaded')
-              ) : (
-                t('voicePanel.downloadItOnceToUse')
-              )
-            }
-          >
-            <ModelButton model={supertonic} />
-          </Field>
+        {VOICE_ENGINES.map((engine) => {
+          const m = models.find((model) => model.id === engine)
+          if (!m) return null
+          const speaks = t(
+            voices.includes(engine)
+              ? 'voicePanel.speaksLanguage'
+              : 'voicePanel.doesntSpeakLanguage',
+            { language: nativeName }
+          )
+          return (
+            <Field
+              key={engine}
+              label={
+                <label className="check">
+                  <input
+                    type="radio"
+                    name="voice-engine"
+                    checked={settings.voiceEngine === engine}
+                    onChange={() => update({ voiceEngine: engine })}
+                  />
+                  {VOICE_NAMES[engine]}
+                  <span className="field-help">{t('voicePanel.mb', { size: m.sizeMb })}</span>
+                </label>
+              }
+              help={
+                m.error ? (
+                  <span className="error-text">{m.error}</span>
+                ) : m.installed ? (
+                  `${speaks} ${t('voicePanel.downloaded')}`
+                ) : (
+                  speaks
+                )
+              }
+            >
+              <ModelButton model={m} />
+            </Field>
+          )
+        })}
+        {other && (
+          <div className="field">
+            <p className="field-help">
+              {t('voicePanel.cantSpeakLanguage', {
+                voice: VOICE_NAMES[settings.voiceEngine],
+                language: nativeName,
+                other: VOICE_NAMES[other]
+              })}
+            </p>
+            <div className="field-control">
+              <button type="button" onClick={() => update({ voiceEngine: other })}>
+                {t('voicePanel.useVoice', { voice: VOICE_NAMES[other] })}
+              </button>
+            </div>
+          </div>
+        )}
+        {hint.kind === 'notDownloaded' && chosen && (
+          <div className="field">
+            <p className="field-help">
+              {t('voicePanel.downloadItOnceToUse', { voice: VOICE_NAMES[settings.voiceEngine] })}
+            </p>
+            <div className="field-control">
+              <ModelButton model={chosen} />
+            </div>
+          </div>
         )}
         <Field label={t('voicePanel.readAnswersAloud')}>
           <select
@@ -182,6 +227,27 @@ function VoicePanel({
             onChange={(speakComments) => update({ speakComments })}
           />
         </Field>
+        {!usesSupertonic && (
+          <Field
+            label={t('voicePanel.voice')}
+            help={
+              oneKokoroVoice ? t('voicePanel.kokoroOneVoice', { language: nativeName }) : undefined
+            }
+          >
+            <select
+              value={oneKokoroVoice ? 'female' : settings.kokoroVoice}
+              disabled={oneKokoroVoice}
+              onChange={(e) => update({ kokoroVoice: e.target.value as KokoroVoice })}
+              aria-label={t('voicePanel.voice')}
+            >
+              {KOKORO_VOICES.map((v) => (
+                <option key={v} value={v}>
+                  {t(`voicePanel.kokoroVoices.${v}`)}
+                </option>
+              ))}
+            </select>
+          </Field>
+        )}
         {usesSupertonic && (
           <Field label={t('voicePanel.voice')}>
             <select

@@ -190,6 +190,7 @@
     "closingTheWindowQuitsGamemate": "Closing the window quits GameMate. The in-game shortcuts and the companion stop until you start it again.",
     "language": "Language",
     "languageHelp": "For GameMate’s windows and the AI’s answers. Game names and wiki pages stay as they are.",
+    "voiceCantSpeak": "{{voice}} doesn’t speak {{language}}, so GameMate won’t read anything aloud in it. Choose {{other}} in Settings → Voice.",
     "chatScreenshot": "Send a screenshot with my questions by default",
     "chatScreenshotHelp": "In the chat window, 📷 starts on in every new chat."
   },
@@ -337,15 +338,11 @@
     "inAGamePressAnd": "In a game, press {{voiceShortcut}} and ask out loud. GameMate stops listening when you pause.",
     "downloadTheSelectedModelOnce": "Download the selected model once to start. After that it works offline.",
     "gamemateSVoice": "GameMate's voice",
-    "usesTheVoicesBuiltInto": "Uses the voices built into Windows.",
-    "voiceType": "Voice type",
-    "windowsVoices": "Windows voices",
     "downloaded": "Downloaded.",
-    "downloadItOnceToUse": "Download it once to use it. Until then, GameMate uses a Windows voice.",
+    "downloadItOnceToUse": "Download {{voice}} once to use it. Until then, GameMate reads nothing aloud.",
     "readAnswersAloud": "Read answers aloud",
     "readCompanionCommentsAloud": "Read companion comments aloud",
     "voice": "Voice",
-    "windowsDefault": "Windows default",
     "volume": "Volume",
     "speed": "Speed",
     "tryIt": "Try it",
@@ -372,21 +369,22 @@
       "voice": "When I ask by voice",
       "always": "Always"
     },
-    "naturalVoice": "Natural voice",
     "englishOnlyModel": "You have the English-only version. Download the multilingual version to talk in {{language}}.",
     "englishOnlyWorks": "You have the English-only version. It works for English; download the multilingual version to talk in other languages too.",
     "naturalVoices": {
       "female": "Female {{number}}",
       "male": "Male {{number}}"
     },
-    "noWindowsVoice": "No Windows voice speaks {{language}} yet.",
-    "addWindowsVoices": "Add Windows voices",
-    "addWindowsVoicesHelp": "Opens Windows' speech settings, where you can add voices in more languages. Come back here afterwards.",
-    "naturalNotForLanguage": "The natural voice doesn't speak {{language}}, so GameMate uses a Windows voice for it.",
-    "naturalDescription": "Supertonic, a natural-sounding voice that runs on this PC and works offline.",
-    "naturalHelp": "Natural is Supertonic 3 (OpenRAIL-M license): a one-time download, then it works offline. It speaks every GameMate language.",
-    "naturalKokoro": "Natural (Kokoro)",
-    "naturalSupertonic": "Natural (Supertonic)"
+    "naturalDescription": "Two natural voices that run on this PC and work offline after a one-time download. Kokoro (Apache 2.0 license) speaks English, Spanish, French, Italian and Portuguese; Supertonic 3 (OpenRAIL-M license) speaks every GameMate language.",
+    "speaksLanguage": "Speaks {{language}}.",
+    "doesntSpeakLanguage": "Doesn’t speak {{language}}.",
+    "cantSpeakLanguage": "{{voice}} doesn’t speak {{language}}, so GameMate reads nothing aloud. {{other}} does.",
+    "useVoice": "Use {{voice}}",
+    "kokoroVoices": {
+      "female": "Female",
+      "male": "Male"
+    },
+    "kokoroOneVoice": "Kokoro has only a female voice in {{language}}."
   },
   "useLocalModels": {
     "builtInAi": "Built-in AI",
@@ -735,8 +733,8 @@
     "voiceHelp": "Downloads speech recognition ({{size}} MB). Your speech is turned into text on this PC.",
     "voiceHelpNoSize": "Downloads speech recognition. Your speech is turned into text on this PC.",
     "naturalVoice": "Natural voice for answers",
-    "naturalVoiceHelp": "Downloads a natural voice ({{size}} MB) to read answers aloud instead of a Windows voice.",
-    "naturalVoiceHelpNoSize": "Downloads a natural voice to read answers aloud instead of a Windows voice.",
+    "naturalVoiceHelp": "Downloads {{voice}}, a natural voice ({{size}} MB) that reads answers aloud on this PC, also offline.",
+    "naturalVoiceHelpNoSize": "Downloads {{voice}}, a natural voice that reads answers aloud on this PC, also offline.",
     "screenshot": "Send a screenshot with my questions",
     "screenshotHelp": "📷 starts on in every new chat.",
     "tray": "Keep running in the tray",

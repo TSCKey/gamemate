@@ -190,6 +190,7 @@
     "closingTheWindowQuitsGamemate": "Das Schließen des Fensters beendet GameMate. Die Tastenkürzel im Spiel und der Begleiter stoppen, bis du es wieder startest.",
     "language": "Sprache",
     "languageHelp": "Für die Fenster von GameMate und die Antworten der KI. Spielnamen und Wikiseiten bleiben, wie sie sind.",
+    "voiceCantSpeak": "{{voice}} spricht kein {{language}}, daher liest GameMate in dieser Sprache nichts vor. Wähle {{other}} unter Einstellungen → Stimme.",
     "chatScreenshot": "Screenshot standardmäßig mit meinen Fragen senden",
     "chatScreenshotHelp": "Im Chatfenster ist 📷 in jedem neuen Chat eingeschaltet."
   },
@@ -337,15 +338,11 @@
     "inAGamePressAnd": "Drück im Spiel {{voiceShortcut}} und frag laut. GameMate hört auf zuzuhören, wenn du eine Pause machst.",
     "downloadTheSelectedModelOnce": "Lade das gewählte Modell einmal herunter, um loszulegen. Danach funktioniert es offline.",
     "gamemateSVoice": "Die Stimme von GameMate",
-    "usesTheVoicesBuiltInto": "Verwendet die in Windows eingebauten Stimmen.",
-    "voiceType": "Stimmtyp",
-    "windowsVoices": "Windows-Stimmen",
     "downloaded": "Heruntergeladen.",
-    "downloadItOnceToUse": "Lade sie einmal herunter, um sie zu nutzen. Bis dahin verwendet GameMate eine Windows-Stimme.",
+    "downloadItOnceToUse": "Lade {{voice}} einmal herunter, um die Stimme zu nutzen. Bis dahin liest GameMate nichts vor.",
     "readAnswersAloud": "Antworten vorlesen",
     "readCompanionCommentsAloud": "Kommentare des Begleiters vorlesen",
     "voice": "Stimme",
-    "windowsDefault": "Windows-Standard",
     "volume": "Lautstärke",
     "speed": "Tempo",
     "tryIt": "Ausprobieren",
@@ -372,21 +369,22 @@
       "voice": "Wenn ich per Sprache frage",
       "always": "Immer"
     },
-    "naturalVoice": "Natürliche Stimme",
     "englishOnlyModel": "Du hast die Version nur für Englisch. Lade die mehrsprachige Version herunter, um auf {{language}} zu sprechen.",
     "englishOnlyWorks": "Du hast die Version nur für Englisch. Sie funktioniert auf Englisch; lade die mehrsprachige Version herunter, um auch andere Sprachen zu sprechen.",
     "naturalVoices": {
       "female": "Weiblich {{number}}",
       "male": "Männlich {{number}}"
     },
-    "noWindowsVoice": "Noch keine Windows-Stimme spricht {{language}}.",
-    "addWindowsVoices": "Windows-Stimmen hinzufügen",
-    "addWindowsVoicesHelp": "Öffnet die Spracheinstellungen von Windows, wo du Stimmen in weiteren Sprachen hinzufügen kannst. Komm danach hierher zurück.",
-    "naturalNotForLanguage": "Die natürliche Stimme spricht kein {{language}}, daher nutzt GameMate dafür eine Windows-Stimme.",
-    "naturalDescription": "Supertonic, eine natürlich klingende Stimme, die auf diesem PC läuft und offline funktioniert.",
-    "naturalHelp": "Natürlich ist Supertonic 3 (Lizenz OpenRAIL-M): einmal herunterladen, dann funktioniert sie offline. Sie spricht alle Sprachen von GameMate.",
-    "naturalKokoro": "Natürlich (Kokoro)",
-    "naturalSupertonic": "Natürlich (Supertonic)"
+    "naturalDescription": "Zwei natürliche Stimmen, die auf diesem PC laufen und nach einem einmaligen Download offline funktionieren. Kokoro (Lizenz Apache 2.0) spricht Englisch, Spanisch, Französisch, Italienisch und Portugiesisch; Supertonic 3 (Lizenz OpenRAIL-M) spricht alle Sprachen von GameMate.",
+    "speaksLanguage": "Spricht {{language}}.",
+    "doesntSpeakLanguage": "Spricht kein {{language}}.",
+    "cantSpeakLanguage": "{{voice}} spricht kein {{language}}, daher liest GameMate nichts vor. {{other}} spricht es.",
+    "useVoice": "{{voice}} verwenden",
+    "kokoroVoices": {
+      "female": "Weiblich",
+      "male": "Männlich"
+    },
+    "kokoroOneVoice": "Kokoro hat auf {{language}} nur eine weibliche Stimme."
   },
   "useLocalModels": {
     "builtInAi": "Integrierte KI",
@@ -735,8 +733,8 @@
     "voiceHelp": "Lädt die Spracherkennung herunter ({{size}} MB). Deine Sprache wird auf diesem PC in Text umgewandelt.",
     "voiceHelpNoSize": "Lädt die Spracherkennung herunter. Deine Sprache wird auf diesem PC in Text umgewandelt.",
     "naturalVoice": "Natürliche Stimme für Antworten",
-    "naturalVoiceHelp": "Lädt eine natürliche Stimme herunter ({{size}} MB), die Antworten statt einer Windows-Stimme vorliest.",
-    "naturalVoiceHelpNoSize": "Lädt eine natürliche Stimme herunter, die Antworten statt einer Windows-Stimme vorliest.",
+    "naturalVoiceHelp": "Lädt {{voice}} herunter, eine natürliche Stimme ({{size}} MB), die Antworten auf diesem PC vorliest, auch offline.",
+    "naturalVoiceHelpNoSize": "Lädt {{voice}} herunter, eine natürliche Stimme, die Antworten auf diesem PC vorliest, auch offline.",
     "screenshot": "Screenshot mit meinen Fragen senden",
     "screenshotHelp": "📷 ist in jedem neuen Chat eingeschaltet.",
     "tray": "Im Infobereich weiterlaufen lassen",

@@ -202,6 +202,7 @@
     "closingTheWindowQuitsGamemate": "إغلاق النافذة يُنهي GameMate. تتوقف الاختصارات داخل اللعبة والرفيق حتى تشغّله مرة أخرى.",
     "language": "اللغة",
     "languageHelp": "لنوافذ GameMate وإجابات الذكاء الاصطناعي. تبقى أسماء الألعاب وصفحات الويكي كما هي.",
+    "voiceCantSpeak": "{{voice}} لا يتحدث {{language}}، لذلك لن يقرأ GameMate شيئًا بصوت عالٍ بهذه اللغة. اختر {{other}} من الإعدادات ← الصوت.",
     "chatScreenshot": "أرسل لقطة شاشة مع أسئلتي افتراضيًا",
     "chatScreenshotHelp": "في نافذة المحادثة، تكون 📷 مفعّلة في كل محادثة جديدة."
   },
@@ -349,15 +350,11 @@
     "inAGamePressAnd": "داخل اللعبة، اضغط {{voiceShortcut}} واسأل بصوت عالٍ. يتوقف GameMate عن الاستماع عندما تصمت.",
     "downloadTheSelectedModelOnce": "نزّل النموذج المحدد مرة واحدة للبدء. بعدها يعمل دون اتصال.",
     "gamemateSVoice": "صوت GameMate",
-    "usesTheVoicesBuiltInto": "يستخدم الأصوات المدمجة في Windows.",
-    "voiceType": "نوع الصوت",
-    "windowsVoices": "أصوات Windows",
     "downloaded": "تم التنزيل.",
-    "downloadItOnceToUse": "نزّله مرة واحدة لاستخدامه. حتى ذلك الحين يستخدم GameMate صوتًا من Windows.",
+    "downloadItOnceToUse": "نزّل {{voice}} مرة واحدة لاستخدامه. حتى ذلك الحين لا يقرأ GameMate شيئًا بصوت عالٍ.",
     "readAnswersAloud": "قراءة الإجابات بصوت عالٍ",
     "readCompanionCommentsAloud": "قراءة تعليقات الرفيق بصوت عالٍ",
     "voice": "الصوت",
-    "windowsDefault": "افتراضي Windows",
     "volume": "مستوى الصوت",
     "speed": "السرعة",
     "tryIt": "جرّبه",
@@ -384,21 +381,22 @@
       "voice": "عندما أسأل بصوتي",
       "always": "دائمًا"
     },
-    "naturalVoice": "صوت طبيعي",
     "englishOnlyModel": "لديك النسخة الإنجليزية فقط. نزّل النسخة متعددة اللغات للتحدث بـ{{language}}.",
     "englishOnlyWorks": "لديك النسخة الإنجليزية فقط. تعمل مع الإنجليزية؛ نزّل النسخة متعددة اللغات للتحدث بلغات أخرى أيضًا.",
     "naturalVoices": {
       "female": "صوت نسائي {{number}}",
       "male": "صوت رجالي {{number}}"
     },
-    "noWindowsVoice": "لا يوجد بعد صوت من Windows يتحدث {{language}}.",
-    "addWindowsVoices": "إضافة أصوات Windows",
-    "addWindowsVoicesHelp": "يفتح إعدادات الكلام في Windows، حيث يمكنك إضافة أصوات بلغات أخرى. ثم عُد إلى هنا.",
-    "naturalNotForLanguage": "الصوت الطبيعي لا يتحدث {{language}}، لذلك يستخدم GameMate صوتًا من Windows.",
-    "naturalDescription": "Supertonic، صوت طبيعي يعمل على هذا الكمبيوتر ودون اتصال بالإنترنت.",
-    "naturalHelp": "الصوت الطبيعي هو Supertonic 3 (رخصة OpenRAIL-M): يُنزَّل مرة واحدة ثم يعمل دون اتصال. يتحدث كل لغات GameMate.",
-    "naturalKokoro": "طبيعي (Kokoro)",
-    "naturalSupertonic": "طبيعي (Supertonic)"
+    "naturalDescription": "صوتان طبيعيان يعملان على هذا الكمبيوتر ودون اتصال بعد تنزيل واحد. Kokoro (رخصة Apache 2.0) يتحدث الإنجليزية والإسبانية والفرنسية والإيطالية والبرتغالية؛ وSupertonic 3 (رخصة OpenRAIL-M) يتحدث كل لغات GameMate.",
+    "speaksLanguage": "يتحدث {{language}}.",
+    "doesntSpeakLanguage": "لا يتحدث {{language}}.",
+    "cantSpeakLanguage": "{{voice}} لا يتحدث {{language}}، لذلك لا يقرأ GameMate شيئًا بصوت عالٍ. أما {{other}} فيتحدثها.",
+    "useVoice": "استخدم {{voice}}",
+    "kokoroVoices": {
+      "female": "نسائي",
+      "male": "رجالي"
+    },
+    "kokoroOneVoice": "لدى Kokoro صوت نسائي واحد فقط في {{language}}."
   },
   "useLocalModels": {
     "builtInAi": "الذكاء الاصطناعي المدمج",
@@ -747,8 +745,8 @@
     "voiceHelp": "ينزّل التعرّف على الكلام ({{size}} ميغابايت). يتحوّل كلامك إلى نص على هذا الحاسوب.",
     "voiceHelpNoSize": "ينزّل التعرّف على الكلام. يتحوّل كلامك إلى نص على هذا الحاسوب.",
     "naturalVoice": "صوت طبيعي للإجابات",
-    "naturalVoiceHelp": "ينزّل صوتًا طبيعيًا ({{size}} ميغابايت) لقراءة الإجابات بصوت عالٍ بدلًا من صوت Windows.",
-    "naturalVoiceHelpNoSize": "ينزّل صوتًا طبيعيًا لقراءة الإجابات بصوت عالٍ بدلًا من صوت Windows.",
+    "naturalVoiceHelp": "ينزّل {{voice}}، وهو صوت طبيعي ({{size}} ميغابايت) يقرأ الإجابات بصوت عالٍ على هذا الكمبيوتر، حتى دون اتصال.",
+    "naturalVoiceHelpNoSize": "ينزّل {{voice}}، وهو صوت طبيعي يقرأ الإجابات بصوت عالٍ على هذا الكمبيوتر، حتى دون اتصال.",
     "screenshot": "أرسل لقطة شاشة مع أسئلتي",
     "screenshotHelp": "📷 تكون مفعّلة في كل محادثة جديدة.",
     "tray": "أبقِ GameMate يعمل في منطقة الإعلام",

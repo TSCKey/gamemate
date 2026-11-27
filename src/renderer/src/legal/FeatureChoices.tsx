@@ -3,6 +3,7 @@ import type { Settings } from '../../../preload/index.d'
 import type { FeatureChoices as Choices } from '../../../shared/types'
 import { naturalVoiceFor } from '../../../shared/voices'
 import { errorMessage } from '../hooks/useSettings'
+import { VOICE_NAMES } from '../voice/voiceHint'
 import { t } from '../i18n'
 
 type Row = keyof Choices
@@ -96,8 +97,13 @@ function FeatureChoices({
             'naturalVoice',
             t('featureChoices.naturalVoice'),
             naturalModel && sizes[naturalModel]
-              ? t('featureChoices.naturalVoiceHelp', { size: sizes[naturalModel] })
-              : t('featureChoices.naturalVoiceHelpNoSize')
+              ? t('featureChoices.naturalVoiceHelp', {
+                  voice: VOICE_NAMES[naturalModel],
+                  size: sizes[naturalModel]
+                })
+              : t('featureChoices.naturalVoiceHelpNoSize', {
+                  voice: naturalModel ? VOICE_NAMES[naturalModel] : ''
+                })
           )}
         {row('screenshot', t('featureChoices.screenshot'), t('featureChoices.screenshotHelp'))}
         {row('tray', t('featureChoices.tray'), t('featureChoices.trayHelp'))}

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { AppInfo, Settings, UpdateState } from '../../../preload/index.d'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT } from '../../../shared/shortcuts'
-import { LANGUAGES, type LanguageCode } from '../../../shared/languages'
+import { LANGUAGES, languageInfo, type LanguageCode } from '../../../shared/languages'
+import { VOICE_NAMES, cantSpeakHint } from '../voice/voiceHint'
 import ShortcutField from './ShortcutField'
 import { Field, Section, Toggle } from './ui'
 import { t } from '../i18n'
@@ -83,12 +84,16 @@ function GeneralPanel({
   update: (patch: Partial<Settings>) => void
   appInfo: AppInfo | null
 }): React.JSX.Element {
+  const language = settings.language || 'en'
+  // The chosen voice can't read this language aloud: say which one can (Settings → Voice).
+  const cantSpeak = cantSpeakHint(language, settings.voiceEngine)
+  const voiceHint = cantSpeak?.other ? { other: cantSpeak.other } : null
   return (
     <>
       <Section title={t('generalPanel.language')}>
         <Field label={t('generalPanel.language')} help={t('generalPanel.languageHelp')}>
           <select
-            value={settings.language || 'en'}
+            value={language}
             aria-label={t('generalPanel.language')}
             onChange={(e) => update({ language: e.target.value as LanguageCode })}
           >
@@ -99,6 +104,15 @@ function GeneralPanel({
             ))}
           </select>
         </Field>
+        {voiceHint && (
+          <p className="field-help">
+            {t('generalPanel.voiceCantSpeak', {
+              voice: VOICE_NAMES[settings.voiceEngine],
+              language: languageInfo(language).nativeName,
+              other: VOICE_NAMES[voiceHint.other]
+            })}
+          </p>
+        )}
       </Section>
       <Section title={t('generalPanel.inGameWindow')}>
         <Field

@@ -193,6 +193,7 @@
     "closingTheWindowQuitsGamemate": "Fermer la fenêtre quitte GameMate. Les raccourcis en jeu et le compagnon s’arrêtent jusqu’au prochain lancement.",
     "language": "Langue",
     "languageHelp": "Pour les fenêtres de GameMate et les réponses de l’IA. Les noms des jeux et les pages des wikis restent tels quels.",
+    "voiceCantSpeak": "{{voice}} ne parle pas {{language}} : GameMate ne lira donc rien à voix haute dans cette langue. Choisissez {{other}} dans Paramètres → Voix.",
     "chatScreenshot": "Envoyer une capture d'écran avec mes questions par défaut",
     "chatScreenshotHelp": "Dans la fenêtre de discussion, 📷 est activé dans chaque nouvelle discussion."
   },
@@ -340,15 +341,11 @@
     "inAGamePressAnd": "En jeu, appuyez sur {{voiceShortcut}} et posez votre question à voix haute. GameMate arrête d’écouter quand vous faites une pause.",
     "downloadTheSelectedModelOnce": "Téléchargez une fois le modèle choisi pour commencer. Ensuite, il fonctionne hors ligne.",
     "gamemateSVoice": "La voix de GameMate",
-    "usesTheVoicesBuiltInto": "Utilise les voix intégrées à Windows.",
-    "voiceType": "Type de voix",
-    "windowsVoices": "Voix Windows",
     "downloaded": "Téléchargé.",
-    "downloadItOnceToUse": "Téléchargez-la une fois pour l’utiliser. D’ici là, GameMate utilise une voix Windows.",
+    "downloadItOnceToUse": "Téléchargez {{voice}} une fois pour l’utiliser. D’ici là, GameMate ne lit rien à voix haute.",
     "readAnswersAloud": "Lire les réponses à voix haute",
     "readCompanionCommentsAloud": "Lire les commentaires du compagnon à voix haute",
     "voice": "Voix",
-    "windowsDefault": "Par défaut de Windows",
     "volume": "Volume",
     "speed": "Vitesse",
     "tryIt": "Essayer",
@@ -375,21 +372,22 @@
       "voice": "Quand je demande à voix haute",
       "always": "Toujours"
     },
-    "naturalVoice": "Voix naturelle",
     "englishOnlyModel": "Vous avez la version anglaise uniquement. Téléchargez la version multilingue pour parler en {{language}}.",
     "englishOnlyWorks": "Vous avez la version anglaise uniquement. Elle fonctionne en anglais ; téléchargez la version multilingue pour parler aussi d'autres langues.",
     "naturalVoices": {
       "female": "Voix féminine {{number}}",
       "male": "Voix masculine {{number}}"
     },
-    "noWindowsVoice": "Aucune voix Windows ne parle encore {{language}}.",
-    "addWindowsVoices": "Ajouter des voix Windows",
-    "addWindowsVoicesHelp": "Ouvre les paramètres vocaux de Windows, où vous pouvez ajouter des voix dans d'autres langues. Revenez ici ensuite.",
-    "naturalNotForLanguage": "La voix naturelle ne parle pas {{language}} : GameMate utilise donc une voix Windows.",
-    "naturalDescription": "Supertonic, une voix naturelle qui fonctionne sur ce PC, même hors ligne.",
-    "naturalHelp": "La voix naturelle est Supertonic 3 (licence OpenRAIL-M) : un seul téléchargement, puis elle fonctionne hors ligne. Elle parle toutes les langues de GameMate.",
-    "naturalKokoro": "Naturelle (Kokoro)",
-    "naturalSupertonic": "Naturelle (Supertonic)"
+    "naturalDescription": "Deux voix naturelles qui fonctionnent sur ce PC, même hors ligne, après un seul téléchargement. Kokoro (licence Apache 2.0) parle anglais, espagnol, français, italien et portugais ; Supertonic 3 (licence OpenRAIL-M) parle toutes les langues de GameMate.",
+    "speaksLanguage": "Parle {{language}}.",
+    "doesntSpeakLanguage": "Ne parle pas {{language}}.",
+    "cantSpeakLanguage": "{{voice}} ne parle pas {{language}} : GameMate ne lit donc rien à voix haute. {{other}}, oui.",
+    "useVoice": "Utiliser {{voice}}",
+    "kokoroVoices": {
+      "female": "Féminine",
+      "male": "Masculine"
+    },
+    "kokoroOneVoice": "En {{language}}, Kokoro n’a qu’une voix féminine."
   },
   "useLocalModels": {
     "builtInAi": "IA intégrée",
@@ -738,8 +736,8 @@
     "voiceHelp": "Télécharge la reconnaissance vocale ({{size}} Mo). Votre voix est transformée en texte sur ce PC.",
     "voiceHelpNoSize": "Télécharge la reconnaissance vocale. Votre voix est transformée en texte sur ce PC.",
     "naturalVoice": "Voix naturelle pour les réponses",
-    "naturalVoiceHelp": "Télécharge une voix naturelle ({{size}} Mo) pour lire les réponses à voix haute à la place d'une voix Windows.",
-    "naturalVoiceHelpNoSize": "Télécharge une voix naturelle pour lire les réponses à voix haute à la place d'une voix Windows.",
+    "naturalVoiceHelp": "Télécharge {{voice}}, une voix naturelle ({{size}} Mo) qui lit les réponses à voix haute sur ce PC, même hors ligne.",
+    "naturalVoiceHelpNoSize": "Télécharge {{voice}}, une voix naturelle qui lit les réponses à voix haute sur ce PC, même hors ligne.",
     "screenshot": "Envoyer une capture d'écran avec mes questions",
     "screenshotHelp": "📷 est activé dans chaque nouvelle discussion.",
     "tray": "Laisser GameMate actif dans la zone de notification",

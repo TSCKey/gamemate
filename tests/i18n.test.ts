@@ -182,11 +182,27 @@ describe('the voice settings', () => {
     expect(labels.at(-1)).toBe('Male 5')
   })
 
-  it('explain where the natural voice and Windows voices don’t cover a language', () => {
-    expect(en('voicePanel.noWindowsVoice', { language: '中文' })).toBe(
-      'No Windows voice speaks 中文 yet.'
-    )
-    expect(en('voicePanel.naturalNotForLanguage', { language: '中文' })).toContain('中文')
-    expect(en('voicePanel.addWindowsVoices')).toBe('Add Windows voices')
+  it('name the voice that speaks a language when the chosen one can’t', () => {
+    expect(
+      en('voicePanel.cantSpeakLanguage', {
+        voice: 'Kokoro',
+        language: 'Deutsch',
+        other: 'Supertonic'
+      })
+    ).toBe('Kokoro doesn’t speak Deutsch, so GameMate reads nothing aloud. Supertonic does.')
+    expect(en('voicePanel.useVoice', { voice: 'Supertonic' })).toBe('Use Supertonic')
+  })
+
+  it('no longer mention Windows voices', async () => {
+    const { readdirSync, readFileSync } = await import('fs')
+    const { join } = await import('path')
+    const dir = join(__dirname, '../src/shared/i18n')
+    for (const file of readdirSync(dir).filter((f) => f.endsWith('.json'))) {
+      const { voicePanel, featureChoices } = JSON.parse(readFileSync(join(dir, file), 'utf8'))
+      const texts = JSON.stringify([voicePanel, featureChoices])
+      expect(texts, file).not.toMatch(/Windows/)
+      for (const key of ['noWindowsVoice', 'addWindowsVoices', 'windowsVoices', 'windowsDefault'])
+        expect(voicePanel[key], `${file} ${key}`).toBeUndefined()
+    }
   })
 })

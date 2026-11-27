@@ -190,6 +190,7 @@
     "closingTheWindowQuitsGamemate": "विंडो बंद करने से GameMate बंद हो जाता है। जब तक आप इसे फिर शुरू नहीं करते, इन-गेम शॉर्टकट और साथी रुके रहते हैं।",
     "language": "भाषा",
     "languageHelp": "GameMate की विंडो और AI के जवाबों के लिए। गेम के नाम और विकी पेज जैसे हैं वैसे ही रहते हैं।",
+    "voiceCantSpeak": "{{voice}} {{language}} नहीं बोलती, इसलिए GameMate इस भाषा में कुछ भी बोलकर नहीं सुनाएगा। सेटिंग्स → आवाज़ में {{other}} चुनें।",
     "chatScreenshot": "डिफ़ॉल्ट रूप से मेरे सवालों के साथ स्क्रीनशॉट भेजें",
     "chatScreenshotHelp": "चैट विंडो में, हर नई चैट में 📷 चालू रहता है।"
   },
@@ -337,15 +338,11 @@
     "inAGamePressAnd": "गेम में {{voiceShortcut}} दबाएँ और बोलकर पूछें। आपके रुकने पर GameMate सुनना बंद कर देता है।",
     "downloadTheSelectedModelOnce": "शुरू करने के लिए चुना हुआ मॉडल एक बार डाउनलोड करें। उसके बाद यह ऑफ़लाइन काम करता है।",
     "gamemateSVoice": "GameMate की आवाज़",
-    "usesTheVoicesBuiltInto": "Windows में बनी आवाज़ें इस्तेमाल करता है।",
-    "voiceType": "आवाज़ का प्रकार",
-    "windowsVoices": "Windows आवाज़ें",
     "downloaded": "डाउनलोड हो गया।",
-    "downloadItOnceToUse": "इस्तेमाल करने के लिए इसे एक बार डाउनलोड करें। तब तक GameMate Windows की आवाज़ इस्तेमाल करता है।",
+    "downloadItOnceToUse": "इस्तेमाल करने के लिए {{voice}} को एक बार डाउनलोड करें। तब तक GameMate कुछ भी बोलकर नहीं सुनाता।",
     "readAnswersAloud": "जवाब बोलकर सुनाएँ",
     "readCompanionCommentsAloud": "साथी की टिप्पणियाँ बोलकर सुनाएँ",
     "voice": "आवाज़",
-    "windowsDefault": "Windows डिफ़ॉल्ट",
     "volume": "वॉल्यूम",
     "speed": "गति",
     "tryIt": "आज़माएँ",
@@ -372,21 +369,22 @@
       "voice": "जब मैं बोलकर पूछूँ",
       "always": "हमेशा"
     },
-    "naturalVoice": "नैचुरल आवाज़",
     "englishOnlyModel": "आपके पास सिर्फ़-अंग्रेज़ी वर्शन है। {{language}} में बात करने के लिए बहुभाषी वर्शन डाउनलोड करें।",
     "englishOnlyWorks": "आपके पास सिर्फ़-अंग्रेज़ी वर्शन है। यह अंग्रेज़ी के लिए काम करता है; दूसरी भाषाओं में भी बात करने के लिए बहुभाषी वर्शन डाउनलोड करें।",
     "naturalVoices": {
       "female": "महिला {{number}}",
       "male": "पुरुष {{number}}"
     },
-    "noWindowsVoice": "अभी कोई Windows आवाज़ {{language}} नहीं बोलती।",
-    "addWindowsVoices": "Windows आवाज़ें जोड़ें",
-    "addWindowsVoicesHelp": "Windows की स्पीच सेटिंग्स खोलता है, जहाँ आप और भाषाओं में आवाज़ें जोड़ सकते हैं। उसके बाद यहाँ वापस आएँ।",
-    "naturalNotForLanguage": "नैचुरल आवाज़ {{language}} नहीं बोलती, इसलिए GameMate इसके लिए Windows की आवाज़ इस्तेमाल करता है।",
-    "naturalDescription": "Supertonic, एक नैचुरल-सी लगने वाली आवाज़ जो इस PC पर चलती है और ऑफ़लाइन काम करती है।",
-    "naturalHelp": "नैचुरल आवाज़ Supertonic 3 है (OpenRAIL-M लाइसेंस): एक बार डाउनलोड करें, फिर यह ऑफ़लाइन काम करती है। यह GameMate की हर भाषा बोलती है।",
-    "naturalKokoro": "नैचुरल (Kokoro)",
-    "naturalSupertonic": "नैचुरल (Supertonic)"
+    "naturalDescription": "दो नैचुरल आवाज़ें जो इस PC पर चलती हैं और एक बार डाउनलोड करने के बाद ऑफ़लाइन काम करती हैं। Kokoro (Apache 2.0 लाइसेंस) अंग्रेज़ी, स्पैनिश, फ़्रेंच, इतालवी और पुर्तगाली बोलती है; Supertonic 3 (OpenRAIL-M लाइसेंस) GameMate की हर भाषा बोलती है।",
+    "speaksLanguage": "{{language}} बोलती है।",
+    "doesntSpeakLanguage": "{{language}} नहीं बोलती।",
+    "cantSpeakLanguage": "{{voice}} {{language}} नहीं बोलती, इसलिए GameMate कुछ भी बोलकर नहीं सुनाता। {{other}} यह भाषा बोलती है।",
+    "useVoice": "{{voice}} इस्तेमाल करें",
+    "kokoroVoices": {
+      "female": "महिला",
+      "male": "पुरुष"
+    },
+    "kokoroOneVoice": "{{language}} में Kokoro के पास सिर्फ़ एक महिला आवाज़ है।"
   },
   "useLocalModels": {
     "builtInAi": "बिल्ट-इन AI",
@@ -735,8 +733,8 @@
     "voiceHelp": "स्पीच रिकग्निशन डाउनलोड करता है ({{size}} MB)। आपकी बोली इसी PC पर टेक्स्ट में बदली जाती है।",
     "voiceHelpNoSize": "स्पीच रिकग्निशन डाउनलोड करता है। आपकी बोली इसी PC पर टेक्स्ट में बदली जाती है।",
     "naturalVoice": "जवाबों के लिए नैचुरल आवाज़",
-    "naturalVoiceHelp": "Windows की आवाज़ की जगह जवाब बोलकर सुनाने के लिए एक नैचुरल आवाज़ ({{size}} MB) डाउनलोड करता है।",
-    "naturalVoiceHelpNoSize": "Windows की आवाज़ की जगह जवाब बोलकर सुनाने के लिए एक नैचुरल आवाज़ डाउनलोड करता है।",
+    "naturalVoiceHelp": "{{voice}} डाउनलोड करता है, एक नैचुरल आवाज़ ({{size}} MB) जो इस PC पर जवाब बोलकर सुनाती है, ऑफ़लाइन भी।",
+    "naturalVoiceHelpNoSize": "{{voice}} डाउनलोड करता है, एक नैचुरल आवाज़ जो इस PC पर जवाब बोलकर सुनाती है, ऑफ़लाइन भी।",
     "screenshot": "मेरे सवालों के साथ स्क्रीनशॉट भेजें",
     "screenshotHelp": "हर नई चैट में 📷 चालू रहता है।",
     "tray": "ट्रे में चलता रहे",
