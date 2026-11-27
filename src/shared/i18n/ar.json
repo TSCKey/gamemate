@@ -399,7 +399,14 @@
       "female": "نسائي",
       "male": "رجالي"
     },
-    "kokoroOneVoice": "لدى Kokoro صوت نسائي واحد فقط في {{language}}."
+    "kokoroOneVoice": "لدى Kokoro صوت نسائي واحد فقط في {{language}}.",
+    "kokoroVoicesHelp": "يمكنك الاستماع إلى أي صوت قبل اختياره.",
+    "accents": {
+      "us": "الإنجليزية الأمريكية",
+      "gb": "الإنجليزية البريطانية"
+    },
+    "listen": "استماع",
+    "listenTo": "الاستماع إلى {{voice}}"
   },
   "useLocalModels": {
     "builtInAi": "الذكاء الاصطناعي المدمج",

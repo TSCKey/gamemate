@@ -103,9 +103,27 @@ describe('loading saved voice settings', () => {
       voiceVolume: 0.5
     })
     expect(settings.voiceEngine).toBe('kokoro')
-    expect(settings.kokoroVoice).toBe('male')
+    expect(settings.kokoroVoice).toBe('am_michael')
     expect(settings.voiceVolume).toBe(0.5)
     expect('voiceName' in settings).toBe(false)
+  })
+
+  it('turns Kokoro’s female voice into Heart and its male voice into Michael', async () => {
+    expect((await load({ voiceEngine: 'kokoro', kokoroVoice: 'female' })).kokoroVoice).toBe(
+      'af_heart'
+    )
+  })
+
+  it('turns Kokoro’s male voice into Michael', async () => {
+    expect((await load({ voiceEngine: 'kokoro', kokoroVoice: 'male' })).kokoroVoice).toBe(
+      'am_michael'
+    )
+  })
+
+  it('keeps a Kokoro voice the player chose', async () => {
+    expect((await load({ voiceEngine: 'kokoro', kokoroVoice: 'bf_lily' })).kokoroVoice).toBe(
+      'bf_lily'
+    )
   })
 
   it('moves a language no longer offered to English before choosing the voice', async () => {

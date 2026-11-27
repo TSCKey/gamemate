@@ -140,7 +140,7 @@ describe('the voices in the legal documents', () => {
 
   it('name the Kokoro download and no Windows voices', () => {
     const privacy = flat(read('PRIVACY.md'))
-    expect(privacy).toContain('Kokoro (about 330 MB)')
+    expect(privacy).toContain('Kokoro (about 345 MB)')
     expect(privacy).toContain('eSpeak NG')
     for (const doc of ['TERMS.md', 'PRIVACY.md']) expect(read(doc)).not.toMatch(/Windows voice/i)
     const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf8')

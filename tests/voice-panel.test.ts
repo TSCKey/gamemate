@@ -39,7 +39,7 @@ const render = (settings: Partial<Settings>): string =>
         speechModel: 'accurate',
         speakAnswers: 'voice',
         speakComments: false,
-        kokoroVoice: 'female',
+        kokoroVoice: 'af_heart',
         naturalVoice: 'F1',
         voiceVolume: 1,
         voiceRate: 1,
@@ -52,12 +52,31 @@ const render = (settings: Partial<Settings>): string =>
   )
 
 describe('the Voice settings', () => {
-  it('offer Kokoro’s female and male voice only where Kokoro speaks the language', () => {
+  it('list every Kokoro voice of the language, each with a Listen button', () => {
     models.list = [model('kokoro', true), model('supertonic', true)]
     const english = render({ language: 'en', voiceEngine: 'kokoro' })
-    expect(english).toContain('value="male"')
+    expect(english.match(/name="kokoro-voice"/g)).toHaveLength(28)
+    expect(english.match(/>Listen</g)).toHaveLength(28)
+    expect(english).toContain('George')
+    expect(english).toContain('British English')
+    expect(render({ language: 'fr', voiceEngine: 'kokoro' }).match(/>Listen</g)).toHaveLength(1)
     const german = render({ language: 'de', voiceEngine: 'kokoro' })
-    expect(german).not.toContain('value="male"')
+    expect(german).not.toContain('name="kokoro-voice"')
+  })
+
+  it('mark the voice the player chose, or the usual one where it doesn’t speak the language', () => {
+    models.list = [model('kokoro', true), model('supertonic', true)]
+    const checked = (html: string): string | undefined =>
+      [...html.matchAll(/<input[^>]*name="kokoro-voice"[^>]*>/g)]
+        .map((m) => m[0])
+        .find((tag) => tag.includes('checked'))
+        ?.match(/value="(\w+)"/)?.[1]
+    expect(
+      checked(render({ language: 'en', voiceEngine: 'kokoro', kokoroVoice: 'bm_george' }))
+    ).toBe('bm_george')
+    expect(
+      checked(render({ language: 'es', voiceEngine: 'kokoro', kokoroVoice: 'bm_george' }))
+    ).toBe('em_alex')
   })
 
   it('offer a voice that isn’t downloaded with one Download button, on its row', () => {

@@ -19,9 +19,9 @@ describe('the voice model store', () => {
     expect(supertonic).toMatchObject({ kind: 'speak', sizeMb: 401, installed: false })
   })
 
-  it('offers Kokoro as a 330 MB download of its model and every voice GameMate uses', () => {
+  it('offers Kokoro as a 345 MB download of its model and every voice GameMate uses', () => {
     const kokoro = speechModelStatuses().find((m) => m.id === 'kokoro')
-    expect(kokoro).toMatchObject({ kind: 'speak', sizeMb: 330, installed: false })
+    expect(kokoro).toMatchObject({ kind: 'speak', sizeMb: 345, installed: false })
     const { repo, revision, files } = SPEECH_MODELS.kokoro
     expect(repo).toBe('onnx-community/Kokoro-82M-v1.0-ONNX')
     expect(revision).toMatch(/^[0-9a-f]{40}$/)
@@ -34,12 +34,17 @@ describe('the voice model store', () => {
       ])
     )
     const voices = [
-      'af_heart', 'ef_dora', 'ff_siwis', 'if_sara', 'pf_dora',
-      'am_michael', 'em_alex', 'ff_siwis', 'im_nicola', 'pm_alex'
-    ] // prettier-ignore
+      'af_heart',
+      'bm_george',
+      'ef_dora',
+      'em_santa',
+      'ff_siwis',
+      'im_nicola',
+      'pm_santa'
+    ]
     for (const voice of voices) expect(files).toContain(`voices/${voice}.bin`)
-    // French's one voice is downloaded once.
+    // Every voice once: 28 English, 3 Spanish, 1 French, 2 Italian, 3 Portuguese.
     expect(new Set(files).size).toBe(files.length)
-    expect(files.filter((f) => f.startsWith('voices/'))).toHaveLength(9)
+    expect(files.filter((f) => f.startsWith('voices/'))).toHaveLength(37)
   })
 })

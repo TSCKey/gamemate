@@ -387,7 +387,14 @@
       "female": "Female",
       "male": "Male"
     },
-    "kokoroOneVoice": "Kokoro has only a female voice in {{language}}."
+    "kokoroOneVoice": "Kokoro has only a female voice in {{language}}.",
+    "kokoroVoicesHelp": "Listen to a voice before you choose it.",
+    "accents": {
+      "us": "American English",
+      "gb": "British English"
+    },
+    "listen": "Listen",
+    "listenTo": "Listen to {{voice}}"
   },
   "useLocalModels": {
     "builtInAi": "Built-in AI",

@@ -9,15 +9,19 @@ import {
   removeSpeechModel,
   speechModelStatuses
 } from '../voice/voiceModels'
-import { pickVoice } from '../../shared/voices'
+import { isKokoroVoice, pickVoice } from '../../shared/voices'
 
 export function registerVoiceHandlers(): void {
   handle('voice:models', () => speechModelStatuses())
   // 'noVoice' the first time the chat or a pop-up asks (options.notice) while the chosen voice
-  // isn't downloaded, so it can tell the player once why nothing is read aloud.
+  // isn't downloaded, so it can tell the player once why nothing is read aloud. With
+  // options.kokoroVoice the Voice settings play a sample of that Kokoro voice, without choosing it.
   handle('voice:speak', (_event, text: unknown, options: unknown): 'noVoice' | undefined => {
     if (typeof text !== 'string') return
-    const settings = getSettings()
+    const sample = (options as { kokoroVoice?: unknown } | undefined)?.kokoroVoice
+    const settings = isKokoroVoice(sample)
+      ? { ...getSettings(), voiceEngine: 'kokoro' as const, kokoroVoice: sample }
+      : getSettings()
     const language = settings.language || 'en'
     const choice = pickVoice({
       language,

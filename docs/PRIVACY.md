@@ -62,7 +62,7 @@ If you choose Gemini for answers or for the companion, GameMate sends to Google:
 
 ## 6. Connections that are not optional consents
 
-- **Downloads you start** (AI models, speech models and the natural voices Kokoro (about 330 MB) and Supertonic (401 MB) from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR). Ticking a download on that screen and pressing **Continue** also starts it.
+- **Downloads you start** (AI models, speech models and the natural voices Kokoro (about 345 MB) and Supertonic (401 MB) from Hugging Face, GameMate's AI engine from GitHub) connect to those services when you click **Download**, because you asked for them (Art. 6 (1) (b) GDPR). Ticking a download on that screen and pressing **Continue** also starts it.
 - **Update checks** ask GitHub for the latest version of GameMate, shortly after GameMate starts and every few hours, and download a new version if there is one. We do this to deliver security fixes and improvements (our legitimate interest, Art. 6 (1) (f) GDPR). You can turn this off in **Settings → General**. GameMate makes no update check before you have accepted the Terms of Use.
 
 Like any connection on the internet, these requests show the service your IP address and basic technical information (such as the app's name and version). We never receive this information.

@@ -89,7 +89,7 @@ describe.each(TRANSLATED)('the %s legal texts', (code) => {
           expect(flat(supertonic)).toContain(restriction)
       } else {
         expect(text).toContain('Kokoro')
-        expect(text).toContain('330')
+        expect(text).toContain('345')
         expect(text).toContain('eSpeak NG')
       }
     })

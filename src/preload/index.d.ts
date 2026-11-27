@@ -113,7 +113,10 @@ export interface Api {
     models: () => Promise<SpeechModelStatus[]>
     // Speaks with the voice, volume and speed from settings, replacing anything still playing.
     // With notice, 'noVoice' the first time nothing is said because no voice is downloaded.
-    speak: (text: string, options?: { notice?: boolean }) => Promise<'noVoice' | undefined>
+    speak: (
+      text: string,
+      options?: { notice?: boolean; kokoroVoice?: string }
+    ) => Promise<'noVoice' | undefined>
     stop: () => Promise<void>
     download: (id: SpeechModelId) => Promise<void>
     remove: (id: SpeechModelId) => Promise<void>

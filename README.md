@@ -171,7 +171,7 @@ Press **Alt + V** or click **🎤** again to stop listening early, or press **Es
 - **Read answers aloud:** Never, When I ask by voice (the default), or Always.
 - **Read companion comments aloud:** speaks Commentary mode's reactions.
 - **Two natural voices** sound like a real person. Each is a one-time download; it then runs on your PC and works offline. Choose one, and click **Download** next to it.
-  - **Kokoro** (330 MB) speaks English, Spanish, French, Italian and Portuguese, with a female and a male voice (only a female voice in French).
+  - **Kokoro** (345 MB) speaks English, Spanish, French, Italian and Portuguese, with 37 voices to choose from: 28 American and British English voices, three Spanish, two Italian, three Portuguese and one French. Settings → Voice lets you listen to each one first.
   - **Supertonic** (401 MB) speaks all of GameMate's languages and has 5 female and 5 male voices. It's the voice for German, Arabic and Hindi.
 - The Voice page shows which voice speaks your language. If the one you chose doesn't, GameMate reads nothing aloud and the page offers the other one. Until your voice is downloaded, GameMate reads nothing aloud either.
 - Choose a **Voice** and set the **Volume** and **Speed**. Click **🔊 Test voice** to hear it.

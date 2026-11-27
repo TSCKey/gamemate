@@ -387,7 +387,14 @@
       "female": "महिला",
       "male": "पुरुष"
     },
-    "kokoroOneVoice": "{{language}} में Kokoro के पास सिर्फ़ एक महिला आवाज़ है।"
+    "kokoroOneVoice": "{{language}} में Kokoro के पास सिर्फ़ एक महिला आवाज़ है।",
+    "kokoroVoicesHelp": "चुनने से पहले कोई भी आवाज़ सुन लें।",
+    "accents": {
+      "us": "अमेरिकी अंग्रेज़ी",
+      "gb": "ब्रिटिश अंग्रेज़ी"
+    },
+    "listen": "सुनें",
+    "listenTo": "{{voice}} को सुनें"
   },
   "useLocalModels": {
     "builtInAi": "बिल्ट-इन AI",

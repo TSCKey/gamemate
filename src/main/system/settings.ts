@@ -9,6 +9,7 @@ import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT, isValidShortcut } from '../../shared/shortcuts'
 import { isLanguageCode, languageInfo } from '../../shared/languages'
+import { isKokoroVoice } from '../../shared/voices'
 import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
@@ -16,7 +17,6 @@ import {
   COMMENTARY_HUMOR_LEVELS,
   REACTION_INTENSITIES,
   SPEAK_ANSWERS,
-  KOKORO_VOICES,
   SUPERTONIC_VOICES,
   VOICE_ENGINES,
   ENGINES,
@@ -31,7 +31,6 @@ import type {
   CommentaryHumor,
   ReactionIntensity,
   SpeakAnswers,
-  KokoroVoice,
   SupertonicVoice,
   VoiceEngine,
   Engine,
@@ -87,7 +86,7 @@ const DEFAULTS: Settings = {
   speakAnswers: 'voice',
   speakComments: false,
   voiceEngine: 'kokoro',
-  kokoroVoice: 'female',
+  kokoroVoice: 'af_heart',
   naturalVoice: 'F1',
   voiceVolume: 1,
   voiceRate: 1,
@@ -166,9 +165,9 @@ export function getSettings(): Settings {
         current.language || 'en',
         installedVoices()
       )
-      // GameMate 0.1.3 saved a Kokoro voice file ('af_heart'); its second letter is the voice.
-      if (!KOKORO_VOICES.includes(current.kokoroVoice)) {
-        current.kokoroVoice = /^.m_/.test(String(current.kokoroVoice)) ? 'male' : 'female'
+      // Kokoro's female or male voice (as earlier builds saved it) becomes its usual voice.
+      if (!isKokoroVoice(current.kokoroVoice)) {
+        current.kokoroVoice = current.kokoroVoice === 'male' ? 'am_michael' : 'af_heart'
       }
       delete (current as Settings & { voiceName?: string }).voiceName
     } catch {
@@ -233,9 +232,7 @@ export function updateSettings(patch: unknown): Settings {
   if (!next.speakComments) next.showComments = true
   if (VOICE_ENGINES.includes(p.voiceEngine as VoiceEngine))
     next.voiceEngine = p.voiceEngine as VoiceEngine
-  if (KOKORO_VOICES.includes(p.kokoroVoice as KokoroVoice)) {
-    next.kokoroVoice = p.kokoroVoice as KokoroVoice
-  }
+  if (isKokoroVoice(p.kokoroVoice)) next.kokoroVoice = p.kokoroVoice
   if (SUPERTONIC_VOICES.includes(p.naturalVoice as SupertonicVoice)) {
     next.naturalVoice = p.naturalVoice as SupertonicVoice
   }

@@ -39,9 +39,6 @@ export type SpeakAnswers = (typeof SPEAK_ANSWERS)[number]
 
 export const VOICE_ENGINES = ['kokoro', 'supertonic'] as const
 export type VoiceEngine = (typeof VOICE_ENGINES)[number]
-// Kokoro's voice in each language it speaks (French has only a female one).
-export const KOKORO_VOICES = ['female', 'male'] as const
-export type KokoroVoice = (typeof KOKORO_VOICES)[number]
 
 export const ENGINES = ['local', 'gemini'] as const
 export type Engine = (typeof ENGINES)[number]
@@ -121,8 +118,9 @@ export interface Settings {
   // GameMate's voice: Kokoro or Supertonic, each a one-time download. Kokoro doesn't speak every
   // language; then nothing is read aloud until the player picks Supertonic.
   voiceEngine: VoiceEngine
-  // Kokoro's female or male voice.
-  kokoroVoice: KokoroVoice
+  // The Kokoro voice the player chose, e.g. 'bm_george' (shared/voices.ts). In another language
+  // Kokoro speaks, its usual voice of the same gender reads instead.
+  kokoroVoice: string
   // Supertonic voice, e.g. 'F1'.
   naturalVoice: SupertonicVoice
   voiceVolume: number

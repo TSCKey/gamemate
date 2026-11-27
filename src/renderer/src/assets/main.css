@@ -704,6 +704,34 @@ kbd {
   align-items: center;
 }
 
+/* A setting whose choices sit under its label (Kokoro's voices). */
+.field-stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.voice-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.voice-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+}
+
+.voice-row + .voice-row {
+  border-top: 1px solid var(--border);
+}
+
 .key-form {
   display: flex;
   gap: 8px;

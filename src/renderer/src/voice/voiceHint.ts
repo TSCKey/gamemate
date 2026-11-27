@@ -1,6 +1,6 @@
 // What the voice settings say about the chosen voice and the player's language.
 import { languageInfo, type LanguageCode, type NaturalVoiceEngine } from '../../../shared/languages'
-import { kokoroVoiceId, pickVoice } from '../../../shared/voices'
+import { kokoroVoicesFor, pickVoice } from '../../../shared/voices'
 
 // Product names: the same in every language.
 export const VOICE_NAMES: Record<NaturalVoiceEngine, string> = {
@@ -32,8 +32,7 @@ export function voiceHint(o: Parameters<typeof pickVoice>[0]): VoiceHint {
   return { kind: 'cantSpeak', other: cantSpeakHint(o.language, o.engine)?.other ?? null }
 }
 
-// Kokoro speaks the language with the same voice for female and male (French).
+// Kokoro speaks the language with only one voice (French).
 export function kokoroHasOneVoice(language: LanguageCode): boolean {
-  const female = kokoroVoiceId(language, 'female')
-  return female !== null && female === kokoroVoiceId(language, 'male')
+  return kokoroVoicesFor(language).length === 1
 }

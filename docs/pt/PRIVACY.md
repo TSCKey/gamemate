@@ -64,7 +64,7 @@ Se você escolher o Gemini para as respostas ou para o companheiro, o GameMate e
 
 ## 6. Conexões que não são consentimentos opcionais
 
-- **Os downloads que você inicia** (modelos de IA, modelos de fala e as vozes naturais Kokoro (cerca de 330 MB) e Supertonic (401 MB) do Hugging Face, o motor de IA do GameMate do GitHub) se conectam a esses serviços quando você clica em **Baixar**, porque você os pediu (art. 6 (1) (b) RGPD). Marcar um download nessa tela e clicar em **Continuar** também o inicia.
+- **Os downloads que você inicia** (modelos de IA, modelos de fala e as vozes naturais Kokoro (cerca de 345 MB) e Supertonic (401 MB) do Hugging Face, o motor de IA do GameMate do GitHub) se conectam a esses serviços quando você clica em **Baixar**, porque você os pediu (art. 6 (1) (b) RGPD). Marcar um download nessa tela e clicar em **Continuar** também o inicia.
 - **A busca por atualizações** pergunta ao GitHub qual é a versão mais recente do GameMate, logo depois de ele iniciar e a cada poucas horas, e baixa uma nova versão se houver. Fazemos isso para entregar correções de segurança e melhorias (nosso interesse legítimo, art. 6 (1) (f) RGPD). Você pode desativar isso em **Configurações → Geral**. O GameMate não procura atualizações antes de você aceitar os Termos de uso.
 
 Como qualquer conexão na internet, essas solicitações mostram ao serviço o seu endereço IP e informações técnicas básicas (como o nome e a versão do aplicativo). Nós nunca recebemos essas informações.

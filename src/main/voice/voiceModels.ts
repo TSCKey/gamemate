@@ -2,7 +2,7 @@
 // renderer's speech worker over the gm-model:// protocol so recognition runs fully offline.
 import { app, BrowserWindow, net, protocol } from 'electron'
 import { createWriteStream, existsSync } from 'fs'
-import { mkdir, rename, rm, stat } from 'fs/promises'
+import { copyFile, mkdir, rename, rm, stat } from 'fs/promises'
 import { dirname, join, normalize, relative } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -65,7 +65,7 @@ export const SPEECH_MODELS = {
     kind: 'speak',
     repo: 'onnx-community/Kokoro-82M-v1.0-ONNX',
     revision: '1939ad2a8e416c0acfeecc08a694d14ef25f2231',
-    sizeMb: 330,
+    sizeMb: 345,
     files: [
       'config.json',
       'tokenizer.json',
@@ -170,12 +170,21 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
     let lastBroadcast = 0
 
     for (const name of files) {
+      const file = join(tmp, name)
+      await mkdir(dirname(file), { recursive: true })
+      // A file an earlier download already has (and that matches the listing) is kept, so
+      // voices added in an update are all that's fetched.
+      const expected = listed.get(name)
+      const have = join(dir, name)
+      if (expected && existsSync(have) && (await checkFile(have, expected))) {
+        await copyFile(have, file)
+        received += expected.size ?? 0
+        continue
+      }
       const res = await net.fetch(`https://huggingface.co/${repo}/resolve/${revision}/${name}`)
       if (!res.ok || !res.body) {
         throw new Error(t('errors.download.serverAnswered', { status: res.status }))
       }
-      const file = join(tmp, name)
-      await mkdir(dirname(file), { recursive: true })
       const body = Readable.fromWeb(res.body as import('stream/web').ReadableStream)
       body.on('data', (chunk: Buffer) => {
         received += chunk.length
@@ -187,7 +196,6 @@ export async function downloadSpeechModel(id: SpeechModelId): Promise<void> {
       })
       await pipeline(body, createWriteStream(file))
       // Large files are checked by their sha256, small ones by size.
-      const expected = listed.get(name)
       if (expected && !(await checkFile(file, expected))) {
         throw new Error(t('errors.download.incomplete'))
       }

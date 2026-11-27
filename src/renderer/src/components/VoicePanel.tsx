@@ -7,18 +7,13 @@ import type {
   SpeechModelStatus,
   SupertonicVoice
 } from '../../../preload/index.d'
-import {
-  KOKORO_VOICES,
-  SUPERTONIC_VOICES,
-  VOICE_ENGINES,
-  type KokoroVoice
-} from '../../../shared/types'
+import { SUPERTONIC_VOICES, VOICE_ENGINES } from '../../../shared/types'
 import { VOICE_NAMES, kokoroHasOneVoice, voiceHint } from '../voice/voiceHint'
 import { speak } from '../voice/speak'
 import { Field, Section, Slider, Toggle } from './ui'
 import { t } from '../i18n'
 import { languageInfo } from '../../../shared/languages'
-import { kokoroVoiceId } from '../../../shared/voices'
+import { kokoroVoiceId, kokoroVoicesFor, type KokoroVoiceInfo } from '../../../shared/voices'
 import { canListen } from '../../../shared/speech'
 import { naturalVoiceLabel } from '../voice/labels'
 
@@ -43,6 +38,55 @@ function ModelButton({ model }: { model: SpeechModelStatus }): React.JSX.Element
 }
 
 const SPEAK_OPTIONS: SpeakAnswers[] = ['off', 'voice', 'always']
+
+// 'British English · Male' in English, 'Male' in the other languages.
+const describeKokoroVoice = (v: KokoroVoiceInfo): string =>
+  [v.accent && t(`voicePanel.accents.${v.accent}`), t(`voicePanel.kokoroVoices.${v.gender}`)]
+    .filter(Boolean)
+    .join(' · ')
+
+// Every Kokoro voice of the language, each with a sample to listen to before choosing it.
+function KokoroVoiceList({
+  voices,
+  chosen,
+  canListen,
+  choose
+}: {
+  voices: KokoroVoiceInfo[]
+  chosen: string | null
+  canListen: boolean
+  choose: (id: string) => void
+}): React.JSX.Element {
+  return (
+    <div className="voice-list" role="radiogroup" aria-label={t('voicePanel.voice')}>
+      {voices.map((v) => (
+        <div className="voice-row" key={v.id}>
+          <label className="check">
+            <input
+              type="radio"
+              name="kokoro-voice"
+              value={v.id}
+              checked={v.id === chosen}
+              onChange={() => choose(v.id)}
+            />
+            <span>{v.name}</span>
+            <span className="field-help">{describeKokoroVoice(v)}</span>
+          </label>
+          <button
+            type="button"
+            disabled={!canListen}
+            aria-label={t('voicePanel.listenTo', { voice: v.name })}
+            onClick={() =>
+              window.api.voice.speak(t('voicePanel.hiIMGamemateWatch'), { kokoroVoice: v.id })
+            }
+          >
+            {t('voicePanel.listen')}
+          </button>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 function VoicePanel({
   settings,
@@ -76,8 +120,9 @@ function VoicePanel({
   })
   const other = hint.kind === 'cantSpeak' ? hint.other : null
   const oneKokoroVoice = kokoroHasOneVoice(language)
-  // Kokoro's female or male voice, where Kokoro speaks the language.
-  const kokoroSpeaks = kokoroVoiceId(language, 'female') !== null
+  // Kokoro's voices in the language (none where Kokoro doesn't speak it), and the one it reads with.
+  const kokoroVoices = kokoroVoicesFor(language)
+  const kokoroVoice = kokoroVoiceId(language, settings.kokoroVoice)
 
   return (
     <>
@@ -224,28 +269,23 @@ function VoicePanel({
             onChange={(speakComments) => update({ speakComments })}
           />
         </Field>
-        {!usesSupertonic && kokoroSpeaks && (
-          <Field
-            label={t('voicePanel.voice')}
-            help={
-              oneKokoroVoice
-                ? t('voicePanel.kokoroOneVoice', { language: sentenceName })
-                : undefined
-            }
-          >
-            <select
-              value={oneKokoroVoice ? 'female' : settings.kokoroVoice}
-              disabled={oneKokoroVoice}
-              onChange={(e) => update({ kokoroVoice: e.target.value as KokoroVoice })}
-              aria-label={t('voicePanel.voice')}
-            >
-              {KOKORO_VOICES.map((v) => (
-                <option key={v} value={v}>
-                  {t(`voicePanel.kokoroVoices.${v}`)}
-                </option>
-              ))}
-            </select>
-          </Field>
+        {!usesSupertonic && kokoroVoices.length > 0 && (
+          <div className="field field-stack">
+            <div className="field-text">
+              <div className="field-label">{t('voicePanel.voice')}</div>
+              <div className="field-help">
+                {oneKokoroVoice
+                  ? t('voicePanel.kokoroOneVoice', { language: sentenceName })
+                  : t('voicePanel.kokoroVoicesHelp')}
+              </div>
+            </div>
+            <KokoroVoiceList
+              voices={kokoroVoices}
+              chosen={kokoroVoice}
+              canListen={isInstalled('kokoro')}
+              choose={(id) => update({ kokoroVoice: id })}
+            />
+          </div>
         )}
         {usesSupertonic && (
           <Field label={t('voicePanel.voice')}>

@@ -41,7 +41,7 @@ describe('reading aloud', () => {
     current.settings = {
       language: 'de',
       voiceEngine: 'supertonic',
-      kokoroVoice: 'female',
+      kokoroVoice: 'af_heart',
       naturalVoice: 'M2',
       voiceVolume: 0.5,
       voiceRate: 1.2
@@ -78,11 +78,23 @@ describe('reading aloud', () => {
       volume: 0.5,
       language: 'es'
     })
-    current.settings = { ...current.settings, language: 'en', kokoroVoice: 'male' }
+    current.settings = { ...current.settings, language: 'en', kokoroVoice: 'am_michael' }
     await speak('Nice shot!')
     expect(sayInToast).toHaveBeenLastCalledWith(
       expect.objectContaining({ engine: 'kokoro', voice: 'am_michael', language: 'en' })
     )
+  })
+
+  it('says a sample with the Kokoro voice the player wants to hear, without choosing it', async () => {
+    current.settings = { ...current.settings, language: 'en', voiceEngine: 'kokoro' }
+    installed.add('kokoro')
+    await speak('Hi!', { kokoroVoice: 'bm_george' })
+    expect(sayInToast).toHaveBeenLastCalledWith(
+      expect.objectContaining({ engine: 'kokoro', voice: 'bm_george', language: 'en' })
+    )
+    expect(current.settings.kokoroVoice).toBe('af_heart')
+    await speak('Hi!', { kokoroVoice: '../evil' })
+    expect(sayInToast).toHaveBeenLastCalledWith(expect.objectContaining({ voice: 'af_heart' }))
   })
 
   it('says nothing while Kokoro isn’t downloaded', async () => {

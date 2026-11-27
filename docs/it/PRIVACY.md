@@ -64,7 +64,7 @@ Se scegli Gemini per le risposte o per il compagno, GameMate invia a Google: le 
 
 ## 6. Connessioni che non sono consensi facoltativi
 
-- **I download che avvii** (modelli di IA, modelli vocali e le voci naturali Kokoro (circa 330 MB) e Supertonic (401 MB) da Hugging Face, il motore di IA di GameMate da GitHub) si collegano a questi servizi quando fai clic su **Scarica**, perché li hai richiesti tu (art. 6 (1) (b) GDPR). Anche selezionare un download in quella schermata e fare clic su **Continua** lo avvia.
+- **I download che avvii** (modelli di IA, modelli vocali e le voci naturali Kokoro (circa 345 MB) e Supertonic (401 MB) da Hugging Face, il motore di IA di GameMate da GitHub) si collegano a questi servizi quando fai clic su **Scarica**, perché li hai richiesti tu (art. 6 (1) (b) GDPR). Anche selezionare un download in quella schermata e fare clic su **Continua** lo avvia.
 - **La ricerca degli aggiornamenti** chiede a GitHub l'ultima versione di GameMate, poco dopo l'avvio e ogni qualche ora, e scarica una nuova versione se c'è. Lo facciamo per fornire correzioni di sicurezza e miglioramenti (nostro legittimo interesse, art. 6 (1) (f) GDPR). Puoi disattivarla in **Impostazioni → Generali**. GameMate non cerca aggiornamenti prima che tu abbia accettato i Termini di utilizzo.
 
 Come ogni connessione su internet, queste richieste mostrano al servizio il tuo indirizzo IP e informazioni tecniche di base (come il nome e la versione dell'app). Noi non riceviamo mai queste informazioni.
