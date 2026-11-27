@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Settings } from '../../../preload/index.d'
 import type { FeatureChoices as Choices } from '../../../shared/types'
-import { languageInfo } from '../../../shared/languages'
+import { naturalVoiceFor } from '../../../shared/voices'
 import { errorMessage } from '../hooks/useSettings'
 import { t } from '../i18n'
 
@@ -29,7 +29,9 @@ function FeatureChoices({
   const [sizes, setSizes] = useState<Record<string, number>>({})
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const naturalVoice = languageInfo(settings.language || 'en').voices.length > 0
+  // The voice the Natural voice row downloads for this language.
+  const naturalModel = naturalVoiceFor(settings.language || 'en')
+  const naturalVoice = naturalModel !== null
 
   useEffect(() => {
     window.api.voice
@@ -93,8 +95,8 @@ function FeatureChoices({
           row(
             'naturalVoice',
             t('featureChoices.naturalVoice'),
-            sizes.supertonic
-              ? t('featureChoices.naturalVoiceHelp', { size: sizes.supertonic })
+            naturalModel && sizes[naturalModel]
+              ? t('featureChoices.naturalVoiceHelp', { size: sizes[naturalModel] })
               : t('featureChoices.naturalVoiceHelpNoSize')
           )}
         {row('screenshot', t('featureChoices.screenshot'), t('featureChoices.screenshotHelp'))}

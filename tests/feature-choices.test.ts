@@ -216,9 +216,18 @@ describe('applying feature choices', () => {
     expect(downloadSpeechModel).not.toHaveBeenCalled()
   })
 
-  it('natural voice is chosen at once and downloads', () => {
-    settings.updateSettings({ language: 'en' })
+  it('natural voice is Kokoro where it speaks the language, chosen at once and downloaded', () => {
+    settings.updateSettings({ language: 'it' })
     const s = features.applyFeatureChoices({ naturalVoice: true })
+    expect(downloadSpeechModel).toHaveBeenCalledTimes(1)
+    expect(downloadSpeechModel).toHaveBeenCalledWith('kokoro')
+    expect(s.voiceEngine).toBe('kokoro')
+  })
+
+  it('natural voice is Supertonic where Kokoro can’t speak the language', () => {
+    settings.updateSettings({ language: 'ar', voiceEngine: 'kokoro' })
+    const s = features.applyFeatureChoices({ naturalVoice: true })
+    expect(downloadSpeechModel).toHaveBeenCalledTimes(1)
     expect(downloadSpeechModel).toHaveBeenCalledWith('supertonic')
     expect(s.voiceEngine).toBe('supertonic')
   })
@@ -229,12 +238,12 @@ describe('applying feature choices', () => {
     downloads[0].done()
     await new Promise((r) => setTimeout(r, 0))
     // Not installed, so nothing is read aloud until it is (pickVoice says why).
-    expect(settings.getSettings().voiceEngine).toBe('supertonic')
+    expect(settings.getSettings().voiceEngine).toBe('kokoro')
     expect(settings.getSettings().featureChoices).toBe('answered')
   })
 
   it('natural voice already installed is used right away', () => {
-    settings.updateSettings({ language: 'en' })
+    settings.updateSettings({ language: 'de' })
     installed.add('supertonic')
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).not.toHaveBeenCalled()

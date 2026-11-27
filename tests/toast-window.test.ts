@@ -42,7 +42,14 @@ vi.mock('electron', () => ({
 }))
 
 const toast = await import('../src/main/windows/toast')
-const say = { text: 'Hi', voice: 'F1' as const, speed: 1, volume: 1, language: 'en' as const }
+const say = {
+  engine: 'supertonic' as const,
+  text: 'Hi',
+  voice: 'F1' as const,
+  speed: 1,
+  volume: 1,
+  language: 'en' as const
+}
 const open = (): FakeWindow[] => FakeWindow.all.filter((w) => !w.destroyed)
 
 describe('the comment pop-up window', () => {

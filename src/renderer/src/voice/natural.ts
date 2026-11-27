@@ -1,40 +1,66 @@
-// GameMate's natural voice (Supertonic), played in the pop-up window: text is spoken sentence
-// by sentence, so the first words start quickly even for long answers.
+// GameMate's natural voices (Kokoro and Supertonic), played in the pop-up window: text is spoken
+// sentence by sentence, so the first words start quickly even for long answers. Each voice runs
+// in its own worker; only the one in use is kept, and both go when the pop-up window closes
+// after a few quiet minutes.
 import type { SayRequest } from '../../../preload/index.d'
 import type { VoiceRequest, VoiceResponse } from './tts.worker'
+import type { KokoroRequest } from './kokoro.worker'
 import { splitForSpeech } from './supertonicText'
 
-let worker: Worker | null = null
+type Engine = SayRequest['engine']
+
+const workers = new Map<Engine, Worker>()
 let nextId = 1
 let generation = 0
 let context: AudioContext | null = null
 let playing: AudioBufferSourceNode | null = null
 const pending = new Map<number, (r: VoiceResponse) => void>()
 
-function getWorker(): Worker {
+function getWorker(engine: Engine): Worker {
+  // The other voice's model isn't needed any more (hundreds of MB). Its unfinished sentences
+  // (all of them: one voice speaks at a time) are dropped.
+  for (const [other, worker] of workers) {
+    if (other === engine) continue
+    worker.terminate()
+    workers.delete(other)
+    for (const [id, resolve] of pending) resolve({ type: 'error', id, message: 'stopped' })
+    pending.clear()
+  }
+  let worker = workers.get(engine)
   if (!worker) {
-    worker = new Worker(new URL('./tts.worker.ts', import.meta.url), { type: 'module' })
+    worker =
+      engine === 'kokoro'
+        ? new Worker(new URL('./kokoro.worker.ts', import.meta.url), { type: 'module' })
+        : new Worker(new URL('./tts.worker.ts', import.meta.url), { type: 'module' })
     worker.onmessage = (event: MessageEvent<VoiceResponse>) => {
       pending.get(event.data.id)?.(event.data)
       pending.delete(event.data.id)
     }
+    workers.set(engine, worker)
   }
   return worker
 }
 
 function synthesize(text: string, request: SayRequest): Promise<VoiceResponse> {
   const id = nextId++
-  const { voice, speed, language } = request
+  const { speed, language } = request
+  const worker = getWorker(request.engine)
   return new Promise((resolve) => {
     pending.set(id, resolve)
-    getWorker().postMessage({
-      type: 'say',
-      id,
-      text,
-      voice,
-      speed,
-      language
-    } satisfies VoiceRequest)
+    if (request.engine === 'kokoro') {
+      const message: KokoroRequest = {
+        type: 'say',
+        id,
+        text,
+        voice: request.voice,
+        speed,
+        language
+      }
+      worker.postMessage(message)
+    } else {
+      const message: VoiceRequest = { type: 'say', id, text, voice: request.voice, speed, language }
+      worker.postMessage(message)
+    }
   })
 }
 

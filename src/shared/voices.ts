@@ -17,6 +17,11 @@ const KOKORO_VOICE_IDS: Partial<Record<LanguageCode, Record<KokoroVoice, string>
   pt: { female: 'pf_dora', male: 'pm_alex' }
 }
 
+// Every Kokoro voice file GameMate uses, once each.
+export const KOKORO_VOICE_FILES: readonly string[] = [
+  ...new Set(Object.values(KOKORO_VOICE_IDS).flatMap((ids) => Object.values(ids)))
+]
+
 // The Kokoro voice for a language, or null where Kokoro doesn't speak it.
 export function kokoroVoiceId(language: LanguageCode, voice: KokoroVoice): string | null {
   return KOKORO_VOICE_IDS[language]?.[voice] ?? null
@@ -36,4 +41,12 @@ export function pickVoice(o: {
   if (o.engine === 'supertonic') return { kind: 'supertonic', voice: o.supertonicVoice }
   const voice = kokoroVoiceId(o.language, o.kokoroVoice)
   return voice ? { kind: 'kokoro', voice } : { kind: 'none', reason: 'cantSpeak' }
+}
+
+// The natural voice a player gets for a language: Kokoro where it speaks it, otherwise
+// Supertonic (null if neither does).
+export function naturalVoiceFor(language: LanguageCode): NaturalVoiceEngine | null {
+  const { voices } = languageInfo(language)
+  if (voices.includes('kokoro')) return 'kokoro'
+  return voices.includes('supertonic') ? 'supertonic' : null
 }

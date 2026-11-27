@@ -9,6 +9,7 @@ import { pipeline } from 'stream/promises'
 import { pathToFileURL } from 'url'
 import type { SpeechModelId, ListenModelId, SpeechModelStatus } from '../../shared/types'
 import { SUPERTONIC_VOICES } from '../../shared/types'
+import { KOKORO_VOICE_FILES } from '../../shared/voices'
 import { checkFile } from './checksum'
 import { t } from '../system/i18n'
 export type { SpeechModelId, ListenModelId, SpeechModelStatus }
@@ -57,7 +58,23 @@ export const SPEECH_MODELS = {
     sizeMb: 253,
     files: WHISPER_FILES
   },
-  // Supertonic 3 (OpenRAIL-M), GameMate's natural voice in 11 of its languages.
+  // Kokoro-82M (Apache 2.0), GameMate's natural voice in English, Spanish, French, Italian and
+  // Portuguese: the full-precision model (sha256 8fbea51e…, checked like every file below) and
+  // each language's voices.
+  kokoro: {
+    kind: 'speak',
+    repo: 'onnx-community/Kokoro-82M-v1.0-ONNX',
+    revision: '1939ad2a8e416c0acfeecc08a694d14ef25f2231',
+    sizeMb: 330,
+    files: [
+      'config.json',
+      'tokenizer.json',
+      'tokenizer_config.json',
+      'onnx/model.onnx',
+      ...KOKORO_VOICE_FILES.map((v) => `voices/${v}.bin`)
+    ]
+  },
+  // Supertonic 3 (OpenRAIL-M), GameMate's natural voice in all eight of its languages.
   supertonic: {
     kind: 'speak',
     repo: 'Supertone/supertonic-3',

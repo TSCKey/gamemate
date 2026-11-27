@@ -20,16 +20,20 @@ export function registerVoiceHandlers(): void {
     const choice = pickVoice({
       language,
       engine: settings.voiceEngine,
-      // Kokoro can't be downloaded until it can speak.
-      installed: { kokoro: false, supertonic: isSpeechModelInstalled('supertonic') },
+      installed: {
+        kokoro: isSpeechModelInstalled('kokoro'),
+        supertonic: isSpeechModelInstalled('supertonic')
+      },
       kokoroVoice: settings.kokoroVoice,
       supertonicVoice: settings.naturalVoice
     })
-    // The natural voices run in the pop-up window. Kokoro doesn't speak yet, and with no voice
-    // for the language (or not downloaded) nothing is read aloud.
-    if (choice.kind === 'supertonic') {
-      const { voiceVolume: volume, voiceRate: speed } = settings
-      sayInToast({ text, voice: choice.voice, speed, volume, language })
+    // The natural voices run in the pop-up window. With no voice for the language (or not
+    // downloaded) nothing is read aloud.
+    const { voiceVolume: volume, voiceRate: speed } = settings
+    if (choice.kind === 'kokoro') {
+      sayInToast({ engine: 'kokoro', text, voice: choice.voice, speed, volume, language })
+    } else if (choice.kind === 'supertonic') {
+      sayInToast({ engine: 'supertonic', text, voice: choice.voice, speed, volume, language })
     }
   })
   handle('voice:stop', () => hushToast())

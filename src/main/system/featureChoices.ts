@@ -1,7 +1,8 @@
 // Applying what the player ticked on the "Get the full GameMate experience" screen. Nothing is
 // turned on or downloaded unless it was ticked and the player pressed Continue.
 import type { FeatureChoices, Settings } from '../../shared/types'
-import { languageInfo } from '../../shared/languages'
+import type { NaturalVoiceEngine } from '../../shared/languages'
+import { naturalVoiceFor } from '../../shared/voices'
 import { downloadSpeechModel, isSpeechModelInstalled } from '../voice/voiceModels'
 import { scanGames } from '../ipc/games'
 import { getSettings, updateSettings } from './settings'
@@ -28,7 +29,7 @@ export function parseFeatureChoices(input: unknown): FeatureChoices {
 export function applyFeatureChoices(input: unknown): Settings {
   const choices = parseFeatureChoices(input)
   const language = getSettings().language || 'en'
-  const naturalWanted = choices.naturalVoice && languageInfo(language).voices.includes('supertonic')
+  const natural = choices.naturalVoice ? naturalVoiceFor(language) : null
 
   const patch: Record<string, unknown> = { closeToTray: choices.tray, featureChoices: 'answered' }
   if (choices.games) patch.deviceConsent = true
@@ -39,18 +40,18 @@ export function applyFeatureChoices(input: unknown): Settings {
   }
   if (choices.screenshot) patch.chatScreenshot = true
   // Chosen at once, so the Voice panel shows the download; nothing is read aloud until it's done.
-  if (naturalWanted) patch.voiceEngine = 'supertonic'
+  if (natural) patch.voiceEngine = natural
   const result = updateSettings(patch)
 
   if (choices.games) {
     scanGames().catch((error) => console.error('Finding games failed', error))
   }
   if (choices.voice && !isSpeechModelInstalled('accurate')) download('accurate')
-  if (naturalWanted && !isSpeechModelInstalled('supertonic')) download('supertonic')
+  if (natural && !isSpeechModelInstalled(natural)) download(natural)
   return result
 }
 
-function download(id: 'accurate' | 'supertonic'): void {
+function download(id: 'accurate' | NaturalVoiceEngine): void {
   downloadSpeechModel(id).catch((error) =>
     console.error(`Downloading the ${id} speech model failed`, error)
   )

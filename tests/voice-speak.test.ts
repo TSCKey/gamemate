@@ -46,6 +46,7 @@ describe('reading aloud', () => {
   it('says it with Supertonic in the pop-up window', async () => {
     await speak('Guter Schuss!')
     expect(sayInToast).toHaveBeenCalledWith({
+      engine: 'supertonic',
       text: 'Guter Schuss!',
       voice: 'M2',
       speed: 1.2,
@@ -60,10 +61,35 @@ describe('reading aloud', () => {
     expect(sayInToast).not.toHaveBeenCalled()
   })
 
-  it('says nothing when Kokoro is chosen, which can’t speak yet', async () => {
-    current.settings = { ...current.settings, language: 'en', voiceEngine: 'kokoro' }
+  it('says it with Kokoro in the pop-up window, in the language’s voice', async () => {
+    current.settings = { ...current.settings, language: 'es', voiceEngine: 'kokoro' }
     installed.add('kokoro')
+    await speak('¡Buen tiro!')
+    expect(sayInToast).toHaveBeenCalledWith({
+      engine: 'kokoro',
+      text: '¡Buen tiro!',
+      voice: 'ef_dora',
+      speed: 1.2,
+      volume: 0.5,
+      language: 'es'
+    })
+    current.settings = { ...current.settings, language: 'en', kokoroVoice: 'male' }
     await speak('Nice shot!')
+    expect(sayInToast).toHaveBeenLastCalledWith(
+      expect.objectContaining({ engine: 'kokoro', voice: 'am_michael', language: 'en' })
+    )
+  })
+
+  it('says nothing while Kokoro isn’t downloaded', async () => {
+    current.settings = { ...current.settings, language: 'en', voiceEngine: 'kokoro' }
+    await speak('Nice shot!')
+    expect(sayInToast).not.toHaveBeenCalled()
+  })
+
+  it('says nothing with Kokoro in a language it can’t speak', async () => {
+    current.settings = { ...current.settings, language: 'de', voiceEngine: 'kokoro' }
+    installed.add('kokoro')
+    await speak('Guter Schuss!')
     expect(sayInToast).not.toHaveBeenCalled()
   })
 

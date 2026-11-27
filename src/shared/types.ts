@@ -80,7 +80,7 @@ export interface ConsentDates {
 }
 
 // Speech recognition models ('listen') and GameMate's natural voice ('speak').
-export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'supertonic'
+export type SpeechModelId = 'fast' | 'accurate' | 'best' | 'kokoro' | 'supertonic'
 export type ListenModelId = 'fast' | 'accurate' | 'best'
 
 export interface Settings {
@@ -382,14 +382,14 @@ export const SUPERTONIC_VOICES = [
 ] as const
 export type SupertonicVoice = (typeof SUPERTONIC_VOICES)[number]
 
-// A request to speak with the natural voice (handled by the pop-up window).
-export interface SayRequest {
+// A request to speak with a natural voice (handled by the pop-up window). Kokoro's voice is
+// one of its voice files ('ef_dora'), from kokoroVoiceId.
+export type SayRequest = {
   text: string
-  voice: SupertonicVoice
   speed: number
   volume: number
   language: LanguageCode
-}
+} & ({ engine: 'kokoro'; voice: string } | { engine: 'supertonic'; voice: SupertonicVoice })
 
 export interface UpdateState {
   // 'dev' when running from source (no updates).
