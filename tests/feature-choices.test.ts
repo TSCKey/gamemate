@@ -254,9 +254,10 @@ describe('applying feature choices', () => {
     noNaturalVoice = true
     settings.updateSettings({ language: 'de' })
     installed.add('supertonic')
+    const before = settings.getSettings().voiceEngine
     const s = features.applyFeatureChoices({ naturalVoice: true })
     expect(downloadSpeechModel).not.toHaveBeenCalled()
-    expect(s.voiceEngine).toBe('kokoro')
+    expect(s.voiceEngine).toBe(before)
   })
 
   it('needs the Terms', async () => {

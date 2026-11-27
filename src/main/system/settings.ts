@@ -8,7 +8,7 @@ import { isLocalModelId, LOCAL_MODELS } from '../ai/localModels'
 import type { SavedGame } from '../games/catalog'
 import { existsSync } from 'fs'
 import { DEFAULT_SHORTCUT, DEFAULT_VOICE_SHORTCUT, isValidShortcut } from '../../shared/shortcuts'
-import { isLanguageCode } from '../../shared/languages'
+import { isLanguageCode, languageInfo } from '../../shared/languages'
 import {
   COMPANION_MODES,
   COMMENTARY_FREQUENCIES,
@@ -243,7 +243,16 @@ export function updateSettings(patch: unknown): Settings {
   if (typeof p.geminiModel === 'string' && /^[\w.-]{0,100}$/.test(p.geminiModel)) {
     next.geminiModel = p.geminiModel
   }
-  if (isLanguageCode(p.language)) next.language = p.language
+  if (isLanguageCode(p.language)) {
+    // The first language chosen (on a first start, or after updating from a GameMate without
+    // languages) comes with a voice that speaks it, unless the voice was chosen with it.
+    // Later changes keep the voice; the settings say when it can't speak the language.
+    const voices = languageInfo(p.language).voices
+    if (next.language === '' && p.voiceEngine === undefined && !voices.includes(next.voiceEngine)) {
+      next.voiceEngine = migrateVoiceEngine(undefined, p.language)
+    }
+    next.language = p.language
+  }
   if (typeof p.webLookup === 'boolean') next.webLookup = p.webLookup
   if (typeof p.webSearch === 'boolean') next.webSearch = p.webSearch
   if (typeof p.detailedAnswers === 'boolean') next.detailedAnswers = p.detailedAnswers

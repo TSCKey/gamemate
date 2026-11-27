@@ -103,3 +103,42 @@ describe('loading saved voice settings', () => {
     expect((await load({ language: 'de', voiceEngine: 'kokoro' })).voiceEngine).toBe('kokoro')
   })
 })
+
+describe('the first language choice', () => {
+  beforeEach(() => {
+    userData = mkdtempSync(join(tmpdir(), 'gamemate-migrate-settings-'))
+    vi.resetModules()
+  })
+
+  const choose = async (
+    saved: object | null,
+    ...languages: string[]
+  ): Promise<import('../src/shared/types').Settings> => {
+    if (saved) writeFileSync(join(userData, 'settings.json'), JSON.stringify(saved))
+    const { updateSettings, getSettings } = await import('../src/main/system/settings')
+    for (const language of languages) updateSettings({ language })
+    return getSettings()
+  }
+
+  it('gives a new player the voice that speaks the language they pick', async () => {
+    expect((await choose(null, 'de')).voiceEngine).toBe('supertonic')
+    vi.resetModules()
+    userData = mkdtempSync(join(tmpdir(), 'gamemate-migrate-settings-'))
+    expect((await choose(null, 'ar')).voiceEngine).toBe('supertonic')
+    vi.resetModules()
+    userData = mkdtempSync(join(tmpdir(), 'gamemate-migrate-settings-'))
+    expect((await choose(null, 'fr')).voiceEngine).toBe('kokoro')
+  })
+
+  it('moves an older GameMate’s Windows voice by the language picked at the first start', async () => {
+    expect((await choose({ voiceEngine: 'windows' }, 'hi')).voiceEngine).toBe('supertonic')
+  })
+
+  it('keeps a voice that speaks the language picked', async () => {
+    expect((await choose({ voiceEngine: 'supertonic' }, 'it')).voiceEngine).toBe('supertonic')
+  })
+
+  it('keeps the voice when the player changes the language later', async () => {
+    expect((await choose(null, 'en', 'de')).voiceEngine).toBe('kokoro')
+  })
+})
