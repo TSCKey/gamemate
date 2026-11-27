@@ -18,11 +18,7 @@ describe('text for the Supertonic voice', () => {
 
 describe('answers spoken sentence by sentence', () => {
   it('splits Latin, full-width and Arabic sentences', () => {
-    expect(splitForSpeech('Get iron. Smelt it! Done?')).toEqual([
-      'Get iron.',
-      'Smelt it!',
-      'Done?'
-    ])
+    expect(splitForSpeech('Get iron. Smelt it! Done?')).toEqual(['Get iron.', 'Smelt it!', 'Done?'])
     expect(splitForSpeech('鉄を取ります。かまどに入れます！')).toEqual([
       '鉄を取ります。',
       'かまどに入れます！'
