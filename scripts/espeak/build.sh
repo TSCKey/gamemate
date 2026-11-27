@@ -30,7 +30,12 @@ cp -r espeak-ng-data "$DATA"
 # 2. The same program with Emscripten. The data is embedded where the program looks for it
 #    (the default prefix, /usr/local).
 make distclean
-emconfigure ./configure "${FEATURES[@]}"
+# eSpeak NG's compat/wctype.h renames iswupper() and friends to its own Unicode functions. Unlike
+# glibc's, Emscripten's (musl's) wchar.h declares those functions too, so when it's included after
+# the rename the declarations clash. Including the real wchar.h first avoids it, without changing
+# eSpeak NG's source.
+SYSROOT_WCHAR="$(em-config CACHE)/sysroot/include/wchar.h"
+emconfigure ./configure "${FEATURES[@]}" CFLAGS="-O2 -include $SYSROOT_WCHAR"
 emmake make -j"$(nproc)" src/espeak-ng
 # libtool leaves the library as a static archive or a "shared" object, depending on the version.
 LIB="$(ls src/.libs/libespeak-ng.a src/.libs/libespeak-ng.so 2>/dev/null | head -1)"
