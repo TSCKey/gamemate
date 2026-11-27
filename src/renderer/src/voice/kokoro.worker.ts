@@ -8,7 +8,8 @@ import ortMjsUrl from 'onnxruntime-web/ort-wasm-simd-threaded.asyncify.mjs?url'
 import espeakWasmUrl from 'espeak-ng/dist/espeak-ng.wasm?url'
 import type { LanguageCode } from '../../../shared/languages'
 import { KOKORO_VOICE_FILES } from '../../../shared/voices'
-import { phonemizeFor, setESpeakWasm } from './kokoroText'
+import { kokoroInput, setESpeakWasm } from './kokoroText'
+import { offlineRequest } from './offline'
 import type { VoiceResponse } from './tts.worker'
 
 const REPO = 'onnx-community/Kokoro-82M-v1.0-ONNX'
@@ -49,7 +50,9 @@ self.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> =
   if (voice && url.startsWith(`https://huggingface.co/${REPO}/`)) {
     return realFetch(`${LOCAL}voices/${voice[1]}.bin`)
   }
-  if (/^https?:/i.test(url)) return Promise.reject(new Error('GameMate’s voice works offline.'))
+  if (offlineRequest(url, self.location.href) === 'refuse') {
+    return Promise.reject(new Error('GameMate’s voice works offline.'))
+  }
   return realFetch(input, init)
 }
 // kokoro-js would also keep each voice in the browser's cache storage; it's on disk already.
@@ -85,13 +88,14 @@ async function synthesize(
   const speed = request.speed
   // kokoro-js pronounces English itself (with numbers, money and abbreviations spelled out);
   // the other languages go through eSpeak, then straight to the model with their own voice.
+  // A piece with nothing to say ('!!!', '...') comes back silent, and the answer goes on.
+  const input = await kokoroInput(request.text, request.language)
+  if (!input) return { samples: new Float32Array(0), rate: 24000 }
   const audio =
-    request.language === 'en'
-      ? await model.generate(request.text, { voice, speed })
+    'text' in input
+      ? await model.generate(input.text, { voice, speed })
       : await model.generate_from_ids(
-          model.tokenizer(await phonemizeFor(request.text, request.language), {
-            truncation: true
-          }).input_ids,
+          model.tokenizer(input.phonemes, { truncation: true }).input_ids,
           { voice, speed }
         )
   return { samples: audio.audio as Float32Array, rate: audio.sampling_rate }

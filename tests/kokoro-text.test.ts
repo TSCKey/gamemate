@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { phonemizeFor } from '../src/renderer/src/voice/kokoroText'
+import { kokoroInput, phonemizeFor } from '../src/renderer/src/voice/kokoroText'
 
 const spaced = (text: string): string => text.replace(/\s+/g, ' ').trim()
 
@@ -32,5 +32,19 @@ describe('Kokoro’s pronunciation through eSpeak', () => {
 
   it('leaves English to kokoro-js itself', async () => {
     await expect(phonemizeFor('Nice shot!', 'en')).rejects.toThrow(RangeError)
+  })
+})
+
+describe('what Kokoro is given', () => {
+  it('nothing for a piece with nothing to say', async () => {
+    expect(await kokoroInput('!!!', 'es')).toBeNull()
+    expect(await kokoroInput('...', 'fr')).toBeNull()
+    expect(await kokoroInput('?!', 'en')).toBeNull()
+    expect(await kokoroInput('—', 'pt')).toBeNull()
+  })
+
+  it('English text as it is, eSpeak’s phonemes otherwise', async () => {
+    expect(await kokoroInput('Nice shot!', 'en')).toEqual({ text: 'Nice shot!' })
+    expect(await kokoroInput('Hola.', 'es')).toEqual({ phonemes: 'ˈola' })
   })
 })

@@ -95,7 +95,8 @@ export async function say(request: SayRequest): Promise<void> {
       console.error('Natural voice failed', result.message)
       return
     }
-    await play(result.samples, result.rate, request.volume)
+    // A piece with nothing to say comes back without sound.
+    if (result.samples.length) await play(result.samples, result.rate, request.volume)
     if (mine !== generation) return
   }
 }

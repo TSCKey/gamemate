@@ -8,6 +8,7 @@ import ortMjsUrl from 'onnxruntime-web/ort-wasm-simd-threaded.mjs?url'
 import type { LanguageCode } from '../../../shared/languages'
 import type { SupertonicVoice } from '../../../shared/types'
 import { prepareText, textToIds } from './supertonicText'
+import { offlineRequest } from './offline'
 
 const ROOT = 'gm-model://models/Supertone/supertonic-3/'
 // Denoising steps: Supertone's default; at 8 steps it speaks about 1.7x faster than real time
@@ -30,7 +31,9 @@ ort.env.wasm.numThreads =
 const realFetch = self.fetch.bind(self)
 self.fetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url
-  if (/^https?:/i.test(url)) return Promise.reject(new Error('GameMate’s voice works offline.'))
+  if (offlineRequest(url, self.location.href) === 'refuse') {
+    return Promise.reject(new Error('GameMate’s voice works offline.'))
+  }
   return realFetch(input, init)
 }
 

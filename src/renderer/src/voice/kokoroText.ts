@@ -30,6 +30,19 @@ export function setESpeakWasm(load: () => Promise<WebAssembly.Module>): void {
   }
 }
 
+// What Kokoro is given for a piece of an answer: English text as it is (kokoro-js pronounces
+// it), eSpeak's phonemes for the other languages, or null when there is nothing to say: a
+// piece of only punctuation ('!!!', '...') would give the model no sounds at all.
+export async function kokoroInput(
+  text: string,
+  language: LanguageCode
+): Promise<{ text: string } | { phonemes: string } | null> {
+  if (!/[\p{L}\p{N}]/u.test(text)) return null
+  if (language === 'en') return { text }
+  const phonemes = await phonemizeFor(text, language)
+  return phonemes ? { phonemes } : null
+}
+
 // Kokoro's phonemes for a sentence: IPA with stress marks, clause by clause.
 export async function phonemizeFor(text: string, language: LanguageCode): Promise<string> {
   // Only reaches the log: English goes to kokoro-js, and GameMate never asks Kokoro for a
