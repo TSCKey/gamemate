@@ -47,7 +47,7 @@
     "searchTheWeb": "वेब पर सर्च करें",
     "letsTheAiSearchThe": "AI को Google से (Gemini के ज़रिए) वेब पर ऐसे पैच, रणनीतियाँ और टिप्स सर्च करने देता है जो विकी में नहीं हैं। सिर्फ़ सर्च क्वेरी भेजी जाती है।",
     "searchesTheWebWithGoogle": "जो विकी में नहीं है, उसे Google से वेब पर सर्च करता है। इसके लिए Gemini चाहिए: पहले उसे चालू करें और ऊपर अपनी कुंजी जोड़ें।",
-    "googleHandlesThatData": "Google उस डेटा को GameMate की नहीं, बल्कि <terms>Gemini API शर्तों</terms> और <privacy>Google गोपनीयता नीति</privacy> के तहत संभालता है। मुफ़्त कुंजी के साथ, Google आपके भेजे गए डेटा का इस्तेमाल अपने प्रोडक्ट बेहतर बनाने के लिए कर सकता है और लोग उसे देख सकते हैं, सिवाय EU/EEA, स्विट्ज़रलैंड और UK के। निजी जानकारी शेयर न करें।",
+    "googleHandlesThatData": "Google उस डेटा को GameMate की नहीं, बल्कि <terms>Gemini API शर्तों</terms> और <privacy>Google गोपनीयता नीति</privacy> के तहत संभालता है। मुफ़्त कुंजी के साथ, Google आपके भेजे गए डेटा का इस्तेमाल अपने प्रोडक्ट बेहतर बनाने के लिए कर सकता है और Google के समीक्षक उसे पढ़ सकते हैं, सिवाय EU/EEA, स्विट्ज़रलैंड और UK के। निजी जानकारी शेयर न करें।",
     "iM18OrOlder": "मेरी उम्र 18 साल या उससे ज़्यादा है और मैं यह डेटा Google को भेजने के लिए सहमत हूँ।",
     "googleSearchesTheWeb": "Google <terms>Gemini API शर्तों</terms> और <privacy>Google गोपनीयता नीति</privacy> के तहत वेब पर सर्च करता है, Reddit जैसे फ़ोरम भी। जवाबों में इस्तेमाल किए गए पेज और Google के सर्च सुझाव दिखते हैं।",
     "autoDecidePerQuestion": "ऑटो (हर सवाल पर तय करें)",
@@ -449,7 +449,7 @@
     "stop": "रोकें"
   },
   "overlay": {
-    "dragToMove": "हटाने के लिए खींचें",
+    "dragToMove": "जगह बदलने के लिए खींचें",
     "openGamemateAndSetUp": "पहले GameMate खोलें और AI मॉडल सेट अप करें",
     "listening": "सुन रहा है…",
     "workingOutWhatYouSaid": "समझ रहा है कि आपने क्या कहा…",
