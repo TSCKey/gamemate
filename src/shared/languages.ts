@@ -11,6 +11,8 @@ export interface Language {
   englishName: string
   // How the language calls itself, shown in the language picker.
   nativeName: string
+  // The same name inside a sentence ("Parle français."), lower case where the language writes it so.
+  sentenceName: string
   dir: 'ltr' | 'rtl'
   // The voices that speak it. Supertonic speaks all eight; Kokoro only some.
   voices: NaturalVoiceEngine[]
@@ -20,14 +22,70 @@ const BOTH: NaturalVoiceEngine[] = ['kokoro', 'supertonic']
 const SUPERTONIC: NaturalVoiceEngine[] = ['supertonic']
 
 export const LANGUAGES: Language[] = [
-  { code: 'en', englishName: 'English', nativeName: 'English', dir: 'ltr', voices: BOTH },
-  { code: 'de', englishName: 'German', nativeName: 'Deutsch', dir: 'ltr', voices: SUPERTONIC },
-  { code: 'fr', englishName: 'French', nativeName: 'Français', dir: 'ltr', voices: BOTH },
-  { code: 'ar', englishName: 'Arabic', nativeName: 'العربية', dir: 'rtl', voices: SUPERTONIC },
-  { code: 'es', englishName: 'Spanish', nativeName: 'Español', dir: 'ltr', voices: BOTH },
-  { code: 'pt', englishName: 'Portuguese', nativeName: 'Português', dir: 'ltr', voices: BOTH },
-  { code: 'it', englishName: 'Italian', nativeName: 'Italiano', dir: 'ltr', voices: BOTH },
-  { code: 'hi', englishName: 'Hindi', nativeName: 'हिन्दी', dir: 'ltr', voices: SUPERTONIC }
+  {
+    code: 'en',
+    englishName: 'English',
+    nativeName: 'English',
+    sentenceName: 'English',
+    dir: 'ltr',
+    voices: BOTH
+  },
+  {
+    code: 'de',
+    englishName: 'German',
+    nativeName: 'Deutsch',
+    sentenceName: 'Deutsch',
+    dir: 'ltr',
+    voices: SUPERTONIC
+  },
+  {
+    code: 'fr',
+    englishName: 'French',
+    nativeName: 'Français',
+    sentenceName: 'français',
+    dir: 'ltr',
+    voices: BOTH
+  },
+  {
+    code: 'ar',
+    englishName: 'Arabic',
+    nativeName: 'العربية',
+    sentenceName: 'العربية',
+    dir: 'rtl',
+    voices: SUPERTONIC
+  },
+  {
+    code: 'es',
+    englishName: 'Spanish',
+    nativeName: 'Español',
+    sentenceName: 'español',
+    dir: 'ltr',
+    voices: BOTH
+  },
+  {
+    code: 'pt',
+    englishName: 'Portuguese',
+    nativeName: 'Português',
+    sentenceName: 'português',
+    dir: 'ltr',
+    voices: BOTH
+  },
+  {
+    code: 'it',
+    englishName: 'Italian',
+    nativeName: 'Italiano',
+    sentenceName: 'italiano',
+    dir: 'ltr',
+    voices: BOTH
+  },
+  {
+    code: 'hi',
+    englishName: 'Hindi',
+    nativeName: 'हिन्दी',
+    sentenceName: 'हिन्दी',
+    dir: 'ltr',
+    voices: SUPERTONIC
+  }
 ]
 
 export function isLanguageCode(value: unknown): value is LanguageCode {

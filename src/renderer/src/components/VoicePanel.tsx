@@ -63,7 +63,7 @@ function VoicePanel({
   const selected = models.find((m) => m.id === settings.speechModel)
   const usesSupertonic = settings.voiceEngine === 'supertonic'
   const language = settings.language || 'en'
-  const { nativeName, voices } = languageInfo(language)
+  const { sentenceName, voices } = languageInfo(language)
   // The chosen voice's download, and why it wouldn't read aloud (if it wouldn't).
   const chosen = models.find((m) => m.id === settings.voiceEngine)
   const isInstalled = (id: string): boolean => models.some((m) => m.id === id && m.installed)
@@ -122,7 +122,7 @@ function VoicePanel({
                       t('voicePanel.englishOnlyWorks')
                     ) : (
                       t('voicePanel.englishOnlyModel', {
-                        language: languageInfo(language).nativeName
+                        language: languageInfo(language).sentenceName
                       })
                     )
                   ) : (
@@ -151,7 +151,7 @@ function VoicePanel({
             voices.includes(engine)
               ? 'voicePanel.speaksLanguage'
               : 'voicePanel.doesntSpeakLanguage',
-            { language: nativeName }
+            { language: sentenceName }
           )
           return (
             <Field
@@ -187,7 +187,7 @@ function VoicePanel({
             <p className="field-help">
               {t('voicePanel.cantSpeakLanguage', {
                 voice: VOICE_NAMES[settings.voiceEngine],
-                language: nativeName,
+                language: sentenceName,
                 other: VOICE_NAMES[other]
               })}
             </p>
@@ -231,7 +231,9 @@ function VoicePanel({
           <Field
             label={t('voicePanel.voice')}
             help={
-              oneKokoroVoice ? t('voicePanel.kokoroOneVoice', { language: nativeName }) : undefined
+              oneKokoroVoice
+                ? t('voicePanel.kokoroOneVoice', { language: sentenceName })
+                : undefined
             }
           >
             <select

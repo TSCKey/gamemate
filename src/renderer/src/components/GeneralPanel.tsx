@@ -108,7 +108,7 @@ function GeneralPanel({
           <p className="field-help">
             {t('generalPanel.voiceCantSpeak', {
               voice: VOICE_NAMES[settings.voiceEngine],
-              language: languageInfo(language).nativeName,
+              language: languageInfo(language).sentenceName,
               other: VOICE_NAMES[voiceHint.other]
             })}
           </p>

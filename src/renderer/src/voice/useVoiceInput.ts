@@ -46,7 +46,7 @@ export function useVoiceInput(
   const problem = settings?.voiceInput ? listenProblem(model, language) : null
   const why =
     problem === 'englishOnly'
-      ? t('useVoiceInput.englishOnly', { language: languageInfo(language).nativeName })
+      ? t('useVoiceInput.englishOnly', { language: languageInfo(language).sentenceName })
       : problem === 'notDownloaded'
         ? t('useVoiceInput.notDownloaded')
         : null

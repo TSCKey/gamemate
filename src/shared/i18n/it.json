@@ -402,7 +402,7 @@
     "privacyPolicy": "Informativa sulla privacy",
     "close": "Chiudi",
     "readEnglish": "Leggi la versione inglese vincolante",
-    "backToTranslation": "Torna a {{language}}"
+    "backToTranslation": "Torna all'{{language}}"
   },
   "termsGate": {
     "ourTermsHaveChanged": "I nostri termini sono cambiati",

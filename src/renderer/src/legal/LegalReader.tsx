@@ -180,7 +180,9 @@ export function LegalReader({
             onClick={() => setEnglish(!english)}
           >
             {english
-              ? t('legalReader.backToTranslation', { language: languageInfo(language).nativeName })
+              ? t('legalReader.backToTranslation', {
+                  language: languageInfo(language).sentenceName
+                })
               : t('legalReader.readEnglish')}
           </button>
         )}

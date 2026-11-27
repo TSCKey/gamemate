@@ -32,6 +32,19 @@ describe('supported languages', () => {
     ])
   })
 
+  it('name themselves in lower case inside a sentence where their language does', () => {
+    expect(LANGUAGES.map((l) => l.sentenceName)).toEqual([
+      'English',
+      'Deutsch',
+      'français',
+      'العربية',
+      'español',
+      'português',
+      'italiano',
+      'हिन्दी'
+    ])
+  })
+
   it('all have a natural voice', () => {
     expect(LANGUAGES.filter((l) => l.voices.length === 0)).toEqual([])
   })
