@@ -50,6 +50,13 @@ describe('the third-party notices', () => {
     expect(from).toBeGreaterThan(lines.indexOf('extraResources:'))
     expect(lines[from + 1]).toBe('to: licenses')
   })
+
+  it('leaves vendor/ out of the app: the eSpeak NG files are bundled into the interface', () => {
+    const files = read('electron-builder.yml')
+      .split('\n')
+      .map((line) => line.trim())
+    expect(files).toContain("- '!vendor/*'")
+  })
 })
 
 describe('each release', () => {

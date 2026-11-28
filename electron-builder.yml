@@ -10,6 +10,8 @@ files:
   - '!scripts/*'
   - '!.github/*'
   - '!licenses/*'
+  # GameMate's eSpeak NG build is bundled into the interface (out/renderer) when it's built.
+  - '!vendor/*'
   - '!{electron.vite.config,vitest.config}.{js,ts,mjs,cjs,mts}'
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
